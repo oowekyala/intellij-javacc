@@ -43,10 +43,7 @@ compileJavacc {
 
 task fixJavaccOutput(type : Delete) {
     dependsOn(compileJavacc)
-    delete fileTree(javaccCommonOutput).matching {
-        "*SimpleNode.java"   
-    }
-    
+    delete javaccCommonOutput.toPath().resolve("SimpleNode.java").toFile()
 }
 
 

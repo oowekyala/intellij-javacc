@@ -123,3 +123,4 @@ gradle-app.setting
 Supprimerait .idea/compiler.xml
 Supprimerait .idea/modules/
 Supprimerait sandbox/
+/sandbox/.idea/
