@@ -1,0 +1,37 @@
+<idea-plugin version="2">
+    <id>com.github.oowekyala.gark87.idea-javacc</id>
+    <name>JavaCC Plugin</name>
+    <description>Support for JavaCC .jj and .jjt files</description>
+    <version>1.0.5-dirty</version>
+    <vendor>oowekyala</vendor>
+    <idea-version since-build="15000"/>
+
+    <application-components>
+        <!-- Add your application components here -->
+        <component>
+            <implementation-class>com.github.oowekyala.gark87.idea.javacc.JavaCCSupportLoader</implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <colorSettingsPage implementation="com.github.oowekyala.gark87.idea.javacc.JavaCCColorsPage"/>
+        <annotator language="JAVACC" implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCAnnotator"/>
+        <lang.parserDefinition language="JAVACC"
+                               implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCParserDefinition"/>
+        <lang.commenter language="JAVACC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
+        <lang.ast.factory language="JAVACC"
+                          implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCASTFactory"/>
+        <lang.elementManipulator forClass="com.github.oowekyala.gark87.idea.javacc.psi.Identifier"
+                                 implementationClass="com.github.oowekyala.gark87.idea.javacc.SectionManipulator"/>
+        <lang.psiStructureViewFactory language="JAVACC"
+                                      implementationClass="com.github.oowekyala.gark87.idea.javacc.structureview.JavaccStructureViewBuilderFactory"/>
+    </extensions>
+</idea-plugin>

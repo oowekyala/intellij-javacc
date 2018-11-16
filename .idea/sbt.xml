@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaSbtSettings">
+    <option name="customVMPath" />
+    <option name="linkedExternalProjectsSettings">
+      <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../pmd-scala-dsl/pmd-scala-dsl" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../pmd-scala-dsl/pmd-scala-dsl" />
+            <option value="$PROJECT_DIR$/../pmd-scala-dsl/pmd-scala-dsl/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.1.5" />
+        <option name="useSbtShellForBuild" value="true" />
+        <option name="useSbtShellForImport" value="true" />
+      </SbtProjectSettings>
+    </option>
+  </component>
+</project>
