@@ -1,7 +1,8 @@
 package com.github.oowekyala.gark87.idea.javacc.structureview
 
-import com.github.oowekyala.gark87.idea.javacc.psi.DeclarationForStructureView
 import com.github.oowekyala.gark87.idea.javacc.psi.JavaccFileImpl
+import com.github.oowekyala.gark87.idea.javacc.psi.NonTerminalProduction
+import com.github.oowekyala.gark87.idea.javacc.psi.RegexpSpec
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.openapi.util.Key
@@ -18,27 +19,33 @@ import java.util.*
  */
 class JavaccFileTreeElement(file: JavaccFileImpl) : PsiTreeElementBase<JavaccFileImpl>(file) {
 
-    private val declarations = ArrayList<StructureViewTreeElement>()
+    private val declarations: List<StructureViewTreeElement>
 
     init {
-        val result = mutableListOf<DeclarationForStructureView>()
+        val result = mutableListOf<JavaccStructureViewElement>()
         // find declarations
         file.processDeclarations(DeclarationResolver { result.add(it) }, ResolveState.initial(), file, file)
-        for (id in result) {
-            declarations.add(JavaccLeafElement(id))
-        }
+
+        declarations = Collections.unmodifiableList(result)
+
     }
 
     override fun getChildrenBase(): Collection<StructureViewTreeElement> = declarations
 
     override fun getPresentableText(): String? = value!!.name
 
-    private class DeclarationResolver(private val onFind: (DeclarationForStructureView) -> Unit) : PsiScopeProcessor {
+    private class DeclarationResolver(private val onFind: (JavaccStructureViewElement) -> Unit) : PsiScopeProcessor {
 
         override fun execute(psiElement: PsiElement, resolveState: ResolveState): Boolean {
-            if (psiElement is DeclarationForStructureView) {
-                onFind(psiElement)
+            when (psiElement) {
+                is NonTerminalProduction -> {
+                    // TODO find children productions
+
+                    onFind(NonTerminalStructureNode(psiElement))
+                }
+                is RegexpSpec -> if (psiElement.identifier != null) onFind(TerminalStructureLeaf(psiElement))
             }
+
             return false
         }
 

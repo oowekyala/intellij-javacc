@@ -13,13 +13,13 @@ import com.intellij.psi.PsiFile
  */
 class JavaccStructureViewBuilderFactory : PsiStructureViewFactory {
     override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
-        return if (psiFile !is JavaccFileImpl) {
-            null
-        } else object : TreeBasedStructureViewBuilder() {
+        return if (psiFile !is JavaccFileImpl) null
+        else object : TreeBasedStructureViewBuilder() {
 
             override fun isRootNodeShown(): Boolean = false
 
-            override fun createStructureViewModel(editor: Editor?): StructureViewModel = JavaccFileStructureViewModel(psiFile)
+            override fun createStructureViewModel(editor: Editor?): StructureViewModel =
+                JavaccFileStructureViewModel(psiFile)
         }
     }
 }
