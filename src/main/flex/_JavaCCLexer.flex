@@ -8,7 +8,7 @@
  *        --charat --jlex -d . _JavaCCLexer.flex
  *
  */
-package org.gark87.idea.javacc.generated;
+package com.github.oowekyala.gark87.idea.javacc.generated;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 

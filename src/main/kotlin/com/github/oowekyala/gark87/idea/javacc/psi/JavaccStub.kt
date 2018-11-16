@@ -1,5 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc.psi
 
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCElementTypes
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.lang.Language

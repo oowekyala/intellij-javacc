@@ -1,8 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc
 
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants
-import com.github.oowekyala.idea.javacc.psi.Identifier
-
+import com.github.oowekyala.gark87.idea.javacc.psi.Identifier
 import com.intellij.lang.ASTFactory
 import com.intellij.psi.impl.source.tree.CompositeElement
 import com.intellij.psi.impl.source.tree.FileElement
@@ -22,7 +21,7 @@ class JavaCCASTFactory : ASTFactory() {
     }
 
     override fun createLeaf(type: IElementType, text: CharSequence): LeafElement? {
-        return if (type === com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.IDENTIFIER || type === com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._OPTIONS) {
+        return if (type === JavaCCConstants.IDENTIFIER || type === JavaCCConstants._OPTIONS) {
             Identifier(type, text)
         } else LeafPsiElement(type, text)
     }

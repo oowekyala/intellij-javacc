@@ -1,6 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc.psi.reference
 
-import com.github.oowekyala.idea.javacc.psi.*
+import com.github.oowekyala.gark87.idea.javacc.psi.*
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState

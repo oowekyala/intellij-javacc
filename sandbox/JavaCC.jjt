@@ -41,9 +41,22 @@ options {
 
 PARSER_BEGIN(JavaCC)
 
-package org.gark87.idea.javacc.generated;
+package com.github.oowekyala.gark87.idea.javacc.generated;
+
+import java.util.ArrayList;
+
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.PsiBuilder;
+import com.intellij.lang.PsiBuilder;
+
 
 public class JavaCC {
+
+    private PsiBuilder builder;
+
+    public JavaCC(PsiBuilder builder) {
+        this.builder = builder;
+    }
 
   /*
    * Returns true if the next token is not in the FOLLOW list of "expansion".
@@ -55,6 +68,16 @@ public class JavaCC {
     if (t == BIT_OR || t == COMMA || t == RPAREN || t == RBRACE || t == RBRACKET || t == null) return false;
     return true;
   }
+
+
+    /** Get the specific Token. */
+    final public IElementType getTokenType(int index) {
+        IElementType t = null;
+        for (int i = 0; i < index; i++) {
+            t = builder.getTokenType();
+        }
+        return t;
+    }
 
 }
 

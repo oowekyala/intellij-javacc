@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc
 
-import com.github.oowekyala.idea.javacc.psi.Identifier
 
+import com.github.oowekyala.gark87.idea.javacc.psi.Identifier
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.AbstractElementManipulator
 import com.intellij.util.IncorrectOperationException

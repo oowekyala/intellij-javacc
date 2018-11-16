@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc
 
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLanguage
-import com.github.oowekyala.idea.javacc.util.JavaCCIcons
+import com.github.oowekyala.gark87.idea.javacc.util.JavaCCIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.fileTypes.SingleLazyInstanceSyntaxHighlighterFactory
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
@@ -11,7 +11,7 @@ import javax.swing.Icon
 /**
  * @author gark87
  */
-class JavaCCFileType : LanguageFileType(com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLanguage()) {
+class JavaCCFileType : LanguageFileType(JavaCCLanguage()) {
     init {
         SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(language, object : SingleLazyInstanceSyntaxHighlighterFactory() {
             override fun createHighlighter(): SyntaxHighlighter = JavaCCHighlighter()

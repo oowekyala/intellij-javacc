@@ -1,5 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc
 
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCC
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser

@@ -1,6 +1,10 @@
 package com.github.oowekyala.gark87.idea.javacc
 
-import com.github.oowekyala.idea.javacc.psi.*
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCC
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCElementTypes
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLexer
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCTreeConstants
+import com.github.oowekyala.gark87.idea.javacc.psi.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition

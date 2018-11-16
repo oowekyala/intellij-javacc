@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc.structureview
 
-import com.github.oowekyala.idea.javacc.psi.DeclarationForStructureView
-import com.github.oowekyala.idea.javacc.psi.JavaccFileImpl
+import com.github.oowekyala.gark87.idea.javacc.psi.DeclarationForStructureView
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccFileImpl
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.openapi.util.Key

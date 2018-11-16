@@ -1,0 +1,1 @@
+A sample "project" to test the plugin on

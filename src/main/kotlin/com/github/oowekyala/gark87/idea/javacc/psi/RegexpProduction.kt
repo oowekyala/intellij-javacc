@@ -1,6 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc.psi
 
-import com.github.oowekyala.idea.javacc.util.filterByType
+import com.github.oowekyala.gark87.idea.javacc.util.filterByType
 import com.intellij.lang.ASTNode
 
 /**

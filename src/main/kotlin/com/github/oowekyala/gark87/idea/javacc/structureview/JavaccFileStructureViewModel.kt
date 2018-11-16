@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc.structureview
 
-import com.github.oowekyala.idea.javacc.psi.JavaccFileImpl
-import com.github.oowekyala.idea.javacc.util.JavaCCIcons
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccFileImpl
+import com.github.oowekyala.gark87.idea.javacc.util.JavaCCIcons
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.util.FileStructureFilter
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation

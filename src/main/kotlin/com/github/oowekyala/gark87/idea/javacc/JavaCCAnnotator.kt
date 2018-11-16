@@ -1,5 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc
 
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCTreeConstants
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement

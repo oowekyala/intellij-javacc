@@ -1,9 +1,8 @@
 package com.github.oowekyala.gark87.idea.javacc.psi.reference
 
-import com.github.oowekyala.idea.javacc.psi.Identifier
-import com.github.oowekyala.idea.javacc.psi.JavaccFileImpl
-import com.github.oowekyala.idea.javacc.psi.JavaccScope
-import com.github.oowekyala.idea.javacc.psi.reference.JavaCCScopeProcessor.DeclarationType
+import com.github.oowekyala.gark87.idea.javacc.psi.Identifier
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccFileImpl
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccScope
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.ResolveState
@@ -13,7 +12,7 @@ import java.util.*
 /**
  * @author gark87
  */
-class IdentifierReference(element: Identifier, private val myTypes: EnumSet<DeclarationType>) : PsiReferenceBase<Identifier>(element) {
+class IdentifierReference(element: Identifier, private val myTypes: EnumSet<JavaCCScopeProcessor.DeclarationType>) : PsiReferenceBase<Identifier>(element) {
 
     override fun getVariants(): Array<out Any> {
         val processor = JavaCCScopeProcessor(myTypes)

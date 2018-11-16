@@ -1,6 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc.structureview
 
-import com.github.oowekyala.idea.javacc.psi.JavaccFileImpl
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccFileImpl
 import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.TreeBasedStructureViewBuilder

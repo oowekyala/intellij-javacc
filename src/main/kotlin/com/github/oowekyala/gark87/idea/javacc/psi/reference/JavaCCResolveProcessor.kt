@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc.psi.reference
 
-import com.github.oowekyala.idea.javacc.psi.Identifier
-import com.github.oowekyala.idea.javacc.psi.JavaccDeclarationElement
+import com.github.oowekyala.gark87.idea.javacc.psi.Identifier
+import com.github.oowekyala.gark87.idea.javacc.psi.JavaccDeclarationElement
 import java.util.*
 
 /**

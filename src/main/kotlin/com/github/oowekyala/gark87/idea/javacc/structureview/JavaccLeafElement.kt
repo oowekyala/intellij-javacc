@@ -1,7 +1,7 @@
 package com.github.oowekyala.gark87.idea.javacc.structureview
 
-import com.github.oowekyala.idea.javacc.psi.DeclarationForStructureView
-import com.github.oowekyala.idea.javacc.psi.Identifier
+import com.github.oowekyala.gark87.idea.javacc.psi.DeclarationForStructureView
+import com.github.oowekyala.gark87.idea.javacc.psi.Identifier
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import java.util.*

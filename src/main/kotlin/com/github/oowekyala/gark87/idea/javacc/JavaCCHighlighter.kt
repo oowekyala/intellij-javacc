@@ -17,7 +17,7 @@ import kotlin.reflect.KProperty
  */
 class JavaCCHighlighter : SyntaxHighlighterBase() {
 
-    override fun getHighlightingLexer(): Lexer = com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLexer()
+    override fun getHighlightingLexer(): Lexer = JavaCCLexer()
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> = arrayOf(TOKEN_TYPE_TO_STYLE[tokenType])
 
@@ -45,129 +45,129 @@ class JavaCCHighlighter : SyntaxHighlighterBase() {
             val keys = HashMap<IElementType, TextAttributesKey>()
 
             // comment
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SINGLE_LINE_COMMENT] = COMMENT
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FORMAL_COMMENT] = COMMENT
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.MULTI_LINE_COMMENT] = COMMENT
+            keys[JavaCCConstants.SINGLE_LINE_COMMENT] = COMMENT
+            keys[JavaCCConstants.FORMAL_COMMENT] = COMMENT
+            keys[JavaCCConstants.MULTI_LINE_COMMENT] = COMMENT
             // javacc keywords
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._OPTIONS] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._LOOKAHEAD] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._IGNORE_CASE] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._PARSER_BEGIN] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._PARSER_END] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._JAVACODE] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._TOKEN] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._SPECIAL_TOKEN] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._MORE] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._SKIP] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._TOKEN_MGR_DECLS] = JAVACC_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._EOF] = JAVACC_KEYWORD
+            keys[JavaCCConstants._OPTIONS] = JAVACC_KEYWORD
+            keys[JavaCCConstants._LOOKAHEAD] = JAVACC_KEYWORD
+            keys[JavaCCConstants._IGNORE_CASE] = JAVACC_KEYWORD
+            keys[JavaCCConstants._PARSER_BEGIN] = JAVACC_KEYWORD
+            keys[JavaCCConstants._PARSER_END] = JAVACC_KEYWORD
+            keys[JavaCCConstants._JAVACODE] = JAVACC_KEYWORD
+            keys[JavaCCConstants._TOKEN] = JAVACC_KEYWORD
+            keys[JavaCCConstants._SPECIAL_TOKEN] = JAVACC_KEYWORD
+            keys[JavaCCConstants._MORE] = JAVACC_KEYWORD
+            keys[JavaCCConstants._SKIP] = JAVACC_KEYWORD
+            keys[JavaCCConstants._TOKEN_MGR_DECLS] = JAVACC_KEYWORD
+            keys[JavaCCConstants._EOF] = JAVACC_KEYWORD
             // java keywords
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ABSTRACT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BOOLEAN] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BREAK] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BYTE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CASE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CATCH] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CHAR] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CLASS] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CONST] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CONTINUE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants._DEFAULT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.DO] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.DOUBLE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ELSE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.EXTENDS] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FALSE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FINAL] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FINALLY] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FLOAT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FOR] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.GOTO] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.IF] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.IMPLEMENTS] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.IMPORT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.INSTANCEOF] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.INT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.INTERFACE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.LONG] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.NATIVE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.NEW] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.NULL] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PACKAGE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PRIVATE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PROTECTED] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PUBLIC] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.RETURN] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SHORT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.STATIC] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SUPER] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SWITCH] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SYNCHRONIZED] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.THIS] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.THROW] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.THROWS] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.TRANSIENT] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.TRUE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.TRY] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.VOID] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.VOLATILE] = JAVA_KEYWORD
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.WHILE] = JAVA_KEYWORD
+            keys[JavaCCConstants.ABSTRACT] = JAVA_KEYWORD
+            keys[JavaCCConstants.BOOLEAN] = JAVA_KEYWORD
+            keys[JavaCCConstants.BREAK] = JAVA_KEYWORD
+            keys[JavaCCConstants.BYTE] = JAVA_KEYWORD
+            keys[JavaCCConstants.CASE] = JAVA_KEYWORD
+            keys[JavaCCConstants.CATCH] = JAVA_KEYWORD
+            keys[JavaCCConstants.CHAR] = JAVA_KEYWORD
+            keys[JavaCCConstants.CLASS] = JAVA_KEYWORD
+            keys[JavaCCConstants.CONST] = JAVA_KEYWORD
+            keys[JavaCCConstants.CONTINUE] = JAVA_KEYWORD
+            keys[JavaCCConstants._DEFAULT] = JAVA_KEYWORD
+            keys[JavaCCConstants.DO] = JAVA_KEYWORD
+            keys[JavaCCConstants.DOUBLE] = JAVA_KEYWORD
+            keys[JavaCCConstants.ELSE] = JAVA_KEYWORD
+            keys[JavaCCConstants.EXTENDS] = JAVA_KEYWORD
+            keys[JavaCCConstants.FALSE] = JAVA_KEYWORD
+            keys[JavaCCConstants.FINAL] = JAVA_KEYWORD
+            keys[JavaCCConstants.FINALLY] = JAVA_KEYWORD
+            keys[JavaCCConstants.FLOAT] = JAVA_KEYWORD
+            keys[JavaCCConstants.FOR] = JAVA_KEYWORD
+            keys[JavaCCConstants.GOTO] = JAVA_KEYWORD
+            keys[JavaCCConstants.IF] = JAVA_KEYWORD
+            keys[JavaCCConstants.IMPLEMENTS] = JAVA_KEYWORD
+            keys[JavaCCConstants.IMPORT] = JAVA_KEYWORD
+            keys[JavaCCConstants.INSTANCEOF] = JAVA_KEYWORD
+            keys[JavaCCConstants.INT] = JAVA_KEYWORD
+            keys[JavaCCConstants.INTERFACE] = JAVA_KEYWORD
+            keys[JavaCCConstants.LONG] = JAVA_KEYWORD
+            keys[JavaCCConstants.NATIVE] = JAVA_KEYWORD
+            keys[JavaCCConstants.NEW] = JAVA_KEYWORD
+            keys[JavaCCConstants.NULL] = JAVA_KEYWORD
+            keys[JavaCCConstants.PACKAGE] = JAVA_KEYWORD
+            keys[JavaCCConstants.PRIVATE] = JAVA_KEYWORD
+            keys[JavaCCConstants.PROTECTED] = JAVA_KEYWORD
+            keys[JavaCCConstants.PUBLIC] = JAVA_KEYWORD
+            keys[JavaCCConstants.RETURN] = JAVA_KEYWORD
+            keys[JavaCCConstants.SHORT] = JAVA_KEYWORD
+            keys[JavaCCConstants.STATIC] = JAVA_KEYWORD
+            keys[JavaCCConstants.SUPER] = JAVA_KEYWORD
+            keys[JavaCCConstants.SWITCH] = JAVA_KEYWORD
+            keys[JavaCCConstants.SYNCHRONIZED] = JAVA_KEYWORD
+            keys[JavaCCConstants.THIS] = JAVA_KEYWORD
+            keys[JavaCCConstants.THROW] = JAVA_KEYWORD
+            keys[JavaCCConstants.THROWS] = JAVA_KEYWORD
+            keys[JavaCCConstants.TRANSIENT] = JAVA_KEYWORD
+            keys[JavaCCConstants.TRUE] = JAVA_KEYWORD
+            keys[JavaCCConstants.TRY] = JAVA_KEYWORD
+            keys[JavaCCConstants.VOID] = JAVA_KEYWORD
+            keys[JavaCCConstants.VOLATILE] = JAVA_KEYWORD
+            keys[JavaCCConstants.WHILE] = JAVA_KEYWORD
 
             // operator
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.GT] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.LT] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BANG] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.TILDE] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.HOOK] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.COLON] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.EQ] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.LE] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.GE] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.NE] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SC_OR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SC_AND] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.INCR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.DECR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PLUS] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.MINUS] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.STAR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SLASH] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BIT_AND] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.BIT_OR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.XOR] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.REM] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.PLUSASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.MINUSASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.STARASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SLASHASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ANDASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ORASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.XORASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.REMASSIGN] = OPERATOR
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SHARP] = OPERATOR
+            keys[JavaCCConstants.ASSIGN] = OPERATOR
+            keys[JavaCCConstants.GT] = OPERATOR
+            keys[JavaCCConstants.LT] = OPERATOR
+            keys[JavaCCConstants.BANG] = OPERATOR
+            keys[JavaCCConstants.TILDE] = OPERATOR
+            keys[JavaCCConstants.HOOK] = OPERATOR
+            keys[JavaCCConstants.COLON] = OPERATOR
+            keys[JavaCCConstants.EQ] = OPERATOR
+            keys[JavaCCConstants.LE] = OPERATOR
+            keys[JavaCCConstants.GE] = OPERATOR
+            keys[JavaCCConstants.NE] = OPERATOR
+            keys[JavaCCConstants.SC_OR] = OPERATOR
+            keys[JavaCCConstants.SC_AND] = OPERATOR
+            keys[JavaCCConstants.INCR] = OPERATOR
+            keys[JavaCCConstants.DECR] = OPERATOR
+            keys[JavaCCConstants.PLUS] = OPERATOR
+            keys[JavaCCConstants.MINUS] = OPERATOR
+            keys[JavaCCConstants.STAR] = OPERATOR
+            keys[JavaCCConstants.SLASH] = OPERATOR
+            keys[JavaCCConstants.BIT_AND] = OPERATOR
+            keys[JavaCCConstants.BIT_OR] = OPERATOR
+            keys[JavaCCConstants.XOR] = OPERATOR
+            keys[JavaCCConstants.REM] = OPERATOR
+            keys[JavaCCConstants.PLUSASSIGN] = OPERATOR
+            keys[JavaCCConstants.MINUSASSIGN] = OPERATOR
+            keys[JavaCCConstants.STARASSIGN] = OPERATOR
+            keys[JavaCCConstants.SLASHASSIGN] = OPERATOR
+            keys[JavaCCConstants.ANDASSIGN] = OPERATOR
+            keys[JavaCCConstants.ORASSIGN] = OPERATOR
+            keys[JavaCCConstants.XORASSIGN] = OPERATOR
+            keys[JavaCCConstants.REMASSIGN] = OPERATOR
+            keys[JavaCCConstants.SHARP] = OPERATOR
 
             // semicolon
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.SEMICOLON] = OPERATOR
+            keys[JavaCCConstants.SEMICOLON] = OPERATOR
             // parenths
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.LPAREN] = PARENTHS
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.RPAREN] = PARENTHS
+            keys[JavaCCConstants.LPAREN] = PARENTHS
+            keys[JavaCCConstants.RPAREN] = PARENTHS
             // brackets
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.LBRACKET] = BRACKETS
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.RBRACKET] = BRACKETS
+            keys[JavaCCConstants.LBRACKET] = BRACKETS
+            keys[JavaCCConstants.RBRACKET] = BRACKETS
             // comma
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.COMMA] = COMMA
+            keys[JavaCCConstants.COMMA] = COMMA
             // dot
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.DOT] = DOT
+            keys[JavaCCConstants.DOT] = DOT
             // number
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.INTEGER_LITERAL] = NUMBER
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.FLOATING_POINT_LITERAL] = NUMBER
+            keys[JavaCCConstants.INTEGER_LITERAL] = NUMBER
+            keys[JavaCCConstants.FLOATING_POINT_LITERAL] = NUMBER
             // quoted string
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.STRING_LITERAL] = STRING
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.CHARACTER_LITERAL] = STRING
+            keys[JavaCCConstants.STRING_LITERAL] = STRING
+            keys[JavaCCConstants.CHARACTER_LITERAL] = STRING
 
             // error
-            keys[com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants.ERROR] = ERROR
+            keys[JavaCCConstants.ERROR] = ERROR
 
             TOKEN_TYPE_TO_STYLE = Collections.unmodifiableMap(keys)
         }

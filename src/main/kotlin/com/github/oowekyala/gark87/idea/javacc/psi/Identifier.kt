@@ -1,7 +1,8 @@
 package com.github.oowekyala.gark87.idea.javacc.psi
 
-import com.github.oowekyala.idea.javacc.psi.reference.IdentifierReference
-import com.github.oowekyala.idea.javacc.psi.reference.JavaCCScopeProcessor
+import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCTreeConstants
+import com.github.oowekyala.gark87.idea.javacc.psi.reference.IdentifierReference
+import com.github.oowekyala.gark87.idea.javacc.psi.reference.JavaCCScopeProcessor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference

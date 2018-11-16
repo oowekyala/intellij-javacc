@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>com.github.oowekyala.gark87.idea-javacc</id>
-    <name>JavaCC Plugin</name>
+    <name>JavaCC Idea Plugin</name>
     <description>Support for JavaCC .jj and .jjt files</description>
     <version>1.0.5-dirty</version>
     <vendor>oowekyala</vendor>

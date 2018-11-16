@@ -580,7 +580,7 @@ class _JavaCCLexer implements FlexLexer {
     public IElementType advance() throws java.io.IOException {
         IElementType result = internalAdvance();
         int start = zzStartRead;
-        while (result != null && (result == org.gark87.idea.javacc.generated.JavaCCConstants.MORE)) {
+        while (result != null && (result == JavaCCConstants.MORE)) {
             result = internalAdvance();
         }
         zzStartRead = start;
@@ -809,618 +809,618 @@ class _JavaCCLexer implements FlexLexer {
 
             switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
             case 94: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.STATIC;
+                return JavaCCConstants.STATIC;
             }
             case 123:
                 break;
             case 83: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CONST;
+                return JavaCCConstants.CONST;
             }
             case 124:
                 break;
             case 57: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.TRY;
+                return JavaCCConstants.TRY;
             }
             case 125:
                 break;
             case 13: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SEMICOLON;
+                return JavaCCConstants.SEMICOLON;
             }
             case 126:
                 break;
             case 53: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.XORASSIGN;
+                return JavaCCConstants.XORASSIGN;
             }
             case 127:
                 break;
             case 21: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.COLON;
+                return JavaCCConstants.COLON;
             }
             case 128:
                 break;
             case 82: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BREAK;
+                return JavaCCConstants.BREAK;
             }
             case 129:
                 break;
             case 50: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SLASHASSIGN;
+                return JavaCCConstants.SLASHASSIGN;
             }
             case 130:
                 break;
             case 6: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SKIP;
+                return JavaCCConstants.SKIP;
             }
             case 131:
                 break;
             case 69: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BYTE;
+                return JavaCCConstants.BYTE;
             }
             case 132:
                 break;
             case 38: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.STRING_LITERAL;
+                return JavaCCConstants.STRING_LITERAL;
             }
             case 133:
                 break;
             case 60: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._EOF;
+                return JavaCCConstants._EOF;
             }
             case 134:
                 break;
             case 56: {
                 yybegin(YYINITIAL);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MULTI_LINE_COMMENT;
+                return JavaCCConstants.MULTI_LINE_COMMENT;
             }
             case 135:
                 break;
             case 11: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LBRACKET;
+                return JavaCCConstants.LBRACKET;
             }
             case 136:
                 break;
             case 35: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FLOATING_POINT_LITERAL;
+                return JavaCCConstants.FLOATING_POINT_LITERAL;
             }
             case 137:
                 break;
             case 30: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.AT;
+                return JavaCCConstants.AT;
             }
             case 138:
                 break;
             case 97: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.RETURN;
+                return JavaCCConstants.RETURN;
             }
             case 139:
                 break;
             case 68: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._MORE;
+                return JavaCCConstants._MORE;
             }
             case 140:
                 break;
             case 33: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.IF;
+                return JavaCCConstants.IF;
             }
             case 141:
                 break;
             case 118: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._IGNORE_CASE;
+                return JavaCCConstants._IGNORE_CASE;
             }
             case 142:
                 break;
             case 42: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.NE;
+                return JavaCCConstants.NE;
             }
             case 143:
                 break;
             case 96: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ASSERT;
+                return JavaCCConstants.ASSERT;
             }
             case 144:
                 break;
             case 29: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SHARP;
+                return JavaCCConstants.SHARP;
             }
             case 145:
                 break;
             case 103: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.EXTENDS;
+                return JavaCCConstants.EXTENDS;
             }
             case 146:
                 break;
             case 80: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SUPER;
+                return JavaCCConstants.SUPER;
             }
             case 147:
                 break;
             case 98: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.DOUBLE;
+                return JavaCCConstants.DOUBLE;
             }
             case 148:
                 break;
             case 73: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ELSE;
+                return JavaCCConstants.ELSE;
             }
             case 149:
                 break;
             case 95: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SWITCH;
+                return JavaCCConstants.SWITCH;
             }
             case 150:
                 break;
             case 41: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LE;
+                return JavaCCConstants.LE;
             }
             case 151:
                 break;
             case 63: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CHARACTER_LITERAL;
+                return JavaCCConstants.CHARACTER_LITERAL;
             }
             case 152:
                 break;
             case 25: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.STAR;
+                return JavaCCConstants.STAR;
             }
             case 153:
                 break;
             case 84: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CATCH;
+                return JavaCCConstants.CATCH;
             }
             case 154:
                 break;
             case 14: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.COMMA;
+                return JavaCCConstants.COMMA;
             }
             case 155:
                 break;
             case 99: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._OPTIONS;
+                return JavaCCConstants._OPTIONS;
             }
             case 156:
                 break;
             case 90: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PUBLIC;
+                return JavaCCConstants.PUBLIC;
             }
             case 157:
                 break;
             case 75: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.GOTO;
+                return JavaCCConstants.GOTO;
             }
             case 158:
                 break;
             case 47: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PLUSASSIGN;
+                return JavaCCConstants.PLUSASSIGN;
             }
             case 159:
                 break;
             case 55: {
                 yybegin(YYINITIAL);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FORMAL_COMMENT;
+                return JavaCCConstants.FORMAL_COMMENT;
             }
             case 160:
                 break;
             case 115: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.INSTANCEOF;
+                return JavaCCConstants.INSTANCEOF;
             }
             case 161:
                 break;
             case 111: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PROTECTED;
+                return JavaCCConstants.PROTECTED;
             }
             case 162:
                 break;
             case 93: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.NATIVE;
+                return JavaCCConstants.NATIVE;
             }
             case 163:
                 break;
             case 120: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._PARSER_BEGIN;
+                return JavaCCConstants._PARSER_BEGIN;
             }
             case 164:
                 break;
             case 32: {
                 yybegin(YYINITIAL);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SINGLE_LINE_COMMENT;
+                return JavaCCConstants.SINGLE_LINE_COMMENT;
             }
             case 165:
                 break;
             case 70: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CASE;
+                return JavaCCConstants.CASE;
             }
             case 166:
                 break;
             case 1: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ERROR;
+                return JavaCCConstants.ERROR;
             }
             case 167:
                 break;
             case 28: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.REM;
+                return JavaCCConstants.REM;
             }
             case 168:
                 break;
             case 81: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._TOKEN;
+                return JavaCCConstants._TOKEN;
             }
             case 169:
                 break;
             case 18: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BANG;
+                return JavaCCConstants.BANG;
             }
             case 170:
                 break;
             case 65: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.THIS;
+                return JavaCCConstants.THIS;
             }
             case 171:
                 break;
             case 117: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._PARSER_END;
+                return JavaCCConstants._PARSER_END;
             }
             case 172:
                 break;
             case 119: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SYNCHRONIZED;
+                return JavaCCConstants.SYNCHRONIZED;
             }
             case 173:
                 break;
             case 27: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.XOR;
+                return JavaCCConstants.XOR;
             }
             case 174:
                 break;
             case 22: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BIT_OR;
+                return JavaCCConstants.BIT_OR;
             }
             case 175:
                 break;
             case 85: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CLASS;
+                return JavaCCConstants.CLASS;
             }
             case 176:
                 break;
             case 40: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.GE;
+                return JavaCCConstants.GE;
             }
             case 177:
                 break;
             case 23: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BIT_AND;
+                return JavaCCConstants.BIT_AND;
             }
             case 178:
                 break;
             case 67: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._SKIP;
+                return JavaCCConstants._SKIP;
             }
             case 179:
                 break;
             case 122: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._TOKEN_MGR_DECLS;
+                return JavaCCConstants._TOKEN_MGR_DECLS;
             }
             case 180:
                 break;
             case 116: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.IMPLEMENTS;
+                return JavaCCConstants.IMPLEMENTS;
             }
             case 181:
                 break;
             case 37: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MINUSASSIGN;
+                return JavaCCConstants.MINUSASSIGN;
             }
             case 182:
                 break;
             case 2: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.IDENTIFIER;
+                return JavaCCConstants.IDENTIFIER;
             }
             case 183:
                 break;
             case 10: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.RBRACE;
+                return JavaCCConstants.RBRACE;
             }
             case 184:
                 break;
             case 3: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.INTEGER_LITERAL;
+                return JavaCCConstants.INTEGER_LITERAL;
             }
             case 185:
                 break;
             case 86: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FINAL;
+                return JavaCCConstants.FINAL;
             }
             case 186:
                 break;
             case 64: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.TRUE;
+                return JavaCCConstants.TRUE;
             }
             case 187:
                 break;
             case 109: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CONTINUE;
+                return JavaCCConstants.CONTINUE;
             }
             case 188:
                 break;
             case 91: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.THROWS;
+                return JavaCCConstants.THROWS;
             }
             case 189:
                 break;
             case 87: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FALSE;
+                return JavaCCConstants.FALSE;
             }
             case 190:
                 break;
             case 4: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.DOT;
+                return JavaCCConstants.DOT;
             }
             case 191:
                 break;
             case 39: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.EQ;
+                return JavaCCConstants.EQ;
             }
             case 192:
                 break;
             case 100: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PACKAGE;
+                return JavaCCConstants.PACKAGE;
             }
             case 193:
                 break;
             case 104: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._DEFAULT;
+                return JavaCCConstants._DEFAULT;
             }
             case 194:
                 break;
             case 77: {
                 yybegin(IN_FORMAL_COMMENT);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MORE;
+                return JavaCCConstants.MORE;
             }
             case 195:
                 break;
             case 76: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.VOID;
+                return JavaCCConstants.VOID;
             }
             case 196:
                 break;
             case 59: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.NEW;
+                return JavaCCConstants.NEW;
             }
             case 197:
                 break;
             case 62: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ELLIPSIS;
+                return JavaCCConstants.ELLIPSIS;
             }
             case 198:
                 break;
             case 113: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.INTERFACE;
+                return JavaCCConstants.INTERFACE;
             }
             case 199:
                 break;
             case 9: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LBRACE;
+                return JavaCCConstants.LBRACE;
             }
             case 200:
                 break;
             case 15: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ASSIGN;
+                return JavaCCConstants.ASSIGN;
             }
             case 201:
                 break;
             case 36: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.DECR;
+                return JavaCCConstants.DECR;
             }
             case 202:
                 break;
             case 88: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FLOAT;
+                return JavaCCConstants.FLOAT;
             }
             case 203:
                 break;
             case 43: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ORASSIGN;
+                return JavaCCConstants.ORASSIGN;
             }
             case 204:
                 break;
             case 19: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.TILDE;
+                return JavaCCConstants.TILDE;
             }
             case 205:
                 break;
             case 58: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.INT;
+                return JavaCCConstants.INT;
             }
             case 206:
                 break;
             case 92: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.IMPORT;
+                return JavaCCConstants.IMPORT;
             }
             case 207:
                 break;
             case 107: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._JAVACODE;
+                return JavaCCConstants._JAVACODE;
             }
             case 208:
                 break;
             case 44: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SC_OR;
+                return JavaCCConstants.SC_OR;
             }
             case 209:
                 break;
             case 26: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SLASH;
+                return JavaCCConstants.SLASH;
             }
             case 210:
                 break;
             case 51: {
                 yybegin(IN_MULTI_LINE_COMMENT);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MORE;
+                return JavaCCConstants.MORE;
             }
             case 211:
                 break;
             case 112: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.TRANSIENT;
+                return JavaCCConstants.TRANSIENT;
             }
             case 212:
                 break;
             case 108: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ABSTRACT;
+                return JavaCCConstants.ABSTRACT;
             }
             case 213:
                 break;
             case 114: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._LOOKAHEAD;
+                return JavaCCConstants._LOOKAHEAD;
             }
             case 214:
                 break;
             case 78: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.THROW;
+                return JavaCCConstants.THROW;
             }
             case 215:
                 break;
             case 8: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.RPAREN;
+                return JavaCCConstants.RPAREN;
             }
             case 216:
                 break;
             case 17: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LT;
+                return JavaCCConstants.LT;
             }
             case 217:
                 break;
             case 7: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LPAREN;
+                return JavaCCConstants.LPAREN;
             }
             case 218:
                 break;
             case 5: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MINUS;
+                return JavaCCConstants.MINUS;
             }
             case 219:
                 break;
             case 74: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.LONG;
+                return JavaCCConstants.LONG;
             }
             case 220:
                 break;
             case 24: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PLUS;
+                return JavaCCConstants.PLUS;
             }
             case 221:
                 break;
             case 31: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MORE;
+                return JavaCCConstants.MORE;
             }
             case 222:
                 break;
             case 121: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants._SPECIAL_TOKEN;
+                return JavaCCConstants._SPECIAL_TOKEN;
             }
             case 223:
                 break;
             case 66: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.NULL;
+                return JavaCCConstants.NULL;
             }
             case 224:
                 break;
             case 54: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.REMASSIGN;
+                return JavaCCConstants.REMASSIGN;
             }
             case 225:
                 break;
             case 46: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SC_AND;
+                return JavaCCConstants.SC_AND;
             }
             case 226:
                 break;
             case 34: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.DO;
+                return JavaCCConstants.DO;
             }
             case 227:
                 break;
             case 110: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.VOLATILE;
+                return JavaCCConstants.VOLATILE;
             }
             case 228:
                 break;
             case 61: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FOR;
+                return JavaCCConstants.FOR;
             }
             case 229:
                 break;
             case 52: {
                 yybegin(IN_SINGLE_LINE_COMMENT);
-                return org.gark87.idea.javacc.generated.JavaCCConstants.MORE;
+                return JavaCCConstants.MORE;
             }
             case 230:
                 break;
             case 20: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.HOOK;
+                return JavaCCConstants.HOOK;
             }
             case 231:
                 break;
             case 106: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.STRICTFP;
+                return JavaCCConstants.STRICTFP;
             }
             case 232:
                 break;
             case 79: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.SHORT;
+                return JavaCCConstants.SHORT;
             }
             case 233:
                 break;
             case 72: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ENUM;
+                return JavaCCConstants.ENUM;
             }
             case 234:
                 break;
             case 48: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.INCR;
+                return JavaCCConstants.INCR;
             }
             case 235:
                 break;
             case 49: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.STARASSIGN;
+                return JavaCCConstants.STARASSIGN;
             }
             case 236:
                 break;
             case 12: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.RBRACKET;
+                return JavaCCConstants.RBRACKET;
             }
             case 237:
                 break;
             case 105: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.FINALLY;
+                return JavaCCConstants.FINALLY;
             }
             case 238:
                 break;
             case 102: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.BOOLEAN;
+                return JavaCCConstants.BOOLEAN;
             }
             case 239:
                 break;
             case 101: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.PRIVATE;
+                return JavaCCConstants.PRIVATE;
             }
             case 240:
                 break;
             case 45: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.ANDASSIGN;
+                return JavaCCConstants.ANDASSIGN;
             }
             case 241:
                 break;
             case 71: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.CHAR;
+                return JavaCCConstants.CHAR;
             }
             case 242:
                 break;
             case 16: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.GT;
+                return JavaCCConstants.GT;
             }
             case 243:
                 break;
             case 89: {
-                return org.gark87.idea.javacc.generated.JavaCCConstants.WHILE;
+                return JavaCCConstants.WHILE;
             }
             case 244:
                 break;
