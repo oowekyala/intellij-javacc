@@ -1,4 +1,4 @@
-package com.github.oowekyala.gark87.idea.javacc.structureview
+package com.github.oowekyala.gark87.idea.javacc.structure
 
 import com.github.oowekyala.gark87.idea.javacc.psi.RegexpSpec
 import com.github.oowekyala.gark87.idea.javacc.util.JavaCCIcons

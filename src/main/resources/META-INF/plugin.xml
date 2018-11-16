@@ -1,6 +1,6 @@
 <idea-plugin version="2">
-    <id>com.github.oowekyala.gark87.idea-javacc</id>
-    <name>JavaCC Idea Plugin</name>
+    <id>com.github.oowekyala.intellij-javacc</id>
+    <name>JavaCC Intellij Plugin</name>
     <description>Support for JavaCC .jj and .jjt files</description>
     <version>1.0.5-dirty</version>
     <vendor>oowekyala</vendor>
@@ -32,6 +32,6 @@
         <lang.elementManipulator forClass="com.github.oowekyala.gark87.idea.javacc.psi.Identifier"
                                  implementationClass="com.github.oowekyala.gark87.idea.javacc.SectionManipulator"/>
         <lang.psiStructureViewFactory language="JAVACC"
-                                      implementationClass="com.github.oowekyala.gark87.idea.javacc.structureview.JavaccStructureViewBuilderFactory"/>
+                                      implementationClass="com.github.oowekyala.gark87.idea.javacc.structure.JavaccStructureViewBuilderFactory"/>
     </extensions>
 </idea-plugin>

@@ -3,6 +3,8 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="idea-javacc_generated" target="1.8" />
+      <module name="idea-javacc_main" target="1.8" />
+      <module name="idea-javacc_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
