@@ -1412,7 +1412,7 @@ void Modifiers() :
 /*
  * Declaration syntax follows.
  */
-void TypeDeclaration() :
+void TypeDeclaration() #void :
 {}
 {
   ";" |

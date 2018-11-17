@@ -1,4 +1,4 @@
-package com.github.oowekyala.gark87.idea.javacc.psi
+package com.github.oowekyala.ijcc.lang.psi
 
 import com.intellij.psi.NavigatablePsiElement
 
@@ -8,4 +8,5 @@ import com.intellij.psi.NavigatablePsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-interface JavaccPsiElement : NavigatablePsiElement
+interface JavaccPsiElement : NavigatablePsiElement {
+}

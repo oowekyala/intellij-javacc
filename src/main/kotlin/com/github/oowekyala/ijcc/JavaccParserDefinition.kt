@@ -1,38 +1,42 @@
-package com.github.oowekyala.gark87.idea.javacc
+package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCC
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCElementTypes
-import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLexer
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCTreeConstants
 import com.github.oowekyala.gark87.idea.javacc.psi.*
+import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
+import com.github.oowekyala.ijcc.lang.parser.JavaccParser
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
-import com.intellij.psi.FileViewProvider
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
+import com.intellij.psi.*
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 
 /**
- * @author gark87
+ * Parser definition for the JavaCC language.
+ *
+ * @author Clément Fournier
  */
-class JavaCCParserDefinition : ParserDefinition {
+class JavaccParserDefinition : ParserDefinition {
 
-    override fun createLexer(project: Project): Lexer = JavaCCLexer()
+    override fun createLexer(project: Project): Lexer = JavaccLexerAdapter()
 
-    override fun createParser(project: Project): PsiParser = JavaCCParser()
+    override fun createParser(project: Project): PsiParser = JavaccParser()
 
     override fun getFileNodeType(): IFileElementType = JavaCCElementTypes.FILE
 
-    override fun getWhitespaceTokens(): TokenSet = WHITESPACES
+    override fun getWhitespaceTokens(): TokenSet =
+        TokenSet.create(TokenType.WHITE_SPACE)
 
-    override fun getCommentTokens(): TokenSet = COMMENTS
+    override fun getCommentTokens(): TokenSet =
+        TokenSet.create(JavaTokenType.C_STYLE_COMMENT, JavaTokenType.END_OF_LINE_COMMENT)
 
-    override fun getStringLiteralElements(): TokenSet = STRINGS
+    override fun getStringLiteralElements(): TokenSet =
+        TokenSet.create(JavaTokenType.STRING_LITERAL, JavaTokenType.RAW_STRING_LITERAL)
 
     override fun createElement(node: ASTNode): PsiElement {
         val type = node.elementType
@@ -76,12 +80,16 @@ class JavaCCParserDefinition : ParserDefinition {
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = JavaccFileImpl(viewProvider)
 
-    override fun spaceExistanceTypeBetweenTokens(astNode: ASTNode?, astNode1: ASTNode?): ParserDefinition.SpaceRequirements =
-            ParserDefinition.SpaceRequirements.MAY
+    override fun spaceExistanceTypeBetweenTokens(
+        astNode: ASTNode?,
+        astNode1: ASTNode?
+    ): ParserDefinition.SpaceRequirements =
+        ParserDefinition.SpaceRequirements.MAY
 
     companion object {
         private val WHITESPACES = TokenSet.create(JavaCC.SKIP)
-        private val COMMENTS = TokenSet.create(JavaCC.MULTI_LINE_COMMENT, JavaCC.SINGLE_LINE_COMMENT, JavaCC.FORMAL_COMMENT)
+        private val COMMENTS =
+            TokenSet.create(JavaCC.MULTI_LINE_COMMENT, JavaCC.SINGLE_LINE_COMMENT, JavaCC.FORMAL_COMMENT)
         private val STRINGS = TokenSet.create(JavaCC.STRING_LITERAL)
     }
 }

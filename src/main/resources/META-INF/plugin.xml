@@ -25,7 +25,7 @@
         <colorSettingsPage implementation="com.github.oowekyala.gark87.idea.javacc.JavaCCColorsPage"/>
         <annotator language="JAVACC" implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCAnnotator"/>
         <lang.parserDefinition language="JAVACC"
-                               implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCParserDefinition"/>
+                               implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.commenter language="JAVACC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
         <lang.ast.factory language="JAVACC"
                           implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCASTFactory"/>

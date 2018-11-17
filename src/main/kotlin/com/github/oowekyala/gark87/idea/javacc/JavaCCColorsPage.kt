@@ -1,5 +1,6 @@
 package com.github.oowekyala.gark87.idea.javacc
 
+import com.github.oowekyala.gark87.idea.javacc.util.JavaCCIcons
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
@@ -14,7 +15,7 @@ class JavaCCColorsPage : ColorSettingsPage {
 
     override fun getDisplayName(): String = "JavaCC"
 
-    override fun getIcon(): Icon? = null
+    override fun getIcon(): Icon = JavaCCIcons.JAVACC_FILE.icon
 
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = ATTRS
 
@@ -23,54 +24,95 @@ class JavaCCColorsPage : ColorSettingsPage {
     override fun getHighlighter(): SyntaxHighlighter = JavaCCHighlighter()
 
     override fun getDemoText(): String {
-        return "options {\n" +
-               "  LOOKAHEAD = 1;\n" +
-               "  CHOICE_AMBIGUITY_CHECK = 2;\n" +
-               "  OTHER_AMBIGUITY_CHECK = 1;\n" +
-               "  STATIC = true;\n" +
-               "  DEBUG_PARSER = false;\n" +
-               "  DEBUG_LOOKAHEAD = false;\n" +
-               "  DEBUG_TOKEN_MANAGER = false;\n" +
-               "  ERROR_REPORTING = true;\n" +
-               "  JAVA_UNICODE_ESCAPE = false;\n" +
-               "  UNICODE_INPUT = false;\n" +
-               "  IGNORE_CASE = false;\n" +
-               "  USER_TOKEN_MANAGER = false;\n" +
-               "  USER_CHAR_STREAM = false;\n" +
-               "  BUILD_PARSER = true;\n" +
-               "  BUILD_TOKEN_MANAGER = true;\n" +
-               "  SANITY_CHECK = true;\n" +
-               "  FORCE_LA_CHECK = false;\n" +
-               "}\n" +
-               "\n" +
-               "PARSER_BEGIN(Simple1)\n" +
-               "\n" +
-               "public class Simple1 {\n" +
-               "\n" +
-               "  public static void main(String args[]) throws ParseException {\n" +
-               "    Simple1 parser = new Simple1(System.in);\n" +
-               "    parser.Input();\n" +
-               "  }\n" +
-               "\n" +
-               "}\n" +
-               "\n" +
-               "PARSER_END(Simple1)\n" +
-               "\n" +
-               "void Input() :\n" +
-               "{}\n" +
-               "{\n" +
-               "  MatchedBraces() (\"\\n\"|\"\\r\")* <EOF>\n" +
-               "}\n" +
-               "\n" +
-               "void MatchedBraces() :\n" +
-               "{}\n" +
-               "{\n" +
-               "  \"{\" [ MatchedBraces() ] \"}\"\n" +
-               "}"
+        return """
+options {
+  LOOKAHEAD = 1;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(Simple1)
+
+public class Simple1 {
+
+  public static void main(String args[]) throws ParseException {
+    Simple1 parser = new Simple1(System.in);
+    parser.Input();
+  }
+
+}
+
+PARSER_END(Simple1)
+
+TOKEN :
+{
+  < OPTIONS: "options" >
+| < LOOKAHEAD: "LOOKAHEAD" >
+| < IDENTIFIER: <LETTER> (<PART_LETTER>)* >
+| < #LETTER:
+    [
+      "A"-"Z",
+      "_",
+      "a"-"z"
+    ]
+  >
+}
+
+/* WHITE SPACE */
+
+SKIP :
+{
+ " "
+ | "\t"
+ | "\n"
+ | "\r"
+ | "\f"
+}
+
+
+/* COMMENTS */
+
+// This is another comment
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+
+void Input() :
+{}
+{
+  MatchedBraces() ("\n"|"\r")* <EOF>
+}
+
+void MatchedBraces() :
+{}
+{
+  "{" [ MatchedBraces() ] "}"
+}"""
     }
 
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? =
-            null
+        null
 
     companion object {
         private val ATTRS: Array<AttributesDescriptor>

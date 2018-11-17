@@ -4,7 +4,7 @@ import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCConstants
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCLexer
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lexer.Lexer
-import com.intellij.openapi.editor.SyntaxHighlighterColors
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.openapi.util.Pair
@@ -19,24 +19,27 @@ class JavaCCHighlighter : SyntaxHighlighterBase() {
 
     override fun getHighlightingLexer(): Lexer = JavaCCLexer()
 
-    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> = arrayOf(TOKEN_TYPE_TO_STYLE[tokenType])
+    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey?> =
+        arrayOf(TOKEN_TYPE_TO_STYLE[tokenType])
 
     companion object {
 
-        private fun attributesKey(base: KProperty<TextAttributesKey>, name: String = base.name): TextAttributesKey = TextAttributesKey.createTextAttributesKey("JavaCC.$name", base.getter.call().defaultAttributes)
+        private fun attributesKey(base: KProperty<TextAttributesKey>, name: String = base.name): TextAttributesKey =
+            TextAttributesKey.createTextAttributesKey("JavaCC.$name", base.getter.call().defaultAttributes)
 
-        val JAVACC_KEYWORD = attributesKey(SyntaxHighlighterColors::KEYWORD, "JAVACC_KEYWORD")
-        val JAVA_KEYWORD = attributesKey(SyntaxHighlighterColors::KEYWORD, "JAVA_KEYWORD")
-        val PARENTHS = attributesKey(SyntaxHighlighterColors::PARENTHS)
-        val DOT = attributesKey(SyntaxHighlighterColors::DOT)
-        val COMMA = attributesKey(SyntaxHighlighterColors::COMMA)
-        val BRACKETS = attributesKey(SyntaxHighlighterColors::BRACKETS)
-        val NUMBER = attributesKey(SyntaxHighlighterColors::NUMBER)
-        val OPERATOR = attributesKey(SyntaxHighlighterColors::OPERATION_SIGN)
-        val STRING = attributesKey(SyntaxHighlighterColors::STRING)
-        val COMMENT = attributesKey(SyntaxHighlighterColors::LINE_COMMENT)
-        val TOKEN = attributesKey(SyntaxHighlighterColors::KEYWORD)
-        val ERROR = attributesKey(SyntaxHighlighterColors::INVALID_STRING_ESCAPE)
+        val JAVACC_KEYWORD = attributesKey(DefaultLanguageHighlighterColors::KEYWORD, "JAVACC_KEYWORD")
+        val JAVA_KEYWORD = attributesKey(DefaultLanguageHighlighterColors::KEYWORD, "JAVA_KEYWORD")
+        val PARENTHESES = attributesKey(DefaultLanguageHighlighterColors::PARENTHESES)
+        val DOT = attributesKey(DefaultLanguageHighlighterColors::DOT)
+        val COMMA = attributesKey(DefaultLanguageHighlighterColors::COMMA)
+        val SEMICOLON = attributesKey(DefaultLanguageHighlighterColors::SEMICOLON)
+        val BRACKETS = attributesKey(DefaultLanguageHighlighterColors::BRACKETS)
+        val NUMBER = attributesKey(DefaultLanguageHighlighterColors::NUMBER)
+        val OPERATOR = attributesKey(DefaultLanguageHighlighterColors::OPERATION_SIGN)
+        val STRING = attributesKey(DefaultLanguageHighlighterColors::STRING)
+        val COMMENT = attributesKey(DefaultLanguageHighlighterColors::LINE_COMMENT)
+        val TOKEN = attributesKey(DefaultLanguageHighlighterColors::KEYWORD)
+        val ERROR = attributesKey(DefaultLanguageHighlighterColors::INVALID_STRING_ESCAPE)
 
         val DISPLAY_NAMES: Map<TextAttributesKey, Pair<String, HighlightSeverity>>
         private val TOKEN_TYPE_TO_STYLE: Map<IElementType, TextAttributesKey>
@@ -148,10 +151,10 @@ class JavaCCHighlighter : SyntaxHighlighterBase() {
             keys[JavaCCConstants.SHARP] = OPERATOR
 
             // semicolon
-            keys[JavaCCConstants.SEMICOLON] = OPERATOR
+            keys[JavaCCConstants.SEMICOLON] = SEMICOLON
             // parenths
-            keys[JavaCCConstants.LPAREN] = PARENTHS
-            keys[JavaCCConstants.RPAREN] = PARENTHS
+            keys[JavaCCConstants.LPAREN] = PARENTHESES
+            keys[JavaCCConstants.RPAREN] = PARENTHESES
             // brackets
             keys[JavaCCConstants.LBRACKET] = BRACKETS
             keys[JavaCCConstants.RBRACKET] = BRACKETS
@@ -177,16 +180,16 @@ class JavaCCHighlighter : SyntaxHighlighterBase() {
 
             displayNames[JAVACC_KEYWORD] = Pair<String, HighlightSeverity>("JavaCC keyword", null)
             displayNames[JAVA_KEYWORD] = Pair<String, HighlightSeverity>("Java keyword", null)
-            displayNames[PARENTHS] = Pair<String, HighlightSeverity>("parenths", null)
-            displayNames[DOT] = Pair<String, HighlightSeverity>("dot", null)
-            displayNames[COMMA] = Pair<String, HighlightSeverity>("comma", null)
-            displayNames[BRACKETS] = Pair<String, HighlightSeverity>("brackets", null)
-            displayNames[NUMBER] = Pair<String, HighlightSeverity>("number", null)
-            displayNames[OPERATOR] = Pair<String, HighlightSeverity>("operator", null)
-            displayNames[STRING] = Pair<String, HighlightSeverity>("quoted string", null)
-            displayNames[COMMENT] = Pair<String, HighlightSeverity>("comment", null)
-            displayNames[ERROR] = Pair<String, HighlightSeverity>("error", null)
-            displayNames[TOKEN] = Pair<String, HighlightSeverity>("token", null)
+            displayNames[PARENTHESES] = Pair<String, HighlightSeverity>("Parentheses", null)
+            displayNames[DOT] = Pair<String, HighlightSeverity>("Dot", null)
+            displayNames[COMMA] = Pair<String, HighlightSeverity>("Comma", null)
+            displayNames[BRACKETS] = Pair<String, HighlightSeverity>("Brackets", null)
+            displayNames[NUMBER] = Pair<String, HighlightSeverity>("Number", null)
+            displayNames[OPERATOR] = Pair<String, HighlightSeverity>("Operator", null)
+            displayNames[STRING] = Pair<String, HighlightSeverity>("Quoted string", null)
+            displayNames[COMMENT] = Pair<String, HighlightSeverity>("Comment", null)
+            displayNames[TOKEN] = Pair<String, HighlightSeverity>("Token", null)
+            displayNames[ERROR] = Pair<String, HighlightSeverity>("Error", null)
 
             DISPLAY_NAMES = Collections.unmodifiableMap(displayNames)
         }

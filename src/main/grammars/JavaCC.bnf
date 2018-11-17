@@ -1,0 +1,188 @@
+{
+  parserClass="com.github.oowekyala.ijcc.lang.parser.JavaccParser"
+  parserUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
+
+  implements="com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement"
+  extends="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiElementImpl"
+
+  elementTypeHolderClass="com.github.oowekyala.ijcc.lang.JavaccTypes"
+  elementTypePrefix="JCC_"
+  elementTypeClass="com.github.oowekyala.ijcc.lang.psi.JavaccElementType"
+  tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.JavaccTokenType"
+
+  psiClassPrefix="Jcc"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.oowekyala.ijcc.lang.psi"
+  psiImplPackage="com.github.oowekyala.ijcc.lang.psi.impl"
+
+  psiImplUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
+
+
+  tokens=[
+    SEMI=';'
+    EQ='='
+    LP='('
+    RP=')'
+
+    space='regexp:\s+'
+    comment='regexp://.*'
+    integer_literal='regexp:\d+[lL]?'
+    identifier='regexp:\p{Alpha}\w*'
+
+    string="regexp:\"([^\"\\]|(\\([ntbrf\\'\"]|[0-7][0-7]?|[0-3][0-7][0-7]|u[0-9aAbBcCdDeEfF]{4})))*\""
+
+  ]
+}
+
+javacc_input 	::=
+        javacc_options
+		"PARSER_BEGIN" "(" <IDENTIFIER> ")"
+		java_compilation_unit // TODO inject Java here
+		"PARSER_END" "(" <IDENTIFIER> ")"
+		( production )*
+		<EOF>
+javacc_options 	    ::=
+    [ "options" "{" ( option_binding )* "}" ]
+
+option_binding 	    ::=
+        "LOOKAHEAD" "=" integer_literal ";"
+	| 	"CHOICE_AMBIGUITY_CHECK" "=" integer_literal ";"
+	| 	"OTHER_AMBIGUITY_CHECK" "=" integer_literal ";"
+	| 	"STATIC" "=" java_boolean_literal ";"
+	| 	"SUPPORT_CLASS_VISIBILITY_PUBLIC" "=" java_boolean_literal ";"
+	| 	"DEBUG_PARSER" "=" java_boolean_literal ";"
+	| 	"DEBUG_LOOKAHEAD" "=" java_boolean_literal ";"
+	| 	"DEBUG_TOKEN_MANAGER" "=" java_boolean_literal ";"
+	| 	"ERROR_REPORTING" "=" java_boolean_literal ";"
+	| 	"JAVA_UNICODE_ESCAPE" "=" java_boolean_literal ";"
+	| 	"UNICODE_INPUT" "=" java_boolean_literal ";"
+	| 	"IGNORE_CASE" "=" java_boolean_literal ";"
+	| 	"USER_TOKEN_MANAGER" "=" java_boolean_literal ";"
+	| 	"USER_CHAR_STREAM" "=" java_boolean_literal ";"
+	| 	"BUILD_PARSER" "=" java_boolean_literal ";"
+	| 	"BUILD_TOKEN_MANAGER" "=" java_boolean_literal ";"
+	| 	"TOKEN_EXTENDS" "=" string ";"
+	| 	"TOKEN_FACTORY" "=" string ";"
+	| 	"TOKEN_MANAGER_USES_PARSER" "=" java_boolean_literal ";"
+	| 	"SANITY_CHECK" "=" java_boolean_literal ";"
+	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
+	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
+	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
+	| 	"OUTPUT_DIRECTORY" "=" string ";"
+
+production 	        ::=
+        javacode_production
+	| 	regular_expr_production
+	| 	bnf_production
+	| 	token_manager_decls
+
+javacode_production ::=
+        "JAVACODE"
+        // TODO inject java here
+		java_access_modifier java_return_type identifier "(" java_parameter_list ")"
+		java_block
+
+bnf_production 	    ::=
+        // TODO inject java here
+        java_access_modifier java_return_type identifier "(" java_parameter_list ")" ":"
+		java_block
+		"{" expansion_choices "}"
+
+regular_expr_production 	::=
+        [ lexical_state_list ]
+		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
+		"{" regexpr_spec ( "|" regexpr_spec )* "}"
+
+token_manager_decls ::=
+        "TOKEN_MGR_DECLS" ":" java_block  // TODO inject java here
+
+
+lexical_state_list 	::=
+        "<" "*" ">"
+	| 	"<" identifier ( "," identifier )* ">"
+
+regexpr_kind 	    ::=
+        "TOKEN"
+	| 	"SPECIAL_TOKEN"
+	| 	"SKIP"
+	| 	"MORE"
+
+regexpr_spec 	    ::=
+    regular_expression [ java_block ] [ ":" identifier ]
+
+
+expansion_choices 	::=
+    expansion ( "|" expansion )*
+
+expansion 	        ::=
+    ( expansion_unit )*
+
+expansion_unit 	    ::=
+        local_lookahead
+	| 	java_block
+	| 	"(" expansion_choices ")" [ "+" | "*" | "?" ]
+	| 	"[" expansion_choices "]"
+	| 	[ java_assignment_lhs "=" ] regular_expression
+	| 	[ java_assignment_lhs "=" ] identifier "(" java_expression_list ")"
+
+
+local_lookahead 	::=
+    "LOOKAHEAD" "(" [ integer_literal ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
+
+/* Regular expressions */
+
+regular_expression 	::=
+        string
+	| 	"<" [ [ "#" ] identifier ":" ] complex_regular_expression_choices ">"
+	| 	"<" identifier ">"
+	| 	"<" "EOF" ">"
+
+complex_regular_expression_choices 	::=
+    complex_regular_expression ( "|" complex_regular_expression )*
+
+complex_regular_expression 	        ::=
+    ( complex_regular_expression_unit )*
+
+complex_regular_expression_unit 	::=
+        string
+	| 	"<" identifier ">"
+	| 	character_list
+	| 	"(" complex_regular_expression_choices ")" [ "+" | "*" | "?" ]
+
+character_list  ::=
+    [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]"
+
+character_descriptor 	::=
+    string [ "-" string ]
+
+
+// Some java grammar
+
+java_boolean_literal    ::=     "true" | "false"
+
+java_block              ::=
+    "{"
+        // TODO
+    "}"
+
+
+
+//
+//root ::= root_item *
+//private root_item ::= !<<eof>> property ';' {pin=1 recoverWhile=property_recover}
+//
+//property ::= id '=' expr  {pin=2}
+//private property_recover ::= !(';' | id '=')
+//
+//expr ::= factor plus_expr *
+//left plus_expr ::= plus_op factor
+//private plus_op ::= '+'|'-'
+//private factor ::= primary mul_expr *
+//left mul_expr  ::= mul_op primary
+//private mul_op ::= '*'|'/'
+//private primary ::= primary_inner factorial_expr ?
+//left factorial_expr ::= '!'
+//private primary_inner ::= literal_expr | ref_expr | paren_expr
+//paren_expr ::= '(' expr ')' {pin=1}
+//ref_expr ::= id
+//literal_expr ::= number | string | float
