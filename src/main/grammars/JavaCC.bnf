@@ -22,20 +22,71 @@
   ]
 
   tokens = [
-      LOOKAHEAD_KEYWORD         = 'LOOKAHEAD'
-      IGNORE_CASE_OPTION        = 'IGNORE_CASE'
-      PARSER_BEGIN_KEYWORD      = 'PARSER_BEGIN'
-      PARSER_END_KEYWORD        = 'PARSER_END'
-      JAVACODE_KEYWORD          = 'JAVACODE'
-      TOKEN_KEYWORD             = 'TOKEN'
-      SPECIAL_TOKEN_KEYWORD     = 'SPECIAL_TOKEN'
-      MORE_KEYWORD              = 'MORE'
-      SKIP_KEYWORD              = 'SKIP'
-      TOKEN_MGR_DECLS_KEYWORD   = 'TOKEN_MGR_DECLS'
-      EOF_KEYWORD               = 'EOF'
-      
-      COLON = ":"                     
+        LOOKAHEAD_KEYWORD         = 'LOOKAHEAD'
+        IGNORE_CASE_OPTION        = 'IGNORE_CASE'
+        PARSER_BEGIN_KEYWORD      = 'PARSER_BEGIN'
+        PARSER_END_KEYWORD        = 'PARSER_END'
+        JAVACODE_KEYWORD          = 'JAVACODE'
+        TOKEN_KEYWORD             = 'TOKEN'
+        SPECIAL_TOKEN_KEYWORD     = 'SPECIAL_TOKEN'
+        MORE_KEYWORD              = 'MORE'
+        SKIP_KEYWORD              = 'SKIP'
+        TOKEN_MGR_DECLS_KEYWORD   = 'TOKEN_MGR_DECLS'
+        EOF_KEYWORD               = 'EOF'
 
+
+  		PRIVATE_KEYWORD		= "private"
+  		PUBLIC_KEYWORD		= "public"
+  		PROTECTED_KEYWORD	= "protected"
+
+  		VOID_KEYWORD	= "void"
+
+  		FALSE_KEYWORD	= "false"
+  		TRUE_KEYWORD	= "true"
+  		NULL_KEYWORD	= "null"
+
+
+        POUND       = "#"
+        COLON       = ":"
+
+        LT          = "<"
+        GT          = ">"
+
+  		LPARENTH	= "("
+  		RPARENTH	= ")"
+  		LBRACE		= "{"
+  		RBRACE		= "}"
+        LBRACKET    = "["
+        RBRACKET    = "]"
+
+  		SEMICOLON	= ";"
+  		COMMA	    = ","
+  		ELLIPSIS    = "..."
+  		DOT         = "."
+
+        EQ          = "="
+
+  		UNION       = "|"
+  		TILDE       = "~"
+        ASTERISK    = "*"
+        PLUS        = "+"
+        MINUS       = "-"
+        QUESTION    = "?"
+
+        DOUBLE_LITERAL      = "DOUBLE_LITERAL"
+        INTEGER_LITERAL     = "INTEGER_LITERAL"
+        STRING_LITERAL      = "STRING_LITERAL"
+        FLOAT_LITERAL       = "FLOAT_LITERAL"
+        LONG_LITERAL        = "LONG_LITERAL"
+        CHARACTER_LITERAL   = "CHARACTER_LITERAL"
+
+        C_STYLE_COMMENT     = "C_STYLE_COMMENT"
+        END_OF_LINE_COMMENT = "END_OF_LINE_COMMENT"
+        DOC_COMMENT         = "DOC_COMMENT"
+
+        BAD_CHARACTER   = "BAD_CHARACTER"
+
+        ACU_CODE        = "ACU_CODE"
   ]
 }
 
@@ -43,14 +94,15 @@ javacc_input 	::=
         javacc_options
 		PARSER_BEGIN_KEYWORD "(" IDENTIFIER ")"
 		java_compilation_unit // TODO inject Java here
-		PARSER_END_KEYWORD "(" IDENTIFIER ")"
+		"PARSER_END" "(" IDENTIFIER ")"
 		( production )*
-		EOF_KEYWORD
+		"EOF" // FIXME ?
+
 javacc_options 	    ::=
     [ "options" "{" ( option_binding )* "}" ]
 
 option_binding 	    ::=
-        LOOKAHEAD_KEYWORD "=" INTEGER_LITERAL ";"
+        "LOOKAHEAD" "=" INTEGER_LITERAL ";"
 	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
 	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
 	| 	"AUTOMATIC_ERROR_RECOVERY" "=" java_boolean_literal ";"
@@ -83,7 +135,7 @@ production 	        ::=
 	| 	token_manager_decls
 
 javacode_production ::=
-        JAVACODE_KEYWORD
+        "JAVACODE"
         // TODO inject java here
 		java_access_modifier java_return_type IDENTIFIER "(" java_parameter_list ")"
 		java_block
@@ -100,7 +152,7 @@ regular_expr_production 	::=
 		"{" regexpr_spec ( "|" regexpr_spec )* "}"
 
 token_manager_decls ::=
-        TOKEN_MGR_DECLS_KEYWORD ":" java_block  // TODO inject java here
+        "TOKEN_MGR_DECLS" ":" java_block  // TODO inject java here
 
 
 lexical_state_list 	::=
@@ -108,10 +160,10 @@ lexical_state_list 	::=
 	| 	"<" IDENTIFIER ( "," IDENTIFIER )* ">"
 
 regexpr_kind 	    ::=
-        TOKEN_KEYWORD
-	| 	SPECIAL_TOKEN_KEYWORD
-	| 	SKIP_KEYWORD
-	| 	MORE_KEYWORD
+        "TOKEN"
+	| 	"SPECIAL_TOKEN"
+	| 	"SKIP"
+	| 	"MORE"
 
 regexpr_spec 	    ::=
     regular_expression [ java_block ] [ ":" IDENTIFIER ]
@@ -133,7 +185,7 @@ expansion_unit 	    ::=
 
 
 local_lookahead 	::=
-    LOOKAHEAD_KEYWORD "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
+    "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
 
 /* Regular expressions */
 
@@ -141,7 +193,7 @@ regular_expression 	::=
         STRING_LITERAL
 	| 	"<" [ [ "#" ] IDENTIFIER ":" ] complex_regular_expression_choices ">"
 	| 	"<" IDENTIFIER ">"
-	| 	"<" EOF_KEYWORD ">"
+	| 	"<" "EOF" ">"
 
 complex_regular_expression_choices 	::=
     complex_regular_expression ( "|" complex_regular_expression )*
@@ -164,7 +216,19 @@ character_descriptor 	::=
 
 // Some java grammar
 
-private java_boolean_literal     ::=  TRUE_KEYWORD | FALSE_KEYWORD
+private java_boolean_literal     ::=  "true" | "false"
 
-external java_compilation_unit   ::= parseJCompilationUnit
+private java_return_type         ::=  "void" | java_type
+private java_type                ::=  (PRIMITIVE_TYPE | IDENTIFIER) ("[" "]")* // FIXME generics?
+
+
+private java_access_modifier     ::=  [ "public" | "protected" | "private" ]
+
+java_expression_list             ::= java_expression [ ("," java_expression)* ]
+java_parameter_list              ::= java_formal_parameter [ ("," java_formal_parameter)* ]
+java_formal_parameter            ::= java_type ["..."] IDENTIFIER ("[" "]")*
+
+external java_compilation_unit   ::= parseJCompilationUnit // The next token is a big ACU_CODE, you must translate the PsiBuilder
 external java_block              ::= parseJBlock
+external java_assignment_lhs     ::= parseJAssignmentLhs
+external java_expression         ::= parseJExpression

@@ -1,19 +1,21 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.gark87.idea.javacc.generated.JavaCC
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCElementTypes
 import com.github.oowekyala.gark87.idea.javacc.generated.JavaCCTreeConstants
 import com.github.oowekyala.gark87.idea.javacc.psi.*
+import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.parser.JavaccParser
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
-import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
-import com.intellij.psi.*
+import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 
@@ -29,7 +31,7 @@ class JavaccParserDefinition : ParserDefinition {
     override fun createParser(project: Project): PsiParser = JavaccParser()
 
     override fun getFileNodeType(): IFileElementType = JavaCCElementTypes.FILE
-
+    /**/
     override fun getWhitespaceTokens(): TokenSet =
         TokenSet.create(TokenType.WHITE_SPACE)
 
@@ -38,10 +40,14 @@ class JavaccParserDefinition : ParserDefinition {
 //    }
 
     override fun getCommentTokens(): TokenSet =
-        TokenSet.create(JavaTokenType.C_STYLE_COMMENT, JavaTokenType.END_OF_LINE_COMMENT)
+        TokenSet.create(
+            JavaccTypes.JCC_C_STYLE_COMMENT,
+            JavaccTypes.JCC_END_OF_LINE_COMMENT,
+            JavaccTypes.JCC_DOC_COMMENT
+        )
 
     override fun getStringLiteralElements(): TokenSet =
-        TokenSet.create(JavaTokenType.STRING_LITERAL, JavaTokenType.RAW_STRING_LITERAL)
+        TokenSet.create(JavaccTypes.JCC_STRING_LITERAL)
 
     override fun createElement(node: ASTNode): PsiElement {
         val type = node.elementType
@@ -90,11 +96,4 @@ class JavaccParserDefinition : ParserDefinition {
         astNode1: ASTNode?
     ): ParserDefinition.SpaceRequirements =
         ParserDefinition.SpaceRequirements.MAY
-
-    companion object {
-        private val WHITESPACES = TokenSet.create(JavaCC.SKIP)
-        private val COMMENTS =
-            TokenSet.create(JavaCC.MULTI_LINE_COMMENT, JavaCC.SINGLE_LINE_COMMENT, JavaCC.FORMAL_COMMENT)
-        private val STRINGS = TokenSet.create(JavaCC.STRING_LITERAL)
-    }
 }

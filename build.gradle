@@ -62,10 +62,10 @@ task cleanGeneratedSources {
     dependsOn(generateParser)
 
     // Removes token declarations when we use java ones
-    ant.replaceregexp(match: 'IElementType (?!JCC_)(\\w+) = new IJavaccTokenType\\(.*$',
-            replace: '', flags: 'g', byline: true) {
-        fileset(dir: "${buildDir}/gen/com/github/oowekyala/ijcc/lang/", includes: 'JavaccTypes.java')
-    }
+//    ant.replaceregexp(match: 'IElementType (?!JCC_)(\\w+) = new IJavaccTokenType\\(.*$',
+//            replace: '', flags: 'g', byline: true) {
+//        fileset(dir: "${buildDir}/gen/com/github/oowekyala/ijcc/lang/", includes: 'JavaccTypes.java')
+//    }
 }
 
 task generateLexer(type: GenerateLexer) {
