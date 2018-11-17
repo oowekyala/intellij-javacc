@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.parser
 
+import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lang.java.parser.JavaParserUtil
@@ -28,8 +29,8 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
     @JvmStatic
     fun parseJCompilationUnit(builder: PsiBuilder, level: Int): Boolean {
         setJavaLanguageLevel(builder)
-        JavaParser.INSTANCE.fileParser.parse(builder)
-        return true // FIXME?
+        JavaParser.INSTANCE.fileParser.parse(AcuPsiBuilderDelegate(builder))
+        return true
     }
 
 
@@ -46,6 +47,13 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         setJavaLanguageLevel(builder)
         JavaParser.INSTANCE.expressionParser.parse(builder)
         return true // FIXME?
+    }
+
+    class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
+
+        // Stops on PARSER_END
+        override fun eof(): Boolean = tokenType == JavaccTypes.JCC_PARSER_END_KEYWORD || base.eof()
+
     }
 
 }

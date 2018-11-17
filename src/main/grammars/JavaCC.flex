@@ -85,8 +85,6 @@ CHARACTER_LITERAL   =   "'" ([^\\\'\r\n] | {ESCAPE_SEQUENCE})* ("'"|\\)?
 STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
 
-PARSER_HEADER       = "PARSER_BEGIN" "(" {IDENTIFIER} ")" // single token
-
 %state IN_JAVACODE, IN_PARSER_HEADER_1, IN_PARSER_HEADER_2, IN_PARSER_HEADER_3
 
 %%

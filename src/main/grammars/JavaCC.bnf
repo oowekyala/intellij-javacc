@@ -45,6 +45,7 @@
   		TRUE_KEYWORD	= "true"
   		NULL_KEYWORD	= "null"
 
+        IDENTIFIER  = 'regexp:\p{Alpha}\w*'
 
         POUND       = "#"
         COLON       = ":"
@@ -73,12 +74,13 @@
         MINUS       = "-"
         QUESTION    = "?"
 
-        DOUBLE_LITERAL      = "DOUBLE_LITERAL"
-        INTEGER_LITERAL     = "INTEGER_LITERAL"
-        STRING_LITERAL      = "STRING_LITERAL"
-        FLOAT_LITERAL       = "FLOAT_LITERAL"
-        LONG_LITERAL        = "LONG_LITERAL"
-        CHARACTER_LITERAL   = "CHARACTER_LITERAL"
+
+        DOUBLE_LITERAL      = 'regexp:(0[xb])?[\da-fA-F]*(\.[\da-fA-F]+)?[dD]?'
+        INTEGER_LITERAL     = 'regexp:(0[xb])?[\da-fA-F]+'
+        STRING_LITERAL      = 'regexp:"([^"\\]|\\.)*"'
+        FLOAT_LITERAL       = 'regexp:(0[xb])?[\da-fA-F]*(\.[\da-fA-F]+)?[fF]?'
+        LONG_LITERAL        = 'regexp:(0[xb])?[\da-fA-F]+[lL]'
+        CHARACTER_LITERAL   = "regexp:'([^\\\'\r\n]|\\[^\n\r])'"
 
         C_STYLE_COMMENT     = "C_STYLE_COMMENT"
         END_OF_LINE_COMMENT = "END_OF_LINE_COMMENT"
@@ -92,11 +94,8 @@
 
 javacc_input 	::=
         javacc_options
-		PARSER_BEGIN_KEYWORD "(" IDENTIFIER ")"
-		java_compilation_unit // TODO inject Java here
-		"PARSER_END" "(" IDENTIFIER ")"
+		parser_declaration
 		( production )*
-		"EOF" // FIXME ?
 
 javacc_options 	    ::=
     [ "options" "{" ( option_binding )* "}" ]
@@ -127,6 +126,11 @@ option_binding 	    ::=
 	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
 	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
 	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
+
+parser_declaration ::=
+    "PARSER_BEGIN" "(" IDENTIFIER ")"
+    java_compilation_unit // TODO inject Java here
+    "PARSER_END" "(" IDENTIFIER ")"
 
 production 	        ::=
         javacode_production
@@ -219,8 +223,8 @@ character_descriptor 	::=
 private java_boolean_literal     ::=  "true" | "false"
 
 private java_return_type         ::=  "void" | java_type
-private java_type                ::=  (PRIMITIVE_TYPE | IDENTIFIER) ("[" "]")* // FIXME generics?
-
+private java_type                ::=  (PRIMITIVE_TYPE | java_coi_type) ("[" "]")* // FIXME generics?
+private java_coi_type            ::= IDENTIFIER ("." IDENTIFIER)*
 
 private java_access_modifier     ::=  [ "public" | "protected" | "private" ]
 
