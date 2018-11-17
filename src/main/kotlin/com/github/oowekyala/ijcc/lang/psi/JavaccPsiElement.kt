@@ -8,5 +8,4 @@ import com.intellij.psi.NavigatablePsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-interface JavaccPsiElement : NavigatablePsiElement {
-}
+interface JavaccPsiElement : NavigatablePsiElement

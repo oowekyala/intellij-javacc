@@ -8,4 +8,4 @@ import com.intellij.psi.tree.IElementType
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccElementType(id: String) : IElementType(id, Language.findInstance(JavaCCLanguage::class.java))
+class IJavaccTokenType(id: String) : IElementType(id, Language.findInstance(JavaCCLanguage::class.java))

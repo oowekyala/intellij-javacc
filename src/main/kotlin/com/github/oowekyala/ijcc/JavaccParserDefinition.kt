@@ -10,6 +10,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
+import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
@@ -31,6 +32,10 @@ class JavaccParserDefinition : ParserDefinition {
 
     override fun getWhitespaceTokens(): TokenSet =
         TokenSet.create(TokenType.WHITE_SPACE)
+
+//    init {
+//        JavaParser.INSTANCE.statementParser.parseCodeBlock()
+//    }
 
     override fun getCommentTokens(): TokenSet =
         TokenSet.create(JavaTokenType.C_STYLE_COMMENT, JavaTokenType.END_OF_LINE_COMMENT)

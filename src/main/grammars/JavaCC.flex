@@ -1,28 +1,24 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Copyright (C) 1998-2009  Gerwin Klein <lsf@jflex.de>                    *
- * All rights reserved.                                                    *
- *                                                                         *
- * License: BSD                                                            *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/* Java 1.2 language lexer specification */
-
-/* Use together with unicode.flex for Unicode preprocesssing */
-/* and java12.cup for a Java 1.2 parser                      */
-
-/* Note that this lexer specification is not tuned for speed.
-   It is in fact quite slow on integer and floating point literals, 
-   because the input is read twice and the methods used to parse
-   the numbers are not very fast. 
-   For a production quality application (e.g. a Java compiler) 
-   this could be optimized */
-
+/*
+ * Copyright 2000-2013 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.oowekyala.ijcc.lang.lexer;
 
 import com.intellij.lexer.FlexLexer;
-import com.intellij.psi.JavaTokenType;
 import com.intellij.psi.tree.IElementType;
+import static com.github.oowekyala.ijcc.lang.JavaccTypes.*;
+import com.intellij.psi.JavaTokenType;
 
 %%
 
@@ -35,240 +31,174 @@ import com.intellij.psi.tree.IElementType;
 
 %unicode
 
-/* main character classes */
-LineTerminator = \r|\n|\r\n
-InputCharacter = [^\r\n]
+WHITE_SPACE_CHAR    =   [\ \n\r\t\f]
 
-WhiteSpace = {LineTerminator} | [ \t\f]
+IDENTIFIER          =   [:jletter:] [:jletterdigit:]*
 
-/* comments */
-Comment = {TraditionalComment} | {EndOfLineComment} | 
-          {DocumentationComment}
+C_STYLE_COMMENT     =   ("/*"[^"*"]{COMMENT_TAIL})|"/*"
+DOC_COMMENT         =   "/*""*"+("/"|([^"/""*"]{COMMENT_TAIL}))?
+COMMENT_TAIL        =   ([^"*"]*("*"+[^"*""/"])?)*("*"+"/")?
+END_OF_LINE_COMMENT =   "/""/"[^\r\n]*
 
-TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
-EndOfLineComment = "//" {InputCharacter}* {LineTerminator}?
-DocumentationComment = "/*" "*"+ [^/*] ~"*/"
+DIGIT               =   [0-9]
+DIGIT_OR_UNDERSCORE =   [_0-9]
+DIGITS              =   {DIGIT} | {DIGIT} {DIGIT_OR_UNDERSCORE}*
+HEX_DIGIT_OR_UNDERSCORE =   [_0-9A-Fa-f]
 
-/* identifiers */
-Identifier = [:jletter:][:jletterdigit:]*
+INTEGER_LITERAL     =   {DIGITS} | {HEX_INTEGER_LITERAL} | {BIN_INTEGER_LITERAL}
+LONG_LITERAL        =   {INTEGER_LITERAL} [Ll]
+HEX_INTEGER_LITERAL =   0 [Xx] {HEX_DIGIT_OR_UNDERSCORE}*
+BIN_INTEGER_LITERAL =   0 [Bb] {DIGIT_OR_UNDERSCORE}*
 
-/* integer literals */
-DecIntegerLiteral = 0 | [1-9][0-9]*
-DecLongLiteral    = {DecIntegerLiteral} [lL]
+FLOAT_LITERAL       =   ({DEC_FP_LITERAL} | {HEX_FP_LITERAL}) [Ff] | {DIGITS} [Ff]
+DOUBLE_LITERAL      =   ({DEC_FP_LITERAL} | {HEX_FP_LITERAL}) [Dd]? | {DIGITS} [Dd]
+DEC_FP_LITERAL      =   {DIGITS} {DEC_EXPONENT} | {DEC_SIGNIFICAND} {DEC_EXPONENT}?
+DEC_SIGNIFICAND     =   "." {DIGITS} | {DIGITS} "." {DIGIT_OR_UNDERSCORE}*
+DEC_EXPONENT        =   [Ee] [+-]? {DIGIT_OR_UNDERSCORE}*
+HEX_FP_LITERAL      =   {HEX_SIGNIFICAND} {HEX_EXPONENT}
+HEX_SIGNIFICAND     =   0 [Xx] ({HEX_DIGIT_OR_UNDERSCORE}+ "."? | {HEX_DIGIT_OR_UNDERSCORE}* "." {HEX_DIGIT_OR_UNDERSCORE}+)
+HEX_EXPONENT        =   [Pp] [+-]? {DIGIT_OR_UNDERSCORE}*
 
-HexIntegerLiteral = 0 [xX] 0* {HexDigit} {1,8}
-HexLongLiteral    = 0 [xX] 0* {HexDigit} {1,16} [lL]
-HexDigit          = [0-9a-fA-F]
-
-OctIntegerLiteral = 0+ [1-3]? {OctDigit} {1,15}
-OctLongLiteral    = 0+ 1? {OctDigit} {1,21} [lL]
-OctDigit          = [0-7]
-    
-/* floating point literals */        
-FloatLiteral  = ({FLit1}|{FLit2}|{FLit3}) {Exponent}? [fF]
-DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
-
-FLit1    = [0-9]+ \. [0-9]* 
-FLit2    = \. [0-9]+ 
-FLit3    = [0-9]+ 
-Exponent = [eE] [+-]? [0-9]+
-
-/* string and character literals */
-StringCharacter = [^\r\n\"\\]
-SingleCharacter = [^\r\n\'\\]
-
-%state STRING, CHARLITERAL
+ESCAPE_SEQUENCE     =   \\[^\r\n]
+CHARACTER_LITERAL   =   "'" ([^\\\'\r\n] | {ESCAPE_SEQUENCE})* ("'"|\\)?
+STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
 %%
 
 <YYINITIAL> {
 
-  {EndOfLineComment}             { return JavaTokenType.END_OF_LINE_COMMENT; }
-  {TraditionalComment}           { return JavaTokenType.C_STYLE_COMMENT; }
+  {WHITE_SPACE_CHAR}+         { return TokenType.WHITE_SPACE; }
 
-  /* keywords */
-  "abstract"                     { return JavaTokenType.ABSTRACT_KEYWORD; }
-  "boolean"                      { return JavaTokenType.BOOLEAN_KEYWORD; }
-  "break"                        { return JavaTokenType.BREAK_KEYWORD; }
-  "byte"                         { return JavaTokenType.BYTE_KEYWORD; }
-  "case"                         { return JavaTokenType.CASE_KEYWORD; }
-  "catch"                        { return JavaTokenType.CATCH_KEYWORD; }
-  "char"                         { return JavaTokenType.CHAR_KEYWORD; }
-  "class"                        { return JavaTokenType.CLASS_KEYWORD; }
-  "const"                        { return JavaTokenType.CONST_KEYWORD; }
-  "continue"                     { return JavaTokenType.CONTINUE_KEYWORD; }
-  "do"                           { return JavaTokenType.DO_KEYWORD; }
-  "double"                       { return JavaTokenType.DOUBLE_KEYWORD; }
-  "else"                         { return JavaTokenType.ELSE_KEYWORD; }
-  "extends"                      { return JavaTokenType.EXTENDS_KEYWORD; }
-  "final"                        { return JavaTokenType.FINAL_KEYWORD; }
-  "finally"                      { return JavaTokenType.FINALLY_KEYWORD; }
-  "float"                        { return JavaTokenType.FLOAT_KEYWORD; }
-  "for"                          { return JavaTokenType.FOR_KEYWORD; }
-  "default"                      { return JavaTokenType.DEFAULT_KEYWORD; }
-  "implements"                   { return JavaTokenType.IMPLEMENTS_KEYWORD; }
-  "import"                       { return JavaTokenType.IMPORT_KEYWORD; }
-  "instanceof"                   { return JavaTokenType.INSTANCEOF_KEYWORD; }
-  "int"                          { return JavaTokenType.INT_KEYWORD; }
-  "interface"                    { return JavaTokenType.INTERFACE_KEYWORD; }
-  "long"                         { return JavaTokenType.LONG_KEYWORD; }
-  "native"                       { return JavaTokenType.NATIVE_KEYWORD; }
-  "new"                          { return JavaTokenType.NEW_KEYWORD; }
-  "goto"                         { return JavaTokenType.GOTO_KEYWORD; }
-  "if"                           { return JavaTokenType.IF_KEYWORD; }
-  "public"                       { return JavaTokenType.PUBLIC_KEYWORD; }
-  "short"                        { return JavaTokenType.SHORT_KEYWORD; }
-  "super"                        { return JavaTokenType.SUPER_KEYWORD; }
-  "switch"                       { return JavaTokenType.SWITCH_KEYWORD; }
-  "synchronized"                 { return JavaTokenType.SYNCHRONIZED_KEYWORD; }
-  "package"                      { return JavaTokenType.PACKAGE_KEYWORD; }
-  "private"                      { return JavaTokenType.PRIVATE_KEYWORD; }
-  "protected"                    { return JavaTokenType.PROTECTED_KEYWORD; }
-  "transient"                    { return JavaTokenType.TRANSIENT_KEYWORD; }
-  "return"                       { return JavaTokenType.RETURN_KEYWORD; }
-  "void"                         { return JavaTokenType.VOID_KEYWORD; }
-  "static"                       { return JavaTokenType.STATIC_KEYWORD; }
-  "while"                        { return JavaTokenType.WHILE_KEYWORD; }
-  "this"                         { return JavaTokenType.THIS_KEYWORD; }
-  "throw"                        { return JavaTokenType.THROW_KEYWORD; }
-  "throws"                       { return JavaTokenType.THROWS_KEYWORD; }
-  "try"                          { return JavaTokenType.TRY_KEYWORD; }
-  "volatile"                     { return JavaTokenType.VOLATILE_KEYWORD; }
-  "strictfp"                     { return JavaTokenType.STRICTFP_KEYWORD; }
-  
-  /* boolean literals */
-  "true"                         { return JavaTokenType.TRUE_KEYWORD; }
-  "false"                        { return JavaTokenType.FALSE_KEYWORD; }
-  
-  /* null literal */
-  "null"                         { return JavaTokenType.NULL_KEYWORD; }
-  
-  
-  /* separators */
-  "("                            { return JavaTokenType.LPARENTH; }
-  ")"                            { return JavaTokenType.RPARENTH; }
-  "{"                            { return JavaTokenType.LBRACE; }
-  "}"                            { return JavaTokenType.RBRACE; }
-  "["                            { return JavaTokenType.LBRACKET; }
-  "]"                            { return JavaTokenType.RBRACKET; }
-  ";"                            { return JavaTokenType.SEMICOLON; }
-  ","                            { return JavaTokenType.COMMA; }
-  "."                            { return JavaTokenType.DOT; }
+  {C_STYLE_COMMENT}           { return JavaTokenType.C_STYLE_COMMENT; }
+  {END_OF_LINE_COMMENT}       { return JavaTokenType.END_OF_LINE_COMMENT; }
 
-  /* operators */
-  "="                            { return JavaTokenType.EQ; }
-  ">"                            { return JavaTokenType.GT; }
-  "<"                            { return JavaTokenType.LT; }
-  "!"                            { return JavaTokenType.EXCL; }
-  "~"                            { return JavaTokenType.TILDE; }
-  "?"                            { return JavaTokenType.QUEST; }
-  ":"                            { return JavaTokenType.COLON; }
-  "=="                           { return JavaTokenType.EQEQ; }
-  "<="                           { return JavaTokenType.LE; }
-  ">="                           { return JavaTokenType.GE; }
-  "!="                           { return JavaTokenType.NE; }
-  "&&"                           { return JavaTokenType.ANDAND; }
-  "||"                           { return JavaTokenType.OROR; }
-  "++"                           { return JavaTokenType.PLUSPLUS; }
-  "--"                           { return JavaTokenType.MINUSMINUS; }
-  "+"                            { return JavaTokenType.PLUS; }
-  "-"                            { return JavaTokenType.MINUS; }
-  "*"                            { return JavaTokenType.ASTERISK; }
-  "/"                            { return JavaTokenType.DIV; }
-  "&"                            { return JavaTokenType.AND; }
-  "|"                            { return JavaTokenType.OR; }
-  "^"                            { return JavaTokenType.XOR; }
-  "%"                            { return JavaTokenType.PERC; }
-  "<<"                           { return JavaTokenType.LTLT; }
-  ">>"                           { return JavaTokenType.GTGT; }
-  ">>>"                          { return JavaTokenType.GTGTGT; }
-  "+="                           { return JavaTokenType.PLUSEQ; }
-  "-="                           { return JavaTokenType.MINUSEQ; }
-  "*="                           { return JavaTokenType.ASTERISKEQ; }
-  "/="                           { return JavaTokenType.DIVEQ; }
-  "&="                           { return JavaTokenType.ANDEQ; }
-  "|="                           { return JavaTokenType.OREQ; }
-  "^="                           { return JavaTokenType.XOREQ; }
-  "%="                           { return JavaTokenType.PERCEQ; }
-  "<<="                          { return JavaTokenType.LTLTEQ; }
-  ">>="                          { return JavaTokenType.GTGTEQ; }
-  ">>>="                         { return JavaTokenType.GTGTGTEQ; }
-  
-  /* string literal */
-  \"                             { yybegin(STRING); }
+  {LONG_LITERAL}              { return JCC_LONG_LITERAL; }
+  {INTEGER_LITERAL}           { return JCC_INTEGER_LITERAL; }
+  {FLOAT_LITERAL}             { return JCC_FLOAT_LITERAL; }
+  {DOUBLE_LITERAL}            { return JCC_DOUBLE_LITERAL; }
+  {CHARACTER_LITERAL}         { return JCC_CHARACTER_LITERAL; }
+  {STRING_LITERAL}            { return JCC_STRING_LITERAL; }
 
-  /* character literal */
-  \'                             { yybegin(CHARLITERAL); }
 
-  /* numeric literals */
+  /* JavaCC keywords */
+  "LOOKAHEAD"                 { return JCC_LOOKAHEAD_KEYWORD; }
+  "IGNORE_CASE"               { return JCC_IGNORE_CASE_OPTION; }
+  "PARSER_BEGIN"              { return JCC_PARSER_BEGIN_KEYWORD; }
+  "PARSER_END"                { return JCC_PARSER_END_KEYWORD; }
+  "JAVACODE"                  { return JCC_JAVACODE_KEYWORD; }
+  "TOKEN"                     { return JCC_TOKEN_KEYWORD; }
+  "SPECIAL_TOKEN"             { return JCC_SPECIAL_TOKEN_KEYWORD; }
+  "MORE"                      { return JCC_MORE_KEYWORD; }
+  "SKIP"                      { return JCC_SKIP_KEYWORD; }
+  "TOKEN_MGR_DECLS"           { return JCC_TOKEN_MGR_DECLS_KEYWORD; }
+  "EOF"                       { return JCC_EOF_KEYWORD; }
 
-  /* This is matched together with the minus, because the number is too big to 
-     be represented by a positive integer. */
-  "-2147483648"                  { return JavaTokenType.INTEGER_LITERAL; }
-  
-  {DecIntegerLiteral}            { return JavaTokenType.INTEGER_LITERAL; }
-  {DecLongLiteral}               { return JavaTokenType.INTEGER_LITERAL; }
-  
-  {HexIntegerLiteral}            { return JavaTokenType.INTEGER_LITERAL; }
-  {HexLongLiteral}               { return JavaTokenType.INTEGER_LITERAL; }
- 
-  {OctIntegerLiteral}            { return JavaTokenType.INTEGER_LITERAL; }
-  {OctLongLiteral}               { return JavaTokenType.INTEGER_LITERAL; }
-  
-  {FloatLiteral}                 { return JavaTokenType.FLOAT_LITERAL; }
-  {DoubleLiteral}                { return JavaTokenType.FLOAT_LITERAL; }
-  {DoubleLiteral}[dD]            { return JavaTokenType.FLOAT_LITERAL; }
-  
-  /* comments */
-  {Comment}                      { /* ignore */ }
+   /* Java keywords */
+  "true"                      { return JCC_TRUE_KEYWORD; }
+  "false"                     { return JCC_FALSE_KEYWORD; }
+  "null"                      { return JCC_NULL_KEYWORD; }
 
-  /* whitespace */
-  {WhiteSpace}                   { /* ignore */ }
+  "boolean"                   { return JavaTokenType.BOOLEAN_KEYWORD; }
+  "break"                     { return JavaTokenType.BREAK_KEYWORD; }
+  "byte"                      { return JavaTokenType.BYTE_KEYWORD; }
+  "case"                      { return JavaTokenType.CASE_KEYWORD; }
+  "catch"                     { return JavaTokenType.CATCH_KEYWORD; }
+  "char"                      { return JavaTokenType.CHAR_KEYWORD; }
+  "class"                     { return JavaTokenType.CLASS_KEYWORD; }
+  "const"                     { return JavaTokenType.CONST_KEYWORD; }
+  "continue"                  { return JavaTokenType.CONTINUE_KEYWORD; }
+  "default"                   { return JavaTokenType.DEFAULT_KEYWORD; }
+  "do"                        { return JavaTokenType.DO_KEYWORD; }
+  "double"                    { return JavaTokenType.DOUBLE_KEYWORD; }
+  "else"                      { return JavaTokenType.ELSE_KEYWORD; }
+  "enum"                      { return myEnumKeyword ? JavaTokenType.ENUM_KEYWORD : JavaTokenType.IDENTIFIER; }
+  "extends"                   { return JavaTokenType.EXTENDS_KEYWORD; }
+  "final"                     { return JavaTokenType.FINAL_KEYWORD; }
+  "finally"                   { return JavaTokenType.FINALLY_KEYWORD; }
+  "float"                     { return JavaTokenType.FLOAT_KEYWORD; }
+  "for"                       { return JavaTokenType.FOR_KEYWORD; }
+  "goto"                      { return JavaTokenType.GOTO_KEYWORD; }
+  "if"                        { return JavaTokenType.IF_KEYWORD; }
+  "implements"                { return JavaTokenType.IMPLEMENTS_KEYWORD; }
+  "import"                    { return JavaTokenType.IMPORT_KEYWORD; }
+  "instanceof"                { return JavaTokenType.INSTANCEOF_KEYWORD; }
+  "int"                       { return JavaTokenType.INT_KEYWORD; }
+  "interface"                 { return JavaTokenType.INTERFACE_KEYWORD; }
+  "long"                      { return JavaTokenType.LONG_KEYWORD; }
+  "native"                    { return JavaTokenType.NATIVE_KEYWORD; }
+  "new"                       { return JavaTokenType.NEW_KEYWORD; }
+  "package"                   { return JavaTokenType.PACKAGE_KEYWORD; }
+  "private"                   { return JavaTokenType.PRIVATE_KEYWORD; }
+  "public"                    { return JavaTokenType.PUBLIC_KEYWORD; }
+  "short"                     { return JavaTokenType.SHORT_KEYWORD; }
+  "super"                     { return JavaTokenType.SUPER_KEYWORD; }
+  "switch"                    { return JavaTokenType.SWITCH_KEYWORD; }
+  "synchronized"              { return JavaTokenType.SYNCHRONIZED_KEYWORD; }
+  "this"                      { return JavaTokenType.THIS_KEYWORD; }
+  "throw"                     { return JavaTokenType.THROW_KEYWORD; }
+  "protected"                 { return JavaTokenType.PROTECTED_KEYWORD; }
+  "transient"                 { return JavaTokenType.TRANSIENT_KEYWORD; }
+  "return"                    { return JavaTokenType.RETURN_KEYWORD; }
+  "void"                      { return JavaTokenType.VOID_KEYWORD; }
+  "static"                    { return JavaTokenType.STATIC_KEYWORD; }
+  "strictfp"                  { return JavaTokenType.STRICTFP_KEYWORD; }
+  "while"                     { return JavaTokenType.WHILE_KEYWORD; }
+  "try"                       { return JavaTokenType.TRY_KEYWORD; }
+  "volatile"                  { return JavaTokenType.VOLATILE_KEYWORD; }
+  "throws"                    { return JavaTokenType.THROWS_KEYWORD; }
 
-  /* identifiers */ 
-  {Identifier}                   { return JavaTokenType.IDENTIFIER; }
+  {IDENTIFIER}                { return JavaTokenType.IDENTIFIER; }
+
+  "=="                        { return JavaTokenType.EQEQ; }
+  "!="                        { return JavaTokenType.NE; }
+  "||"                        { return JavaTokenType.OROR; }
+  "++"                        { return JavaTokenType.PLUSPLUS; }
+  "--"                        { return JavaTokenType.MINUSMINUS; }
+
+  "<"                         { return JavaTokenType.LT; }
+  "<="                        { return JavaTokenType.LE; }
+  "<<="                       { return JavaTokenType.LTLTEQ; }
+  "<<"                        { return JavaTokenType.LTLT; }
+  ">"                         { return JavaTokenType.GT; }
+  "&"                         { return JavaTokenType.AND; }
+  "&&"                        { return JavaTokenType.ANDAND; }
+
+  "+="                        { return JavaTokenType.PLUSEQ; }
+  "-="                        { return JavaTokenType.MINUSEQ; }
+  "*="                        { return JavaTokenType.ASTERISKEQ; }
+  "/="                        { return JavaTokenType.DIVEQ; }
+  "&="                        { return JavaTokenType.ANDEQ; }
+  "|="                        { return JavaTokenType.OREQ; }
+  "^="                        { return JavaTokenType.XOREQ; }
+  "%="                        { return JavaTokenType.PERCEQ; }
+
+  "("                         { return JavaTokenType.LPARENTH; }
+  ")"                         { return JavaTokenType.RPARENTH; }
+  "{"                         { return JavaTokenType.LBRACE; }
+  "}"                         { return JavaTokenType.RBRACE; }
+  "["                         { return JavaTokenType.LBRACKET; }
+  "]"                         { return JavaTokenType.RBRACKET; }
+  ";"                         { return JavaTokenType.SEMICOLON; }
+  ","                         { return JavaTokenType.COMMA; }
+  "..."                       { return JavaTokenType.ELLIPSIS; }
+  "."                         { return JavaTokenType.DOT; }
+
+  "="                         { return JavaTokenType.EQ; }
+  "!"                         { return JavaTokenType.EXCL; }
+  "~"                         { return JavaTokenType.TILDE; }
+  "?"                         { return JavaTokenType.QUEST; }
+  ":"                         { return JavaTokenType.COLON; }
+  "+"                         { return JavaTokenType.PLUS; }
+  "-"                         { return JavaTokenType.MINUS; }
+  "*"                         { return JavaTokenType.ASTERISK; }
+  "/"                         { return JavaTokenType.DIV; }
+  "|"                         { return JavaTokenType.OR; }
+  "^"                         { return JavaTokenType.XOR; }
+  "%"                         { return JavaTokenType.PERC; }
+  "@"                         { return JavaTokenType.AT; }
+
+  "::"                        { return JavaTokenType.DOUBLE_COLON; }
+  "->"                        { return JavaTokenType.ARROW; }
 }
 
-<STRING> {
-  \"                             { yybegin(YYINITIAL); return JavaTokenType.STRING_LITERAL; }
-  
-  {StringCharacter}+             { /* ignore */ }
-  
-  /* escape sequences */
-  "\\b"                          { /* ignore */ }
-  "\\t"                          { /* ignore */ }
-  "\\n"                          { /* ignore */ }
-  "\\f"                          { /* ignore */ }
-  "\\r"                          { /* ignore */ }
-  "\\\""                         { /* ignore */ }
-  "\\'"                          { /* ignore */ }
-  "\\\\"                         { /* ignore */ }
-  \\[0-3]?{OctDigit}?{OctDigit}  { /* ignore */ }
-
-  
-  /* error cases */
-  \\.                            { return JavaTokenType.BAD_CHARACTER; }
-  {LineTerminator}               { return JavaTokenType.BAD_CHARACTER; }
-}
-
-<CHARLITERAL> {
-  {SingleCharacter}\'            { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL; }
-
-  /* escape sequences */
-  "\\b"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\t"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\n"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\f"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\r"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\\""\'                       { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\'"\'                        { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  "\\\\"\'                       { yybegin(YYINITIAL); return JavaTokenType.CHARACTER_LITERAL;}
-  \\[0-3]?{OctDigit}?{OctDigit}\' { yybegin(YYINITIAL);return JavaTokenType.CHARACTER_LITERAL;}
-  
-  /* error cases */
-  \\.                            { return JavaTokenType.BAD_CHARACTER; }
-  {LineTerminator}               { return JavaTokenType.BAD_CHARACTER; }
-}
-
-/* error fallback */
-[^]                              { return JavaTokenType.BAD_CHARACTER; }
+[^]                           { return JavaTokenType.BAD_CHARACTER; }
