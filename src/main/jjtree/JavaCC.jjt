@@ -103,7 +103,7 @@ TOKEN :
 | < _SPECIAL_TOKEN: "SPECIAL_TOKEN" >
 | < _MORE: "MORE" >
 | < _SKIP: "SKIP" >
-| < _TOKEN_MGR_DECLS: "TOKEN_MGR_DECLS" >
+| < _TOKEN_MGR_DECLS: ("TOKEN_MGR_DECLS"){3} >
 | < _EOF: "EOF" >
 }
 

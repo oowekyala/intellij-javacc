@@ -20,9 +20,21 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
     @JvmStatic
     fun parseJBlock(builder: PsiBuilder, level: Int): Boolean {
-        setJavaLanguageLevel(builder)
-        JavaParser.INSTANCE.statementParser.parseCodeBlock(builder)
-        return true // FIXME?
+
+        val inBlock = consumeToken(builder, JavaccTypes.JCC_LBRACE)
+        if (!inBlock) return false
+
+        var depth = 1
+
+        while (depth > 0 && !builder.eof()) {
+            when (builder.tokenType) {
+                JavaccTypes.JCC_LBRACE -> depth++
+                JavaccTypes.JCC_RBRACE -> depth--
+            }
+            builder.advanceLexer()
+        }
+
+        return true
     }
 
 
@@ -49,7 +61,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         return true // FIXME?
     }
 
-    class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
+    private class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
 
         // Stops on PARSER_END
         override fun eof(): Boolean = tokenType == JavaccTypes.JCC_PARSER_END_KEYWORD || base.eof()

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.gark87.idea.javacc.psi.JavaccPsiElement
+import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 

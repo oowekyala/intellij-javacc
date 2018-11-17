@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.3.12'
     id 'org.jetbrains.kotlin.jvm' version '1.3.0'
-    id "ca.coglinc.javacc" version "2.4.0"
     id "org.jetbrains.grammarkit" version "2018.2.2"
 }
 
@@ -32,9 +31,8 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDirs "${buildDir}/generated/javacc"
             srcDirs "${buildDir}/gen"
-            srcDirs 'src/main/java'
+            srcDirs 'src/main/kotlin'
         }
     }
 }
@@ -58,16 +56,6 @@ task generateParser(type: GenerateParser) {
 }
 
 
-task cleanGeneratedSources {
-    dependsOn(generateParser)
-
-    // Removes token declarations when we use java ones
-//    ant.replaceregexp(match: 'IElementType (?!JCC_)(\\w+) = new IJavaccTokenType\\(.*$',
-//            replace: '', flags: 'g', byline: true) {
-//        fileset(dir: "${buildDir}/gen/com/github/oowekyala/ijcc/lang/", includes: 'JavaccTypes.java')
-//    }
-}
-
 task generateLexer(type: GenerateLexer) {
     // source flex file
     source = "src/main/grammars/JavaCC.flex"
@@ -87,28 +75,14 @@ task generateLexer(type: GenerateLexer) {
 
 
 
-def generatedPackage = 'com/github/oowekyala/gark87/idea/javacc/generated'
-def javaccCommonOutput = file(project.buildDir.absolutePath + "/generated/javacc/${generatedPackage}")
-
-compileJjtree {
-    outputDirectory = javaccCommonOutput
-}
-
-compileJavacc {
-    inputDirectory = javaccCommonOutput
-    outputDirectory = javaccCommonOutput
-}
-
-task fixJavaccOutput(type: Delete) {
-    dependsOn(compileJavacc)
-    delete javaccCommonOutput.toPath().resolve("SimpleNode.java").toFile()
-}
-
-
 compileKotlin {
-    dependsOn(fixJavaccOutput, generateLexer, cleanGeneratedSources)
+    dependsOn(generateLexer, generateParser)
 
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions{
+        freeCompilerArgs = ['-Xjvm-default=enable', ]
+        jvmTarget = "1.8"
+    }
+
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"

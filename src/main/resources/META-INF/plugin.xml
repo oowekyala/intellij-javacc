@@ -9,7 +9,7 @@
     <application-components>
         <!-- Add your application components here -->
         <component>
-            <implementation-class>com.github.oowekyala.gark87.idea.javacc.JavaCCSupportLoader</implementation-class>
+            <implementation-class>com.github.oowekyala.ijcc.JavaCCSupportLoader</implementation-class>
         </component>
     </application-components>
 
@@ -22,16 +22,21 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <colorSettingsPage implementation="com.github.oowekyala.gark87.idea.javacc.JavaCCColorsPage"/>
-        <annotator language="JAVACC" implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCAnnotator"/>
-        <lang.parserDefinition language="JAVACC"
-                               implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
-        <lang.commenter language="JAVACC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
-        <lang.ast.factory language="JAVACC"
-                          implementationClass="com.github.oowekyala.gark87.idea.javacc.JavaCCASTFactory"/>
-        <lang.elementManipulator forClass="com.github.oowekyala.gark87.idea.javacc.psi.Identifier"
-                                 implementationClass="com.github.oowekyala.gark87.idea.javacc.SectionManipulator"/>
+
+        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+        <colorSettingsPage implementation="com.github.oowekyala.ijcc.JavaCCColorsPage"/>
+
+        <lang.parserDefinition
+                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
+        <lang.syntaxHighlighterFactory
+                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccSyntaxHighlighterFactory"/>
+        <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
+        <annotator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaCCAnnotator"/>
+
+        <lang.ast.factory language="JavaCC"
+                          implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
+
         <lang.psiStructureViewFactory language="JAVACC"
-                                      implementationClass="com.github.oowekyala.gark87.idea.javacc.structure.JavaccStructureViewBuilderFactory"/>
+                                      implementationClass="com.github.oowekyala.ijcc.structure.JavaccStructureViewBuilderFactory"/>
     </extensions>
 </idea-plugin>

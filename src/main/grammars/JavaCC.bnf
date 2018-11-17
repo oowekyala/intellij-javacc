@@ -15,7 +15,7 @@
   psiPackage="com.github.oowekyala.ijcc.lang.psi"
   psiImplPackage="com.github.oowekyala.ijcc.lang.psi.impl"
 
-  psiImplUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
+  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
 
   parserImports = [
   'static com.intellij.psi.JavaTokenType.*'
@@ -90,6 +90,8 @@
 
         ACU_CODE        = "ACU_CODE"
   ]
+
+  implements(".*production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
 }
 
 javacc_input 	::=
@@ -128,11 +130,11 @@ option_binding 	    ::=
 	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
 
 parser_declaration ::=
-    "PARSER_BEGIN" "(" IDENTIFIER ")"
+    "PARSER_BEGIN" "(" identifier ")"
     java_compilation_unit // TODO inject Java here
-    "PARSER_END" "(" IDENTIFIER ")"
+    "PARSER_END" "(" identifier ")"
 
-production 	        ::=
+private production ::=
         javacode_production
 	| 	regular_expr_production
 	| 	bnf_production
@@ -141,12 +143,12 @@ production 	        ::=
 javacode_production ::=
         "JAVACODE"
         // TODO inject java here
-		java_access_modifier java_return_type IDENTIFIER "(" java_parameter_list ")"
+		java_access_modifier java_return_type identifier "(" java_parameter_list ")"
 		java_block
 
 bnf_production 	    ::=
         // TODO inject java here
-        java_access_modifier java_return_type IDENTIFIER "(" java_parameter_list ")" ":"
+        java_access_modifier java_return_type identifier "(" java_parameter_list ")" ":"
 		java_block
 		"{" expansion_choices "}"
 
@@ -161,7 +163,7 @@ token_manager_decls ::=
 
 lexical_state_list 	::=
         "<" "*" ">"
-	| 	"<" IDENTIFIER ( "," IDENTIFIER )* ">"
+	| 	"<" identifier ( "," identifier )* ">"
 
 regexpr_kind 	    ::=
         "TOKEN"
@@ -170,7 +172,7 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    regular_expression [ java_block ] [ ":" IDENTIFIER ]
+    regular_expression [ java_block ] [ ":" identifier ]
 
 
 expansion_choices 	::=
@@ -185,7 +187,7 @@ expansion_unit 	    ::=
 	| 	"(" expansion_choices ")" [ "+" | "*" | "?" ]
 	| 	"[" expansion_choices "]"
 	| 	[ java_assignment_lhs "=" ] regular_expression
-	| 	[ java_assignment_lhs "=" ] IDENTIFIER "(" java_expression_list ")"
+	| 	[ java_assignment_lhs "=" ] identifier "(" java_expression_list ")"
 
 
 local_lookahead 	::=
@@ -195,8 +197,8 @@ local_lookahead 	::=
 
 regular_expression 	::=
         STRING_LITERAL
-	| 	"<" [ [ "#" ] IDENTIFIER ":" ] complex_regular_expression_choices ">"
-	| 	"<" IDENTIFIER ">"
+	| 	"<" [ [ "#" ] identifier ":" ] complex_regular_expression_choices ">"
+	| 	"<" identifier ">"
 	| 	"<" "EOF" ">"
 
 complex_regular_expression_choices 	::=
@@ -207,9 +209,15 @@ complex_regular_expression 	        ::=
 
 complex_regular_expression_unit 	::=
         STRING_LITERAL
-	| 	"<" IDENTIFIER ">"
+	| 	"<" identifier ">"
 	| 	character_list
-	| 	"(" complex_regular_expression_choices ")" [ "+" | "*" | "?" ]
+	| 	"(" complex_regular_expression_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
+
+one_or_more         ::= "+"
+zero_or_more        ::= "*"
+zero_or_one         ::= "?"
+repetition_range    ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}"
+
 
 character_list  ::=
     [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]"
@@ -220,19 +228,24 @@ character_descriptor 	::=
 
 // Some java grammar
 
+private identifier               ::= IDENTIFIER
+
+
 private java_boolean_literal     ::=  "true" | "false"
 
 private java_return_type         ::=  "void" | java_type
 private java_type                ::=  (PRIMITIVE_TYPE | java_coi_type) ("[" "]")* // FIXME generics?
-private java_coi_type            ::= IDENTIFIER ("." IDENTIFIER)*
+private java_coi_type            ::= identifier ("." identifier)*
 
 private java_access_modifier     ::=  [ "public" | "protected" | "private" ]
 
 java_expression_list             ::= java_expression [ ("," java_expression)* ]
-java_parameter_list              ::= java_formal_parameter [ ("," java_formal_parameter)* ]
-java_formal_parameter            ::= java_type ["..."] IDENTIFIER ("[" "]")*
+java_parameter_list              ::= [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+java_formal_parameter            ::= java_type ["..."] identifier ("[" "]")*
 
-external java_compilation_unit   ::= parseJCompilationUnit // The next token is a big ACU_CODE, you must translate the PsiBuilder
-external java_block              ::= parseJBlock
+external java_compilation_unit   ::= parseJCompilationUnit
+java_block                       ::= ext_java_block
+external ext_java_block          ::= parseJBlock
+
 external java_assignment_lhs     ::= parseJAssignmentLhs
 external java_expression         ::= parseJExpression
