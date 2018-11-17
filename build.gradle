@@ -33,6 +33,7 @@ sourceSets {
         java {
             srcDirs "${buildDir}/gen"
             srcDirs 'src/main/kotlin'
+            srcDirs 'src/main/java'
         }
     }
 }
@@ -50,7 +51,7 @@ task generateParser(type: GenerateParser) {
 
     // path to a directory with generated psi files, relative to the targetRoot 
     pathToPsiRoot = '/com/github/oowekyala/ijcc/lang/psi'
-
+    
     // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
     purgeOldFiles = true
 }

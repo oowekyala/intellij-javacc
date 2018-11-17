@@ -1056,7 +1056,7 @@ void production() :
 {
   LOOKAHEAD(1)
   /*
-   * Since JAVACODE is both a JavaCC reserved word and a Java identifier,
+   * Since JAVACODE is both a JavaCC reserved word and a Java nameIdentifier,
    * we need to give preference to "javacode_production" over
    * "bnf_production".
    */
@@ -1072,7 +1072,7 @@ void production() :
 |
   LOOKAHEAD(1)
   /*
-   * Since TOKEN_MGR_DECLS is both a JavaCC reserved word and a Java identifier,
+   * Since TOKEN_MGR_DECLS is both a JavaCC reserved word and a Java nameIdentifier,
    * we need to give preference to "token_manager_decls" over
    * "bnf_production".
    */
@@ -1209,7 +1209,7 @@ void expansion_unit() :
   LOOKAHEAD(1)
   /*
    * We give this priority over primary expressions which use LOOKAHEAD as the
-   * name of its identifier.
+   * name of its nameIdentifier.
    */
   "LOOKAHEAD" "(" local_lookahead() ")"
 |

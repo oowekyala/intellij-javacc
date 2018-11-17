@@ -45,7 +45,7 @@
   		TRUE_KEYWORD	= "true"
   		NULL_KEYWORD	= "null"
 
-        IDENTIFIER  = 'regexp:\p{Alpha}\w*'
+        IDENT       = 'regexp:\p{Alpha}\w*'
 
         POUND       = "#"
         COLON       = ":"
@@ -74,7 +74,6 @@
         MINUS       = "-"
         QUESTION    = "?"
 
-
         DOUBLE_LITERAL      = 'regexp:(0[xb])?[\da-fA-F]*(\.[\da-fA-F]+)?[dD]?'
         INTEGER_LITERAL     = 'regexp:(0[xb])?[\da-fA-F]+'
         STRING_LITERAL      = 'regexp:"([^"\\]|\\.)*"'
@@ -87,11 +86,11 @@
         DOC_COMMENT         = "DOC_COMMENT"
 
         BAD_CHARACTER   = "BAD_CHARACTER"
-
-        ACU_CODE        = "ACU_CODE"
   ]
 
-  implements(".*production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
+  implements(".*_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
+  mixin(".*_production") = "com.github.oowekyala.ijcc.lang.psi.impl.ChildIdentifierHolderImpl"
+
 }
 
 javacc_input 	::=
@@ -228,24 +227,28 @@ character_descriptor 	::=
 
 // Some java grammar
 
-private identifier               ::= IDENTIFIER
+identifier                       ::=    IDENT {
+    implements="com.github.oowekyala.ijcc.lang.psi.impl.JccIdentifierTrait"
+}
 
 
-private java_boolean_literal     ::=  "true" | "false"
+private java_boolean_literal     ::=    "true" | "false"
 
-private java_return_type         ::=  "void" | java_type
-private java_type                ::=  (PRIMITIVE_TYPE | java_coi_type) ("[" "]")* // FIXME generics?
-private java_coi_type            ::= identifier ("." identifier)*
+private java_return_type         ::=    "void" | java_type
+private java_type                ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")* // FIXME generics?
+private java_coi_type            ::=    identifier ("." identifier)*
 
-private java_access_modifier     ::=  [ "public" | "protected" | "private" ]
+private java_access_modifier     ::=    [ "public" | "protected" | "private" ]
 
-java_expression_list             ::= java_expression [ ("," java_expression)* ]
-java_parameter_list              ::= [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
-java_formal_parameter            ::= java_type ["..."] identifier ("[" "]")*
+java_expression_list             ::=    java_expression [ ("," java_expression)* ]
+java_parameter_list              ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+java_formal_parameter            ::=    java_type ["..."] identifier ("[" "]")*
 
-external java_compilation_unit   ::= parseJCompilationUnit
-java_block                       ::= ext_java_block
-external ext_java_block          ::= parseJBlock
+java_compilation_unit               ::= ext_java_compilation_unit
+external ext_java_compilation_unit  ::= parseJCompilationUnit
 
-external java_assignment_lhs     ::= parseJAssignmentLhs
-external java_expression         ::= parseJExpression
+java_block                       ::=    ext_java_block
+external ext_java_block          ::=    parseJBlock
+
+external java_assignment_lhs     ::=    parseJAssignmentLhs    // TODO
+external java_expression         ::=    parseJExpression       // TODO

@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JavaccTypes.JCC_PARSER_END_KEYWORD
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lang.java.parser.JavaParserUtil
@@ -40,8 +41,14 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
     @JvmStatic
     fun parseJCompilationUnit(builder: PsiBuilder, level: Int): Boolean {
-        setJavaLanguageLevel(builder)
-        JavaParser.INSTANCE.fileParser.parse(AcuPsiBuilderDelegate(builder))
+
+        if (builder.tokenType == JCC_PARSER_END_KEYWORD) return true
+
+
+        while (builder.lookAhead(1) != JCC_PARSER_END_KEYWORD && !builder.eof()) {
+            builder.advanceLexer()
+        }
+
         return true
     }
 
@@ -64,7 +71,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
     private class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
 
         // Stops on PARSER_END
-        override fun eof(): Boolean = tokenType == JavaccTypes.JCC_PARSER_END_KEYWORD || base.eof()
+        override fun eof(): Boolean = tokenType == JCC_PARSER_END_KEYWORD || base.eof()
 
     }
 
