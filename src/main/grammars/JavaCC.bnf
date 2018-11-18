@@ -22,7 +22,6 @@
   ]
 
   generatePsi=false
-
   tokens = [
         LOOKAHEAD_KEYWORD         = 'LOOKAHEAD'
         IGNORE_CASE_OPTION        = 'IGNORE_CASE'
@@ -40,6 +39,8 @@
   		PRIVATE_KEYWORD		= "private"
   		PUBLIC_KEYWORD		= "public"
   		PROTECTED_KEYWORD	= "protected"
+
+  		STATIC_KEYWORD	= "static"
 
   		VOID_KEYWORD	= "void"
 
@@ -99,40 +100,47 @@
 }
 
 javacc_input 	::=
-        javacc_options
-		parser_declaration
-		( production )*
+    javacc_options
+	parser_declaration
+	( production )*
 
 javacc_options 	    ::=
     [ "options" "{" ( option_binding )* "}" ]
 
 option_binding 	    ::=
-        "LOOKAHEAD" "=" INTEGER_LITERAL ";"
-	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
-	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
-	| 	"AUTOMATIC_ERROR_RECOVERY" "=" java_boolean_literal ";"
-	| 	"STATIC" "=" java_boolean_literal ";"
-	| 	"SUPPORT_CLASS_VISIBILITY_PUBLIC" "=" java_boolean_literal ";"
-	| 	"DEBUG_PARSER" "=" java_boolean_literal ";"
-	| 	"DEBUG_LOOKAHEAD" "=" java_boolean_literal ";"
-	| 	"DEBUG_TOKEN_MANAGER" "=" java_boolean_literal ";"
-	| 	"ERROR_REPORTING" "=" java_boolean_literal ";"
-	| 	"JAVA_UNICODE_ESCAPE" "=" java_boolean_literal ";"
-	| 	"UNICODE_INPUT" "=" java_boolean_literal ";"
-	| 	"IGNORE_CASE" "=" java_boolean_literal ";"
-	| 	"USER_TOKEN_MANAGER" "=" java_boolean_literal ";"
-	| 	"USER_CHAR_STREAM" "=" java_boolean_literal ";"
-	| 	"BUILD_PARSER" "=" java_boolean_literal ";"
-	| 	"BUILD_TOKEN_MANAGER" "=" java_boolean_literal ";"
-	| 	"TOKEN_EXTENDS" "=" STRING_LITERAL ";"
-	| 	"TOKEN_FACTORY" "=" STRING_LITERAL ";"
-	| 	"TOKEN_MANAGER_USES_PARSER" "=" java_boolean_literal ";"
-	| 	"SANITY_CHECK" "=" java_boolean_literal ";"
-	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
-	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
-	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
-	| 	"NODE_DEFAULT_VOID" "=" java_boolean_literal ";"
-	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
+    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | java_boolean_literal) ";" {pin=option_name recoverWhile="option_recover"}
+
+private option_recover  ::= !(option_name | "}")
+
+private option_name ::=
+        "LOOKAHEAD" | "IGNORE_CASE" | "static" | IDENT
+//      "LOOKAHEAD" "=" INTEGER_LITERAL ";"
+//	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
+//	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
+//	| 	"AUTOMATIC_ERROR_RECOVERY" "=" java_boolean_literal ";"
+//	| 	"STATIC" "=" java_boolean_literal ";"
+//	| 	"SUPPORT_CLASS_VISIBILITY_PUBLIC" "=" java_boolean_literal ";"
+//	| 	"DEBUG_PARSER" "=" java_boolean_literal ";"
+//	| 	"DEBUG_LOOKAHEAD" "=" java_boolean_literal ";"
+//	| 	"DEBUG_TOKEN_MANAGER" "=" java_boolean_literal ";"
+//	| 	"ERROR_REPORTING" "=" java_boolean_literal ";"
+//	| 	"JAVA_UNICODE_ESCAPE" "=" java_boolean_literal ";"
+//	| 	"UNICODE_INPUT" "=" java_boolean_literal ";"
+//	| 	"IGNORE_CASE" "=" java_boolean_literal ";"
+//	| 	"USER_TOKEN_MANAGER" "=" java_boolean_literal ";"
+//	| 	"USER_CHAR_STREAM" "=" java_boolean_literal ";"
+//	| 	"BUILD_PARSER" "=" java_boolean_literal ";"
+//	| 	"BUILD_TOKEN_MANAGER" "=" java_boolean_literal ";"
+//	| 	"TOKEN_EXTENDS" "=" STRING_LITERAL ";"
+//	| 	"TOKEN_FACTORY" "=" STRING_LITERAL ";"
+//	| 	"TOKEN_MANAGER_USES_PARSER" "=" java_boolean_literal ";"
+//	| 	"SANITY_CHECK" "=" java_boolean_literal ";"
+//	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
+//	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
+//	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
+//	| 	"NODE_DEFAULT_VOID" "=" java_boolean_literal ";"
+//	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
+
 
 parser_declaration ::=
     "PARSER_BEGIN" "(" identifier ")"
@@ -213,7 +221,7 @@ expansion 	        ::=
 expansion_unit 	    ::=
         local_lookahead
 	| 	java_block
-	| 	"(" expansion_choices ")" [ "+" | "*" | "?" ]
+	| 	"(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]
 	| 	"[" expansion_choices "]"
 	|   try_catch_expansion_unit
 	| 	[ java_assignment_lhs "=" ] regular_expression
