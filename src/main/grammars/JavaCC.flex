@@ -136,10 +136,12 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "public"                    { return JCC_PUBLIC_KEYWORD; }
     "protected"                 { return JCC_PROTECTED_KEYWORD; }
 
+    "throws"                    { return JCC_THROWS_KEYWORD; }
+    "try"                       { return JCC_TRY_KEYWORD; }
+    "catch"                     { return JCC_CATCH_KEYWORD; }
+    "finally"                   { return JCC_FINALLY_KEYWORD; }
+
     /* Java keywords not relevant to JavaCC */
-    "try"                       { return JavaTokenType.TRY_KEYWORD; }
-    "catch"                     { return JavaTokenType.CATCH_KEYWORD; }
-    "finally"                   { return JavaTokenType.FINALLY_KEYWORD; }
 
     "null"                      { return JavaTokenType.NULL_KEYWORD; }
 
@@ -181,7 +183,6 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "strictfp"                  { return JavaTokenType.STRICTFP_KEYWORD; }
     "while"                     { return JavaTokenType.WHILE_KEYWORD; }
     "volatile"                  { return JavaTokenType.VOLATILE_KEYWORD; }
-    "throws"                    { return JavaTokenType.THROWS_KEYWORD; }
 
 
     {IDENTIFIER}                { return JCC_IDENT; }

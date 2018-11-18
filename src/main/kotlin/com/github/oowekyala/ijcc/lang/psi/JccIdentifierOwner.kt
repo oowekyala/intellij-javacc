@@ -10,13 +10,14 @@ import com.intellij.psi.PsiNameIdentifierOwner
 interface JccIdentifierOwner : PsiNameIdentifierOwner, JavaccPsiElement {
 
     val nameIdentifier: JccIdentifier?
+        get() = children.first { it is JccIdentifier } as? JccIdentifier
 
-    @JvmDefault
+    override fun getNameIdentifier(): PsiElement? = nameIdentifier
+
     override fun getName(): String? = nameIdentifier?.name
 
-    @JvmDefault
     override fun setName(name: String): PsiElement {
-        nameIdentifier?.setName(name)
+        nameIdentifier?.name = name
         return this
     }
 

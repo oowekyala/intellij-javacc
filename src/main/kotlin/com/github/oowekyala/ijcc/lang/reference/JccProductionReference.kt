@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.lang.psi.impl
+package com.github.oowekyala.ijcc.lang.reference
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement

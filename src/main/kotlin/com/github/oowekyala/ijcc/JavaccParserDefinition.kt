@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.parser.JavaccParser
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -42,7 +43,7 @@ class JavaccParserDefinition : ParserDefinition {
     override fun getStringLiteralElements(): TokenSet =
         TokenSet.create(JavaccTypes.JCC_STRING_LITERAL)
 
-    override fun createElement(node: ASTNode): PsiElement = JavaccTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode): PsiElement = JccElementFactory.createElement(node)
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = JccFileImpl(viewProvider)
 

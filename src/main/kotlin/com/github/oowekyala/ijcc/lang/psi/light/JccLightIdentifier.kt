@@ -19,7 +19,6 @@ class JccLightIdentifier(manager: PsiManager, private var ident: String) : Light
         return this
     }
 
-    override fun getIdent(): PsiElement = throw UnsupportedOperationException() // FIXME
 
     override fun getName(): String = ident
 

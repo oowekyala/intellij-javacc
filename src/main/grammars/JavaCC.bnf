@@ -21,6 +21,8 @@
   'static com.intellij.psi.JavaTokenType.*'
   ]
 
+  generatePsi=false
+
   tokens = [
         LOOKAHEAD_KEYWORD         = 'LOOKAHEAD'
         IGNORE_CASE_OPTION        = 'IGNORE_CASE'
@@ -43,7 +45,11 @@
 
   		FALSE_KEYWORD	= "false"
   		TRUE_KEYWORD	= "true"
-  		NULL_KEYWORD	= "null"
+
+  		THROWS_KEYWORD	= "throws"
+  		TRY_KEYWORD	    = "try"
+  		CATCH_KEYWORD	= "catch"
+  		FINALLY_KEYWORD	= "finally"
 
         IDENT       = 'regexp:\p{Alpha}\w*'
 
@@ -88,10 +94,8 @@
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 
-  implements(".*_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
-  mixin(".*_production") = "com.github.oowekyala.ijcc.lang.psi.impl.ChildIdentifierHolderImpl"
+  // implements(".*_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
 
-  implements("java_compilation_unit") = 'com.github.oowekyala.ijcc.lang.psi.JccJavaCUInjectionHost'
 }
 
 javacc_input 	::=
@@ -127,6 +131,7 @@ option_binding 	    ::=
 	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
 	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
 	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
+	| 	"NODE_DEFAULT_VOID" "=" java_boolean_literal ";"
 	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
 
 parser_declaration ::=
@@ -135,22 +140,46 @@ parser_declaration ::=
     "PARSER_END" "(" identifier ")"
 
 private production ::=
-        javacode_production
+        non_terminal_production
 	| 	regular_expr_production
-	| 	bnf_production
 	| 	token_manager_decls
+
+
+private non_terminal_production ::=
+        javacode_production
+	| 	bnf_production
 
 javacode_production ::=
         "JAVACODE"
-        // TODO inject java here
-		java_access_modifier java_return_type identifier "(" java_parameter_list ")"
+		non_terminal_production_header
 		java_block
 
 bnf_production 	    ::=
-        // TODO inject java here
-        java_access_modifier java_return_type identifier "(" java_parameter_list ")" ":"
+        non_terminal_production_header ":"
 		java_block
 		"{" expansion_choices "}"
+
+
+non_terminal_production_header  ::=  // TODO inject java here
+        java_access_modifier
+        java_return_type
+        identifier
+        "(" java_parameter_list ")"
+        [ java_throws_list ]
+        [ jjtree_node_descriptor ]
+
+java_throws_list ::=
+        "throws" java_name ("," java_name)*
+
+
+jjtree_node_descriptor     ::=
+    "#" ( identifier | "void" )
+    [ "(" jjtree_node_descriptor_expr ")" ]
+
+jjtree_node_descriptor_expr ::=
+    [ ">" ] // GT-expression
+    java_expression  // Is integer valued for definite nodes, is boolean valued for conditional nodes
+
 
 regular_expr_production 	::=
         [ lexical_state_list ]
@@ -186,12 +215,18 @@ expansion_unit 	    ::=
 	| 	java_block
 	| 	"(" expansion_choices ")" [ "+" | "*" | "?" ]
 	| 	"[" expansion_choices "]"
+	|   try_catch_expansion_unit
 	| 	[ java_assignment_lhs "=" ] regular_expression
 	| 	[ java_assignment_lhs "=" ] identifier "(" java_expression_list ")"
 
 
 local_lookahead 	::=
     "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
+
+try_catch_expansion_unit ::=
+    "try" "{" [ expansion_choices ] "}"
+    ("catch" "(" java_name identifier ")" java_block)*
+    ["finally" java_block]
 
 /* Regular expressions */
 
@@ -235,9 +270,11 @@ identifier                       ::=    IDENT {
 
 private java_boolean_literal     ::=    "true" | "false"
 
+java_name                        ::=    identifier ("." identifier)*
+
 private java_return_type         ::=    "void" | java_type
-private java_type                ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")* // FIXME generics?
-private java_coi_type            ::=    identifier ("." identifier)*
+private java_type                ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
+private java_coi_type            ::=    java_name  // FIXME generics
 
 private java_access_modifier     ::=    [ "public" | "protected" | "private" ]
 

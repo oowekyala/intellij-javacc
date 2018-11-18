@@ -11,6 +11,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.JavaTokenType
 import com.intellij.psi.tree.IElementType
 import java.util.*
 import kotlin.reflect.KProperty
@@ -99,11 +100,18 @@ enum class JavaccHighlightingColors(base: KProperty<TextAttributesKey>, name: St
             JAVA_KEYWORD(
                 JCC_PRIMITIVE_TYPE,
                 JCC_FALSE_KEYWORD,
-                JCC_NULL_KEYWORD,
+                JCC_TRUE_KEYWORD,
+                JavaTokenType.NULL_KEYWORD,
+                JavaTokenType.CLASS_KEYWORD,
+                JavaTokenType.INTERFACE_KEYWORD,
+                JavaTokenType.RETURN_KEYWORD,
                 JCC_PRIVATE_KEYWORD,
                 JCC_PROTECTED_KEYWORD,
                 JCC_PUBLIC_KEYWORD,
-                JCC_TRUE_KEYWORD,
+                JCC_THROWS_KEYWORD,
+                JCC_TRY_KEYWORD,
+                JCC_CATCH_KEYWORD,
+                JCC_FINALLY_KEYWORD,
                 JCC_VOID_KEYWORD
             )
 
