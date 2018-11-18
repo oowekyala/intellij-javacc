@@ -41,14 +41,10 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
     @JvmStatic
     fun parseJCompilationUnit(builder: PsiBuilder, level: Int): Boolean {
-
-        if (builder.tokenType == JCC_PARSER_END_KEYWORD) return true
-
-
-        while (builder.lookAhead(1) != JCC_PARSER_END_KEYWORD && !builder.eof()) {
+        // PARSER_END should be the current token when this method returns
+        while (builder.tokenType != JCC_PARSER_END_KEYWORD && !builder.eof()) {
             builder.advanceLexer()
         }
-
         return true
     }
 

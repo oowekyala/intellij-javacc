@@ -91,6 +91,7 @@
   implements(".*_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
   mixin(".*_production") = "com.github.oowekyala.ijcc.lang.psi.impl.ChildIdentifierHolderImpl"
 
+  implements("java_compilation_unit") = 'com.github.oowekyala.ijcc.lang.psi.JccJavaCUInjectionHost'
 }
 
 javacc_input 	::=
