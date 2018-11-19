@@ -21,7 +21,7 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
-        <colorSettingsPage implementation="com.github.oowekyala.ijcc.JavaccColorsPage"/>
+        <colorSettingsPage implementation="com.github.oowekyala.ijcc.JavaccColorSettingsPage"/>
 
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>

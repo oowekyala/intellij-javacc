@@ -14,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.JavaTokenType
 import com.intellij.psi.tree.IElementType
 import java.util.*
-import kotlin.reflect.KProperty
 
 /**
  * Syntax highlighter.
@@ -43,34 +42,36 @@ class JavaccSyntaxHighlighterFactory : SyntaxHighlighterFactory() {
 /**
  * Highlighting classes for Javacc.
  */
-enum class JavaccHighlightingColors(base: KProperty<TextAttributesKey>, name: String = base.name) {
-    JAVACC_KEYWORD(DefaultLanguageHighlighterColors::KEYWORD, "JAVACC_KEYWORD"),
-    JAVA_KEYWORD(JavaHighlightingColors::KEYWORD, "JAVA_KEYWORD"),
-    PARENTHESES(DefaultLanguageHighlighterColors::PARENTHESES),
-    DOT(DefaultLanguageHighlighterColors::DOT),
-    COMMA(DefaultLanguageHighlighterColors::COMMA),
-    SEMICOLON(DefaultLanguageHighlighterColors::SEMICOLON),
-    BRACKETS(DefaultLanguageHighlighterColors::BRACKETS),
-    NUMBER(DefaultLanguageHighlighterColors::NUMBER),
-    OPERATOR(DefaultLanguageHighlighterColors::OPERATION_SIGN),
-    STRING(DefaultLanguageHighlighterColors::STRING),
-    CHARACTER(JavaHighlightingColors::STRING, "CHARACTER"),
-    LINE_COMMENT(DefaultLanguageHighlighterColors::LINE_COMMENT),
-    C_COMMENT(DefaultLanguageHighlighterColors::BLOCK_COMMENT),
-    DOC_COMMENT(DefaultLanguageHighlighterColors::DOC_COMMENT),
-    TOKEN(DefaultLanguageHighlighterColors::KEYWORD),
-    ERROR(DefaultLanguageHighlighterColors::INVALID_STRING_ESCAPE);
+enum class JavaccHighlightingColors(base: TextAttributesKey, name: String) {
+    JAVACC_KEYWORD(DefaultLanguageHighlighterColors.KEYWORD, "JAVACC_KEYWORD"),
+    JAVA_KEYWORD(JavaHighlightingColors.KEYWORD, "JAVA_KEYWORD"),
+
+    PARENTHESES(JavaHighlightingColors.PARENTHESES, "PARENTHESES"),
+    DOT(JavaHighlightingColors.DOT, "DOT"),
+    COMMA(JavaHighlightingColors.COMMA, "COMMA"),
+    SEMICOLON(JavaHighlightingColors.JAVA_SEMICOLON, "SEMICOLON"),
+    BRACKETS(JavaHighlightingColors.BRACKETS, "BRACKETS"),
+    OPERATOR(JavaHighlightingColors.OPERATION_SIGN, "OPERATION_SIGN"),
+
+    STRING(JavaHighlightingColors.STRING, "STRING"),
+    CHARACTER(JavaHighlightingColors.STRING, "CHARACTER"),
+    NUMBER(JavaHighlightingColors.NUMBER, "NUMBER"),
+
+    LINE_COMMENT(JavaHighlightingColors.LINE_COMMENT, "LINE_COMMENT"),
+    C_COMMENT(JavaHighlightingColors.JAVA_BLOCK_COMMENT, "BLOCK_COMMENT"),
+    DOC_COMMENT(JavaHighlightingColors.DOC_COMMENT, "DOC_COMMENT"),
+
+    BAD_CHARACTER(DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE, "INVALID_STRING_ESCAPE");
 
 
     val keys: TextAttributesKey =
-        TextAttributesKey.createTextAttributesKey("JavaCC.$name", base.getter.call().defaultAttributes)
+        TextAttributesKey.createTextAttributesKey("JavaCC.$name", base)
 
     val displayName = name.removePrefix("JavaCC.").replace('_', ' ').toLowerCase().capitalize()
 
 
     companion object {
         private val TOKEN_TYPE_TO_STYLE: Map<IElementType, TextAttributesKey>
-
         fun getTokenHighlight(tokenType: IElementType?): TextAttributesKey? = TOKEN_TYPE_TO_STYLE[tokenType]
 
         init {
@@ -105,6 +106,10 @@ enum class JavaccHighlightingColors(base: KProperty<TextAttributesKey>, name: St
                 JavaTokenType.CLASS_KEYWORD,
                 JavaTokenType.INTERFACE_KEYWORD,
                 JavaTokenType.RETURN_KEYWORD,
+                JavaTokenType.SUPER_KEYWORD,
+                JavaTokenType.THIS_KEYWORD,
+                JavaTokenType.THROW_KEYWORD,
+                JavaTokenType.ABSTRACT_KEYWORD,
                 JCC_PRIVATE_KEYWORD,
                 JCC_PROTECTED_KEYWORD,
                 JCC_PUBLIC_KEYWORD,
@@ -142,9 +147,9 @@ enum class JavaccHighlightingColors(base: KProperty<TextAttributesKey>, name: St
 
 
             STRING(JCC_STRING_LITERAL)
-            STRING(JCC_CHARACTER_LITERAL)
+            CHARACTER(JCC_CHARACTER_LITERAL)
 
-            ERROR(JCC_BAD_CHARACTER)
+            BAD_CHARACTER(JCC_BAD_CHARACTER)
 
             TOKEN_TYPE_TO_STYLE = Collections.unmodifiableMap(keys)
         }
