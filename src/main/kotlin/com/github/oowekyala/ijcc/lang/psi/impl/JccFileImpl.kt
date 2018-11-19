@@ -7,6 +7,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.tree.IFileElementType
 
+
 /**
  * File implementation.
  *
@@ -16,9 +17,6 @@ import com.intellij.psi.tree.IFileElementType
 class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage) {
 
     override fun getFileType(): FileType = JavaccFileType
-
-//    private val productions: Map<String, JccProductionReference>
-
 
 
     companion object {

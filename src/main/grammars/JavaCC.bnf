@@ -227,20 +227,29 @@ expansion_choices 	::=
 expansion 	        ::=
     ( expansion_unit )*
 
-expansion_unit 	    ::=
+private expansion_unit 	    ::=
         local_lookahead
 	| 	java_block
-	| 	"(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]
-	| 	"[" expansion_choices "]"
+	| 	parenthesized_expansion_unit
+	| 	optional_expansion_unit
 	|   try_catch_expansion_unit
 	| 	[ java_assignment_lhs "=" ] regular_expression
-	| 	[ java_assignment_lhs "=" ] identifier "(" java_expression_list ")"
+	| 	[ java_assignment_lhs "=" ] non_terminal_expansion_unit
 
 
 local_lookahead 	::=
     "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
 
-try_catch_expansion_unit ::=
+non_terminal_expansion_unit     ::=
+    identifier "(" java_expression_list ")"
+
+parenthesized_expansion_unit    ::=
+    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]
+
+optional_expansion_unit         ::=
+    "[" expansion_choices "]"
+
+try_catch_expansion_unit        ::=
     "try" "{" [ expansion_choices ] "}"
     ("catch" "(" java_name identifier ")" java_block)*
     ["finally" java_block]

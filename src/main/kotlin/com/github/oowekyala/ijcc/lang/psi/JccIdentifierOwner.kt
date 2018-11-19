@@ -4,6 +4,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 
 /**
+ * An element that has an identifier.
+ *
  * @author Clément Fournier
  * @since 1.0
  */
