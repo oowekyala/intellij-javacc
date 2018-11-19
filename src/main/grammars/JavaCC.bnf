@@ -97,27 +97,29 @@
 
   implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
   methods("(bnf|javacode)_production") = [
-       header="non_terminal_production_header"
+       header="java_non_terminal_production_header"
   ]
 
-  implements("non_terminal_production_header|jjtree_node_descriptor") = 'com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
+  implements("java_non_terminal_production_header|jjtree_node_descriptor") = 'com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
 
-  methods("non_terminal_production_header|jjtree_node_descriptor") = [
+  methods("java_non_terminal_production_header|jjtree_node_descriptor") = [
     nameIdentifier="identifier"
   ]
 
   methods("jjtree_node_descriptor") = [
     descriptorExpr="jjtree_node_descriptor_expr"
   ]
+
+   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
 }
 
 javacc_input 	::=
-    javacc_options
+    javacc_options?
 	parser_declaration
 	( production )*
 
 javacc_options 	    ::=
-    [ "options" "{" ( option_binding )* "}" ]
+    "options" "{" ( option_binding )* "}" {pin=1}
 
 option_binding 	    ::=
     option_name "=" (INTEGER_LITERAL | STRING_LITERAL | java_boolean_literal) ";" {pin=option_name recoverWhile="option_recover"}
@@ -158,6 +160,7 @@ parser_declaration ::=
     "PARSER_BEGIN" "(" identifier ")"
     java_compilation_unit // TODO inject Java here
     "PARSER_END" "(" identifier ")"
+    {pin=1}
 
 private production ::=
         javacode_production
@@ -167,22 +170,24 @@ private production ::=
 
 javacode_production ::=
         "JAVACODE"
-		non_terminal_production_header
+		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
+		{pin=1}
 
 bnf_production 	    ::=
-        non_terminal_production_header ":"
+        java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
 		"{" expansion_choices "}"
+		{pin=1}
 
 
-non_terminal_production_header  ::=  // TODO inject java here
+java_non_terminal_production_header  ::=  // TODO inject java here
         java_access_modifier
         java_return_type
         identifier
         "(" java_parameter_list ")"
         [ java_throws_list ]
-        [ jjtree_node_descriptor ]
+        {pin=3}
 
 
 java_throws_list ::=
@@ -192,6 +197,7 @@ java_throws_list ::=
 jjtree_node_descriptor     ::=
     "#" ( identifier | "void" )
     [ "(" jjtree_node_descriptor_expr ")" ]
+    {pin=1}
 
 jjtree_node_descriptor_expr ::=
     [ ">" ] // GT-expression
@@ -204,7 +210,7 @@ regular_expr_production 	::=
 		"{" regexpr_spec ( "|" regexpr_spec )* "}"
 
 token_manager_decls ::=
-        "TOKEN_MGR_DECLS" ":" java_block  // TODO inject java here
+        "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here
 
 
 lexical_state_list 	::=
@@ -218,74 +224,93 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    regular_expression [ java_block ] [ ":" identifier ]
+    regular_expression [ java_block ] [ ":" identifier ] {recoverWhile=regexpr_spec_recover}
+
+private regexpr_spec_recover    ::= !("|" | "}")
 
 
 expansion_choices 	::=
-    expansion ( "|" expansion )*
+    expansion_sequence ( "|" expansion_sequence )*
 
-expansion 	        ::=
-    ( expansion_unit )*
+expansion_sequence 	        ::=
+    ( expansion_unit jjtree_node_descriptor? )*
 
 private expansion_unit 	    ::=
-        local_lookahead
+    (   local_lookahead
 	| 	java_block
 	| 	parenthesized_expansion_unit
 	| 	optional_expansion_unit
 	|   try_catch_expansion_unit
-	| 	[ java_assignment_lhs "=" ] regular_expression
-	| 	[ java_assignment_lhs "=" ] non_terminal_expansion_unit
-
+	| 	[ java_assignment_lhs "=" ] (regular_expression | non_terminal_expansion_unit)
+    )
 
 local_lookahead 	::=
-    "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")"
+    "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")" {pin=1}
 
 non_terminal_expansion_unit     ::=
     identifier "(" java_expression_list ")"
 
 parenthesized_expansion_unit    ::=
-    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]
+    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]  {pin=1}
 
 optional_expansion_unit         ::=
     "[" expansion_choices "]"
+    {pin=1}
 
 try_catch_expansion_unit        ::=
     "try" "{" [ expansion_choices ] "}"
     ("catch" "(" java_name identifier ")" java_block)*
     ["finally" java_block]
+    {pin=1}
 
 /* Regular expressions */
 
-regular_expression 	::=
+regular_expression 	            ::=
         STRING_LITERAL
-	| 	"<" [ [ "#" ] identifier ":" ] complex_regular_expression_choices ">"
-	| 	"<" identifier ">"
-	| 	"<" "EOF" ">"
+	|   "<" "EOF" ">"
+	|   regular_expression_reference
+	|   named_regular_expression
 
-complex_regular_expression_choices 	::=
-    complex_regular_expression ( "|" complex_regular_expression )*
+named_regular_expression        ::=
+	"<" [ [ "#" ] identifier ":" ] complex_regexp_choices ">" {pin=1}
 
-complex_regular_expression 	        ::=
-    ( complex_regular_expression_unit )*
 
-complex_regular_expression_unit 	::=
+complex_regexp_choices 	::=
+    complex_regexp_sequence ( "|" complex_regexp_sequence )*
+
+complex_regexp_sequence ::=
+    ( complex_regexp_unit )* {pin('.*')=1}
+
+complex_regexp_unit 	::=
         STRING_LITERAL
-	| 	"<" identifier ">"
+	| 	regular_expression_reference
 	| 	character_list
-	| 	"(" complex_regular_expression_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
+	| 	"(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
+
+
+regular_expression_reference        ::=
+	"<" identifier ">"
+
+
+character_list          ::=
+    [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin=2}
+
+character_descriptor 	::=
+    STRING_LITERAL [ "-" STRING_LITERAL ] {pin=1 recoverWhile=character_descriptor_recover}
+
+private character_descriptor_recover    ::= !("]" | ",")
+
+// Occurrence indicators
 
 one_or_more         ::= "+"
 zero_or_more        ::= "*"
 zero_or_one         ::= "?"
-repetition_range    ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}"
+repetition_range    ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}" {pin=1}
 
 
-character_list  ::=
-    [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]"
+// Meta rules
 
-character_descriptor 	::=
-    STRING_LITERAL [ "-" STRING_LITERAL ]
-
+meta comma_separated_list ::= <<param>> ( ',' <<param>> )*
 
 // Some java grammar
 
@@ -294,15 +319,15 @@ identifier                       ::=    IDENT
 
 private java_boolean_literal     ::=    "true" | "false"
 
-java_name                        ::=    identifier ("." identifier)*
+java_name                        ::=    identifier ("." identifier)* {pin=1}
 
-private java_return_type         ::=    "void" | java_type
+java_return_type                 ::=    "void" | java_type
 private java_type                ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
 private java_coi_type            ::=    java_name  // FIXME generics
 
 private java_access_modifier     ::=    [ "public" | "protected" | "private" ]
 
-java_expression_list             ::=    java_expression [ ("," java_expression)* ]
+java_expression_list             ::=    <<comma_separated_list java_expression>>
 java_parameter_list              ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
 java_formal_parameter            ::=    java_type ["..."] identifier ("[" "]")*
 
@@ -312,5 +337,5 @@ external ext_java_compilation_unit  ::= parseJCompilationUnit
 java_block                       ::=    ext_java_block
 external ext_java_block          ::=    parseJBlock
 
-external java_assignment_lhs     ::=    parseJAssignmentLhs    // TODO
-external java_expression         ::=    parseJExpression       // TODO
+external java_assignment_lhs     ::=    java_name   // FIXME only handles field accesses
+external java_expression         ::=    parseJExpression

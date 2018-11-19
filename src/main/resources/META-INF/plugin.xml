@@ -28,7 +28,7 @@
         <lang.syntaxHighlighterFactory
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
-        <annotator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccAnnotator"/>
+        <!--<annotator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccAnnotator"/>-->
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.ast.factory language="JavaCC"

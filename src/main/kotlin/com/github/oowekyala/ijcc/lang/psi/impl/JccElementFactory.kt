@@ -2,9 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.lang.JavaccTypes
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
-import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.light.JccLightIdentifier
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
@@ -34,6 +32,32 @@ object JccElementFactory {
         return JccLightIdentifier(project.psiManager, name)
     }
 
+
+    fun createJavaBlock(project: Project, text: String): JccJavaBlock {
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            JAVACODE foo() $text
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions[0].javaBlock
+    }
+
+
+    fun createJavaNonterminalHeader(project: Project, text: String): JccJavaNonTerminalProductionHeader {
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            JAVACODE $text {}
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions[0].header
+    }
+
     fun createAcu(project: Project, text: String): JccJavaCompilationUnit {
         val fileText = """
             PARSER_BEGIN(dummy)
@@ -42,7 +66,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.findChildOfType(JccParserDeclaration::class.java)!!.findChildOfType(JccJavaCompilationUnit::class.java)!!
+        return file.parserDeclaration.javaCompilationUnit!!
     }
 
     private fun createFile(project: Project, text: String): JccFileImpl =

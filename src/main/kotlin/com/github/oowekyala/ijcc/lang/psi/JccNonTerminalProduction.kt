@@ -15,6 +15,11 @@ interface JccNonTerminalProduction : JccIdentifierOwner {
 
     val javaBlock: JccJavaBlock
 
-    val header: JccNonTerminalProductionHeader
+    val header: JccJavaNonTerminalProductionHeader
 
+    @JvmDefault
+    fun isBnf() = this is JccBnfProduction
+
+    @JvmDefault
+    fun isJavacode() = this is JccJavacodeProduction
 }
