@@ -6,39 +6,38 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
  * Node descriptor.
  *
  *
- * JjtNodeDescriptor ::= "#" ( [JccIdentifier] | "void" ) [ "(" [JjtNodeDescriptorExpr] ")" ]
+ * JjtNodeDescriptor ::= "#" ( [JccIdentifier] | "void" ) [ "(" [JccJjtreeNodeDescriptorExpr] ")" ]
  *
  * @author Clément Fournier
  * @since 1.0
  */
-interface JjtNodeDescriptor : JavaccPsiElement {
+interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
 
+    @JvmDefault
+    override fun getName(): String? = super<JccIdentifierOwner>.getName()
 
     /**
      * Returns the expression if one was specified
      */
-    val descriptorExpr: JjtNodeDescriptorExpr?
+    @JvmDefault
+    val descriptorExpr: JccJjtreeNodeDescriptorExpr?
         get() = when (lastChild) {
-            is JjtNodeDescriptorExpr -> lastChild as JjtNodeDescriptorExpr
+            is JccJjtreeNodeDescriptorExpr -> lastChild as JccJjtreeNodeDescriptorExpr
             else -> null
         }
 
     /**
      * Returns true if this is a void identifier.
      */
+    @JvmDefault
     val isVoid: Boolean
         get() = children[1].node.elementType === JavaccTypes.JCC_VOID_KEYWORD
 
-    /**
-     * Returns the identifier if this isn't void.
-     */
-    val nameIdentifier: JccIdentifier?
-        get() = if (isVoid) null else children[1] as JccIdentifier
-
-
+    @JvmDefault
     val isIndefinite: Boolean
         get() = descriptorExpr == null
 
+    @JvmDefault
     val isGreaterThan: Boolean
         get() = descriptorExpr != null && descriptorExpr!!.isGtExpression
 }

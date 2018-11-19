@@ -3,13 +3,14 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 
 /**
- * Expression in a [JjtNodeDescriptor].
+ * Expression in a [JccJjtreeNodeDescriptor].
  *
  * @author Clément Fournier
  * @since 1.0
  */
-interface JjtNodeDescriptorExpr : JavaccPsiElement {
+interface JccJjtreeNodeDescriptorExpr : JavaccPsiElement {
 
+    @JvmDefault
     val isGtExpression: Boolean
         get() = firstChild.node.elementType === JavaccTypes.JCC_GT
 

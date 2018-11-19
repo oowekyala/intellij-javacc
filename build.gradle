@@ -51,7 +51,7 @@ task generateParser(type: GenerateParser) {
 
     // path to a directory with generated psi files, relative to the targetRoot 
     pathToPsiRoot = '/com/github/oowekyala/ijcc/lang/psi'
-    
+
     // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
     purgeOldFiles = true
 }
@@ -74,13 +74,37 @@ task generateLexer(type: GenerateLexer) {
     purgeOldFiles = true
 }
 
+task overrideDefaultPsi << {
 
+    String sourceRoot
+    def psiInterfaces = { "${sourceRoot}${generateParser.pathToPsiRoot}" }
+    def psiImpl = { "${sourceRoot}${generateParser.pathToPsiRoot}/impl" }
+
+    def psiFiles = layout.files { file(psiInterfaces).listFiles() } + layout.files { file(psiImpl).listFiles() }
+
+    sourceRoot = "src/main/kotlin" // Collect names without extension bc in this sourcetree they're .kt
+    def userPsiFiles = psiFiles.collect().stream().map { it.name.take(it.name.lastIndexOf('.')) }.collect()
+
+    sourceRoot = "${buildDir}/gen"
+    def genPsiFileDups = psiFiles.filter { genFile -> // in this source tree they're .java
+        return genFile.isFile() && userPsiFiles.any { it == genFile.name.take(genFile.name.lastIndexOf('.')) }
+    }.collect()
+
+
+    println "Detected generated PSI files overridden by sources in the main source tree:"
+    genPsiFileDups.sort().each { println it.name }
+    delete genPsiFileDups
+    println "Deleted.\n"
+}
+
+overrideDefaultPsi.dependsOn(generateParser)
+compileJava.dependsOn(overrideDefaultPsi, generateLexer)
 
 compileKotlin {
-    dependsOn(generateLexer, generateParser)
+    dependsOn(generateLexer, overrideDefaultPsi)
 
-    kotlinOptions{
-        freeCompilerArgs = ['-Xjvm-default=enable', ]
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjvm-default=enable',]
         jvmTarget = "1.8"
     }
 

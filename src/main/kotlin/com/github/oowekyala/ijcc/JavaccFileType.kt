@@ -19,10 +19,10 @@ object JavaccFileType : LanguageFileType(JavaccLanguage) {
 
     override fun getDefaultExtension(): String = "jj"
 
-    override fun getDescription(): String = "JavaCC *.jj files support"
+    override fun getDescription(): String = "JavaCC grammar file"
 }
 
 /** FileTypeFactory extension point. */
 class JavaccFileTypeFactory : FileTypeFactory() {
-    override fun createFileTypes(consumer: FileTypeConsumer) = consumer.consume(JavaccFileType)
+    override fun createFileTypes(consumer: FileTypeConsumer) = consumer.consume(JavaccFileType, "jj;jjt")
 }

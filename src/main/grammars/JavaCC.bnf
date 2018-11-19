@@ -21,7 +21,7 @@
   'static com.intellij.psi.JavaTokenType.*'
   ]
 
-  generatePsi=false
+  generatePsi=true
   tokens = [
         LOOKAHEAD_KEYWORD         = 'LOOKAHEAD'
         IGNORE_CASE_OPTION        = 'IGNORE_CASE'
@@ -95,8 +95,20 @@
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 
-  // implements(".*_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
+  implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
+  methods("(bnf|javacode)_production") = [
+       header="non_terminal_production_header"
+  ]
 
+  implements("non_terminal_production_header|jjtree_node_descriptor") = 'com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
+
+  methods("non_terminal_production_header|jjtree_node_descriptor") = [
+    nameIdentifier="identifier"
+  ]
+
+  methods("jjtree_node_descriptor") = [
+    descriptorExpr="jjtree_node_descriptor_expr"
+  ]
 }
 
 javacc_input 	::=
@@ -148,14 +160,10 @@ parser_declaration ::=
     "PARSER_END" "(" identifier ")"
 
 private production ::=
-        non_terminal_production
+        javacode_production
+    | 	bnf_production
 	| 	regular_expr_production
 	| 	token_manager_decls
-
-
-private non_terminal_production ::=
-        javacode_production
-	| 	bnf_production
 
 javacode_production ::=
         "JAVACODE"
@@ -175,6 +183,7 @@ non_terminal_production_header  ::=  // TODO inject java here
         "(" java_parameter_list ")"
         [ java_throws_list ]
         [ jjtree_node_descriptor ]
+
 
 java_throws_list ::=
         "throws" java_name ("," java_name)*
@@ -271,9 +280,7 @@ character_descriptor 	::=
 
 // Some java grammar
 
-identifier                       ::=    IDENT {
-    implements="com.github.oowekyala.ijcc.lang.psi.impl.JccIdentifierTrait"
-}
+identifier                       ::=    IDENT
 
 
 private java_boolean_literal     ::=    "true" | "false"

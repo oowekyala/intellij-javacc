@@ -9,7 +9,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 /**
  * @author gark87
  */
-class JavaCCAnnotator : Annotator {
+class JavaccAnnotator : Annotator {
     override fun annotate(psiElement: PsiElement, holder: AnnotationHolder) {
         val node = psiElement.node
         if ((node.elementType !== JCC_REGULAR_EXPRESSION || psiElement.parent.node.elementType !== JCC_EXPANSION_UNIT) && node.elementType !== JCC_COMPLEX_REGULAR_EXPRESSION_UNIT) {

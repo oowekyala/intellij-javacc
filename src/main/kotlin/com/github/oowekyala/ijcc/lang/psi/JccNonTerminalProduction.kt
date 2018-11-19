@@ -10,9 +10,11 @@ package com.github.oowekyala.ijcc.lang.psi
  */
 interface JccNonTerminalProduction : JccIdentifierOwner {
 
+    @JvmDefault
+    override fun getNameIdentifier(): JccIdentifier? = header.nameIdentifier
+
     val javaBlock: JccJavaBlock
 
     val header: JccNonTerminalProductionHeader
-        get() = children.first { it is JccNonTerminalProductionHeader } as JccNonTerminalProductionHeader
 
 }

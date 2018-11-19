@@ -11,7 +11,7 @@ import javax.swing.Icon
 /**
  * Color settings page (extension point).
  */
-object JavaCCColorsPage : ColorSettingsPage {
+object JavaccColorsPage : ColorSettingsPage {
 
     override fun getDisplayName(): String = "JavaCC"
 
