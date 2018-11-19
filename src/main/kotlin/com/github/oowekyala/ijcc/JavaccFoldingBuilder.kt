@@ -4,43 +4,76 @@ import com.github.oowekyala.ijcc.lang.psi.JccJavaBlock
 import com.github.oowekyala.ijcc.lang.psi.JccJavacodeProduction
 import com.github.oowekyala.ijcc.lang.psi.JccLocalLookahead
 import com.intellij.lang.ASTNode
-import com.intellij.lang.folding.FoldingBuilderEx
+import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 import com.intellij.psi.util.PsiTreeUtil
-import java.util.*
 
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccFoldingBuilder : FoldingBuilderEx() {
+class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
-    override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        val group = FoldingGroup.newGroup("java code blocks")
+    override fun buildLanguageFoldRegions(
+        descriptors: MutableList<FoldingDescriptor>,
+        root: PsiElement,
+        document: Document,
+        quick: Boolean
+    ) {
 
-        val descriptors = ArrayList<FoldingDescriptor>()
-
-        PsiTreeUtil.findChildrenOfType(root, JccJavaBlock::class.java).forEach {
-            if (it.parent !is JccJavacodeProduction && it.parent !is JccLocalLookahead && it.textLength > 2) { // not just "{}"
-                descriptors.add(
-                    FoldingDescriptor(
-                        it.node,
-                        TextRange(it.textRange.startOffset + 1, it.textRange.endOffset - 1),
-                        group
-                    )
-                )
+        PsiTreeUtil.findChildrenOfAnyType(root, JccLocalLookahead::class.java, JccJavaBlock::class.java).forEach {
+            val descriptor = when (it) {
+                is JccJavaBlock      -> getDescriptorForJavaBlock(it)
+                is JccLocalLookahead -> getDescriptorForLookahead(it)
+                else                 -> null
             }
+
+            if (descriptor != null) descriptors.add(descriptor)
+
         }
-        return descriptors.toTypedArray()
     }
 
-    override fun getPlaceholderText(node: ASTNode): String? = "..."
 
-    override fun isCollapsedByDefault(node: ASTNode): Boolean = true
+    private fun getDescriptorForLookahead(lookahead: JccLocalLookahead): FoldingDescriptor? {
+        return FoldingDescriptor(
+            lookahead,
+            lookahead.textRange
+        )
+    }
 
+
+    private fun getDescriptorForJavaBlock(javaBlock: JccJavaBlock): FoldingDescriptor? {
+        if (javaBlock.parent !is JccJavacodeProduction && javaBlock.textLength > 2) { // not just "{}"
+            var range = javaBlock.textRange
+            if (javaBlock.prevSibling.node.elementType == TokenType.WHITE_SPACE) {
+                range = range.union(javaBlock.prevSibling.textRange)
+            }
+
+            return FoldingDescriptor(
+                javaBlock,
+                range
+            )
+        }
+        return null
+    }
+
+    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = true
+
+    override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
+        val psi = node.psi
+        return when (psi) {
+            is JccJavaBlock -> " {...}"
+            is JccLocalLookahead -> {
+                if (psi.integerLiteral != null && psi.expansionChoices == null && psi.javaExpression == null) {
+                    "LOOKAHEAD(${psi.integerLiteral!!.text})"
+                } else "LOOKAHEAD(...)"
+            }
+            else -> throw UnsupportedOperationException("Unhandled case")
+        }
+    }
 }
