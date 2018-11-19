@@ -194,10 +194,10 @@ java_throws_list ::=
         "throws" java_name ("," java_name)*
 
 
-jjtree_node_descriptor     ::=
+jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
     [ "(" jjtree_node_descriptor_expr ")" ]
-    {pin=1}
+//    {pin=1}
 
 jjtree_node_descriptor_expr ::=
     [ ">" ] // GT-expression
@@ -224,16 +224,16 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    regular_expression [ java_block ] [ ":" identifier ] {recoverWhile=regexpr_spec_recover}
+    regular_expression [ java_block ] [ ":" identifier ] {recoverWhile=regexp_spec_recover}
 
-private regexpr_spec_recover    ::= !("|" | "}")
+private regexp_spec_recover ::=    !("|" | "}")
 
 
-expansion_choices 	::=
+expansion_choices 	        ::=
     expansion_sequence ( "|" expansion_sequence )*
 
 expansion_sequence 	        ::=
-    ( expansion_unit jjtree_node_descriptor? )*
+    ( expansion_unit jjtree_node_descriptor? )+
 
 private expansion_unit 	    ::=
     (   local_lookahead
@@ -245,7 +245,14 @@ private expansion_unit 	    ::=
     )
 
 local_lookahead 	::=
-    "LOOKAHEAD" "(" [ INTEGER_LITERAL ] [ "," ] [ expansion_choices ] [ "," ] [ "{" java_expression "}" ] ")" {pin=1}
+    "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
+
+
+private local_lookahead_tail    ::=
+    // java_expression takes precedence over expansion_choices
+    INTEGER_LITERAL [ "," "{" java_expression "}" ]
+    | "{" java_expression "}"
+    | [ INTEGER_LITERAL "," ] expansion_choices [ "," "{" java_expression "}" ]
 
 non_terminal_expansion_unit     ::=
     identifier "(" java_expression_list ")"
@@ -314,28 +321,33 @@ meta comma_separated_list ::= <<param>> ( ',' <<param>> )*
 
 // Some java grammar
 
-identifier                       ::=    IDENT
+identifier                      ::=    IDENT
 
 
-private java_boolean_literal     ::=    "true" | "false"
+private java_boolean_literal    ::=    "true" | "false"
 
-java_name                        ::=    identifier ("." identifier)* {pin=1}
+java_name                       ::=    identifier ("." identifier)* {pin=1}
 
-java_return_type                 ::=    "void" | java_type
-private java_type                ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
-private java_coi_type            ::=    java_name  // FIXME generics
+java_return_type                ::=    "void" | java_type
+private java_type               ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
+private java_coi_type           ::=    java_name  // FIXME generics
 
-private java_access_modifier     ::=    [ "public" | "protected" | "private" ]
+private java_access_modifier    ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list             ::=    <<comma_separated_list java_expression>>
 java_parameter_list              ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
 java_formal_parameter            ::=    java_type ["..."] identifier ("[" "]")*
 
-java_compilation_unit               ::= ext_java_compilation_unit
-external ext_java_compilation_unit  ::= parseJCompilationUnit
+// externals
 
-java_block                       ::=    ext_java_block
-external ext_java_block          ::=    parseJBlock
+java_compilation_unit               ::=     ext_java_compilation_unit
+external ext_java_compilation_unit  ::=     parseJCompilationUnit
 
-external java_assignment_lhs     ::=    java_name   // FIXME only handles field accesses
-external java_expression         ::=    parseJExpression
+java_block                          ::=     ext_java_block
+external ext_java_block             ::=     parseJBlock
+
+java_assignment_lhs                 ::=     ext_java_assignment_lhs
+private ext_java_assignment_lhs     ::=     java_name   // FIXME only handles field accesses
+
+java_expression                     ::=     ext_java_expression
+external ext_java_expression        ::=     parseJExpression

@@ -21,20 +21,24 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
-        <colorSettingsPage implementation="com.github.oowekyala.ijcc.JavaccColorSettingsPage"/>
+        <colorSettingsPage implementation="com.github.oowekyala.ijcc.highlight.JavaccColorSettingsPage"/>
 
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
-                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccSyntaxHighlighterFactory"/>
+                language="JavaCC"
+                implementationClass="com.github.oowekyala.ijcc.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
-        <!--<annotator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccAnnotator"/>-->
+        <annotator language="JavaCC"
+                   implementationClass="com.github.oowekyala.ijcc.highlight.SmartHighlightingAnnotator"/>
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
 
-        <lang.psiStructureViewFactory language="JAVACC"
+        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
+
+        <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.structure.JavaccStructureViewBuilderFactory"/>
     </extensions>
 </idea-plugin>

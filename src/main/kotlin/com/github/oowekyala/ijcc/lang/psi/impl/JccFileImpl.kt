@@ -26,6 +26,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     val nonTerminalProductions: List<JccNonTerminalProduction>
         get() = findChildrenByClass(JccNonTerminalProduction::class.java).toList()
 
+
+
+
     companion object {
         /**
          * Element type.

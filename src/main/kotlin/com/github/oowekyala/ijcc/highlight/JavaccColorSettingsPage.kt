@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc
+package com.github.oowekyala.ijcc.highlight
 
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -17,7 +17,8 @@ object JavaccColorSettingsPage : ColorSettingsPage {
 
     override fun getIcon(): Icon = JavaccIcons.JAVACC_FILE
 
-    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = Attributes
+    override fun getAttributeDescriptors(): Array<AttributesDescriptor> =
+        Attributes
 
     override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 

@@ -61,6 +61,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
             true
         }
 
+    //FIXME
     @JvmStatic
     fun parseJAssignmentLhs(builder: PsiBuilder, level: Int): Boolean =
         builder.javaContext(JavaRemapperNoAssignment) {

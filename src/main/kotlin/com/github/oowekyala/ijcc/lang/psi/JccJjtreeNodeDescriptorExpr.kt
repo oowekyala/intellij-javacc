@@ -14,4 +14,5 @@ interface JccJjtreeNodeDescriptorExpr : JavaccPsiElement {
     val isGtExpression: Boolean
         get() = firstChild.node.elementType === JavaccTypes.JCC_GT
 
+    val javaExpression: JccJavaExpression
 }

@@ -33,12 +33,25 @@ object JccElementFactory {
     }
 
 
+    fun createJavaExpression(project: Project, text: String): JccJavaExpression {
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            void foo() {} { LOOKAHEAD({$text}) "dummy" }
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions[0].findChildOfType(JccLocalLookahead::class.java)!!.javaExpression!!
+    }
+
+
     fun createJavaBlock(project: Project, text: String): JccJavaBlock {
         val fileText = """
             PARSER_BEGIN(dummy)
             PARSER_END(dummy)
 
-            JAVACODE foo() $text
+            JAVACODE void foo() $text
         """.trimIndent()
         val file = createFile(project, fileText)
 
