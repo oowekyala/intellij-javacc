@@ -22,6 +22,8 @@ class JavaccSyntaxHighlighter : SyntaxHighlighterBase() {
         }
     }
 
+
+
     override fun getHighlightingLexer(): Lexer = JavaccLexerAdapter()
 }
 
