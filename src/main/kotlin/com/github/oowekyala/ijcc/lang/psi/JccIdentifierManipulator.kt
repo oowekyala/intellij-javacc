@@ -16,6 +16,6 @@ class JccIdentifierManipulator : AbstractElementManipulator<JccIdentifier>() {
         val oldText = identifier.text
         val newText = oldText.substring(0, range.startOffset) + newContent +
                 oldText.substring(range.endOffset)
-        return JccElementFactory.createIdentifier(identifier.project, newText)
+        return identifier.replace(JccElementFactory.createIdentifier(identifier.project, newText)) as JccIdentifier?
     }
 }

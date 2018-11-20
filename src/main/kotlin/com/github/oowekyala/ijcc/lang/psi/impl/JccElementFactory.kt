@@ -29,7 +29,15 @@ object JccElementFactory {
 
 
     fun createIdentifier(project: Project, name: String): JccIdentifier {
-        return JccLightIdentifier(project.psiManager, name)
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            void $name() {} { "dummy" }
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions[0].nameIdentifier!!
     }
 
 

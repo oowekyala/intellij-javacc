@@ -4,11 +4,16 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 
 class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
 
     override fun getName(): String = super<JccIdentifier>.getName()
+
+    override fun setName(name: String): PsiElement {
+        return super.setName(name)
+    }
 
     fun accept(visitor: JccVisitor) {
         visitor.visitIdentifier(this)

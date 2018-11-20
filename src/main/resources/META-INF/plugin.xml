@@ -23,6 +23,8 @@
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.highlight.JavaccColorSettingsPage"/>
 
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.reference.JccRenameProcessor"/>
+        <lang.namesValidator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.reference.JccNamesValidator"/>
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
