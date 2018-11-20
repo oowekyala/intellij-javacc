@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.structure
 
+import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
@@ -46,9 +47,13 @@ class JavaccFileTreeElement(file: JccFileImpl) : PsiTreeElementBase<JccFileImpl>
                     // TODO find children productions
                     onFind(NonTerminalStructureNode(psiElement))
                 }
-                is JccRegexprSpec           -> if (psiElement.namedRegularExpression != null && psiElement.namedRegularExpression!!.nameIdentifier != null) onFind(
-                    TerminalStructureLeaf(psiElement)
-                )
+                is JccRegexprSpec           -> {
+                    val regex = psiElement.regularExpression
+                    if (regex is JccNamedRegularExpression && regex.nameIdentifier != null) onFind(
+                        TerminalStructureLeaf(psiElement))
+                }
+
+
             }
 
             return false

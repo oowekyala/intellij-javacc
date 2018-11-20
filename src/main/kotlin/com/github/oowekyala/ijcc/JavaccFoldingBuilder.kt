@@ -53,19 +53,10 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             else f(this)
 
         private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
-            val decl = regexRef.reference.resolve()
-            if (decl is JccIdentifier && decl.parent is JccNamedRegularExpression) {
-                val parent = decl.parent as JccNamedRegularExpression
-                return parent.complexRegexpChoices
-                    ?.complexRegexpSequenceList
-                    ?.takeIf { it.size == 1 }
-                    ?.get(0)
-                    ?.complexRegexpUnitList
-                    ?.takeIf { it.size == 1 }
-                    ?.get(0)
-                    .map { it.literalRegularExpression }
-            }
-            return null
+            return regexRef.reference.resolve()
+                .map { it as? JccIdentifier }
+                .map { it.parent as? JccNamedRegularExpression }
+                .map { it.regularExpression as? JccLiteralRegularExpression }
         }
 
         private val newLines = CharArray(2)

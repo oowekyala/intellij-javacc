@@ -64,7 +64,7 @@ object JavaccLanguageInjector : MultiHostInjector {
             if (context.expansionChoices != null)
                 JavaBlocksVisitor(registrar).visitExpansionChoices(context.expansionChoices!!)
 
-            registrar.addPlace(null, "}", context.javaBlock, TextRange.EMPTY_RANGE)
+            registrar.addPlace(null, "}}", context.javaBlock, TextRange.EMPTY_RANGE)
         }
         registrar.doneInjecting()
     }
