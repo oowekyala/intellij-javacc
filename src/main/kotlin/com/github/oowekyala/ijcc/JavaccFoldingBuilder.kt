@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.lang.psi.JccJavaBlock
-import com.github.oowekyala.ijcc.lang.psi.JccJavacodeProduction
-import com.github.oowekyala.ijcc.lang.psi.JccLocalLookahead
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
@@ -26,11 +24,25 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         quick: Boolean
     ) {
 
-        PsiTreeUtil.findChildrenOfAnyType(root, JccLocalLookahead::class.java, JccJavaBlock::class.java).forEach {
+        PsiTreeUtil.findChildrenOfAnyType(
+            root,
+            JccJavaBlock::class.java,
+            JccLocalLookahead::class.java,
+            JccRegularExprProduction::class.java,
+            JccJavaccOptions::class.java,
+            JccParserDeclaration::class.java,
+            JccTokenManagerDecls::class.java,
+            JccRegularExpressionReference::class.java
+        ).forEach {
             val descriptor = when (it) {
-                is JccJavaBlock      -> getDescriptorForJavaBlock(it)
-                is JccLocalLookahead -> getDescriptorForLookahead(it)
-                else                 -> null
+                is JccJavaBlock                  -> getDescriptorForJavaBlock(it)
+                is JccLocalLookahead             -> getDescriptorForLookahead(it)
+                is JccRegularExprProduction      -> getDescriptorForRegexProduction(it)
+                is JccJavaccOptions              -> getDescriptorForOptions(it)
+                is JccParserDeclaration          -> getDescriptorForParserDecl(it)
+                is JccTokenManagerDecls          -> getDescriptorForTokenMgrDecl(it)
+                is JccRegularExpressionReference -> getDescriptorForRegexRef(it)
+                else                             -> null
             }
 
             if (descriptor != null) descriptors.add(descriptor)
@@ -38,6 +50,60 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         }
     }
 
+    private fun <T : Any> T?.onlyIf(predicate: (T) -> Boolean): T? =
+        if (this == null || !predicate(this)) null
+        else this
+
+    private fun <T : Any, R> T?.map(f: (T) -> R?): R? =
+        if (this == null) null
+        else f(this)
+
+    private fun getDescriptorForRegexRef(regexRef: JccRegularExpressionReference): FoldingDescriptor? =
+        literalRegexpForRef(regexRef).map { FoldingDescriptor(regexRef, regexRef.textRange) }
+
+    private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
+        val decl = regexRef.reference.resolve()
+        if (decl is JccIdentifier && decl.parent is JccNamedRegularExpression) {
+            val parent = decl.parent as JccNamedRegularExpression
+            return parent.complexRegexpChoices
+                ?.complexRegexpSequenceList
+                .onlyIf { it.size == 1 }
+                ?.get(0)
+                ?.complexRegexpUnitList
+                .onlyIf { it.size == 1 }
+                ?.get(0)
+                .map { it.literalRegularExpression }
+        }
+        return null
+    }
+
+    private fun getDescriptorForTokenMgrDecl(decl: JccTokenManagerDecls): FoldingDescriptor? {
+        return FoldingDescriptor(
+            decl,
+            decl.textRange
+        )
+    }
+
+    private fun getDescriptorForParserDecl(decl: JccParserDeclaration): FoldingDescriptor? {
+        return FoldingDescriptor(
+            decl,
+            decl.textRange
+        )
+    }
+
+    private fun getDescriptorForRegexProduction(production: JccRegularExprProduction): FoldingDescriptor? {
+        return FoldingDescriptor(
+            production,
+            production.textRange
+        )
+    }
+
+    private fun getDescriptorForOptions(options: JccJavaccOptions): FoldingDescriptor? {
+        return FoldingDescriptor(
+            options,
+            options.textRange
+        )
+    }
 
     private fun getDescriptorForLookahead(lookahead: JccLocalLookahead): FoldingDescriptor? {
         return FoldingDescriptor(
@@ -67,13 +133,18 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is JccJavaBlock -> " {...}"
-            is JccLocalLookahead -> {
+            is JccRegularExpressionReference -> literalRegexpForRef(psi)!!.text
+            is JccParserDeclaration          -> "/PARSER DECLARATION/"
+            is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
+            is JccRegularExprProduction      -> "${psi.regexprKind.text}: {..}"
+            is JccJavaccOptions              -> "options {..}"
+            is JccJavaBlock                  -> " {..}"
+            is JccLocalLookahead             -> {
                 if (psi.integerLiteral != null && psi.expansionChoices == null && psi.javaExpression == null) {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
-                } else "LOOKAHEAD(...)"
+                } else "LOOKAHEAD(..)"
             }
-            else -> throw UnsupportedOperationException("Unhandled case")
+            else                             -> throw UnsupportedOperationException("Unhandled case")
         }
     }
 }

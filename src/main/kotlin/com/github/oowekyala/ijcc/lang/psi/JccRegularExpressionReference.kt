@@ -9,7 +9,7 @@ interface JccRegularExpressionReference : JavaccPsiElement, JccRegularExpression
     val identifier: JccIdentifier
 
     @JvmDefault
-    override fun getReference(): PsiReference? = JccTerminalReference(identifier)
+    override fun getReference(): PsiReference = JccTerminalReference(identifier)
 
 
 }

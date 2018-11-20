@@ -24,7 +24,7 @@ class JccRegularExpressionReferenceImpl(node: ASTNode) : JavaccPsiElementImpl(no
             super.accept(visitor)
     }
 
-    override fun getReference(): PsiReference? {
+    override fun getReference(): PsiReference {
         return super<JccRegularExpressionReference>.getReference()
     }
 

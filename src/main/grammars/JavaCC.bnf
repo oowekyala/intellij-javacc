@@ -303,11 +303,13 @@ complex_regexp_sequence ::=
     ( complex_regexp_unit )* {pin('.*')=1}
 
 complex_regexp_unit 	::=
-        STRING_LITERAL
+        literal_regular_expression
 	| 	regular_expression_reference
 	| 	character_list
-	| 	"(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
+	| 	parenthesized_regexp_unit
 
+parenthesized_regexp_unit           ::=
+    "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
 
 regular_expression_reference        ::=
 	"<" identifier ">"
