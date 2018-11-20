@@ -44,10 +44,9 @@ class JavaccFileTreeElement(file: JccFileImpl) : PsiTreeElementBase<JccFileImpl>
             when (psiElement) {
                 is JccNonTerminalProduction -> {
                     // TODO find children productions
-
                     onFind(NonTerminalStructureNode(psiElement))
                 }
-                is JccRegexprSpec -> if (psiElement.identifier != null) onFind(
+                is JccRegexprSpec           -> if (psiElement.namedRegularExpression != null && psiElement.namedRegularExpression!!.nameIdentifier != null) onFind(
                     TerminalStructureLeaf(psiElement)
                 )
             }

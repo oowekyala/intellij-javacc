@@ -11,7 +11,7 @@ import javax.swing.Icon
  * @since 1.0
  */
 class TerminalStructureLeaf(private val regexpSpec: JccRegexprSpec) : JavaccLeafElement<JccRegexprSpec>(regexpSpec) {
-    override fun getPresentableText(): String? = regexpSpec.identifier?.let { "< $it >" }
+    override fun getPresentableText(): String? = regexpSpec.namedRegularExpression?.let { "< $it >" }
 
     override fun getIcon(open: Boolean): Icon? = JavaccIcons.TERMINAL
 }

@@ -15,10 +15,11 @@ import com.intellij.psi.PsiElement
 class SmartHighlightingAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element is JccJjtreeNodeDescriptor) {
-            val annotation = holder.createInfoAnnotation(
-                element.firstChild.textRange.union(element.nameIdentifier!!.textRange),
-                null
-            )
+            val ident = element.nameIdentifier
+            val poundRange = element.firstChild.textRange // "#"
+            val fullRange = if (ident != null) poundRange.union(ident.textRange) else poundRange
+
+            val annotation = holder.createInfoAnnotation(fullRange, null)
             annotation.textAttributes = JavaccHighlightingColors.JJTREE_DECORATION.keys
         }
     }

@@ -100,9 +100,11 @@
        header="java_non_terminal_production_header"
   ]
 
-  implements("java_non_terminal_production_header|jjtree_node_descriptor") = 'com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
+  implements("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression")='com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
 
-  methods("java_non_terminal_production_header|jjtree_node_descriptor") = [
+  extends("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression")='com.github.oowekyala.ijcc.lang.psi.impl.JccIdentifierOwnerImpl'
+
+  methods("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression") = [
     nameIdentifier="identifier"
   ]
 
@@ -110,7 +112,9 @@
     descriptorExpr="jjtree_node_descriptor_expr"
   ]
 
-   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
+  consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
+
+  implements(".*regular_expression.*")='com.github.oowekyala.ijcc.lang.psi.JccRegularExpression'
 }
 
 javacc_input 	::=
@@ -128,6 +132,7 @@ private option_recover  ::= !(option_name | "}")
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | "static" | IDENT
+//      TODO move that to the options!
 //      "LOOKAHEAD" "=" INTEGER_LITERAL ";"
 //	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
 //	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
@@ -224,7 +229,10 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    regular_expression [ java_block ] [ ":" identifier ] {recoverWhile=regexp_spec_recover}
+    regular_expression [ java_block ] [ ":" identifier ] {
+        recoverWhile=regexp_spec_recover
+        methods=[lexicalState="identifier"]
+    }
 
 private regexp_spec_recover ::=    !("|" | "}")
 
@@ -272,11 +280,17 @@ try_catch_expansion_unit        ::=
 
 /* Regular expressions */
 
-regular_expression 	            ::=
-        STRING_LITERAL
-	|   "<" "EOF" ">"
+private regular_expression 	            ::=
+        literal_regular_expression
+    |   eof_regular_expression
 	|   regular_expression_reference
 	|   named_regular_expression
+
+literal_regular_expression      ::=
+    STRING_LITERAL
+
+eof_regular_expression          ::=
+	"<" "EOF" ">"
 
 named_regular_expression        ::=
 	"<" [ [ "#" ] identifier ":" ] complex_regexp_choices ">" {pin=1}

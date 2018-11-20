@@ -36,6 +36,9 @@
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
 
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifierManipulator"/>
+
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
