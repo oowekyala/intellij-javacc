@@ -5,10 +5,11 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import com.intellij.psi.util.PsiTreeUtil
+import java.util.*
 
 
 /**
@@ -23,109 +24,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         document: Document,
         quick: Boolean
     ) {
-
-        PsiTreeUtil.findChildrenOfAnyType(
-            root,
-            JccJavaBlock::class.java,
-            JccLocalLookahead::class.java,
-            JccRegularExprProduction::class.java,
-            JccJavaccOptions::class.java,
-            JccParserDeclaration::class.java,
-            JccTokenManagerDecls::class.java,
-            JccRegularExpressionReference::class.java
-        ).forEach {
-            val descriptor = when (it) {
-                is JccJavaBlock                  -> getDescriptorForJavaBlock(it)
-                is JccLocalLookahead             -> getDescriptorForLookahead(it)
-                is JccRegularExprProduction      -> getDescriptorForRegexProduction(it)
-                is JccJavaccOptions              -> getDescriptorForOptions(it)
-                is JccParserDeclaration          -> getDescriptorForParserDecl(it)
-                is JccTokenManagerDecls          -> getDescriptorForTokenMgrDecl(it)
-                is JccRegularExpressionReference -> getDescriptorForRegexRef(it)
-                else                             -> null
-            }
-
-            if (descriptor != null) descriptors.add(descriptor)
-
-        }
-    }
-
-    private fun <T : Any> T?.onlyIf(predicate: (T) -> Boolean): T? =
-        if (this == null || !predicate(this)) null
-        else this
-
-    private fun <T : Any, R> T?.map(f: (T) -> R?): R? =
-        if (this == null) null
-        else f(this)
-
-    private fun getDescriptorForRegexRef(regexRef: JccRegularExpressionReference): FoldingDescriptor? =
-        literalRegexpForRef(regexRef).map { FoldingDescriptor(regexRef, regexRef.textRange) }
-
-    private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
-        val decl = regexRef.reference.resolve()
-        if (decl is JccIdentifier && decl.parent is JccNamedRegularExpression) {
-            val parent = decl.parent as JccNamedRegularExpression
-            return parent.complexRegexpChoices
-                ?.complexRegexpSequenceList
-                .onlyIf { it.size == 1 }
-                ?.get(0)
-                ?.complexRegexpUnitList
-                .onlyIf { it.size == 1 }
-                ?.get(0)
-                .map { it.literalRegularExpression }
-        }
-        return null
-    }
-
-    private fun getDescriptorForTokenMgrDecl(decl: JccTokenManagerDecls): FoldingDescriptor? {
-        return FoldingDescriptor(
-            decl,
-            decl.textRange
-        )
-    }
-
-    private fun getDescriptorForParserDecl(decl: JccParserDeclaration): FoldingDescriptor? {
-        return FoldingDescriptor(
-            decl,
-            decl.textRange
-        )
-    }
-
-    private fun getDescriptorForRegexProduction(production: JccRegularExprProduction): FoldingDescriptor? {
-        return FoldingDescriptor(
-            production,
-            production.textRange
-        )
-    }
-
-    private fun getDescriptorForOptions(options: JccJavaccOptions): FoldingDescriptor? {
-        return FoldingDescriptor(
-            options,
-            options.textRange
-        )
-    }
-
-    private fun getDescriptorForLookahead(lookahead: JccLocalLookahead): FoldingDescriptor? {
-        return FoldingDescriptor(
-            lookahead,
-            lookahead.textRange
-        )
-    }
-
-
-    private fun getDescriptorForJavaBlock(javaBlock: JccJavaBlock): FoldingDescriptor? {
-        if (javaBlock.parent !is JccJavacodeProduction && javaBlock.textLength > 2) { // not just "{}"
-            var range = javaBlock.textRange
-            if (javaBlock.prevSibling.node.elementType == TokenType.WHITE_SPACE) {
-                range = range.union(javaBlock.prevSibling.textRange)
-            }
-
-            return FoldingDescriptor(
-                javaBlock,
-                range
-            )
-        }
-        return null
+        root.accept(FolderVisitor(descriptors))
     }
 
     override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = true
@@ -145,6 +44,93 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 } else "LOOKAHEAD(..)"
             }
             else                             -> throw UnsupportedOperationException("Unhandled case")
+        }
+    }
+
+    companion object {
+
+        private fun <T : Any, R> T?.map(f: (T) -> R?): R? =
+            if (this == null) null
+            else f(this)
+
+        private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
+            val decl = regexRef.reference.resolve()
+            if (decl is JccIdentifier && decl.parent is JccNamedRegularExpression) {
+                val parent = decl.parent as JccNamedRegularExpression
+                return parent.complexRegexpChoices
+                    ?.complexRegexpSequenceList
+                    ?.takeIf { it.size == 1 }
+                    ?.get(0)
+                    ?.complexRegexpUnitList
+                    ?.takeIf { it.size == 1 }
+                    ?.get(0)
+                    .map { it.literalRegularExpression }
+            }
+            return null
+        }
+
+        private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : JccVisitor() {
+            // all java blocks in the same bnf production belong in the same group
+            private val currentGroup = Stack<FoldingGroup>()
+            // all regex productions belong in the same group
+            private val regexpProductionsGroup = FoldingGroup.newGroup("terminals")
+
+            override fun visitElement(o: PsiElement?) {
+                o?.children?.forEach { it.accept(this) }
+            }
+
+            override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+                val ref = literalRegexpForRef(o)
+                if (ref != null) {
+                    result += FoldingDescriptor(o, o.textRange)
+                }
+            }
+
+            override fun visitRegularExprProduction(o: JccRegularExprProduction) {
+                result += FoldingDescriptor(o.node, o.textRange, regexpProductionsGroup)
+            }
+
+            override fun visitLocalLookahead(o: JccLocalLookahead) {
+                result += FoldingDescriptor(o, o.textRange)
+            }
+
+            override fun visitJavaccOptions(o: JccJavaccOptions) {
+                result += FoldingDescriptor(o, o.textRange)
+            }
+
+            override fun visitParserDeclaration(o: JccParserDeclaration) {
+                result += FoldingDescriptor(o, o.textRange)
+            }
+
+            override fun visitTokenManagerDecls(o: JccTokenManagerDecls) {
+                result += FoldingDescriptor(o, o.textRange)
+            }
+
+            override fun visitJavacodeProduction(o: JccJavacodeProduction) {
+                // don't explore children
+            }
+
+            override fun visitBnfProduction(o: JccBnfProduction) {
+                currentGroup += FoldingGroup.newGroup("bnf:" + o.name)
+                super.visitBnfProduction(o)
+                currentGroup.pop()
+            }
+
+            override fun visitJavaBlock(javaBlock: JccJavaBlock) {
+                if (javaBlock.textLength > 2) { // not just "{}"
+                    var range = javaBlock.textRange
+                    if (javaBlock.prevSibling.node.elementType == TokenType.WHITE_SPACE) {
+                        range = range.union(javaBlock.prevSibling.textRange)
+                    }
+
+                    result += if (!currentGroup.isEmpty())
+                        FoldingDescriptor(javaBlock.node, range, currentGroup.peek())
+                    else
+                        FoldingDescriptor(javaBlock, range)
+                }
+            }
+
+
         }
     }
 }
