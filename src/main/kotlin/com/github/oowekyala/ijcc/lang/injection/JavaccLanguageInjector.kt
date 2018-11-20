@@ -85,12 +85,12 @@ object JavaccLanguageInjector : MultiHostInjector {
                 // then the block represents a boolean expression
                 registrar.addPlace(
                     "if (",
-                    ") {", // FIXME
+                    ");", // FIXME
                     expr,
                     relativeRange(expr)
                 )
 
-                endBlockBuilder.append('}')
+//                endBlockBuilder.append('}')
             }
         }
 

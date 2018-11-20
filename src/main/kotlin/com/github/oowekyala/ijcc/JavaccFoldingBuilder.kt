@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import java.util.*
 
 
 /**
@@ -69,9 +68,18 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             return null
         }
 
+        private val newLines = CharArray(2)
+
+        init {
+            newLines[0] = '\r'
+            newLines[1] = '\n'
+        }
+
         private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : JccVisitor() {
             // all java blocks in the same bnf production belong in the same group
-            private val currentGroup = Stack<FoldingGroup>()
+            private var currentJBlockGroup: FoldingGroup? = null
+            // all lookaheads in the same bnf production belong in the same group
+            private var currentLookaheadGroup: FoldingGroup? = null
             // all regex productions belong in the same group
             private val regexpProductionsGroup = FoldingGroup.newGroup("terminals")
 
@@ -90,8 +98,42 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 result += FoldingDescriptor(o.node, o.textRange, regexpProductionsGroup)
             }
 
+            fun TextRange.growLeft(delta: Int) = TextRange(startOffset - delta, endOffset)
+
+            private fun trimWhitespace(o: PsiElement, greedyLeft: Boolean = true): TextRange {
+                var range = o.textRange
+                if (o.prevSibling?.node?.elementType == TokenType.WHITE_SPACE) {
+                    val ws = o.prevSibling.node.text
+
+                    range =
+                            if (greedyLeft || !ws.startsWith(" ")) {
+                                range.union(o.prevSibling.textRange) // eat up all whitespace
+                            } else {
+                                // keep a space
+                                range.growLeft(ws.length - 1)
+                            }
+
+
+                }
+
+                if (o.nextSibling?.node?.elementType == TokenType.WHITE_SPACE) {
+                    val ws = o.nextSibling.node.text
+                    val fstNewLine = ws.indexOfAny(newLines)
+                    if (fstNewLine < 0 && ws.last() == ' ') {
+                        range = range.grown(ws.length - 1)
+                    } else if (fstNewLine > 0) {
+                        range = range.grown(fstNewLine)
+                    }
+                }
+                return range
+            }
+
             override fun visitLocalLookahead(o: JccLocalLookahead) {
-                result += FoldingDescriptor(o, o.textRange)
+                result +=
+                        if (o.integerLiteral != null && o.expansionChoices == null && o.javaExpression == null)
+                            FoldingDescriptor(o.node, trimWhitespace(o, false), currentLookaheadGroup, emptySet(), true)
+                        else
+                            FoldingDescriptor(o.node, trimWhitespace(o, false), currentLookaheadGroup)
             }
 
             override fun visitJavaccOptions(o: JccJavaccOptions) {
@@ -111,26 +153,21 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitBnfProduction(o: JccBnfProduction) {
-                currentGroup += FoldingGroup.newGroup("bnf:" + o.name)
+                currentJBlockGroup = FoldingGroup.newGroup("bnf:blocks:" + o.name)
+                currentLookaheadGroup = FoldingGroup.newGroup("bnf:lookaheads:" + o.name)
                 super.visitBnfProduction(o)
-                currentGroup.pop()
+                currentJBlockGroup = null
+                currentLookaheadGroup = null
             }
 
             override fun visitJavaBlock(javaBlock: JccJavaBlock) {
                 if (javaBlock.textLength > 2) { // not just "{}"
-                    var range = javaBlock.textRange
-                    if (javaBlock.prevSibling.node.elementType == TokenType.WHITE_SPACE) {
-                        range = range.union(javaBlock.prevSibling.textRange)
-                    }
-
-                    result += if (!currentGroup.isEmpty())
-                        FoldingDescriptor(javaBlock.node, range, currentGroup.peek())
+                    result += if (currentJBlockGroup != null)
+                        FoldingDescriptor(javaBlock.node, trimWhitespace(javaBlock), currentJBlockGroup)
                     else
-                        FoldingDescriptor(javaBlock, range)
+                        FoldingDescriptor(javaBlock, trimWhitespace(javaBlock))
                 }
             }
-
-
         }
     }
 }

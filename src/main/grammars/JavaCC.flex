@@ -195,10 +195,12 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "||"                        { return JavaTokenType.OROR; }
     "++"                        { return JavaTokenType.PLUSPLUS; }
     "--"                        { return JavaTokenType.MINUSMINUS; }
-
-    "<="                        { return JavaTokenType.LE; }
-    "&"                         { return JavaTokenType.AND; }
     "&&"                        { return JavaTokenType.ANDAND; }
+
+    "&"                         { return JavaTokenType.AND; }
+    "<="                        { return JavaTokenType.LE; }
+    ">="                        { return JavaTokenType.GE; }
+
 
     "+="                        { return JavaTokenType.PLUSEQ; }
     "-="                        { return JavaTokenType.MINUSEQ; }
