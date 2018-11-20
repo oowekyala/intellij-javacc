@@ -18,7 +18,7 @@
         <!-- Add your actions here -->
     </actions>
 
-    <extensions defaultExtensionNs="com.intellij">
+    <extensions defaultExtensionNs="com.intellij" >
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.highlight.JavaccColorSettingsPage"/>
@@ -41,6 +41,9 @@
 
         <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JavaccTemplateContext"/>
+
+        <lang.findUsagesProvider language="JavaCC" implementationClass="com.github.oowekyala.ijcc.reference.JccFindUsagesProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.reference.JccDescriptionProvider"/>
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 

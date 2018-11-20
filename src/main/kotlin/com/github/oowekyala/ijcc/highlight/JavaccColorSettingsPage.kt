@@ -24,6 +24,12 @@ object JavaccColorSettingsPage : ColorSettingsPage {
 
     override fun getHighlighter(): SyntaxHighlighter = JavaccSyntaxHighlighter()
 
+    override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? =
+        null
+
+    private val Attributes: Array<AttributesDescriptor> =
+        JavaccHighlightingColors.values().map { AttributesDescriptor(it.displayName, it.keys) }.toTypedArray()
+
     override fun getDemoText(): String {
         return """
 options {
@@ -111,12 +117,6 @@ void MatchedBraces() :
   "{" [ MatchedBraces() ] "}"
 }"""
     }
-
-    override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? =
-        null
-
-    private val Attributes: Array<AttributesDescriptor> =
-        JavaccHighlightingColors.values().map { AttributesDescriptor(it.displayName, it.keys) }.toTypedArray()
 
 
 }

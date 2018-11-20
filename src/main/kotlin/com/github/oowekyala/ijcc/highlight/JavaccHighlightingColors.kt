@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.highlight
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JavaccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
@@ -33,7 +34,6 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
 
     LINE_COMMENT(JavaHighlightingColors.LINE_COMMENT),
     C_COMMENT(JavaHighlightingColors.JAVA_BLOCK_COMMENT),
-    DOC_COMMENT(JavaHighlightingColors.DOC_COMMENT),
 
     BAD_CHARACTER(JavaHighlightingColors.INVALID_STRING_ESCAPE);
 
@@ -59,27 +59,26 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
                 tokenType.forEach { keys[it] = this.keys }
             }
 
-            LINE_COMMENT(JavaccTypes.JCC_END_OF_LINE_COMMENT)
-            DOC_COMMENT(JavaccTypes.JCC_DOC_COMMENT)
-            C_COMMENT(JavaccTypes.JCC_C_STYLE_COMMENT)
+            LINE_COMMENT(JCC_END_OF_LINE_COMMENT)
+            C_COMMENT(JCC_C_STYLE_COMMENT, JCC_DOC_COMMENT)
 
             JAVACC_KEYWORD(
-                JavaccTypes.JCC_LOOKAHEAD_KEYWORD,
-                JavaccTypes.JCC_PARSER_BEGIN_KEYWORD,
-                JavaccTypes.JCC_PARSER_END_KEYWORD,
-                JavaccTypes.JCC_JAVACODE_KEYWORD,
-                JavaccTypes.JCC_TOKEN_KEYWORD,
-                JavaccTypes.JCC_SPECIAL_TOKEN_KEYWORD,
-                JavaccTypes.JCC_MORE_KEYWORD,
-                JavaccTypes.JCC_SKIP_KEYWORD,
-                JavaccTypes.JCC_TOKEN_MGR_DECLS_KEYWORD,
-                JavaccTypes.JCC_EOF_KEYWORD
+                JCC_LOOKAHEAD_KEYWORD,
+                JCC_PARSER_BEGIN_KEYWORD,
+                JCC_PARSER_END_KEYWORD,
+                JCC_JAVACODE_KEYWORD,
+                JCC_TOKEN_KEYWORD,
+                JCC_SPECIAL_TOKEN_KEYWORD,
+                JCC_MORE_KEYWORD,
+                JCC_SKIP_KEYWORD,
+                JCC_TOKEN_MGR_DECLS_KEYWORD,
+                JCC_EOF_KEYWORD
             )
 
             JAVA_KEYWORD(
-                JavaccTypes.JCC_PRIMITIVE_TYPE,
-                JavaccTypes.JCC_FALSE_KEYWORD,
-                JavaccTypes.JCC_TRUE_KEYWORD,
+                JCC_PRIMITIVE_TYPE,
+                JCC_FALSE_KEYWORD,
+                JCC_TRUE_KEYWORD,
                 JavaTokenType.NULL_KEYWORD,
                 JavaTokenType.CLASS_KEYWORD,
                 JavaTokenType.INTERFACE_KEYWORD,
@@ -88,52 +87,53 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
                 JavaTokenType.THIS_KEYWORD,
                 JavaTokenType.THROW_KEYWORD,
                 JavaTokenType.ABSTRACT_KEYWORD,
-                JavaccTypes.JCC_PRIVATE_KEYWORD,
-                JavaccTypes.JCC_PROTECTED_KEYWORD,
-                JavaccTypes.JCC_PUBLIC_KEYWORD,
-                JavaccTypes.JCC_THROWS_KEYWORD,
-                JavaccTypes.JCC_TRY_KEYWORD,
-                JavaccTypes.JCC_CATCH_KEYWORD,
-                JavaccTypes.JCC_FINALLY_KEYWORD,
-                JavaccTypes.JCC_VOID_KEYWORD
+                JavaTokenType.STATIC_KEYWORD,
+                JCC_PRIVATE_KEYWORD,
+                JCC_PROTECTED_KEYWORD,
+                JCC_PUBLIC_KEYWORD,
+                JCC_THROWS_KEYWORD,
+                JCC_TRY_KEYWORD,
+                JCC_CATCH_KEYWORD,
+                JCC_FINALLY_KEYWORD,
+                JCC_VOID_KEYWORD
             )
 
             OPERATOR(
-                JavaccTypes.JCC_GT,
-                JavaccTypes.JCC_LT,
-                JavaccTypes.JCC_TILDE,
-                JavaccTypes.JCC_COLON,
-                JavaccTypes.JCC_EQ,
-                JavaccTypes.JCC_PLUS,
-                JavaccTypes.JCC_MINUS
+                JCC_GT,
+                JCC_LT,
+                JCC_TILDE,
+                JCC_COLON,
+                JCC_EQ,
+                JCC_PLUS,
+                JCC_MINUS
             )
 
             NUMBER(
-                JavaccTypes.JCC_INTEGER_LITERAL,
-                JavaccTypes.JCC_FLOAT_LITERAL,
-                JavaccTypes.JCC_DOUBLE_LITERAL,
-                JavaccTypes.JCC_LONG_LITERAL
+                JCC_INTEGER_LITERAL,
+                JCC_FLOAT_LITERAL,
+                JCC_DOUBLE_LITERAL,
+                JCC_LONG_LITERAL
             )
 
 
 
-            SEMICOLON(JavaccTypes.JCC_SEMICOLON)
-            COMMA(JavaccTypes.JCC_COMMA)
-            DOT(JavaccTypes.JCC_DOT)
+            SEMICOLON(JCC_SEMICOLON)
+            COMMA(JCC_COMMA)
+            DOT(JCC_DOT)
             PARENTHESES(
-                JavaccTypes.JCC_LPARENTH,
-                JavaccTypes.JCC_RPARENTH
+                JCC_LPARENTH,
+                JCC_RPARENTH
             )
             BRACKETS(
-                JavaccTypes.JCC_LBRACKET,
-                JavaccTypes.JCC_RBRACKET
+                JCC_LBRACKET,
+                JCC_RBRACKET
             )
 
 
-            STRING(JavaccTypes.JCC_STRING_LITERAL)
-            CHARACTER(JavaccTypes.JCC_CHARACTER_LITERAL)
+            STRING(JCC_STRING_LITERAL)
+            CHARACTER(JCC_CHARACTER_LITERAL)
 
-            BAD_CHARACTER(JavaccTypes.JCC_BAD_CHARACTER)
+            BAD_CHARACTER(JCC_BAD_CHARACTER)
 
             TOKEN_TYPE_TO_STYLE = Collections.unmodifiableMap(keys)
         }
