@@ -13,7 +13,7 @@ enum class JavaccIcons(fname: String) : Icon by getIcon(fname) {
     /** Non-terminal icon for the structure view.  */
     NONTERMINAL("nonterminal.png"),
     /** File type icon.  */
-    JAVACC_FILE("jcc_file.png");
+    JAVACC_FILE("javaccFile.png");
 }
 
 private object IconLoader {
