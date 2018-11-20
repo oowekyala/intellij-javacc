@@ -39,6 +39,8 @@
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifierManipulator"/>
 
+        <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
+
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"

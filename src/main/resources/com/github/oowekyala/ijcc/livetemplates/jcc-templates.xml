@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="JavaCC">
+    <template name="javacc:bnf"
+              value="void $Production$()$Cond$:
+{}
+{
+    $Code$
+}"
+              description="New BNF production" toReformat="false">
+        <variable name="Production" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="Cond" expression="" defaultValue="" alwaysStopAt="true"/>
+        <variable name="Code" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context/>
+    </template>
+</templateSet>

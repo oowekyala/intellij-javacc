@@ -1,0 +1,26 @@
+/*
+ * Grammar for the ${NAME} language.
+ *
+ * Author: ${USER}
+ * Date: ${YEAR}-${MONTH}-${DAY}
+ *
+ */
+
+options {
+    // option=value
+}
+
+PARSER_BEGIN(${NAME})
+
+class ${NAME}Parser {
+
+
+}
+
+PARSER_END(${NAME})
+
+void root():
+{}
+{
+
+}

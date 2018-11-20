@@ -52,19 +52,20 @@ object JavaccLanguageInjector : MultiHostInjector {
         //  TODO get ast class prefix + package
         val jjtThisTypeName = "AST${context.name}"
 
-        // Add prelude declarations
-        registrar.addPlace(
-            "{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
-            null,
-            context.javaBlock,
-            javaBlockInsides(context.javaBlock)
-        )
+        if (context.javaBlock != null) {
+            // Add prelude declarations
+            registrar.addPlace(
+                "{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
+                null,
+                context.javaBlock,
+                javaBlockInsides(context.javaBlock)
+            )
 
-        if (context.expansionChoices != null)
-            JavaBlocksVisitor(registrar).visitExpansionChoices(context.expansionChoices!!)
+            if (context.expansionChoices != null)
+                JavaBlocksVisitor(registrar).visitExpansionChoices(context.expansionChoices!!)
 
-        registrar.addPlace(null, "}", context.javaBlock, TextRange.EMPTY_RANGE)
-
+            registrar.addPlace(null, "}", context.javaBlock, TextRange.EMPTY_RANGE)
+        }
         registrar.doneInjecting()
     }
 
