@@ -5,10 +5,10 @@
 # Things to do before release
 
 ++ Tone down injection in production headers
+++ Fix bugs with lookahead not expanding anymore
 * Fix control flow in injected blocks (hard)
 * Rebuild the structure view
-* Fix that bug with the java expressions (&&)
-* Fix the template context
+++ Fix that bug with the java expressions (&&)
 
 # Things not necessary before release
 

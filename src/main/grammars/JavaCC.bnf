@@ -116,6 +116,11 @@
 
   extends(".*regular_expression.*|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
   implements("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
+
+  extends("expansion_(alternative|sequence|unit)")=expansion
+  implements("expansion_(alternative|sequence|unit)")=expansion
+  implements(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
+  extends(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
 }
 
 javacc_input 	::=
@@ -237,21 +242,36 @@ regexpr_spec 	    ::=
 
 private regexp_spec_recover ::=    !("|" | "}")
 
+fake expansion ::=
 
-expansion_choices 	        ::=
-    expansion_sequence ( "|" expansion_sequence )*
+private expansion_choices 	        ::=
+        expansion_alternative
+    |   expansion_sequence
+
+expansion_alternative       ::=
+    expansion_sequence ( "|" expansion_sequence )+
 
 expansion_sequence 	        ::=
-    ( expansion_unit jjtree_node_descriptor? )+
+    ( priv_expansion_unit jjtree_node_descriptor? )+
 
-private expansion_unit 	    ::=
+fake expansion_unit ::=
+
+private priv_expansion_unit 	    ::=
     (   local_lookahead
-	| 	java_block
+	| 	parser_actions_unit
 	| 	parenthesized_expansion_unit
 	| 	optional_expansion_unit
 	|   try_catch_expansion_unit
-	| 	[ java_assignment_lhs "=" ] (regular_expression | non_terminal_expansion_unit)
+	|   assigned_expansion_unit
+	|   regular_expression
+	|   non_terminal_expansion_unit
     )
+
+parser_actions_unit     ::=
+    java_block
+
+assigned_expansion_unit ::=
+    java_assignment_lhs "=" (regular_expression | non_terminal_expansion_unit)
 
 local_lookahead 	::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
@@ -344,7 +364,7 @@ exactly_one         ::= // empty string
 
 // Meta rules
 
-meta comma_separated_list ::= <<param>> ( ',' <<param>> )*
+meta comma_separated_list ::= [ <<param>> ( ',' <<param>> )* ]
 
 // Some java grammar
 
@@ -361,9 +381,9 @@ private java_coi_type           ::=    java_name  // FIXME generics
 
 private java_access_modifier    ::=    [ "public" | "protected" | "private" ]
 
-java_expression_list             ::=    <<comma_separated_list java_expression>>
-java_parameter_list              ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
-java_formal_parameter            ::=    java_type ["..."] identifier ("[" "]")*
+java_expression_list            ::=    <<comma_separated_list java_expression>>
+java_parameter_list             ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")*
 
 // externals
 

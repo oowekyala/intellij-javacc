@@ -12,6 +12,9 @@ import com.intellij.psi.TokenType
 
 
 /**
+ * Folds code regions not immediately relevant to the grammar,
+ * eg parser actions.
+ *
  * @author Clément Fournier
  * @since 1.0
  */
@@ -36,11 +39,12 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
             is JccRegularExprProduction      -> "${psi.regexprKind.text}: {..}"
             is JccJavaccOptions              -> "options {..}"
-            is JccJavaBlock                  -> " {..}"
+            is JccJavaBlock                  -> "{..}"
+            is JccParserActionsUnit          -> "{..}"
             is JccLocalLookahead             -> {
-                if (psi.integerLiteral != null && psi.expansionChoices == null && psi.javaExpression == null) {
+                if (psi.integerLiteral != null && psi.expansion == null && psi.javaExpression == null) {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
-                } else "LOOKAHEAD(..)"
+                } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
             }
             else                             -> throw UnsupportedOperationException("Unhandled case")
         }
@@ -48,15 +52,11 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
     companion object {
 
-        private fun <T : Any, R> T?.map(f: (T) -> R?): R? =
-            if (this == null) null
-            else f(this)
-
         private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
             return regexRef.reference.resolve()
-                .map { it as? JccIdentifier }
-                .map { it.parent as? JccNamedRegularExpression }
-                .map { it.regularExpression as? JccLiteralRegularExpression }
+                .let { it as? JccIdentifier }
+                .let { it?.parent as? JccNamedRegularExpression }
+                .let { it?.regularExpression as? JccLiteralRegularExpression }
         }
 
         private val newLines = CharArray(2)
@@ -89,31 +89,13 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 result += FoldingDescriptor(o.node, o.textRange, regexpProductionsGroup)
             }
 
-            fun TextRange.growLeft(delta: Int) = TextRange(startOffset - delta, endOffset)
-
-            private fun trimWhitespace(o: PsiElement, greedyLeft: Boolean = true): TextRange {
+            private fun trimWhitespace(o: PsiElement): TextRange {
                 var range = o.textRange
-                if (o.prevSibling?.node?.elementType == TokenType.WHITE_SPACE) {
-                    val ws = o.prevSibling.node.text
-
-                    range =
-                            if (greedyLeft || !ws.startsWith(" ")) {
-                                range.union(o.prevSibling.textRange) // eat up all whitespace
-                            } else {
-                                // keep a space
-                                range.growLeft(ws.length - 1)
-                            }
-
-
-                }
 
                 if (o.nextSibling?.node?.elementType == TokenType.WHITE_SPACE) {
                     val ws = o.nextSibling.node.text
-                    val fstNewLine = ws.indexOfAny(newLines)
-                    if (fstNewLine < 0 && ws.last() == ' ') {
+                    if (ws.length > 1) {
                         range = range.grown(ws.length - 1)
-                    } else if (fstNewLine > 0) {
-                        range = range.grown(fstNewLine)
                     }
                 }
                 return range
@@ -121,10 +103,10 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
             override fun visitLocalLookahead(o: JccLocalLookahead) {
                 result +=
-                        if (o.integerLiteral != null && o.expansionChoices == null && o.javaExpression == null)
-                            FoldingDescriptor(o.node, trimWhitespace(o, false), currentLookaheadGroup, emptySet(), true)
+                        if (o.integerLiteral != null && o.expansion == null && o.javaExpression == null)
+                            FoldingDescriptor(o.node, trimWhitespace(o), null, emptySet(), true)
                         else
-                            FoldingDescriptor(o.node, trimWhitespace(o, false), currentLookaheadGroup)
+                            FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
             override fun visitJavaccOptions(o: JccJavaccOptions) {
@@ -140,8 +122,9 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-                // don't explore children
+                // don't fold children
             }
+
 
             override fun visitBnfProduction(o: JccBnfProduction) {
                 currentJBlockGroup = FoldingGroup.newGroup("bnf:blocks:" + o.name)
@@ -151,12 +134,17 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 currentLookaheadGroup = null
             }
 
-            override fun visitJavaBlock(javaBlock: JccJavaBlock) {
-                if (javaBlock.textLength > 2) { // not just "{}"
+
+            override fun visitParserActionsUnit(unit: JccParserActionsUnit) = visitJavaBlockLike(unit)
+
+            override fun visitJavaBlock(javaBlock: JccJavaBlock) = visitJavaBlockLike(javaBlock)
+
+            private fun visitJavaBlockLike(elt: JavaccPsiElement) {
+                if (elt.textLength > 2) { // not just "{}"
                     result += if (currentJBlockGroup != null)
-                        FoldingDescriptor(javaBlock.node, trimWhitespace(javaBlock), currentJBlockGroup)
+                        FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
                     else
-                        FoldingDescriptor(javaBlock, trimWhitespace(javaBlock))
+                        FoldingDescriptor(elt, trimWhitespace(elt))
                 }
             }
         }

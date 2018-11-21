@@ -171,7 +171,6 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "native"                    { return JavaTokenType.NATIVE_KEYWORD; }
     "new"                       { return JavaTokenType.NEW_KEYWORD; }
     "package"                   { return JavaTokenType.PACKAGE_KEYWORD; }
-    "short"                     { return JavaTokenType.SHORT_KEYWORD; }
     "super"                     { return JavaTokenType.SUPER_KEYWORD; }
     "switch"                    { return JavaTokenType.SWITCH_KEYWORD; }
     "synchronized"              { return JavaTokenType.SYNCHRONIZED_KEYWORD; }

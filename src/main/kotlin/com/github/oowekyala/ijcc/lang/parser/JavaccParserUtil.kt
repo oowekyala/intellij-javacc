@@ -55,11 +55,13 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
     }
 
     @JvmStatic
-    fun parseJExpression(builder: PsiBuilder, level: Int): Boolean =
-        builder.javaContext {
+    fun parseJExpression(builder: PsiBuilder, level: Int): Boolean {
+        if (builder.tokenType == JCC_RPARENTH) return false // when we're in a parameter list
+        return builder.javaContext {
             JavaParser.INSTANCE.expressionParser.parse(it)
             true
         }
+    }
 
     //FIXME
     @JvmStatic

@@ -4,7 +4,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.reference.JccNonTerminalReference
 import com.intellij.psi.PsiReference
 
-interface JccNonTerminalExpansionUnit : JavaccPsiElement {
+interface JccNonTerminalExpansionUnit : JavaccPsiElement, JccExpansionUnit {
 
     val identifier: JccIdentifier
 

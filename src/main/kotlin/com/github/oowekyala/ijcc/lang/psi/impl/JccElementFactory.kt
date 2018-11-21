@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.light.JccLightIdentifier
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -18,7 +17,8 @@ import com.intellij.psi.util.PsiTreeUtil
  */
 
 object JccElementFactory {
-    private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? = PsiTreeUtil.findChildOfType(this, clazz)
+    private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
+        PsiTreeUtil.findChildOfType(this, clazz)
 
     private val Project.psiManager
         get() = PsiManager.getInstance(this)
@@ -64,6 +64,25 @@ object JccElementFactory {
         val file = createFile(project, fileText)
 
         return file.nonTerminalProductions[0].javaBlock
+    }
+
+
+    fun createAssignmentLhs(project: Project, text: String): JccJavaAssignmentLhs {
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            void foo(): {} {
+                $text = hello()
+            }
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions[0]
+            .let { it as? JccBnfProduction }
+            ?.expansion
+            .let { it as? JccAssignedExpansionUnit }
+            .let { it as JccJavaAssignmentLhs }
     }
 
 

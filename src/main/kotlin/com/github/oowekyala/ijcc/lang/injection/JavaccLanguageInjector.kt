@@ -60,14 +60,14 @@ object JavaccLanguageInjector : MultiHostInjector {
         if (context.javaBlock != null) {
             // Add prelude declarations
             registrar.addPlace(
-                "class Dummy ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
+                "class Dummy{ ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
                 null,
                 context.javaBlock,
                 javaBlockInsides(context.javaBlock)
             )
 
-            if (context.expansionChoices != null)
-                JavaBlocksVisitor(registrar).visitExpansionChoices(context.expansionChoices!!)
+            if (context.expansion != null)
+                BnfInjectionVisitor(registrar).visitExpansion(context.expansion!!)
 
             registrar.addPlace(null, "}}", context.javaBlock, TextRange.EMPTY_RANGE)
         }
@@ -76,27 +76,39 @@ object JavaccLanguageInjector : MultiHostInjector {
 
     fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = relativeRange(javaBlock, 1, 1) // remove braces
 
-    private class JavaBlocksVisitor(private val registrar: MultiHostRegistrar) : JccVisitor() {
+    private class BnfInjectionVisitor(private val registrar: MultiHostRegistrar) : JccVisitor() {
+        companion object {
+            private var i = 0
+            fun freshName() = "ident${i++}"
+        }
 
         val endBlockBuilder = StringBuilder()
+
         override fun visitElement(element: PsiElement?) {
             for (child in element!!.children) {
                 child.accept(this)
             }
         }
 
-        override fun visitJavaExpression(expr: JccJavaExpression) {
-            if (expr.parent is JccLocalLookahead) {
-                // then the block represents a boolean expression
-                registrar.addPlace(
-                    "if (",
-                    ");", // FIXME
-                    expr,
-                    relativeRange(expr)
-                )
+        override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
 
-                //                endBlockBuilder.append('}')
-            }
+            registrar.addPlace(null, "= null;", o, relativeRange(o))
+
+        }
+
+        override fun visitJavaExpression(expr: JccJavaExpression) {
+//            if (expr.parent is JccLocalLookahead) {
+//                 then the block represents a boolean expression
+//                registrar.addPlace(
+//                    "if (",
+//                    ");", // FIXME
+//                    expr,
+//                    relativeRange(expr)
+//                )
+//                                endBlockBuilder.append('}')
+//            } else {
+                registrar.addPlace("\nObject ${freshName()} = ", ";", expr, relativeRange(expr))
+//            }
         }
 
         override fun visitJavaBlock(block: JccJavaBlock) {
