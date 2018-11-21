@@ -93,7 +93,7 @@ object JavaccLanguageInjector : MultiHostInjector {
 
         override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
 
-            registrar.addPlace(null, "= null;", o, relativeRange(o))
+            registrar.addPlace(null, "= getToken(0);", o, relativeRange(o))
 
         }
 

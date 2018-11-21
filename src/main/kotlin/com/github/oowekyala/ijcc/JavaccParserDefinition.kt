@@ -22,7 +22,7 @@ import com.intellij.psi.tree.TokenSet
  *
  * @author Clément Fournier
  */
-class JavaccParserDefinition : ParserDefinition {
+object JavaccParserDefinition : ParserDefinition {
 
     override fun createLexer(project: Project): Lexer = JavaccLexerAdapter()
 

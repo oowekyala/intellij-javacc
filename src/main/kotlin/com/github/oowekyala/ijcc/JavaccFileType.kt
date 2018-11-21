@@ -15,11 +15,11 @@ import javax.swing.Icon
 object JavaccFileType : LanguageFileType(JavaccLanguage) {
     override fun getIcon(): Icon = JavaccIcons.JAVACC_FILE
 
-    override fun getName(): String = "JavaCC grammar file"
+    override fun getName(): String = "JavaCC grammar"
 
     override fun getDefaultExtension(): String = "jj"
 
-    override fun getDescription(): String = "JavaCC grammar file"
+    override fun getDescription(): String = "JavaCC grammar"
 }
 
 /** FileTypeFactory extension point. */
