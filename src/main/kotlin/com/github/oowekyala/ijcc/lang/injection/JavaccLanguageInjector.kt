@@ -37,8 +37,13 @@ object JavaccLanguageInjector : MultiHostInjector {
     private fun injectIntoJavacode(registrar: MultiHostRegistrar, context: JccJavacodeProduction) {
         registrar.startInjecting(JavaLanguage.INSTANCE)
 
-        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
-        registrar.addPlace(null, "}", context.javaBlock, relativeRange(context.javaBlock))
+        //        registrar.addPlace("", null, context.header, relativeRange(context.header))
+        registrar.addPlace(
+            "class Dummy {${context.header?.toJavaMethodHeader()}",
+            "}",
+            context.javaBlock,
+            relativeRange(context.javaBlock)
+        )
         registrar.doneInjecting()
     }
 
@@ -47,7 +52,7 @@ object JavaccLanguageInjector : MultiHostInjector {
         registrar.startInjecting(JavaLanguage.INSTANCE, "java")
 
         // TODO add package + imports + methods from the ACU
-        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
+        //        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
 
         //  TODO get ast class prefix + package
         val jjtThisTypeName = "AST${context.name}"
@@ -55,7 +60,7 @@ object JavaccLanguageInjector : MultiHostInjector {
         if (context.javaBlock != null) {
             // Add prelude declarations
             registrar.addPlace(
-                "{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
+                "class Dummy ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
                 null,
                 context.javaBlock,
                 javaBlockInsides(context.javaBlock)
@@ -90,7 +95,7 @@ object JavaccLanguageInjector : MultiHostInjector {
                     relativeRange(expr)
                 )
 
-//                endBlockBuilder.append('}')
+                //                endBlockBuilder.append('}')
             }
         }
 

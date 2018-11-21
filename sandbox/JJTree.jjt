@@ -49,8 +49,7 @@ public class JJTreeParser {
   }
 
   void jjtreeCloseNodeScope(Node n)
-  {
-	((JJTreeNode)n).setLastToken(getToken(0));
+  { ((JJTreeNode)n).setLastToken(getToken(0));
   }
 
 

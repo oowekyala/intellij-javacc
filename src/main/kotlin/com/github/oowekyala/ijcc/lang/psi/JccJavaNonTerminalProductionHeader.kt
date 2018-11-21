@@ -1,4 +1,3 @@
-// This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
@@ -17,6 +16,9 @@ interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageIn
     val javaThrowsList: JccJavaThrowsList?
 
     override fun getNameIdentifier(): JccIdentifier
+
+    @JvmDefault
+    fun toJavaMethodHeader(): String = text
 
     @JvmDefault
     override fun isValidHost(): Boolean = true

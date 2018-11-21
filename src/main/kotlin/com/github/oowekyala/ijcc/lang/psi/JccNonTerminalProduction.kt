@@ -11,11 +11,11 @@ package com.github.oowekyala.ijcc.lang.psi
 interface JccNonTerminalProduction : JccIdentifierOwner {
 
     @JvmDefault
-    override fun getNameIdentifier(): JccIdentifier? = header.nameIdentifier
+    override fun getNameIdentifier(): JccIdentifier? = header?.nameIdentifier
 
     val javaBlock: JccJavaBlock
 
-    val header: JccJavaNonTerminalProductionHeader
+    val header: JccJavaNonTerminalProductionHeader?
 
     @JvmDefault
     fun isBnf() = this is JccBnfProduction

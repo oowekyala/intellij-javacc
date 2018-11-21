@@ -69,8 +69,6 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
                 })
             }
         }
-
-
     }
 
 }
