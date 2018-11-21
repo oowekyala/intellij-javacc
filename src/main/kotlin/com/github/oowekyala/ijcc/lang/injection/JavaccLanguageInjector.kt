@@ -68,7 +68,9 @@ object JavaccLanguageInjector : MultiHostInjector {
             if (context.expansion != null)
                 BnfInjectionVisitor(registrar).visitExpansion(context.expansion!!)
 
-            registrar.addPlace(null, "}}", context.javaBlock, TextRange.EMPTY_RANGE)
+            // skipping lines is important, otherwise the smarkey will jump to the closing brace, which is physically
+            // represented at the top of the injection (production header)
+            registrar.addPlace(null, "\n\n\n}}", context.javaBlock, TextRange.EMPTY_RANGE)
             registrar.doneInjecting()
         }
     }

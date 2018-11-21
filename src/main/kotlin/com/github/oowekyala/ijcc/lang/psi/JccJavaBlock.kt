@@ -18,4 +18,6 @@ interface JccJavaBlock : JavaccPsiElement, PsiLanguageInjectionHost {
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
         return LiteralTextEscaper.createSimple(this)
     }
+
+
 }
