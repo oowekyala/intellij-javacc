@@ -49,29 +49,28 @@ object JavaccLanguageInjector : MultiHostInjector {
 
 
     private fun injectIntoBnf(registrar: MultiHostRegistrar, context: JccBnfProduction) {
-        registrar.startInjecting(JavaLanguage.INSTANCE, "java")
-
-        // TODO add package + imports + methods from the ACU
-        //        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
-
-        //  TODO get ast class prefix + package
-        val jjtThisTypeName = "AST${context.name}"
-
         if (context.javaBlock != null) {
+            registrar.startInjecting(JavaLanguage.INSTANCE, "java")
+
+            // TODO add package + imports + methods from the ACU
+            //        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
+
+            //  TODO get ast class prefix + package
+            val jjtThisTypeName = "AST${context.name}"
             // Add prelude declarations
             registrar.addPlace(
-                "class Dummy{ ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();",
-                null,
+                "class Dummy{ ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();\n",
+                "\n",
                 context.javaBlock,
-                javaBlockInsides(context.javaBlock)
+                relativeRange(context.javaBlock)
             )
 
             if (context.expansion != null)
                 BnfInjectionVisitor(registrar).visitExpansion(context.expansion!!)
 
             registrar.addPlace(null, "}}", context.javaBlock, TextRange.EMPTY_RANGE)
+            registrar.doneInjecting()
         }
-        registrar.doneInjecting()
     }
 
     fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = relativeRange(javaBlock, 1, 1) // remove braces
@@ -97,22 +96,22 @@ object JavaccLanguageInjector : MultiHostInjector {
         }
 
         override fun visitJavaExpression(expr: JccJavaExpression) {
-//            if (expr.parent is JccLocalLookahead) {
-//                 then the block represents a boolean expression
-//                registrar.addPlace(
-//                    "if (",
-//                    ");", // FIXME
-//                    expr,
-//                    relativeRange(expr)
-//                )
-//                                endBlockBuilder.append('}')
-//            } else {
-                registrar.addPlace("\nObject ${freshName()} = ", ";", expr, relativeRange(expr))
-//            }
+            //            if (expr.parent is JccLocalLookahead) {
+            //                 then the block represents a boolean expression
+            //                registrar.addPlace(
+            //                    "if (",
+            //                    ");", // FIXME
+            //                    expr,
+            //                    relativeRange(expr)
+            //                )
+            //                                endBlockBuilder.append('}')
+            //            } else {
+            registrar.addPlace("\nObject ${freshName()} = ", ";", expr, relativeRange(expr))
+            //            }
         }
 
         override fun visitJavaBlock(block: JccJavaBlock) {
-            registrar.addPlace(null, null, block, relativeRange(block))
+            registrar.addPlace("\n", "\n", block, relativeRange(block))
         }
     }
 }

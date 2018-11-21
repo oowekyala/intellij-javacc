@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.highlight
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.JavaccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
 import com.intellij.ide.highlighter.JavaHighlightingColors
@@ -26,9 +25,13 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
     COMMA(JavaHighlightingColors.COMMA),
     SEMICOLON(JavaHighlightingColors.JAVA_SEMICOLON),
     BRACKETS(JavaHighlightingColors.BRACKETS),
-    OPERATOR(JavaHighlightingColors.OPERATION_SIGN),
+    OPERATOR_SIGN(JavaHighlightingColors.OPERATION_SIGN),
+    BRACES(JavaHighlightingColors.BRACES),
 
     STRING(JavaHighlightingColors.STRING),
+    // used for strings that match a token
+    STRING_TOKEN(DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL),
+
     CHARACTER(JavaHighlightingColors.STRING),
     NUMBER(JavaHighlightingColors.NUMBER),
 
@@ -98,7 +101,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
                 JCC_VOID_KEYWORD
             )
 
-            OPERATOR(
+            OPERATOR_SIGN(
                 JCC_GT,
                 JCC_LT,
                 JCC_TILDE,
@@ -120,15 +123,9 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
             SEMICOLON(JCC_SEMICOLON)
             COMMA(JCC_COMMA)
             DOT(JCC_DOT)
-            PARENTHESES(
-                JCC_LPARENTH,
-                JCC_RPARENTH
-            )
-            BRACKETS(
-                JCC_LBRACKET,
-                JCC_RBRACKET
-            )
-
+            PARENTHESES(JCC_LPARENTH, JCC_RPARENTH)
+            BRACKETS(JCC_LBRACKET, JCC_RBRACKET)
+            BRACES(JCC_LBRACE, JCC_RBRACE)
 
             STRING(JCC_STRING_LITERAL)
             CHARACTER(JCC_CHARACTER_LITERAL)

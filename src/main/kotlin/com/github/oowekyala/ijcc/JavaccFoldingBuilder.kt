@@ -4,9 +4,11 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -26,8 +28,18 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         document: Document,
         quick: Boolean
     ) {
-        root.accept(FolderVisitor(descriptors))
+        val tmp = mutableListOf<FoldingDescriptor>()
+
+        root.accept(FolderVisitor(tmp))
+
+        val (proper, improper) = tmp.partition { it.range.isProperTextRange() }
+
+        improper.forEach { LOG.error("Improper text range for ${it.element.elementType}: ${it.element.text}") }
+        descriptors.clear()
+        descriptors.addAll(proper)
     }
+
+    private fun TextRange.isProperTextRange() = startOffset in 0..endOffset
 
     override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = true
 
@@ -51,6 +63,9 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     }
 
     companion object {
+
+        private val LOG = Logger.getInstance(JavaccFoldingBuilder::class.java)
+
 
         private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
             return regexRef.reference.resolve()
@@ -92,11 +107,10 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             private fun trimWhitespace(o: PsiElement): TextRange {
                 var range = o.textRange
 
-                if (o.nextSibling?.node?.elementType == TokenType.WHITE_SPACE) {
-                    val ws = o.nextSibling.node.text
-                    if (ws.length > 1) {
-                        range = range.grown(ws.length - 1)
-                    }
+                if (o.nextSibling?.node?.elementType == TokenType.WHITE_SPACE
+                    && o.nextSibling.textLength > 1
+                ) {
+                    range = UnfairTextRange(range.startOffset, range.endOffset + o.nextSibling.textLength - 1)
                 }
                 return range
             }

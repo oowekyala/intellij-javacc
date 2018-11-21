@@ -28,7 +28,6 @@ sealed class JccScopeProcessor(private val searchedName: String, private val isT
         return true
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun result(): JccIdentifier? = foundIdentifier
 }
 

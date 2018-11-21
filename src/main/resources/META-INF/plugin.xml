@@ -24,7 +24,8 @@
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.highlight.JavaccColorSettingsPage"/>
 
         <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.reference.JccRenameProcessor"/>
-        <lang.namesValidator language="JavaCC" implementationClass="com.github.oowekyala.ijcc.reference.JccNamesValidator"/>
+        <lang.namesValidator language="JavaCC"
+                             implementationClass="com.github.oowekyala.ijcc.reference.JccNamesValidator"/>
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
@@ -38,8 +39,10 @@
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
 
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression"
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
-                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifierManipulator"/>
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
 
         <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>

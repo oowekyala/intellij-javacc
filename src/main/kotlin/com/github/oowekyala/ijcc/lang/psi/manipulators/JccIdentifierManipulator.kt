@@ -1,5 +1,6 @@
-package com.github.oowekyala.ijcc.lang.psi
+package com.github.oowekyala.ijcc.lang.psi.manipulators
 
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.AbstractElementManipulator

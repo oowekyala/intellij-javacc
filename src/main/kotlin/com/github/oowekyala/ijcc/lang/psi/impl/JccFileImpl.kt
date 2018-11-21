@@ -3,8 +3,10 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.reference.JccStringTokenReferenceProcessor
 import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
@@ -12,8 +14,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.tree.IFileElementType
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.stream
+import java.util.stream.Stream
 import kotlin.streams.toList
 
 
@@ -34,10 +36,22 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         get() = findChildrenByClass(JccNonTerminalProduction::class.java).toList()
 
 
-    val globalTerminalSpecs: List<JccNamedRegularExpression>
-        get() =
-            findChildrenByClass(JccRegularExprProduction::class.java).stream()
-                .flatMap { PsiTreeUtil.findChildrenOfType(it, JccNamedRegularExpression::class.java).stream() }.toList()
+    /**
+     * Named regexes of the TOKEN kind defined globally in the file.
+     */
+    val globalNamedTokens: List<JccNamedRegularExpression>
+        get() = globalTokensStream().map { it.regularExpression }.filterMapAs<JccNamedRegularExpression>().toList()
+
+    /**
+     * Regexpr specs of the TOKEN kind defined globally in the file.
+     */
+    val globalTokenSpecs: List<JccRegexprSpec>
+        get() = globalTokensStream().toList()
+
+    private fun globalTokensStream(): Stream<JccRegexprSpec> =
+        findChildrenByClass(JccRegularExprProduction::class.java).stream()
+            .filter { it.regexprKind.text == "TOKEN" }
+            .flatMap { it.regexprSpecList.stream() }
 
 
     override fun processDeclarations(
@@ -46,12 +60,19 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         lastParent: PsiElement?,
         place: PsiElement
     ): Boolean {
-        when (processor) {
-            is NonTerminalScopeProcessor -> nonTerminalProductions.forEach { processor.execute(it, state) }
-            is TerminalScopeProcessor    -> globalTerminalSpecs.forEach { processor.execute(it, state) }
-            else                         -> return true
+        return when (processor) {
+            is NonTerminalScopeProcessor        -> executeUntilFound(nonTerminalProductions, state, processor)
+            is TerminalScopeProcessor           -> executeUntilFound(globalNamedTokens, state, processor)
+            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs.asReversed(), state, processor)
+            else                                -> true
         }
-        return false
+    }
+
+    private fun executeUntilFound(list: List<PsiElement>, state: ResolveState, processor: PsiScopeProcessor): Boolean {
+        for (spec in list) {
+            if (!processor.execute(spec, state)) return false
+        }
+        return true
     }
 
 

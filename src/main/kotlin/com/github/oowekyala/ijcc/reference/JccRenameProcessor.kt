@@ -45,7 +45,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
 
         allRenames.forEach { key, value ->
             val file = key.containingFile as JccFileImpl
-            if (isTerminal(key) == true) processCollisions(key, value, file.globalTerminalSpecs, result) {
+            if (isTerminal(key) == true) processCollisions(key, value, file.globalNamedTokens, result) {
                 "A terminal named \'$it\' is already defined in this file"
             } else processCollisions(key, value, file.nonTerminalProductions, result) {
                 "A production named \'$it\' is already defined in this file"

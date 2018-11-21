@@ -91,7 +91,7 @@ task overrideDefaultPsi {
         }.collect()
 
 
-        println "Detected generated PSI files overridden by sources in the main source tree:"
+        println "Detected ${genPsiFileDups.size()} generated PSI files overridden by sources in the main source tree:"
         genPsiFileDups.sort().each { println it.name }
         delete genPsiFileDups
         println "Deleted.\n"

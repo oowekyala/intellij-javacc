@@ -114,7 +114,8 @@
 
   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
 
-  extends(".*regular_expression.*|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
+  extends("regular_expression_.+|.+_regular_expression|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
+  implements("regular_expression_.+|.+_regular_expression|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
   implements("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
 
   extends("expansion_(alternative|sequence|unit)")=expansion
@@ -235,9 +236,9 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    regular_expression [ java_block ] [ ":" identifier ] {
+    priv_regular_expression [ java_block ] [ ":" identifier ] {
         recoverWhile=regexp_spec_recover
-        methods=[lexicalState="identifier"]
+        methods=[lexicalState="identifier" named_regular_expression=""]
     }
 
 private regexp_spec_recover ::=    !("|" | "}")
@@ -263,7 +264,7 @@ private priv_expansion_unit 	    ::=
 	| 	optional_expansion_unit
 	|   try_catch_expansion_unit
 	|   assigned_expansion_unit
-	|   regular_expression
+	|   priv_regular_expression
 	|   non_terminal_expansion_unit
     )
 
@@ -271,7 +272,7 @@ parser_actions_unit     ::=
     java_block
 
 assigned_expansion_unit ::=
-    java_assignment_lhs "=" (regular_expression | non_terminal_expansion_unit)
+    java_assignment_lhs "=" (priv_regular_expression | non_terminal_expansion_unit)
 
 local_lookahead 	::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
@@ -301,7 +302,9 @@ try_catch_expansion_unit        ::=
 
 /* Regular expressions */
 
-regular_expression 	            ::=
+fake regular_expression         ::=
+
+private priv_regular_expression	::=
         literal_regular_expression
     |   eof_regular_expression
 	|   regular_expression_reference
@@ -315,24 +318,24 @@ literal_regular_expression      ::=
 eof_regular_expression          ::=
 	"<" "EOF" ">"
 
-inline_regular_expression        ::=
+inline_regular_expression       ::=
 	"<" complex_regexp_choices ">"
 
 named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regexp_choices ">"
 
 
-private complex_regexp_choices 	        ::=
+private complex_regexp_choices 	::=
         regexp_alternative
     |   regexp_sequence
 
 regexp_alternative 	            ::=
     regexp_sequence ( "|" regexp_sequence )+
 
-regexp_sequence         ::=
+regexp_sequence                 ::=
     regexp_unit+ {pin('.*')=1}
 
-regexp_unit 	        ::=
+regexp_unit 	                ::=
         literal_regular_expression
 	| 	regular_expression_reference
 	| 	character_list
@@ -356,11 +359,11 @@ private chardescriptor_recover  ::= !("]" | ",")
 
 // Occurrence indicators
 
-one_or_more         ::= "+"
-zero_or_more        ::= "*"
-zero_or_one         ::= "?"
-repetition_range    ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}" {pin=1}
-exactly_one         ::= // empty string
+one_or_more                     ::= "+"
+zero_or_more                    ::= "*"
+zero_or_one                     ::= "?"
+repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}" {pin=1}
+exactly_one                     ::= // empty string, to be placed only at the very end of an alternation
 
 // Meta rules
 
