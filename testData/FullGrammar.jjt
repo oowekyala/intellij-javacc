@@ -1,14 +1,21 @@
+options {
+    LOOKAHEAD = 4;
+    MULTI = true;
+}
+
 PARSER_BEGIN(JJTreeParser)
 
-package org.javacc.jjtree;
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
 
-public class JJTreeParser {
+      void jjtreeOpenNodeScope(Node n) {
+        ((JJTreeNode)n).setFirstToken(getToken(1));
+      }
 
-  void jjtreeOpenNodeScope(Node n) {
-	((JJTreeNode)n).setFirstToken(getToken(1));
-  }
-
-}
+    }
 
 PARSER_END(JJTreeParser)
 
@@ -39,24 +46,9 @@ void option_binding() #OptionBinding :
 {
   ( o=<IDENTIFIER> | o="LOOKAHEAD" | o="IGNORE_CASE" | o="static" )
   "="
-  (
-     v=IntegerLiteral()
-        {
-	  JJTreeOptions.setInputFileOption(o, v, o.image, new Integer(v.image));
-	  jjtThis.initialize(o.image, v.image);
-	}
+  (  v=IntegerLiteral()
    | v=BooleanLiteral()
-        {
-	  JJTreeOptions.setInputFileOption(o, v, o.image,
-				     Boolean.valueOf(v.image));
-	  jjtThis.initialize(o.image, v.image);
-	}
    | v=StringLiteral()
-        {
-	  String vs = TokenUtils.remove_escapes_and_quotes(v, v.image);
-	  JJTreeOptions.setInputFileOption(o, v, o.image, (Object)vs);
-	  jjtThis.initialize(o.image, vs);
-	}
   ) ";"
 }
 

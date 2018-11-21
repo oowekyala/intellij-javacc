@@ -9,12 +9,9 @@ import com.intellij.testFramework.ParsingTestCase
  */
 class FullParserTest : ParsingTestCase("", "jjt", JavaccParserDefinition) {
 
-    fun testFullGrammar() {
-        doTest(true)
-    }
+    fun testFullGrammar() = doTest(true)
 
     override fun getTestDataPath(): String = "testData"
-
 
     override fun skipSpaces(): Boolean = false
 

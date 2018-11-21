@@ -10,8 +10,9 @@ import com.intellij.psi.PsiReference
 
 class JccRegularExpressionReferenceImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegularExpressionReference {
 
-    override val identifier: JccIdentifier
-        get() = findNotNullChildByClass(JccIdentifier::class.java)
+    override fun getNameIdentifier(): JccIdentifier = findNotNullChildByClass(JccIdentifier::class.java)
+
+    override fun getName(): String? = super<JccRegularExpressionReference>.getName()
 
     fun accept(visitor: JccVisitor) {
         visitor.visitRegularExpressionReference(this)

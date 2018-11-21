@@ -9,7 +9,7 @@ import com.intellij.psi.util.strictParents
  * A literal regular expression. Holds a reference only if it's not in a regexp spec.
  * TODO this could be improved to match tokens declared further up
  */
-interface JccLiteralRegularExpression : JccRegularExpression, JccRegexpUnit {
+interface JccLiteralRegularExpression : JccRegexpUnit {
 
     val stringLiteral: PsiElement
 

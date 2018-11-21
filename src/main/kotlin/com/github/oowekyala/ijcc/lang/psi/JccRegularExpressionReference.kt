@@ -4,12 +4,12 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.reference.JccTerminalReference
 import com.intellij.psi.PsiReference
 
-interface JccRegularExpressionReference : JavaccPsiElement, JccRegularExpression {
+interface JccRegularExpressionReference : JccRegexpUnit, JccIdentifierOwner {
 
-    val identifier: JccIdentifier
+    override fun getNameIdentifier(): JccIdentifier
 
     @JvmDefault
-    override fun getReference(): PsiReference = JccTerminalReference(identifier)
+    override fun getReference(): PsiReference = JccTerminalReference(nameIdentifier)
 
 
 }

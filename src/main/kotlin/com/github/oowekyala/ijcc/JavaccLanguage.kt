@@ -8,4 +8,7 @@ import com.intellij.lang.Language
  * @author Clément Fournier
  * @since 1.0
  */
-object JavaccLanguage : Language("JavaCC")
+object JavaccLanguage : Language("JavaCC") {
+
+    override fun isCaseSensitive(): Boolean = true
+}

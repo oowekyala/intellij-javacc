@@ -11,8 +11,9 @@ import com.intellij.psi.PsiReference
 
 class JccNonTerminalExpansionUnitImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccNonTerminalExpansionUnit {
 
-    override val identifier: JccIdentifier
-        get() = findNotNullChildByClass(JccIdentifier::class.java)
+    override fun getNameIdentifier(): JccIdentifier = findNotNullChildByClass(JccIdentifier::class.java)
+
+    override fun getName(): String? = super<JccNonTerminalExpansionUnit>.getName()
 
     override val javaExpressionList: JccJavaExpressionList
         get() = findNotNullChildByClass(JccJavaExpressionList::class.java)

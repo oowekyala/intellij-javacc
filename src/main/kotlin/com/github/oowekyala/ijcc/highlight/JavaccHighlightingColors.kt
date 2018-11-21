@@ -18,7 +18,10 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
     JAVA_KEYWORD(JavaHighlightingColors.KEYWORD),
 
     /** For [JccJjtreeNodeDescriptor]. */
-    JJTREE_DECORATION(JavaHighlightingColors.ANNOTATION_NAME_ATTRIBUTES),
+    JJTREE_DECORATION(DefaultLanguageHighlighterColors.INTERFACE_NAME),
+
+    NONTERMINAL_DECLARATION(DefaultLanguageHighlighterColors.FUNCTION_DECLARATION),
+    NONTERMINAL_REFERENCE(DefaultLanguageHighlighterColors.FUNCTION_CALL),
 
     PARENTHESES(JavaHighlightingColors.PARENTHESES),
     DOT(JavaHighlightingColors.DOT),
@@ -30,7 +33,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
 
     STRING(JavaHighlightingColors.STRING),
     // used for strings that match a token
-    STRING_TOKEN(DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL),
+    TOKEN(DefaultLanguageHighlighterColors.INSTANCE_FIELD),
 
     CHARACTER(JavaHighlightingColors.STRING),
     NUMBER(JavaHighlightingColors.NUMBER),
@@ -41,7 +44,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
     BAD_CHARACTER(JavaHighlightingColors.INVALID_STRING_ESCAPE);
 
     val keys: TextAttributesKey =
-        TextAttributesKey.createTextAttributesKey("JavaCC.$name", base)
+            TextAttributesKey.createTextAttributesKey("JavaCC.$name", base)
 
     val displayName = name.removePrefix("JavaCC.")
         .replace('_', ' ')
@@ -56,11 +59,13 @@ enum class JavaccHighlightingColors(base: TextAttributesKey) {
 
         init {
             val keys =
-                HashMap<IElementType, TextAttributesKey>()
+                    HashMap<IElementType, TextAttributesKey>()
 
             operator fun JavaccHighlightingColors.invoke(vararg tokenType: IElementType) {
                 tokenType.forEach { keys[it] = this.keys }
             }
+
+            // Each token type for javacc tokens and for java tokens must fall into one of those categories
 
             LINE_COMMENT(JCC_END_OF_LINE_COMMENT)
             C_COMMENT(JCC_C_STYLE_COMMENT, JCC_DOC_COMMENT)
