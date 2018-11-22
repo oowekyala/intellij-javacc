@@ -8,7 +8,7 @@
 ++ Fix bugs with lookahead not expanding anymore
 * Rebuild the structure view
 * Add quick doc for options and productions
-* Highlight scope of jjtree decoration and parser action
+++ Highlight scope of jjtree decoration and parser action
 
 # Things not necessary before release
 

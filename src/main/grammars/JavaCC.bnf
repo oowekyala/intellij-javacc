@@ -282,7 +282,7 @@ non_terminal_expansion_unit     ::=
     identifier "(" java_expression_list ")"
 
 parenthesized_expansion_unit    ::=
-    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one | exactly_one ]  {pin=1}
+    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]  {pin=1}
 
 optional_expansion_unit         ::=
     "[" expansion_choices "]"
@@ -336,7 +336,7 @@ regexp_unit 	                ::=
 	| 	parenthesized_regexp_unit
 
 parenthesized_regexp_unit       ::=
-    "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range | exactly_one ]
+    "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
 
 regular_expression_reference    ::=
 	"<" identifier ">"
@@ -356,7 +356,6 @@ one_or_more                     ::= "+"
 zero_or_more                    ::= "*"
 zero_or_one                     ::= "?"
 repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}" {pin=1}
-exactly_one                     ::= // empty string, to be placed only at the very end of an alternation
 
 // Meta and fake rules
 

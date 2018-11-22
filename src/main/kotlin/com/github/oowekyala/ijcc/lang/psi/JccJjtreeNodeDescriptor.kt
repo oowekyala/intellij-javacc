@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 
 /**
  * Node descriptor.
@@ -24,11 +25,34 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
         }
 
     /**
-     * Returns true if this is a void identifier.
+     * Gets the production header of the production to which this
+     * descriptor is applied. If null then [expansionUnit] won't
+     * return null, bc this is applied to a single expansion unit.
+     */
+    @JvmDefault
+    val productionHeader: JccJavaNonTerminalProductionHeader?
+        get() = prevSiblingNonWhitespace() as? JccJavaNonTerminalProductionHeader
+
+    /**
+     * Gets the expansion unit that is the scope of this node.
+     * If null then [productionHeader] won't return null, bc this
+     * is applied to a whole production.
+     */
+    @JvmDefault
+    val expansionUnit: JccExpansionUnit?
+        get() = prevSiblingNonWhitespace() as? JccExpansionUnit
+
+    private fun prevSiblingNonWhitespace(): PsiElement =
+            if (prevSibling.node.elementType == TokenType.WHITE_SPACE)
+                prevSibling.prevSibling
+            else prevSibling
+
+    /**
+     * Returns true if this is a "#void" annotation.
      */
     @JvmDefault
     val isVoid: Boolean
-        get() = children[1].node.elementType === JavaccTypes.JCC_VOID_KEYWORD
+        get() = nameIdentifier == null
 
     @JvmDefault
     val isIndefinite: Boolean
