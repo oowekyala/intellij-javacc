@@ -7,9 +7,9 @@ import com.intellij.psi.PsiNamedElement
 
 interface JccIdentifier : JavaccPsiElement, PsiNamedElement {
 
-    override fun getName(): String = text
+    override fun getName(): String
 
+    @JvmDefault
     override fun setName(name: String): PsiElement = replace(JccElementFactory.createIdentifier(project, name))
-
 
 }

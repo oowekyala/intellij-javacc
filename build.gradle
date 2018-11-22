@@ -39,37 +39,18 @@ sourceSets {
 
 
 task generateParser(type: GenerateParser) {
-    // source bnf file
     source = "src/main/grammars/JavaCC.bnf"
-
-    // optional, task-specific root for the generated files. Default: none
     targetRoot = "${buildDir}/gen"
-
-    // path to a parser file, relative to the targetRoot  
     pathToParser = '/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java'
-
-    // path to a directory with generated psi files, relative to the targetRoot 
     pathToPsiRoot = '/com/github/oowekyala/ijcc/lang/psi'
-
-    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
     purgeOldFiles = true
 }
 
 
 task generateLexer(type: GenerateLexer) {
-    // source flex file
     source = "src/main/grammars/JavaCC.flex"
-
-    // target directory for lexer
     targetDir = "${buildDir}/gen/com/github/oowekyala/ijcc/lang/lexer"
-
-    // target classname, target file will be targetDir/targetClass.java
     targetClass = "JavaccLexer"
-
-    // optional, path to the task-specific skeleton file. Default: none
-    // skeleton = '/some/specific/skeleton'
-
-    // if set, plugin will remove a lexer output file before generating new one. Default: false
     purgeOldFiles = true
 }
 

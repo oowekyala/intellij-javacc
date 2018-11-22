@@ -30,7 +30,7 @@ interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageIn
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-        this.replace(JccElementFactory.createJavaNonterminalHeader(project, text)) as PsiLanguageInjectionHost
+            this.replace(JccElementFactory.createJavaNonterminalHeader(project, text)) as PsiLanguageInjectionHost
 
 
 }

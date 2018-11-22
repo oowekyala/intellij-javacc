@@ -13,9 +13,6 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
  */
 interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
 
-    @JvmDefault
-    override fun getName(): String? = super<JccIdentifierOwner>.getName()
-
     /**
      * Returns the expression if one was specified
      */
@@ -23,7 +20,7 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
     val descriptorExpr: JccJjtreeNodeDescriptorExpr?
         get() = when (lastChild) {
             is JccJjtreeNodeDescriptorExpr -> lastChild as JccJjtreeNodeDescriptorExpr
-            else -> null
+            else                           -> null
         }
 
     /**

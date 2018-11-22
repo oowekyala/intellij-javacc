@@ -52,7 +52,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].nameIdentifier!!
+        return file.nonTerminalProductions[0].nameIdentifier
     }
 
 
@@ -110,7 +110,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].header!!
+        return file.nonTerminalProductions[0].header
     }
 
     fun createAcu(project: Project, text: String): JccJavaCompilationUnit {

@@ -68,7 +68,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
 
         private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
-            return regexRef.reference.resolve()
+            return regexRef.reference?.resolve()
                 .let { it as? JccIdentifier }
                 .let { it?.parent as? JccNamedRegularExpression }
                 .let { it?.regularExpression as? JccLiteralRegularExpression }

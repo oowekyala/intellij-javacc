@@ -15,7 +15,10 @@
   psiPackage="com.github.oowekyala.ijcc.lang.psi"
   psiImplPackage="com.github.oowekyala.ijcc.lang.psi.impl"
 
-  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
+  // not on the classpath...
+  //  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
+
+  generate=[java="8"]
 
   parserImports = [
   'static com.intellij.psi.JavaTokenType.*'
@@ -96,31 +99,23 @@
   ]
 
   implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
-  methods("(bnf|javacode)_production") = [
-       header="java_non_terminal_production_header"
-  ]
 
-  implements("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression")='com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner'
+  extends("(bnf|javacode)_production") = non_terminal_production
 
-  extends("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression")='com.github.oowekyala.ijcc.lang.psi.impl.JccIdentifierOwnerImpl'
+  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit")=identifier_owner
 
-  methods("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression") = [
+  methods("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit") = [
     nameIdentifier="identifier"
   ]
 
-  methods("jjtree_node_descriptor") = [
-    descriptorExpr="jjtree_node_descriptor_expr"
-  ]
+  methods("jjtree_node_descriptor") = [descriptorExpr="jjtree_node_descriptor_expr"]
 
   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
 
   extends("regular_expression_.+|.+_regular_expression|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
-  implements("regular_expression_.+|.+_regular_expression|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
-  implements("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
+  extends("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
 
   extends("expansion_(alternative|sequence|unit)")=expansion
-  implements("expansion_(alternative|sequence|unit)")=expansion
-  implements(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
   extends(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
 }
 
@@ -139,7 +134,6 @@ private option_recover  ::= !(option_name | "}")
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | "static" | IDENT
-//      TODO move that to the options!
 //      "LOOKAHEAD" "=" INTEGER_LITERAL ";"
 //	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
 //	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
@@ -215,7 +209,6 @@ jjtree_node_descriptor_expr ::=
     [ ">" ] // GT-expression
     java_expression  // Is integer valued for definite nodes, is boolean valued for conditional nodes
 
-
 regular_expr_production 	::=
         [ lexical_state_list ]
 		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
@@ -253,11 +246,11 @@ expansion_alternative       ::=
     expansion_sequence ( "|" expansion_sequence )+
 
 expansion_sequence 	        ::=
-    ( priv_expansion_unit jjtree_node_descriptor? )+
+    ( expansion_unit jjtree_node_descriptor? )+
 
-fake expansion_unit ::=
+//fake expansion_unit ::=
 
-private priv_expansion_unit 	    ::=
+expansion_unit 	            ::=
     (   local_lookahead
 	| 	parser_actions_unit
 	| 	parenthesized_expansion_unit
@@ -340,7 +333,6 @@ regexp_unit 	                ::=
 	| 	regular_expression_reference
 	| 	character_list
 	| 	parenthesized_regexp_unit
-	{ methods =[character_list="" parenthesized_regexp_unit=""] }
 
 parenthesized_regexp_unit       ::=
     "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range | exactly_one ]
@@ -365,9 +357,19 @@ zero_or_one                     ::= "?"
 repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] "}" {pin=1}
 exactly_one                     ::= // empty string, to be placed only at the very end of an alternation
 
-// Meta rules
+// Meta and fake rules
 
-meta comma_separated_list ::= [ <<param>> ( ',' <<param>> )* ]
+meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
+
+fake identifier_owner           ::= identifier {
+    methods=[nameIdentifier="identifier"]
+    implements="com.intellij.psi.PsiNameIdentifierOwner"
+}
+
+fake non_terminal_production    ::= java_non_terminal_production_header java_block {
+    methods=[getNameIdentifier header="java_non_terminal_production_header"]
+}
+
 
 // Some java grammar
 
