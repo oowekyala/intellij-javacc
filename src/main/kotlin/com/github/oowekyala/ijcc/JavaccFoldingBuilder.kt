@@ -22,16 +22,15 @@ import com.intellij.psi.TokenType
  */
 class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
-    override fun buildLanguageFoldRegions(
-        descriptors: MutableList<FoldingDescriptor>,
-        root: PsiElement,
-        document: Document,
-        quick: Boolean
-    ) {
+    override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
+                                          root: PsiElement,
+                                          document: Document,
+                                          quick: Boolean) {
         val tmp = mutableListOf<FoldingDescriptor>()
 
         root.accept(FolderVisitor(tmp))
 
+        // this is not actually an issue but the extra safety may be cool
         val (proper, improper) = tmp.partition { it.range.isProperTextRange() }
 
         improper.forEach { LOG.error("Improper text range for ${it.element.elementType}: ${it.element.text}") }
@@ -81,6 +80,9 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             newLines[1] = '\n'
         }
 
+        /**
+         * Collects all folded regions in the file.
+         */
         private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : JccVisitor() {
             // all java blocks in the same bnf production belong in the same group
             private var currentJBlockGroup: FoldingGroup? = null

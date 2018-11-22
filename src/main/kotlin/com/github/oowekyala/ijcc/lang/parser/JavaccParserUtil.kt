@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes.*
@@ -12,11 +14,18 @@ import com.intellij.psi.tree.java.IJavaElementType
 
 
 /**
+ * External BNF rules implementations.
+ *
  * @author Clément Fournier
  * @since 1.0
  */
 object JavaccParserUtil : GeneratedParserUtilBase() {
 
+    /**
+     * Parse a Java block. This implementation just eats up
+     * to the matching closing brace. Java injection takes
+     * the relay.
+     */
     @JvmStatic
     fun parseJBlock(builder: PsiBuilder, level: Int): Boolean {
 
@@ -36,7 +45,11 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         return true
     }
 
-
+    /**
+     * Parse a the compilation unit between PARSER_(BEGIN|END) tokens.
+     * This implementation just eats up to the matching closing brace.
+     * Java injection takes the relay for syntax highlighting and stuff.
+     */
     @JvmStatic
     fun parseJCompilationUnit(builder: PsiBuilder, level: Int): Boolean {
         // PARSER_END should be the current token when this method returns
@@ -46,14 +59,16 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         return true
     }
 
-    private fun PsiBuilder.javaContext(
-        remapper: TokenTypeRemapper = BaseJavaRemapper,
-        block: (PsiBuilder) -> Boolean
-    ): Boolean {
+    /** Borrows a psi builder that can be used by java parsers. */
+    private fun PsiBuilder.javaContext(remapper: TokenTypeRemapper = BaseJavaRemapper,
+                                       block: (PsiBuilder) -> Boolean): Boolean {
         JavaParserUtil.setLanguageLevel(this, LanguageLevel.JDK_1_4)
         return block(RemappedBuilder(this, remapper))
     }
 
+    /**
+     * Parse a Java expression. Uses a full-on Java parser to do so.
+     */
     @JvmStatic
     fun parseJExpression(builder: PsiBuilder, level: Int): Boolean {
         if (builder.tokenType == JCC_RPARENTH) return false // when we're in a parameter list
@@ -63,14 +78,15 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         }
     }
 
-    //FIXME
+    //FIXME assignment lhs are for now restricted to IDENT ("." IDENT)*
     @JvmStatic
     fun parseJAssignmentLhs(builder: PsiBuilder, level: Int): Boolean =
-        builder.javaContext(JavaRemapperNoAssignment) {
-            JavaParser.INSTANCE.expressionParser.parse(it)
-            it.tokenType == JavaTokenType.EQ // Only say ok if the next token is an EQ
-        }
+            builder.javaContext(JavaRemapperNoAssignment) {
+                JavaParser.INSTANCE.expressionParser.parse(it)
+                it.tokenType == JavaTokenType.EQ // Only say ok if the next token is an EQ
+            }
 
+    // TODO this worked quite well, should we use it?
     private class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
 
         // Stops on PARSER_END
@@ -86,7 +102,8 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
     /**
      * Maps Javacc tokens to Java tokens so that java parsers may use the PsiBuilder.
      *
-     * The built-in remap mechanism of PsiBuilderImpl doesn't remap tokens when we backtrack.
+     * The built-in remap mechanism of PsiBuilderImpl doesn't remap tokens when we backtrack,
+     * which is why we need a wrapper.
      */
     private class RemappedBuilder(private val psiBuilder: PsiBuilder, private val remapper: TokenTypeRemapper) :
         PsiBuilder by psiBuilder {
@@ -95,7 +112,15 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
     }
 
-
+    /**
+     * Remaps the "=" token to EOF, to parse assignment left-hand sides.
+     * This has shortcomings, e.g. a lhs like "foo(j = 1).bar" would be
+     * valid, albeit improbable.
+     *
+     * FIXME assignment lhs are for now restricted to simple field names or variable names.
+     * This is because of syntactic ambiguity that Java parser callouts don't seem to handle
+     * very well.
+     */
     private object JavaRemapperNoAssignment : TokenTypeRemapper {
         override fun remap(source: IElementType?, text: () -> String?): IElementType? {
             val fstRemap = BaseJavaRemapper.remap(source, text)
@@ -106,6 +131,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         }
     }
 
+    /** Remaps all JavaCC token types to Java ones. Necessary to call out to a Java parser from this parser. */
     private object BaseJavaRemapper : TokenTypeRemapper {
         override fun remap(source: IElementType?, text: () -> String?): IElementType? {
             return when (source) {
