@@ -34,7 +34,7 @@
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
         <annotator language="JavaCC"
                    implementationClass="com.github.oowekyala.ijcc.highlight.SmartHighlightingAnnotator"/>
-        <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
+        <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
 
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>

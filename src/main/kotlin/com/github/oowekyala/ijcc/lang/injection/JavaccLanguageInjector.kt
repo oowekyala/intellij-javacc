@@ -25,24 +25,24 @@ object JavaccLanguageInjector : MultiHostInjector {
         }
     }
 
-    private fun relativeRange(psiElement: PsiElement, from: Int = 0, endOffset: Int = 0): TextRange =
+    private fun rangeInside(psiElement: PsiElement, from: Int = 0, endOffset: Int = 0): TextRange =
         TextRange(from, psiElement.textLength - endOffset)
 
     private fun injectIntoCompilationUnit(registrar: MultiHostRegistrar, context: JccJavaCompilationUnit) {
         registrar.startInjecting(JavaLanguage.INSTANCE)
-        registrar.addPlace(null, null, context, relativeRange(context))
+        registrar.addPlace(null, null, context, rangeInside(context))
         registrar.doneInjecting()
     }
 
     private fun injectIntoJavacode(registrar: MultiHostRegistrar, context: JccJavacodeProduction) {
         registrar.startInjecting(JavaLanguage.INSTANCE)
 
-        //        registrar.addPlace("", null, context.header, relativeRange(context.header))
+        //        registrar.addPlace("", null, context.header, rangeInside(context.header))
         registrar.addPlace(
             "class Dummy {${context.header?.toJavaMethodHeader()}",
             "}",
             context.javaBlock,
-            relativeRange(context.javaBlock)
+            rangeInside(context.javaBlock)
         )
         registrar.doneInjecting()
     }
@@ -53,7 +53,7 @@ object JavaccLanguageInjector : MultiHostInjector {
             registrar.startInjecting(JavaLanguage.INSTANCE, "java")
 
             // TODO add package + imports + methods from the ACU
-            //        registrar.addPlace("class Dummy {", null, context.header, relativeRange(context.header))
+            //        registrar.addPlace("class Dummy {", null, context.header, rangeInside(context.header))
 
             //  TODO get ast class prefix + package
             val jjtThisTypeName = "AST${context.name}"
@@ -62,7 +62,7 @@ object JavaccLanguageInjector : MultiHostInjector {
                 "class Dummy{ ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();\n",
                 "\n",
                 context.javaBlock,
-                relativeRange(context.javaBlock)
+                rangeInside(context.javaBlock, 1, 1)
             )
 
             if (context.expansion != null)
@@ -75,7 +75,7 @@ object JavaccLanguageInjector : MultiHostInjector {
         }
     }
 
-    fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = relativeRange(javaBlock, 1, 1) // remove braces
+    fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = rangeInside(javaBlock, 1, 1) // remove braces
 
     private class BnfInjectionVisitor(private val registrar: MultiHostRegistrar) : JccVisitor() {
         companion object {
@@ -92,11 +92,8 @@ object JavaccLanguageInjector : MultiHostInjector {
         }
 
         override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
-
-            registrar.addPlace(null, "= getToken(0);", o, relativeRange(o))
-
+            registrar.addPlace(null, "= getToken(0);", o, rangeInside(o))
         }
-
         override fun visitJavaExpression(expr: JccJavaExpression) {
             //            if (expr.parent is JccLocalLookahead) {
             //                 then the block represents a boolean expression
@@ -104,16 +101,16 @@ object JavaccLanguageInjector : MultiHostInjector {
             //                    "if (",
             //                    ");", // FIXME
             //                    expr,
-            //                    relativeRange(expr)
+            //                    rangeInside(expr)
             //                )
             //                                endBlockBuilder.append('}')
             //            } else {
-            registrar.addPlace("\nObject ${freshName()} = ", ";", expr, relativeRange(expr))
+            registrar.addPlace("\nObject ${freshName()} = ", ";", expr, rangeInside(expr))
             //            }
         }
 
         override fun visitJavaBlock(block: JccJavaBlock) {
-            registrar.addPlace("\n", "\n", block, relativeRange(block))
+            registrar.addPlace("\n", "\n", block, rangeInside(block, 1, 1))
         }
     }
 }
