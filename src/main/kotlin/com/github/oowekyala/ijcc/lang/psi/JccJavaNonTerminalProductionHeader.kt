@@ -9,7 +9,6 @@ import com.intellij.psi.PsiLanguageInjectionHost
  * Header of a non-terminal production, containing the java parts.
  */
 interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageInjectionHost {
-
     val javaParameterList: JccJavaParameterList
 
     val javaReturnType: JccJavaReturnType

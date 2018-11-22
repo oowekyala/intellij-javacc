@@ -19,7 +19,8 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
 
 
     override fun getName(): String? = when (this) {
-        is JccIdentifierOwner -> this.nameIdentifier.name
+        is JccIdentifierOwner -> this.nameIdentifier?.name
+        // JccIdentifier overrides this directly
         else                  -> null
     }
 

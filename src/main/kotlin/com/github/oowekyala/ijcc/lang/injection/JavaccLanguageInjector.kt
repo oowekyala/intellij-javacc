@@ -39,7 +39,7 @@ object JavaccLanguageInjector : MultiHostInjector {
 
         //        registrar.addPlace("", null, context.header, rangeInside(context.header))
         registrar.addPlace(
-            "class Dummy {${context.header?.toJavaMethodHeader()}",
+            "class Dummy {${context.header.toJavaMethodHeader()}",
             "}",
             context.javaBlock,
             rangeInside(context.javaBlock)

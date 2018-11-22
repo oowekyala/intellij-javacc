@@ -1,19 +1,22 @@
 # Things missing in the javacc grammar
 
 * {min,max} quantifiers for regex (complex_regular_expression_unit)
+* "try" expansion unit
 
 # Things to do before release
 
-++ Tone down injection in production headers
 ++ Fix bugs with lookahead not expanding anymore
-* Fix control flow in injected blocks (hard)
 * Rebuild the structure view
-++ Fix that bug with the java expressions (&&)
+* Add quick doc for options and productions
+* Highlight scope of jjtree decoration and parser action
 
 # Things not necessary before release
 
-* Highlight node scopes & scope of parser actions
+
+* Java injection
+  * File-wide injection -> will depend on its resilience
+  * Avoid bug with the java expressions (&&)
+  * Avoid bugs with braces
+  * Fix control flow in injected blocks (hard)
+  * Avoid injection preventing live template insertion
   * Highlight unresolved jjtThis references (when in no node scope)
-* File-wide java injection -> will depend on its resilience
-* Check option validity
-* Add quick doc for options and productions

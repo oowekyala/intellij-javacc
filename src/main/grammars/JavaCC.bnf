@@ -101,6 +101,7 @@
   implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
 
   extends("(bnf|javacode)_production") = non_terminal_production
+  methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
   implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit")=identifier_owner
 
@@ -178,7 +179,7 @@ javacode_production ::=
         "JAVACODE"
 		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
-		{pin=1}
+		{pin=2}
 
 bnf_production 	    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"

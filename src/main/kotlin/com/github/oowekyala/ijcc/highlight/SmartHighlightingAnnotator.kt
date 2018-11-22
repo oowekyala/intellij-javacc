@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.tree.TokenSet
 
 
 /**
@@ -67,8 +68,8 @@ class SmartHighlightingAnnotator : Annotator {
         val ident = element.nameIdentifier
         val poundRange = element.firstChild.textRange // "#"
         return if (ident != null) poundRange.union(ident.textRange)
-        else element.children
-            .firstOrNull { it.node.elementType == JavaccTypes.JCC_VOID_KEYWORD }
+        else element.node.getChildren(TokenSet.create(JavaccTypes.JCC_VOID_KEYWORD))
+            .firstOrNull()
             ?.let { poundRange.union(it.textRange) }
             ?: poundRange
     }
