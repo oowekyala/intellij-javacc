@@ -24,7 +24,12 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     : PsiTreeElementBase<JavaccPsiElement>(element), SortableTreeElement {
 
     override fun getAlphaSortKey(): String {
-        return presentableText
+        val element = element
+        return when (element) {
+            is JccOptionSection         -> "aaaaaaa"
+            is JccRegularExprProduction -> "aaaaabb"
+            else                        -> presentableText
+        }
     }
 
     override fun getChildrenBase(): Collection<StructureViewTreeElement> {
@@ -81,6 +86,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         builder.append(">")
         return builder.toString()
     }
+
 
     override fun getLocationString(): String? {
         val element = element
@@ -173,6 +179,4 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         row.setIcon(other, 1)
         return row
     }
-
-
 }

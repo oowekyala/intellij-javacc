@@ -7,10 +7,7 @@ import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.FileStructureFilter
-import com.intellij.ide.util.treeView.smartTree.ActionPresentation
-import com.intellij.ide.util.treeView.smartTree.ActionPresentationData
-import com.intellij.ide.util.treeView.smartTree.Filter
-import com.intellij.ide.util.treeView.smartTree.TreeElement
+import com.intellij.ide.util.treeView.smartTree.*
 import com.intellij.openapi.actionSystem.Shortcut
 
 /**
@@ -66,15 +63,40 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
     }
 
 
-    override fun getFilters(): Array<Filter> = arrayOf(terminalFilter())
+    override fun getSorters(): Array<Sorter> = arrayOf(Sorter.ALPHA_SORTER)
+    override fun getFilters(): Array<Filter> = arrayOf(terminalFilter(), optionFilter())
 
     companion object {
 
         // optionally sort alphabetically like Kotlin structure does
 
 
+        private fun optionFilter(): Filter = object : FileStructureFilter {
+            override fun getCheckBoxText(): String = "Show Options"
+
+            override fun getShortcut(): Array<Shortcut> = emptyArray()
+
+            override fun isVisible(treeElement: TreeElement): Boolean =
+                    when (treeElement.let { it as JccStructureTreeElement }.element) {
+                        is JccOptionSection -> false
+                        is JccOptionBinding -> false
+                        else                -> true
+                    }
+
+            override fun isReverted(): Boolean = true
+
+            override fun getPresentation(): ActionPresentation =
+                    ActionPresentationData(
+                        "Show JavaCC Options",
+                        "Show the options for code generation",
+                        JavaccIcons.JAVACC_OPTION
+                    )
+
+            override fun getName(): String = "OptionFilter"
+        }
+
         private fun terminalFilter(): Filter = object : FileStructureFilter {
-            override fun getCheckBoxText(): String = "Show lexical structure"
+            override fun getCheckBoxText(): String = "Show Lexical Structure"
 
             override fun getShortcut(): Array<Shortcut> = emptyArray()
 
@@ -88,7 +110,11 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
             override fun isReverted(): Boolean = true
 
             override fun getPresentation(): ActionPresentation =
-                    ActionPresentationData("Show lexical structure", "Show terminals (tokens)", JavaccIcons.TOKEN_HEADER)
+                    ActionPresentationData(
+                        "Show Lexical Structure",
+                        "Show tokens specifications.",
+                        JavaccIcons.TOKEN_HEADER
+                    )
 
             override fun getName(): String = "TerminalFilter"
         }
