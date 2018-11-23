@@ -11,6 +11,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 
 
 /**
@@ -49,7 +50,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             is JccParserDeclaration          -> "/PARSER DECLARATION/"
             is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
             is JccRegularExprProduction      -> "${psi.regexprKind.text}: {..}"
-            is JccJavaccOptions              -> "options {..}"
+            is JccOptionSection              -> "options {..}"
             is JccJavaBlock                  -> "{..}"
             is JccParserActionsUnit          -> "{..}"
             is JccLocalLookahead             -> {
@@ -125,7 +126,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                             FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
-            override fun visitJavaccOptions(o: JccJavaccOptions) {
+            override fun visitOptionSection(o: JccOptionSection) {
                 result += FoldingDescriptor(o, o.textRange)
             }
 

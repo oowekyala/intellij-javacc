@@ -27,7 +27,7 @@ class SmartHighlightingAnnotator : Annotator {
             is JccJjtreeNodeDescriptor            -> holder.highlightNodeDescriptor(element)
             is JccJavaNonTerminalProductionHeader ->
                 holder.addHighlight(element.nameIdentifier, JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES)
-            is JccJavaccOptions                   -> // highlight the "options" as a keyword
+            is JccOptionSection                   -> // highlight the "options" as a keyword
                 holder.addHighlight(element.firstChild, JAVACC_KEYWORD.keys)
             is JccRegexprSpec                     ->
                 // highlight the name of a global named regex

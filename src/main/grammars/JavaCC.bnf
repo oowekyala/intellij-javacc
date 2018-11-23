@@ -121,11 +121,11 @@
 }
 
 javacc_input 	::=
-    javacc_options?
+    option_section?
 	parser_declaration
 	( production )*
 
-javacc_options 	    ::=
+option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
 
 option_binding 	    ::=

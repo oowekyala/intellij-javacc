@@ -42,7 +42,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
     init {
         withSuitableClasses(
             JccFileImpl::class.java,
-            JccJavaccOptions::class.java,
+            JccOptionSection::class.java,
             JccOptionBinding::class.java,
 
             // FUTURE JccParserDeclaration::class.java,
@@ -57,7 +57,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean {
         val value = element.value
-        return value is JccRegularExprProduction || value is JccJavaccOptions
+        return value is JccRegularExprProduction || value is JccOptionSection
     }
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {

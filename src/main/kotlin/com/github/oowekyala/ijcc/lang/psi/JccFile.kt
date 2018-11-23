@@ -27,6 +27,9 @@ interface JccFile : PsiFile, JavaccPsiElement {
     /** Regexpr specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
     val globalTokenSpecs: List<JccRegexprSpec>
 
+    /** Options section. */
+    val options: JccOptionSection?
+
     companion object {
         /** Element type. */
         val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)

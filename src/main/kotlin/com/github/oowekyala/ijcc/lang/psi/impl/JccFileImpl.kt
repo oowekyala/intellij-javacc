@@ -42,6 +42,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val globalTokenSpecs: List<JccRegexprSpec>
         get() = globalTokensStream().toList()
 
+    override val options: JccOptionSection?
+        get() = findChildByClass(JccOptionSection::class.java)
+
     private fun globalTokensStream(): Stream<JccRegexprSpec> =
             findChildrenByClass(JccRegularExprProduction::class.java).stream()
                 .filter { it.regexprKind.text == "TOKEN" }

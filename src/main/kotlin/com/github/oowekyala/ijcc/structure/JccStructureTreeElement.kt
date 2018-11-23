@@ -30,9 +30,9 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     override fun getChildrenBase(): Collection<StructureViewTreeElement> {
         val elt = element
         return when (elt) {
-            is JccFile                  -> elt.regexpProductions.plus(elt.nonTerminalProductions)
+            is JccFile                  -> listOfNotNull(elt.options).plus(elt.regexpProductions).plus(elt.nonTerminalProductions)
             is JccRegularExprProduction -> elt.regexprSpecList
-            is JccJavaccOptions         -> elt.optionBindingList
+            is JccOptionSection         -> elt.optionBindingList
             else                        -> emptyList()
         }.map { JccStructureTreeElement(it) }
     }
@@ -40,7 +40,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     override fun getPresentableText(): String {
         val element = element
         return when (element) {
-            is JccJavaccOptions         -> "options" // TODO add parser class name
+            is JccOptionSection         -> "Options" // TODO add parser class name
             is JccOptionBinding         -> "${element.name} = ${element.stringValue}"
 
             is JccRegularExprProduction -> getRegexpProductionDisplayName(element)
@@ -71,6 +71,8 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         } else if (regex is JccInlineRegularExpression) {
             if (regex.regularExpression is JccLiteralRegularExpression) {
                 builder.append(regex.regularExpression.text)
+            } else {
+                builder.append("...")
             }
         } else {
             builder.append("...")
@@ -134,10 +136,10 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     override fun getIcon(open: Boolean): Icon? {
         val element = element ?: return null
         return when (element) {
-            is JccJavaccOptions         -> PlatformIcons.PACKAGE_ICON
-            is JccOptionBinding         -> PlatformIcons.ANNOTATION_TYPE_ICON
+            is JccOptionSection         -> JavaccIcons.JAVACC_OPTION
+            is JccOptionBinding         -> JavaccIcons.JAVACC_OPTION
 
-            is JccRegularExprProduction -> JavaccIcons.TOKEN_HEADER
+            is JccRegularExprProduction -> JavaccIcons.TOKEN
             is JccRegexprSpec           -> JavaccIcons.TOKEN.append(visibilityIcon(element))
 
             is JccBnfProduction         -> JavaccIcons.BNF_PRODUCTION.append(visibilityIcon(element))

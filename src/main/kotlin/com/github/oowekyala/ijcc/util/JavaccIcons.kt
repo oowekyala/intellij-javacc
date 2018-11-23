@@ -15,6 +15,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     TOKEN(PlatformIcons.FIELD_ICON),
     /** BNF production.  */
     BNF_PRODUCTION(PlatformIcons.METHOD_ICON),
+    /** Javacc option. */
+    JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
     /** Javacode production.  */
     JAVACODE_PRODUCTION(PlatformIcons.ABSTRACT_METHOD_ICON),
 
