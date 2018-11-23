@@ -7,7 +7,7 @@
 
 ++ Fix bugs with lookahead not expanding anymore
 ++ Rebuild the structure view
-* Make new icons
+++ Make new icons
 * Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
 * AUTOCOMPLETE

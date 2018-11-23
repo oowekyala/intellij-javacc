@@ -12,4 +12,12 @@ interface JavaccPsiElement : NavigatablePsiElement {
 
     override fun getContainingFile(): JccFile
 
+    /**
+     * True if the node is incomplete (due to eg a pin).
+     * In that case every non-null accessor may return
+     * null so the node should be ignored.
+     */
+    @JvmDefault
+    val isBroken
+        get() = false
 }

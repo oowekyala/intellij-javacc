@@ -16,7 +16,7 @@
   psiImplPackage="com.github.oowekyala.ijcc.lang.psi.impl"
 
   // not on the classpath...
-  //  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
+  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
 
   generate=[java="8"]
 
@@ -210,13 +210,18 @@ jjtree_node_descriptor_expr ::=
     [ ">" ] // GT-expression
     java_expression  // Is integer valued for definite nodes, is boolean valued for conditional nodes
 
+
+token_manager_decls ::=
+        "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here
+
 regular_expr_production 	::=
         [ lexical_state_list ]
 		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
 		"{" regexpr_spec ( "|" regexpr_spec )* "}"
 
-token_manager_decls ::=
-        "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here
+private regexpr_spec_list   ::=
+    regexpr_spec ( "|" regexpr_spec )*
+	{pin(".*")=1}
 
 
 lexical_state_list 	::=
@@ -231,8 +236,8 @@ regexpr_kind 	    ::=
 
 regexpr_spec 	    ::=
     priv_regular_expression [ java_block ] [ ":" identifier ] {
-        recoverWhile=regexp_spec_recover
         methods=[lexicalState="identifier" named_regular_expression=""]
+        recoverWhile=regexp_spec_recover
     }
 
 private regexp_spec_recover ::=    !("|" | "}")

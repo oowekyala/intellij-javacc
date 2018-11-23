@@ -20,7 +20,7 @@ sealed class JccScopeProcessor(private val searchedName: String, private val isT
             return false
         }
 
-        if (isTerminal && element is JccNamedRegularExpression && element.name == searchedName) {
+        if (isTerminal && element is JccNamedRegularExpression && !element.isPrivate && element.name == searchedName) {
             foundIdentifier = element.nameIdentifier
             return false
         }

@@ -35,7 +35,9 @@ class JccStringTokenReferenceProcessor(private val literal: JccLiteralRegularExp
     private fun gatherMatchingLiterals(regex: JccRegularExpression, result: MutableList<JccLiteralRegularExpression>) {
         when (regex) {
             is JccLiteralRegularExpression -> result += regex
-            is JccNamedRegularExpression   -> gatherMatchingLiterals(regex.regularExpression, result)
+            is JccNamedRegularExpression   -> if (!regex.isPrivate) {
+                gatherMatchingLiterals(regex.regularExpression, result)
+            }
             is JccRegexpSequence           -> if (regex.regularExpressionList.size == 1) {
                 gatherMatchingLiterals(regex.regularExpressionList[0], result)
             }
