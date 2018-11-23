@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
+import java.util.stream.Stream
 
 /**
  * Root of all Javacc files.
@@ -16,16 +17,24 @@ interface JccFile : PsiFile, JavaccPsiElement {
     val parserDeclaration: JccParserDeclaration
 
     /** All non-terminal productions. */
-    val nonTerminalProductions: List<JccNonTerminalProduction>
+    val nonTerminalProductions: Sequence<JccNonTerminalProduction>
 
     /** All terminal productions. */
     val regexpProductions: List<JccRegularExprProduction>
 
-    /** Named regexes of the TOKEN kind defined globally in the file. */
-    val globalNamedTokens: List<JccNamedRegularExpression>
+    /**
+     * Named regexes of the TOKEN kind defined globally in the file.
+     * May contain private regexes.
+     */
+    val globalNamedTokens: Sequence<JccNamedRegularExpression>
+    /**
+     * Named regexes of the TOKEN kind defined globally in the file.
+     * Doesn't contain private regexes.
+     */
+    val globalPublicNamedTokens: Sequence<JccNamedRegularExpression>
 
     /** Regexpr specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
-    val globalTokenSpecs: List<JccRegexprSpec>
+    val globalTokenSpecs: Sequence<JccRegexprSpec>
 
     /** Options section. */
     val options: JccOptionSection?

@@ -26,9 +26,13 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
     }
 
     override fun getReference(): PsiReference? = when (this) {
-        is JccLiteralRegularExpression   -> JccStringTokenReference(this).takeUnless { _ -> strictParents().any { it is JccRegexprSpec } }
+        is JccLiteralRegularExpression   -> JccStringTokenReference(this).takeUnless { this.isInRegexContext() }
         is JccNonTerminalExpansionUnit   -> JccNonTerminalReference(this.nameIdentifier)
-        is JccRegularExpressionReference -> JccTerminalReference(this.nameIdentifier)
+        is JccRegularExpressionReference -> JccTerminalReference(this.nameIdentifier, this.isInRegexContext())
         else                             -> null
     }
+
+    private fun JccRegularExpression.isInRegexContext(): Boolean =
+            strictParents().any { it is JccRegularExprProduction }
+
 }

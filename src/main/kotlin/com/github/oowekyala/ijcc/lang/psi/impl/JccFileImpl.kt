@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.reference.JccStringTokenReferenceProcessor
 import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.util.childrenSequence
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
@@ -13,9 +14,6 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.util.containers.stream
-import java.util.stream.Stream
-import kotlin.streams.toList
 
 
 /**
@@ -33,22 +31,30 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val parserDeclaration: JccParserDeclaration
         get() = findChildByClass(JccParserDeclaration::class.java)!!
 
-    override val nonTerminalProductions: List<JccNonTerminalProduction>
-        get() = findChildrenByClass(JccNonTerminalProduction::class.java).toList()
+    override val nonTerminalProductions: Sequence<JccNonTerminalProduction>
+        get() = findChildrenByClass(JccNonTerminalProduction::class.java).asSequence()
 
-    override val globalNamedTokens: List<JccNamedRegularExpression>
-        get() = globalTokensStream().map { it.regularExpression }.filterMapAs<JccNamedRegularExpression>().toList()
+    override val globalNamedTokens: Sequence<JccNamedRegularExpression>
+        get() = globalTokenSpecs.map { it.regularExpression }.filterMapAs()
 
-    override val globalTokenSpecs: List<JccRegexprSpec>
-        get() = globalTokensStream().toList()
+    override val globalPublicNamedTokens: Sequence<JccNamedRegularExpression>
+        get() = globalNamedTokens.filter { !it.isPrivate }
+
+
+    override val globalTokenSpecs: Sequence<JccRegexprSpec>
+        get() = globalTokenSpecs(reversed = false)
+
+    private val reversedGlobalTokenSpecs: Sequence<JccRegexprSpec>
+        get() = globalTokenSpecs(reversed = true)
+
+    private fun globalTokenSpecs(reversed: Boolean): Sequence<JccRegexprSpec> =
+            childrenSequence(reversed)
+                .filterMapAs<JccRegularExprProduction>()
+                .filter { it.regexprKind.text == "TOKEN" }
+                .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
 
     override val options: JccOptionSection?
         get() = findChildByClass(JccOptionSection::class.java)
-
-    private fun globalTokensStream(): Stream<JccRegexprSpec> =
-            findChildrenByClass(JccRegularExprProduction::class.java).stream()
-                .filter { it.regexprKind.text == "TOKEN" }
-                .flatMap { it.regexprSpecList.stream() }
 
 
     override fun getContainingFile(): JccFile = this
@@ -59,13 +65,18 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                                      place: PsiElement): Boolean {
         return when (processor) {
             is NonTerminalScopeProcessor        -> executeUntilFound(nonTerminalProductions, state, processor)
-            is TerminalScopeProcessor           -> executeUntilFound(globalNamedTokens, state, processor)
-            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs.asReversed(), state, processor)
+            is TerminalScopeProcessor           -> {
+                val seq = if (processor.isRegexContext) globalNamedTokens else globalPublicNamedTokens
+                executeUntilFound(seq, state, processor)
+            }
+            is JccStringTokenReferenceProcessor -> executeUntilFound(reversedGlobalTokenSpecs, state, processor)
             else                                -> true
         }
     }
 
-    private fun executeUntilFound(list: List<PsiElement>, state: ResolveState, processor: PsiScopeProcessor): Boolean {
+    private fun executeUntilFound(list: Sequence<PsiElement>,
+                                  state: ResolveState,
+                                  processor: PsiScopeProcessor): Boolean {
         for (spec in list) {
             if (!processor.execute(spec, state)) return false
         }

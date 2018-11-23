@@ -29,9 +29,9 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
 
     private fun isTerminal(psiElement: PsiElement): Boolean? {
         val elt =
-            if (psiElement is JccIdentifier)
-                PsiTreeUtil.findFirstParent(psiElement) { it is JccIdentifierOwner }
-            else psiElement as? JccIdentifierOwner
+                if (psiElement is JccIdentifier)
+                    PsiTreeUtil.findFirstParent(psiElement) { it is JccIdentifierOwner }
+                else psiElement as? JccIdentifierOwner
 
         return elt is JccIdentifierOwner && elt is JccNamedRegularExpression
     }
@@ -53,13 +53,11 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         }
     }
 
-    private fun processCollisions(
-        element: PsiElement,
-        newName: String,
-        sameKind: List<PsiNamedElement>,
-        result: MutableList<UsageInfo>,
-        description: (String) -> String
-    ) {
+    private fun processCollisions(element: PsiElement,
+                                  newName: String,
+                                  sameKind: Sequence<PsiNamedElement>,
+                                  result: MutableList<UsageInfo>,
+                                  description: (String) -> String) {
         for (spec in sameKind) {
             if (Comparing.strEqual(newName, spec.name)) {
                 result.add(object : UnresolvableCollisionUsageInfo(spec, element) {

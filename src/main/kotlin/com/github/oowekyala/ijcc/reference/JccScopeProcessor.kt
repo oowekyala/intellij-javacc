@@ -8,7 +8,7 @@ import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
 
 
-sealed class JccScopeProcessor(private val searchedName: String, private val isTerminal: Boolean) :
+sealed class JccScopeProcessor(val searchedName: String, private val isTerminal: Boolean) :
     PsiScopeProcessor {
 
 
@@ -20,7 +20,7 @@ sealed class JccScopeProcessor(private val searchedName: String, private val isT
             return false
         }
 
-        if (isTerminal && element is JccNamedRegularExpression && !element.isPrivate && element.name == searchedName) {
+        if (isTerminal && element is JccNamedRegularExpression && element.name == searchedName) {
             foundIdentifier = element.nameIdentifier
             return false
         }
@@ -31,5 +31,5 @@ sealed class JccScopeProcessor(private val searchedName: String, private val isT
     fun result(): JccIdentifier? = foundIdentifier
 }
 
-class TerminalScopeProcessor(searchedName: String) : JccScopeProcessor(searchedName, true)
+class TerminalScopeProcessor(searchedName: String, val isRegexContext: Boolean) : JccScopeProcessor(searchedName, true)
 class NonTerminalScopeProcessor(searchedName: String) : JccScopeProcessor(searchedName, false)

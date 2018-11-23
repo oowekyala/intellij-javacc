@@ -39,7 +39,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0]
+        return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
             .expansion
             .let { it as JccLiteralRegularExpression }
@@ -54,7 +54,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].nameIdentifier
+        return file.nonTerminalProductions.first().nameIdentifier
     }
 
 
@@ -67,7 +67,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].findChildOfType(JccLocalLookahead::class.java)!!.javaExpression!!
+        return file.nonTerminalProductions.first().findChildOfType(JccLocalLookahead::class.java)!!.javaExpression!!
     }
 
 
@@ -80,7 +80,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].javaBlock
+        return file.nonTerminalProductions.first().javaBlock
     }
 
 
@@ -95,10 +95,10 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0]
-            .let { it as? JccBnfProduction }
-            ?.expansion
-            .let { it as? JccAssignedExpansionUnit }
+        return file.nonTerminalProductions.first()
+            .let { it as JccBnfProduction }
+            .expansion
+            .let { it as JccAssignedExpansionUnit }
             .let { it as JccJavaAssignmentLhs }
     }
 
@@ -112,7 +112,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions[0].header
+        return file.nonTerminalProductions.first().header
     }
 
     fun createAcu(project: Project, text: String): JccJavaCompilationUnit {

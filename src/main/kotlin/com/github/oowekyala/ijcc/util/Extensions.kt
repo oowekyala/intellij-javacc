@@ -2,10 +2,25 @@ package com.github.oowekyala.ijcc.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import java.util.stream.Stream
 
 /** Select only those elements that are of type R. */
-inline fun <reified R> Stream<*>.filterMapAs(): Stream<R> = this.filter { it is R }.map { it as R }
+inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> = this.filter { it is R }.map { it as R }
+
+/** Lazy sequence of children. */
+fun PsiElement.childrenSequence(reversed: Boolean = false): Sequence<PsiElement> = when (reversed) {
+    false -> children.asSequence()
+    true  -> {
+        val children = children
+        var i = children.size
+        sequence {
+            while (i > 0) {
+                val child = children[--i]
+                yield(child)
+            }
+        }
+    }
+}
+
 
 val PsiElement.prevSiblingNoWhitespace: PsiElement
     inline get() {
@@ -16,10 +31,3 @@ val PsiElement.prevSiblingNoWhitespace: PsiElement
         return sibling
     }
 
-// this is just playing around
-
-typealias Fun<A, B> = (A) -> B
-
-infix fun <A, B, C> Fun<A, B>.then(f: Fun<B, C>): Fun<A, C> = { f(this(it)) }
-
-fun <A, B> A.then(f: Fun<A, B>): B = f(this)
