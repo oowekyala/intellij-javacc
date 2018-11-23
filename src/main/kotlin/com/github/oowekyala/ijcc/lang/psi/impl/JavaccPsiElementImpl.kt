@@ -17,6 +17,7 @@ import com.intellij.psi.util.strictParents
  */
 abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JavaccPsiElement {
 
+    override fun getContainingFile() = super.getContainingFile() as JccFile
 
     override fun getName(): String? = when (this) {
         is JccIdentifierOwner -> this.nameIdentifier?.name

@@ -25,11 +25,7 @@ class JavaccFileTreeElement(file: JccFileImpl) : PsiTreeElementBase<JccFileImpl>
     init {
         val result = mutableListOf<JavaccStructureViewElement>()
         // find declarations
-        file.processDeclarations(DeclarationResolver {
-            result.add(
-                it
-            )
-        }, ResolveState.initial(), file, file)
+        file.processDeclarations(DeclarationResolver { result.add(it) }, ResolveState.initial(), file, file)
 
         declarations = Collections.unmodifiableList(result)
 
@@ -41,19 +37,17 @@ class JavaccFileTreeElement(file: JccFileImpl) : PsiTreeElementBase<JccFileImpl>
 
     private class DeclarationResolver(private val onFind: (JavaccStructureViewElement) -> Unit) : PsiScopeProcessor {
 
+        //        val lexicalGrammarNode
+
+
         override fun execute(psiElement: PsiElement, resolveState: ResolveState): Boolean {
             when (psiElement) {
-                is JccNonTerminalProduction -> {
-                    // TODO find children productions
+                // TODO find children productions
+                is JccNonTerminalProduction ->
                     onFind(NonTerminalStructureNode(psiElement))
-                }
-                is JccRegexprSpec           -> {
-                    val regex = psiElement.regularExpression
-                    if (regex is JccNamedRegularExpression && regex.nameIdentifier != null) onFind(
-                        TerminalStructureLeaf(psiElement))
-                }
-
-
+                is JccRegexprSpec           ->
+                    if (psiElement.regularExpression is JccNamedRegularExpression)
+                        onFind(TerminalStructureLeaf(psiElement))
             }
 
             return false

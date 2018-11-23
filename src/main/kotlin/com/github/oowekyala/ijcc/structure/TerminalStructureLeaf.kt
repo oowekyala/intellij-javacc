@@ -13,7 +13,7 @@ import javax.swing.Icon
  */
 class TerminalStructureLeaf(private val regexpSpec: JccRegexprSpec) : JavaccLeafElement<JccRegexprSpec>(regexpSpec) {
     override fun getPresentableText(): String? =
-        (regexpSpec.regularExpression as? JccNamedRegularExpression)?.let { "< ${it.name} >" }
+            (regexpSpec.regularExpression as? JccNamedRegularExpression)?.let { "< ${it.name} >" }
 
     override fun getIcon(open: Boolean): Icon? = JavaccIcons.TERMINAL
 }

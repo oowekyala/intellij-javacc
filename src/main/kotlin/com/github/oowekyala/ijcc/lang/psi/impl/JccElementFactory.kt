@@ -3,11 +3,13 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.util.PsiTreeUtil
 
 
@@ -18,7 +20,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 object JccElementFactory {
     private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
-        PsiTreeUtil.findChildOfType(this, clazz)
+            PsiTreeUtil.findChildOfType(this, clazz)
 
     private val Project.psiManager
         get() = PsiManager.getInstance(this)
@@ -124,8 +126,21 @@ object JccElementFactory {
         return file.parserDeclaration.javaCompilationUnit!!
     }
 
+    fun createJavaMethodForNonterminal(project: Project, header: JccJavaNonTerminalProductionHeader): PsiMethod {
+        val text = """
+            class Foo {
+                ${header.toJavaMethodHeader()} {
+
+                }
+            }
+        """.trimIndent()
+
+        return project.psiFileFactory.createFileFromText("dummy.java", JavaFileType.INSTANCE, text)
+            .findChildOfType(PsiMethod::class.java)!!
+    }
+
     private fun createFile(project: Project, text: String): JccFileImpl =
-        project.psiFileFactory.createFileFromText("dummy.javacc", JavaccFileType, text) as JccFileImpl
+            project.psiFileFactory.createFileFromText("dummy.javacc", JavaccFileType, text) as JccFileImpl
 
     /**
      * Create from an AST node, used by the parser.

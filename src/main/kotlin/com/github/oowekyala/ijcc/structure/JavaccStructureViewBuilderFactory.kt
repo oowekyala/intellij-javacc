@@ -12,6 +12,7 @@ import com.intellij.psi.PsiFile
  * @author gark87
  */
 class JavaccStructureViewBuilderFactory : PsiStructureViewFactory {
+
     override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder? {
         return when (psiFile) {
             !is JccFileImpl -> null

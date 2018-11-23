@@ -103,9 +103,9 @@
   extends("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
-  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit")=identifier_owner
+  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit|option_binding")=identifier_owner
 
-  methods("(bnf|javacode)_production|java_non_terminal_production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit") = [
+  methods("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
   ]
 
@@ -129,12 +129,12 @@ javacc_options 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
 
 option_binding 	    ::=
-    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | java_boolean_literal) ";" {pin=option_name recoverWhile="option_recover"}
+    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | boolean_literal) ";" {pin=1 recoverWhile="option_recover"}
 
 private option_recover  ::= !(option_name | "}")
 
 private option_name ::=
-        "LOOKAHEAD" | "IGNORE_CASE" | "static" | IDENT
+        "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?
 //      "LOOKAHEAD" "=" INTEGER_LITERAL ";"
 //	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
 //	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
@@ -376,7 +376,7 @@ fake non_terminal_production    ::= java_non_terminal_production_header java_blo
 identifier                      ::=    IDENT
 
 
-private java_boolean_literal    ::=    "true" | "false"
+boolean_literal                 ::=    "true" | "false"
 
 java_name                       ::=    identifier ("." identifier)* {pin=1}
 
@@ -384,10 +384,10 @@ java_return_type                ::=    "void" | java_type
 private java_type               ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
 private java_coi_type           ::=    java_name  // FIXME generics
 
-private java_access_modifier    ::=    [ "public" | "protected" | "private" ]
+java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
-java_parameter_list             ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+private java_parameter_list             ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
 java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")*
 
 // externals

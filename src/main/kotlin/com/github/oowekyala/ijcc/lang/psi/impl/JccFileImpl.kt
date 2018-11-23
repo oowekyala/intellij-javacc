@@ -25,41 +25,34 @@ import kotlin.streams.toList
  * @author Clément Fournier
  * @since 1.0
  */
-class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage) {
+class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
+    override val regexpProductions: List<JccRegularExprProduction>
+        get() = findChildrenByClass(JccRegularExprProduction::class.java).asList()
 
     override fun getFileType(): FileType = JavaccFileType
 
-    val parserDeclaration: JccParserDeclaration
+    override val parserDeclaration: JccParserDeclaration
         get() = findChildByClass(JccParserDeclaration::class.java)!!
 
-    val nonTerminalProductions: List<JccNonTerminalProduction>
+    override val nonTerminalProductions: List<JccNonTerminalProduction>
         get() = findChildrenByClass(JccNonTerminalProduction::class.java).toList()
 
-
-    /**
-     * Named regexes of the TOKEN kind defined globally in the file.
-     */
-    val globalNamedTokens: List<JccNamedRegularExpression>
+    override val globalNamedTokens: List<JccNamedRegularExpression>
         get() = globalTokensStream().map { it.regularExpression }.filterMapAs<JccNamedRegularExpression>().toList()
 
-    /**
-     * Regexpr specs of the TOKEN kind defined globally in the file.
-     */
-    val globalTokenSpecs: List<JccRegexprSpec>
+    override val globalTokenSpecs: List<JccRegexprSpec>
         get() = globalTokensStream().toList()
 
     private fun globalTokensStream(): Stream<JccRegexprSpec> =
-        findChildrenByClass(JccRegularExprProduction::class.java).stream()
-            .filter { it.regexprKind.text == "TOKEN" }
-            .flatMap { it.regexprSpecList.stream() }
+            findChildrenByClass(JccRegularExprProduction::class.java).stream()
+                .filter { it.regexprKind.text == "TOKEN" }
+                .flatMap { it.regexprSpecList.stream() }
 
 
-    override fun processDeclarations(
-        processor: PsiScopeProcessor,
-        state: ResolveState,
-        lastParent: PsiElement?,
-        place: PsiElement
-    ): Boolean {
+    override fun processDeclarations(processor: PsiScopeProcessor,
+                                     state: ResolveState,
+                                     lastParent: PsiElement?,
+                                     place: PsiElement): Boolean {
         return when (processor) {
             is NonTerminalScopeProcessor        -> executeUntilFound(nonTerminalProductions, state, processor)
             is TerminalScopeProcessor           -> executeUntilFound(globalNamedTokens, state, processor)
@@ -76,10 +69,4 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     }
 
 
-    companion object {
-        /**
-         * Element type.
-         */
-        val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)
-    }
 }

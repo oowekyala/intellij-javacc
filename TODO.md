@@ -9,6 +9,8 @@
 * Rebuild the structure view
 * Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
+* AUTOCOMPLETE
+
 * Make a good plugin description
 * Make a readme
 * Check with JB about Intellij copyright
