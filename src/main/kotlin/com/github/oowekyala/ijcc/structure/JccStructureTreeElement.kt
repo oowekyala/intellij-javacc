@@ -71,31 +71,38 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         }
 
         builder.append(">")
-
-        val outboundState = spec.lexicalState
-        if (outboundState != null) {
-            builder.append(" ").append(UIUtil.rightArrow()).append(outboundState.name)
-        }
-
         return builder.toString()
     }
 
+    override fun getLocationString(): String? {
+        val element = element
+        if (element is JccRegexprSpec) {
+            val outboundState = element.lexicalState
+            if (outboundState != null) {
+                return "${UIUtil.rightArrow()} ${outboundState.name}"
+            }
+        } else if (element is JccRegularExprProduction) {
+            val states = element.lexicalStateList
+            if (states != null) {
+                val identList = states.identifierList
+
+                return if (identList.isEmpty()) {
+                    "<*>"
+                } else {
+                    identList.joinToString(separator = ", ", prefix = "<", postfix = ">") { it.name }
+                }
+            }
+        }
+        return null
+    }
+
     private fun getRegexpProductionDisplayName(prod: JccRegularExprProduction): String {
-        val states = prod.lexicalStateList
 
         val builder = StringBuilder()
 
         builder.append(prod.regexprKind.text)
 
-        if (states != null) {
-            val identList = states.identifierList
 
-            if (identList.isEmpty()) {
-                builder.append(" <*>")
-            } else {
-                identList.joinTo(builder, separator = ", ", prefix = " <", postfix = ">") { it.name }
-            }
-        }
 
         return builder.toString()
     }
@@ -115,7 +122,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
             PsiFormatUtilBase.SHOW_NAME or PsiFormatUtilBase.TYPE_AFTER or PsiFormatUtilBase.SHOW_PARAMETERS or if (dumb) 0 else PsiFormatUtilBase.SHOW_TYPE,
             if (dumb) PsiFormatUtilBase.SHOW_NAME else PsiFormatUtilBase.SHOW_TYPE
         )
-        return StringUtil.replace(method, ":", ": ")
+        return StringUtil.replace(StringUtil.replace(method, ":void", ""), ":", ": ")
     }
 
     override fun getIcon(open: Boolean): Icon? {
