@@ -19,7 +19,7 @@ class JccLiteralRegexManipulator : AbstractElementManipulator<JccLiteralRegularE
         range: TextRange,
         newContent: String
     ): JccLiteralRegularExpression? {
-        val oldText = regex.text
+        val oldText = regex.stringLiteral.text
         val newText = oldText.substring(0, range.startOffset) + newContent +
                 oldText.substring(range.endOffset)
         return regex.replace(

@@ -46,7 +46,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is JccRegularExpressionReference -> literalRegexpForRef(psi)!!.text
+            is JccRegularExpressionReference -> literalRegexpForRef(psi)!!.stringLiteral.text
             is JccParserDeclaration          -> "/PARSER DECLARATION/"
             is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
             is JccRegularExprProduction      -> "${psi.regexprKind.text}: {..}"
@@ -84,17 +84,13 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         /**
          * Collects all folded regions in the file.
          */
-        private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : JccVisitor() {
+        private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : DepthFirstVisitor() {
             // all java blocks in the same bnf production belong in the same group
             private var currentJBlockGroup: FoldingGroup? = null
             // all lookaheads in the same bnf production belong in the same group
             private var currentLookaheadGroup: FoldingGroup? = null
             // all regex productions belong in the same group
             private val regexpProductionsGroup = FoldingGroup.newGroup("terminals")
-
-            override fun visitElement(o: PsiElement?) {
-                o?.children?.forEach { it.accept(this) }
-            }
 
             override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
                 val ref = literalRegexpForRef(o)

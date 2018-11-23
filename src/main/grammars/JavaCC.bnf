@@ -129,9 +129,7 @@ option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
 
 option_binding 	    ::=
-    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | boolean_literal) ";" {pin=1 recoverWhile="option_recover"}
-
-private option_recover  ::= !(option_name | "}")
+    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | boolean_literal) ";" {pin=1 recoverWhile="#auto"}
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?
@@ -241,8 +239,6 @@ regexpr_spec 	    ::=
         recoverWhile="#auto"
     }
 
-private regexp_spec_recover ::=    !("|" | "}")
-
 fake expansion ::=
 
 private expansion_choices 	        ::=
@@ -331,7 +327,7 @@ regular_expression_reference    ::=
 
 inline_regular_expression       ::=
 	"<" complex_regexp_choices ">"
-	{pin="<"}
+	{pin=1}
 
 
 private complex_regexp_choices 	::=
@@ -354,12 +350,10 @@ parenthesized_regexp_unit       ::=
     "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
 
 character_list                  ::=
-    [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin=2}
+    [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin="["}
 
 character_descriptor 	        ::=
-    STRING_LITERAL [ "-" STRING_LITERAL ] {pin=1 recoverWhile=chardescriptor_recover}
-
-private chardescriptor_recover  ::= !("]" | ",")
+    STRING_LITERAL [ "-" STRING_LITERAL ] {pin=1 recoverWhile="#auto"}
 
 // Occurrence indicators
 
@@ -384,7 +378,7 @@ fake non_terminal_production    ::= java_non_terminal_production_header java_blo
 
 // Some java grammar
 
-identifier                      ::=    IDENT
+identifier                      ::=    IDENT {name="identifier"}
 
 
 boolean_literal                 ::=    "true" | "false"
@@ -398,7 +392,7 @@ private java_coi_type           ::=    java_name  // FIXME generics
 java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
-private java_parameter_list             ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+private java_parameter_list     ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
 java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")*
 
 // externals

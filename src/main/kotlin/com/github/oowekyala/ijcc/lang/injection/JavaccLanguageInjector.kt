@@ -77,19 +77,12 @@ object JavaccLanguageInjector : MultiHostInjector {
 
     fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = rangeInside(javaBlock, 1, 1) // remove braces
 
-    private class BnfInjectionVisitor(private val registrar: MultiHostRegistrar) : JccVisitor() {
+    private class BnfInjectionVisitor(private val registrar: MultiHostRegistrar) : DepthFirstVisitor() {
         companion object {
             private var i = 0
             fun freshName() = "ident${i++}"
         }
 
-        val endBlockBuilder = StringBuilder()
-
-        override fun visitElement(element: PsiElement?) {
-            for (child in element!!.children) {
-                child.accept(this)
-            }
-        }
 
         override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
             registrar.addPlace(null, "= getToken(0);", o, rangeInside(o))
