@@ -31,5 +31,4 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
         is JccRegularExpressionReference -> JccTerminalReference(this.nameIdentifier)
         else                             -> null
     }
-
 }

@@ -8,9 +8,11 @@ import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
+import com.intellij.ui.RowIcon
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.UIUtil
 import javax.swing.Icon
@@ -58,9 +60,11 @@ class JccStructureTreeElement(element: JavaccPsiElement)
 
         val regex = spec.regularExpression
         if (regex is JccNamedRegularExpression) {
-            builder.append(regex.name)
+            builder.append(regex.name).append(" : ")
             if (regex.regularExpression is JccLiteralRegularExpression) {
-                builder.append(": ").append(regex.regularExpression.text)
+                builder.append(regex.regularExpression.text)
+            } else {
+                builder.append("...")
             }
         } else if (regex is JccLiteralRegularExpression) {
             builder.append(regex.text)
@@ -68,6 +72,8 @@ class JccStructureTreeElement(element: JavaccPsiElement)
             if (regex.regularExpression is JccLiteralRegularExpression) {
                 builder.append(regex.regularExpression.text)
             }
+        } else {
+            builder.append("...")
         }
 
         builder.append(">")
@@ -130,10 +136,41 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         return when (element) {
             is JccJavaccOptions         -> PlatformIcons.PACKAGE_ICON
             is JccOptionBinding         -> PlatformIcons.ANNOTATION_TYPE_ICON
-            is JccRegexprSpec           -> JavaccIcons.TERMINAL
-            is JccRegularExprProduction -> JavaccIcons.TERMINAL
-            is JccNonTerminalProduction -> JavaccIcons.NONTERMINAL
+
+            is JccRegularExprProduction -> JavaccIcons.TOKEN_HEADER
+            is JccRegexprSpec           -> JavaccIcons.TOKEN.append(visibilityIcon(element))
+
+            is JccBnfProduction         -> JavaccIcons.BNF_PRODUCTION.append(visibilityIcon(element))
+            is JccJavacodeProduction    -> JavaccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(element))
             else                        -> element.getIcon(0) // this isn't implemented by our classes
         }
     }
+
+    private fun visibilityIcon(prod: JccRegexprSpec): Icon {
+        val regex = prod.regularExpression
+        return when {
+            regex is JccNamedRegularExpression && regex.isPrivate -> PlatformIcons.PRIVATE_ICON
+            else                                                  -> PlatformIcons.PUBLIC_ICON
+        }
+    }
+
+    private fun visibilityIcon(prod: JccNonTerminalProduction): Icon {
+        val modifier = prod.header.javaAccessModifier.text.trim()
+        return when (modifier) {
+            ""                    -> PlatformIcons.PACKAGE_LOCAL_ICON
+            PsiModifier.PUBLIC    -> PlatformIcons.PUBLIC_ICON
+            PsiModifier.PRIVATE   -> PlatformIcons.PRIVATE_ICON
+            PsiModifier.PROTECTED -> PlatformIcons.PROTECTED_ICON
+            else                  -> throw IllegalArgumentException("unknown modifier")
+        }
+    }
+
+    private fun Icon.append(other: Icon): RowIcon {
+        val row = RowIcon(2)
+        row.setIcon(this, 0)
+        row.setIcon(other, 1)
+        return row
+    }
+
+
 }

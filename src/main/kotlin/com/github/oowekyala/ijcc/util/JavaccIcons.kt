@@ -1,21 +1,26 @@
 package com.github.oowekyala.ijcc.util
 
-import com.github.oowekyala.ijcc.util.IconLoader.getIcon
 import com.intellij.openapi.util.IconLoader
+import com.intellij.util.PlatformIcons
 import javax.swing.Icon
 
 /**
  * Provides icons for the plugin.
  */
-enum class JavaccIcons(fname: String) : Icon by getIcon(fname) {
-    /** Terminal icon for the structure view.  */
-    TERMINAL("terminal.png"),
-    /** Non-terminal icon for the structure view.  */
-    NONTERMINAL("nonterminal.png"),
+enum class JavaccIcons(icon: Icon) : Icon by icon {
+    // Structure view
+    /** Terminal for headers.  */
+    TOKEN_HEADER("terminal.png"),
+    /** Terminal regex.  */
+    TOKEN(PlatformIcons.FIELD_ICON),
+    /** BNF production.  */
+    BNF_PRODUCTION(PlatformIcons.METHOD_ICON),
+    /** Javacode production.  */
+    JAVACODE_PRODUCTION(PlatformIcons.ABSTRACT_METHOD_ICON),
+
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");
-}
 
-private object IconLoader {
-    fun getIcon(fname: String) = IconLoader.getIcon("../icons/$fname")
+    // This is a FP!
+    constructor(fname: String) : this(IconLoader.getIcon("../icons/$fname"))
 }

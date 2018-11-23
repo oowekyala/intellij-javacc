@@ -318,7 +318,6 @@ inline_regular_expression       ::=
 named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regexp_choices ">"
 
-
 private complex_regexp_choices 	::=
         regexp_alternative
     |   regexp_sequence

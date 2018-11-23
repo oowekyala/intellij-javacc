@@ -88,7 +88,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
             override fun isReverted(): Boolean = true
 
             override fun getPresentation(): ActionPresentation =
-                    ActionPresentationData("Show lexical structure", "Show terminals (tokens)", JavaccIcons.TERMINAL)
+                    ActionPresentationData("Show lexical structure", "Show terminals (tokens)", JavaccIcons.TOKEN_HEADER)
 
             override fun getName(): String = "TerminalFilter"
         }
