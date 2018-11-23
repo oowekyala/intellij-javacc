@@ -13,7 +13,6 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.tree.IFileElementType
 import com.intellij.util.containers.stream
 import java.util.stream.Stream
 import kotlin.streams.toList
@@ -48,6 +47,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                 .filter { it.regexprKind.text == "TOKEN" }
                 .flatMap { it.regexprSpecList.stream() }
 
+
+    override fun getContainingFile(): JccFile = this
 
     override fun processDeclarations(processor: PsiScopeProcessor,
                                      state: ResolveState,

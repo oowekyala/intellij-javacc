@@ -10,7 +10,6 @@ import com.intellij.psi.NavigatablePsiElement
  */
 interface JavaccPsiElement : NavigatablePsiElement {
 
-
     override fun getContainingFile(): JccFile
 
 }

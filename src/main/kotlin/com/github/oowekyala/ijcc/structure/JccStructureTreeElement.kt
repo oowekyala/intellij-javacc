@@ -8,15 +8,17 @@ import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
 import com.intellij.util.PlatformIcons
 import javax.swing.Icon
 
-class JccStructureTreeElement(element: PsiElement) : PsiTreeElementBase<PsiElement>(element),
-    SortableTreeElement {
+/**
+ * One element of the structure view. This class is used for all elements, regardless of their type.
+ */
+class JccStructureTreeElement(element: JavaccPsiElement)
+    : PsiTreeElementBase<JavaccPsiElement>(element), SortableTreeElement {
 
     override fun getAlphaSortKey(): String {
         return presentableText
@@ -51,23 +53,20 @@ class JccStructureTreeElement(element: PsiElement) : PsiTreeElementBase<PsiEleme
     private fun getRegexpSpecDisplayName(spec: JccRegexprSpec): String {
         val builder = StringBuilder()
 
-        fun appendRegexpSpecSuffix(hasPrefix: Boolean, regex: JccRegularExpression) {
-            if (regex is JccLiteralRegularExpression) {
-                if (hasPrefix)
-                    builder.append(": ")
-                builder.append(regex.text)
-            }
-        }
-
-
         builder.append('<')
 
         val regex = spec.regularExpression
         if (regex is JccNamedRegularExpression) {
             builder.append(regex.name)
-            appendRegexpSpecSuffix(true, regex.regularExpression)
-        } else {
-            appendRegexpSpecSuffix(false, regex)
+            if (regex.regularExpression is JccLiteralRegularExpression) {
+                builder.append(": ").append(regex.regularExpression.text)
+            }
+        } else if (regex is JccLiteralRegularExpression) {
+            builder.append(regex.text)
+        } else if (regex is JccInlineRegularExpression) {
+            if (regex.regularExpression is JccLiteralRegularExpression) {
+                builder.append(regex.regularExpression.text)
+            }
         }
 
         builder.append(">")
@@ -126,7 +125,7 @@ class JccStructureTreeElement(element: PsiElement) : PsiTreeElementBase<PsiEleme
             is JccRegexprSpec           -> JavaccIcons.TERMINAL
             is JccRegularExprProduction -> JavaccIcons.TERMINAL
             is JccNonTerminalProduction -> JavaccIcons.NONTERMINAL
-            else                        -> element.getIcon(0)
+            else                        -> element.getIcon(0) // this isn't implemented by our classes
         }
     }
 }

@@ -20,10 +20,7 @@ import com.intellij.openapi.actionSystem.Shortcut
  * @since 1.0
  */
 class JavaccFileStructureViewModel(psiFile: JccFileImpl)
-    : StructureViewModelBase(
-    psiFile,
-    JccStructureTreeElement(psiFile)
-), StructureViewModel.ElementInfoProvider {
+    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile)), StructureViewModel.ElementInfoProvider {
 
     /*
      * [sort alpha:off] [show lexical structure:on] [show options:off]// later [show parser structure] [show jjtree node structure]

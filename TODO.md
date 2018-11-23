@@ -6,7 +6,8 @@
 # Things to do before release
 
 ++ Fix bugs with lookahead not expanding anymore
-* Rebuild the structure view
+++ Rebuild the structure view
+* Make new icons
 * Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
 * AUTOCOMPLETE
@@ -15,6 +16,31 @@
 * Make a readme
 * Check with JB about Intellij copyright
 * Find a license
+
+* String uncovered by literal regex
+
+## Inspection ideas
+
+* Unnecessary #void annotation
+* Unnecessary inline regex (in token specs)
+* Unnamed inline regex (in productions)
+* Regex reference can be replaced by string
+  * String can be replaced by regex reference
+  * Only apply if the regex reference is exactly just the string and vice versa
+* Collapsible regex productions (consecutive (no comment in between), same regex kind, same lexical states)
+* Empty parser actions
+* Consecutive parser actions
+* Suspicious node descriptor expr (when it's parsable as an expansion unit, but parsed as a java expression)
+
+### Injection
+
+* Unnecessary token variable (used only to get the last token, exactly once)
+
+### Control flow analysis
+
+* Missing return statement
+* Expansion sequence can/ should be factored out (also for parser actions)
+* Lookahead issues (needs global CFA)
 
 # Things not necessary before release
 
