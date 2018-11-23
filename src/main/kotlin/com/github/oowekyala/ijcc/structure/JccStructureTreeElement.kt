@@ -66,16 +66,18 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         val regex = spec.regularExpression
         if (regex is JccNamedRegularExpression) {
             builder.append(regex.name).append(" : ")
-            if (regex.regularExpression is JccLiteralRegularExpression) {
-                builder.append(regex.regularExpression.text)
+            val namedContents = regex.regularExpression
+            if (namedContents is JccLiteralRegularExpression) {
+                builder.append(namedContents.text)
             } else {
                 builder.append("...")
             }
         } else if (regex is JccLiteralRegularExpression) {
             builder.append(regex.text)
         } else if (regex is JccInlineRegularExpression) {
-            if (regex.regularExpression is JccLiteralRegularExpression) {
-                builder.append(regex.regularExpression.text)
+            val inlineContents = regex.regularExpression
+            if (inlineContents is JccLiteralRegularExpression) {
+                builder.append(inlineContents.text)
             } else {
                 builder.append("...")
             }

@@ -10,20 +10,20 @@
 ++ Make new icons
 * Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
-* AUTOCOMPLETE
+++ AUTOCOMPLETE
 
 * Make a good plugin description
 * Make a readme
 * Check with JB about Intellij copyright
 * Find a license
 
-* String uncovered by literal regex
 
 ## Inspection ideas
 
 * Unnecessary #void annotation
 * Unnecessary inline regex (in token specs)
 * Unnamed inline regex (in productions)
+* String uncovered by literal regex
 * Regex reference can be replaced by string
   * String can be replaced by regex reference
   * Only apply if the regex reference is exactly just the string and vice versa

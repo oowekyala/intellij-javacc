@@ -217,7 +217,8 @@ token_manager_decls ::=
 regular_expr_production 	::=
         [ lexical_state_list ]
 		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
-		"{" regexpr_spec ( "|" regexpr_spec )* "}"
+		"{" regexpr_spec_list "}"
+		{pin="regexpr_kind"}
 
 private regexpr_spec_list   ::=
     regexpr_spec ( "|" regexpr_spec )*
@@ -237,7 +238,7 @@ regexpr_kind 	    ::=
 regexpr_spec 	    ::=
     priv_regular_expression [ java_block ] [ ":" identifier ] {
         methods=[lexicalState="identifier"]
-        recoverWhile=regexp_spec_recover
+        recoverWhile="#auto"
     }
 
 private regexp_spec_recover ::=    !("|" | "}")
@@ -252,9 +253,8 @@ expansion_alternative       ::=
     expansion_sequence ( "|" expansion_sequence )+
 
 expansion_sequence 	        ::=
-    ( expansion_unit jjtree_node_descriptor? )+
+    ( expansion_unit jjtree_node_descriptor? )+ {pin=1}
 
-//fake expansion_unit ::=
 
 expansion_unit 	            ::=
     (   local_lookahead
@@ -265,7 +265,10 @@ expansion_unit 	            ::=
 	|   assigned_expansion_unit
 	|   priv_regular_expression
 	|   non_terminal_expansion_unit
-    )
+    ) {recoverWhile=expansion_unit_recover}
+
+private expansion_unit_recover ::=
+    !('{' | '#' | '(' | ')' | ',' | '<' | 'JAVACODE' | 'LOOKAHEAD' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '[' | ']' | 'private' | 'protected' | 'public' | 'try' | 'void' | '|' | '}' | IDENT | PRIMITIVE_TYPE | STRING_LITERAL)
 
 parser_actions_unit     ::=
     java_block
@@ -306,9 +309,13 @@ fake regular_expression         ::=
 private priv_regular_expression	::=
         literal_regular_expression
     |   eof_regular_expression
+    // Pins try to match these in order to allow autocompletion
+    // If       ("<" IDENT ":") -> named regex
+    // Else if  ("<" IDENT)     -> reference (autocomplete)
+    // Else if  "<"             -> inline regex
+	|   named_regular_expression
 	|   regular_expression_reference
 	|   inline_regular_expression
-	|   named_regular_expression
 	{methods=[named_regular_expression=""]}
 
 literal_regular_expression      ::=
@@ -317,11 +324,18 @@ literal_regular_expression      ::=
 eof_regular_expression          ::=
 	"<" "EOF" ">"
 
-inline_regular_expression       ::=
-	"<" complex_regexp_choices ">"
-
 named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regexp_choices ">"
+    {pin=":"}
+
+regular_expression_reference    ::=
+	"<" identifier ">"
+    {pin=identifier}
+
+inline_regular_expression       ::=
+	"<" complex_regexp_choices ">"
+	{pin="<"}
+
 
 private complex_regexp_choices 	::=
         regexp_alternative
@@ -341,10 +355,6 @@ regexp_unit 	                ::=
 
 parenthesized_regexp_unit       ::=
     "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
-
-regular_expression_reference    ::=
-	"<" identifier ">"
-
 
 character_list                  ::=
     [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin=2}

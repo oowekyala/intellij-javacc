@@ -20,7 +20,7 @@ class JccStringTokenReferenceProcessor(private val literal: JccLiteralRegularExp
     override fun execute(element: PsiElement, state: ResolveState): Boolean {
         if (element is JccRegexprSpec) {
             val candidates = mutableListOf<JccLiteralRegularExpression>()
-            gatherMatchingLiterals(element.regularExpression, candidates)
+            element.regularExpression.gatherMatchingLiterals(candidates)
 
             if (candidates.any { it.textMatches(literal) }) {
                 foundSpec = element
@@ -32,19 +32,19 @@ class JccStringTokenReferenceProcessor(private val literal: JccLiteralRegularExp
     }
 
     // TODO ideally, finding out whether a JccRegularExpression matches a string would be moved to the JccRegularExpression
-    private fun gatherMatchingLiterals(regex: JccRegularExpression, result: MutableList<JccLiteralRegularExpression>) {
-        when (regex) {
-            is JccLiteralRegularExpression -> result += regex
-            is JccNamedRegularExpression   -> if (!regex.isPrivate) {
-                gatherMatchingLiterals(regex.regularExpression, result)
+    private fun JccRegularExpression.gatherMatchingLiterals(result: MutableList<JccLiteralRegularExpression>) {
+        when (this) {
+            is JccLiteralRegularExpression -> result += this
+            is JccNamedRegularExpression   -> if (!isPrivate) {
+                regularExpression?.gatherMatchingLiterals(result)
             }
-            is JccRegexpSequence           -> if (regex.regularExpressionList.size == 1) {
-                gatherMatchingLiterals(regex.regularExpressionList[0], result)
+            is JccRegexpSequence           -> if (regularExpressionList.size == 1) {
+                regularExpressionList[0].gatherMatchingLiterals(result)
             }
             is JccInlineRegularExpression  ->
-                gatherMatchingLiterals(regex.regularExpression, result)
-            is JccRegexpAlternative        -> regex.regularExpressionList.forEach {
-                gatherMatchingLiterals(it, result)
+                regularExpression?.gatherMatchingLiterals(result)
+            is JccRegexpAlternative        -> regularExpressionList.forEach {
+                it.gatherMatchingLiterals(result)
             }
         }
     }
