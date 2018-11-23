@@ -25,13 +25,14 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
      * Parse a Java block. This implementation just eats up
      * to the matching closing brace. Java injection takes
      * the relay.
+     *
+     * It consumes the insides of a java block, up to and including the
+     * closing braces. We assume here an opening brace has already been
+     * consumed. This is to preserve the start set of the production in
+     * the grammar, to help the generator.
      */
     @JvmStatic
     fun parseJBlock(builder: PsiBuilder, level: Int): Boolean {
-
-        val inBlock = consumeToken(builder, JCC_LBRACE)
-        if (!inBlock) return false
-
         var depth = 1
 
         while (depth > 0 && !builder.eof()) {

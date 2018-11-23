@@ -265,10 +265,7 @@ expansion_unit 	            ::=
 	|   assigned_expansion_unit
 	|   priv_regular_expression
 	|   non_terminal_expansion_unit
-    ) {recoverWhile=expansion_unit_recover}
-
-private expansion_unit_recover ::=
-    !('{' | '#' | '(' | ')' | ',' | '<' | 'JAVACODE' | 'LOOKAHEAD' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '[' | ']' | 'private' | 'protected' | 'public' | 'try' | 'void' | '|' | '}' | IDENT | PRIMITIVE_TYPE | STRING_LITERAL)
+    ) {recoverWhile="#auto"}
 
 parser_actions_unit     ::=
     java_block
@@ -300,7 +297,7 @@ try_catch_expansion_unit        ::=
     "try" "{" [ expansion_choices ] "}"
     ("catch" "(" java_name identifier ")" java_block)*
     ["finally" java_block]
-    {pin=1}
+    {pin="try"}
 
 /* Regular expressions */
 
@@ -409,7 +406,7 @@ java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")*
 java_compilation_unit               ::=     ext_java_compilation_unit
 external ext_java_compilation_unit  ::=     parseJCompilationUnit
 
-java_block                          ::=     ext_java_block
+java_block                          ::=     "{" ext_java_block
 external ext_java_block             ::=     parseJBlock
 
 java_assignment_lhs                 ::=     ext_java_assignment_lhs
