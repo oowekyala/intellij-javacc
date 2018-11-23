@@ -12,6 +12,7 @@ import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
 import com.intellij.util.PlatformIcons
+import com.intellij.util.ui.UIUtil
 import javax.swing.Icon
 
 /**
@@ -73,7 +74,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
 
         val outboundState = spec.lexicalState
         if (outboundState != null) {
-            builder.append(" -> ").append(outboundState.name)
+            builder.append(" ").append(UIUtil.rightArrow()).append(outboundState.name)
         }
 
         return builder.toString()
