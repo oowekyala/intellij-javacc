@@ -57,5 +57,9 @@
 
         <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.structure.JavaccStructureViewBuilderFactory"/>
+
+        <inspectionToolProvider
+                implementation="com.github.oowekyala.ijcc.inspections.UnnecessaryInlineRegexInspection$Companion$Provider"/>
+
     </extensions>
 </idea-plugin>

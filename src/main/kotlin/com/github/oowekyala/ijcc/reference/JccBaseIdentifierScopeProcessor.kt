@@ -33,12 +33,12 @@ class TerminalScopeProcessor(searchedName: String, val isRegexContext: Boolean)
     : JccBaseIdentifierScopeProcessor(searchedName) {
 
 
-    override fun matches(element: JccIdentifierOwner): Boolean =
-            element is JccNamedRegularExpression && element.name == searchedName
+    override fun matches(psiElement: JccIdentifierOwner): Boolean =
+            psiElement is JccNamedRegularExpression && psiElement.name == searchedName
 }
 
 class NonTerminalScopeProcessor(searchedName: String) : JccBaseIdentifierScopeProcessor(searchedName) {
 
-    override fun matches(element: JccIdentifierOwner): Boolean =
-            element is JccNonTerminalProduction && element.name == searchedName
+    override fun matches(psiElement: JccIdentifierOwner): Boolean =
+            psiElement is JccNonTerminalProduction && psiElement.name == searchedName
 }

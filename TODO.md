@@ -21,7 +21,7 @@
 ## Inspection ideas
 
 * Unnecessary #void annotation
-* Unnecessary inline regex (in token specs)
+++ Unnecessary inline regex (in token specs)
 * Unnamed inline regex (in productions)
 * String uncovered by literal regex
 * Regex reference can be replaced by string
