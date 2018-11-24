@@ -19,7 +19,7 @@ class JccTerminalReference(psiElement: JccIdentifier, private val isRegexContext
         val processor = TerminalScopeProcessor(element.name, isRegexContext)
         val file = element.containingFile
         process(processor, file)
-        return processor.result()
+        return processor.result
     }
 
     override fun getVariants(): Array<Any> {
@@ -29,7 +29,7 @@ class JccTerminalReference(psiElement: JccIdentifier, private val isRegexContext
         return base.map { it.name!! }.toList().toTypedArray()
     }
 
-    private fun process(processor: JccScopeProcessor, file: JccFile) {
+    private fun process(processor: JccBaseIdentifierScopeProcessor, file: JccFile) {
         file.processDeclarations(processor, ResolveState.initial(), element, element)
     }
 }
