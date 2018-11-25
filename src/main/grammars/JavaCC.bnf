@@ -294,9 +294,15 @@ optional_expansion_unit         ::=
 
 try_catch_expansion_unit        ::=
     "try" "{" [ expansion_choices ] "}"
-    ("catch" "(" java_name identifier ")" java_block)*
-    ["finally" java_block]
+    (catch_clause)*
+    finally_clause?
     {pin="try"}
+
+catch_clause                     ::=
+    "catch" "(" java_name identifier ")" java_block
+
+finally_clause                  ::=
+    "finally" java_block
 
 /* Regular expressions */
 

@@ -34,6 +34,8 @@
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
         <annotator language="JavaCC"
                    implementationClass="com.github.oowekyala.ijcc.highlight.SmartHighlightingAnnotator"/>
+        <annotator language="JavaCC"
+                   implementationClass="com.github.oowekyala.ijcc.highlight.JccErrorAnnotator"/>
         <!-- TODO v2.0 -->
         <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
 

@@ -4,8 +4,10 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.model.RegexKind
 import com.github.oowekyala.ijcc.util.lastChildNoWhitespace
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parentOfType
+import org.apache.commons.lang3.text.translate.JavaUnicodeEscaper
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -127,11 +129,11 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegularExpressionDF
             else                             -> this // ??
         }
 
-        if (o.baseChar == "\\u212f") return
+        if (o.baseCharAsString == "\\u212f") return
 
         builder.append('[')
-        builder.append(o.baseChar.quoteRegexChar())
-        val toChar = o.toChar
+        builder.append(o.baseCharAsString.quoteRegexChar())
+        val toChar = o.toCharAsString
         if (toChar != null) {
             builder.append("-").append(toChar.quoteRegexChar())
         }
@@ -145,15 +147,30 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegularExpressionDF
     }
 }
 
-val JccCharacterDescriptor.baseChar: String
-    get() = firstChild.text.removeSurrounding("\"")
 
-val JccCharacterDescriptor.toChar: String?
+//val JccCharacterDescriptor.baseCharAsString: String
+//    get() = firstChild.text.removeSurrounding("\"")
+//
+//val JccCharacterDescriptor.toCharAsString: String?
+//
+
+
+val JccCharacterDescriptor.baseCharElement: PsiElement
+    get() = firstChild
+
+val JccCharacterDescriptor.toCharElement: PsiElement?
     get() {
         val strings = node.getChildren(TokenSet.create(JavaccTypes.JCC_STRING_LITERAL))
         return if (strings.size < 2) null
-        else strings[1].text.removeSurrounding("\"")
+        else strings[1].psi
     }
+
+
+val JccCharacterDescriptor.baseCharAsString: String
+    get() = baseCharElement.text.removeSurrounding("\"")
+
+val JccCharacterDescriptor.toCharAsString: String?
+    get() = toCharElement?.text?.removeSurrounding("\"")
 
 
 val JccCharacterList.isNegated
