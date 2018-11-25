@@ -6,9 +6,9 @@ import com.intellij.openapi.diagnostic.Logger
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class BaseInspectionCompanion {
+interface LoggerCompanion {
 
-    protected val LOG = Logger.getInstance("#${javaClass.enclosingClass.name}")
-
+    val LOG
+        get() = Logger.getInstance("#${javaClass.enclosingClass.name}")
 
 }

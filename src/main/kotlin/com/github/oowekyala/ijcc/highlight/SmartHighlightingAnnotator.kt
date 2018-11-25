@@ -5,14 +5,13 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.lang.annotation.AnnotationHolder
-import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.strictParents
 
 
 /**
@@ -21,7 +20,7 @@ import com.intellij.psi.tree.TokenSet
  * @author Clément Fournier
  * @since 1.0
  */
-class SmartHighlightingAnnotator : Annotator {
+class SmartHighlightingAnnotator : JccBaseAnnotator() {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         when (element) {
             is JccJjtreeNodeDescriptor            -> holder.highlightNodeDescriptor(element)
@@ -36,19 +35,31 @@ class SmartHighlightingAnnotator : Annotator {
                     ?.run {
                         holder.addHighlight(nameIdentifier, TOKEN.keys)
                     }
-            is JccRegularExpressionReference      ->
-                holder.highlightOrFlagReference(element, TOKEN.keys)
-            is JccNonTerminalExpansionUnit        -> {
+            is JccRegularExpression -> holder.dealWithRegexp(element)
+            is JccNonTerminalExpansionUnit        ->
                 holder.highlightOrFlagReference(element, NONTERMINAL_REFERENCE.keys)
-            }
-            is JccLiteralRegularExpression        -> {
-                // highlight string literals covered by a regexp spec
-                element.reference?.resolve()?.run {
-                    // if not resolved, the highlight stays the default for string
-                    holder.addHighlight(element, TOKEN.keys, message = "Matched by a token")
-                }
-            }
         }
+    }
+
+    private fun AnnotationHolder.dealWithRegexp(element: JccRegularExpression) {
+
+        when (element) {
+            is JccRegularExpressionReference ->
+                highlightOrFlagReference(element, TOKEN.keys)
+            is JccLiteralRegularExpression   ->
+                highlightStringOrToken(element)
+        }
+    }
+
+    private fun AnnotationHolder.highlightStringOrToken(literal: JccLiteralRegularExpression) {
+        val ref = literal.reference?.resolve()
+
+        // if so, the literal declares itself
+        val isSelfReferential = ref != null && literal.strictParents().any { it === ref }
+
+        if (ref != null && !isSelfReferential) {
+            addHighlight(literal, TOKEN.keys, message = "Matched by a token")
+        } // else stay default
     }
 
     private fun AnnotationHolder.highlightOrFlagReference(element: JccIdentifierOwner, normalKeys: TextAttributesKey) {
@@ -100,33 +111,5 @@ class SmartHighlightingAnnotator : Annotator {
         }
     }
 
-    private fun trimWhitespace(psiElement: PsiElement): TextRange {
-        var range = psiElement.textRange
-        if (psiElement.firstChild.node.elementType == TokenType.WHITE_SPACE) {
-            range = range.cutOut(psiElement.firstChild.textRange)
-        }
-
-        if (psiElement.lastChild.node.elementType == TokenType.WHITE_SPACE) {
-            range = range.cutOut(psiElement.lastChild.textRange)
-        }
-
-        return range
-    }
-
-
-    private fun AnnotationHolder.addHighlight(element: PsiElement,
-                                              textAttributesKey: TextAttributesKey,
-                                              severity: HighlightSeverity = HighlightSeverity.INFORMATION,
-                                              message: String? = null) {
-        addHighlight(element.textRange, textAttributesKey, severity, message)
-    }
-
-    private fun AnnotationHolder.addHighlight(textRange: TextRange,
-                                              textAttributesKey: TextAttributesKey,
-                                              severity: HighlightSeverity = HighlightSeverity.INFORMATION,
-                                              message: String? = null) {
-        val annotation = this.createAnnotation(severity, textRange, message)
-        annotation.textAttributes = textAttributesKey
-    }
 
 }

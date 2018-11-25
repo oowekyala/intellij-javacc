@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.reference.JccStringTokenReferenceProcessor
+import com.github.oowekyala.ijcc.model.LexicalGrammar
 import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.util.childrenSequence
@@ -42,20 +42,17 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
 
     override val globalTokenSpecs: Sequence<JccRegexprSpec>
-        get() = globalTokenSpecs(reversed = false)
-
-    private val reversedGlobalTokenSpecs: Sequence<JccRegexprSpec>
-        get() = globalTokenSpecs(reversed = true)
-
-    private fun globalTokenSpecs(reversed: Boolean): Sequence<JccRegexprSpec> =
-            childrenSequence(reversed)
-                .filterMapAs<JccRegularExprProduction>()
-                .filter { it.regexprKind.text == "TOKEN" }
-                .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
+        get() = childrenSequence(reversed = false)
+            .filterMapAs<JccRegularExprProduction>()
+            .filter { it.regexprKind.text == "TOKEN" }
+            .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
 
     override val options: JccOptionSection?
         get() = findChildByClass(JccOptionSection::class.java)
 
+
+    // TODO maybe rebuild that incrementally
+    override val lexicalGrammar: LexicalGrammar by lazy { LexicalGrammar(childrenSequence().filterMapAs()) }
 
     override fun getContainingFile(): JccFile = this
 
@@ -69,7 +66,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                 val seq = if (processor.isRegexContext) globalNamedTokens else globalPublicNamedTokens
                 executeUntilFound(seq, state, processor)
             }
-            is JccStringTokenReferenceProcessor -> executeUntilFound(reversedGlobalTokenSpecs, state, processor)
+//            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs, state, processor)
             else                                -> true
         }
     }

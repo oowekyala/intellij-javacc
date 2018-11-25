@@ -1,9 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.model.LexicalGrammar
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
-import java.util.stream.Stream
 
 /**
  * Root of all Javacc files.
@@ -21,6 +21,8 @@ interface JccFile : PsiFile, JavaccPsiElement {
 
     /** All terminal productions. */
     val regexpProductions: List<JccRegularExprProduction>
+
+    val lexicalGrammar: LexicalGrammar
 
     /**
      * Named regexes of the TOKEN kind defined globally in the file.

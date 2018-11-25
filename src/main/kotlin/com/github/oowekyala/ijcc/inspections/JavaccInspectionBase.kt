@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.inspections
 
+import com.github.oowekyala.ijcc.JavaccLanguage
 import com.intellij.codeInspection.ex.BaseLocalInspectionTool
 
 /**
@@ -11,5 +12,5 @@ import com.intellij.codeInspection.ex.BaseLocalInspectionTool
 open class JavaccInspectionBase(private val myDisplayName: String) : BaseLocalInspectionTool() {
 
     override fun getDisplayName(): String = myDisplayName
-
+    override fun getGroupDisplayName(): String = JavaccLanguage.displayName
 }

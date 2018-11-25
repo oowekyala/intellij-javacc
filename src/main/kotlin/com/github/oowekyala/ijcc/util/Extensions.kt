@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import java.util.*
 
 /** Select only those elements that are of type R. */
 inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> = this.filter { it is R }.map { it as R }
@@ -30,4 +31,8 @@ val PsiElement.prevSiblingNoWhitespace: PsiElement
 
         return sibling
     }
+
+
+val PsiElement.lastChildNoWhitespace: PsiElement?
+    inline get() = childrenSequence(reversed = true).firstOrNull { it.node.elementType != TokenType.WHITE_SPACE }
 

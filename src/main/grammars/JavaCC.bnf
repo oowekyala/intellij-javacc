@@ -113,8 +113,11 @@
 
   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
 
-  extends("regular_expression_.+|.+_regular_expression|regexp_sequence|regexp_unit|regexp_alternative")=regular_expression
   extends("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
+  extends("regexp_sequence|regexp_unit|regexp_alternative")=regexp_element
+  extends("regular_expression_.+|.+_regular_expression")=regular_expression
+
+  implements("literal_regular_expression|regular_expression_reference")=regular_expression
 
   extends("expansion_(alternative|sequence|unit)")=expansion
   extends(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
@@ -129,7 +132,7 @@ option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
 
 option_binding 	    ::=
-    option_name "=" (INTEGER_LITERAL | STRING_LITERAL | boolean_literal) ";" {pin=1 recoverWhile="#auto"}
+    option_name "=" (INTEGER_LITERAL | string_literal | boolean_literal) ";" {pin=1 recoverWhile="#auto"}
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?
@@ -150,15 +153,15 @@ private option_name ::=
 //	| 	"USER_CHAR_STREAM" "=" java_boolean_literal ";"
 //	| 	"BUILD_PARSER" "=" java_boolean_literal ";"
 //	| 	"BUILD_TOKEN_MANAGER" "=" java_boolean_literal ";"
-//	| 	"TOKEN_EXTENDS" "=" STRING_LITERAL ";"
-//	| 	"TOKEN_FACTORY" "=" STRING_LITERAL ";"
+//	| 	"TOKEN_EXTENDS" "=" string_literal ";"
+//	| 	"TOKEN_FACTORY" "=" string_literal ";"
 //	| 	"TOKEN_MANAGER_USES_PARSER" "=" java_boolean_literal ";"
 //	| 	"SANITY_CHECK" "=" java_boolean_literal ";"
 //	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
 //	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
 //	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
 //	| 	"NODE_DEFAULT_VOID" "=" java_boolean_literal ";"
-//	| 	"OUTPUT_DIRECTORY" "=" STRING_LITERAL ";"
+//	| 	"OUTPUT_DIRECTORY" "=" string_literal ";"
 
 
 parser_declaration  ::=
@@ -235,7 +238,7 @@ regexpr_kind 	    ::=
 
 regexpr_spec 	    ::=
     priv_regular_expression [ java_block ] [ ":" identifier ] {
-        methods=[lexicalState="identifier"]
+        methods=[lexicalState="identifier" regexp_unit=""]
         recoverWhile="#auto"
     }
 
@@ -261,7 +264,7 @@ expansion_unit 	            ::=
 	|   assigned_expansion_unit
 	|   priv_regular_expression
 	|   non_terminal_expansion_unit
-    ) {recoverWhile="#auto"}
+    ) {recoverWhile="#auto" methods=[expansion_unit="" literal_regular_expression="" regular_expression_reference=""]}
 
 parser_actions_unit     ::=
     java_block
@@ -297,8 +300,6 @@ try_catch_expansion_unit        ::=
 
 /* Regular expressions */
 
-fake regular_expression         ::=
-
 private priv_regular_expression	::=
         literal_regular_expression
     |   eof_regular_expression
@@ -312,7 +313,7 @@ private priv_regular_expression	::=
 	{methods=[named_regular_expression=""]}
 
 literal_regular_expression      ::=
-    STRING_LITERAL
+    string_literal
 
 eof_regular_expression          ::=
 	"<" "EOF" ">"
@@ -353,7 +354,8 @@ character_list                  ::=
     [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin="["}
 
 character_descriptor 	        ::=
-    STRING_LITERAL [ "-" STRING_LITERAL ] {pin=1 recoverWhile="#auto"}
+    STRING_LITERAL [ "-" STRING_LITERAL ]
+    {pin=1 recoverWhile="#auto"}
 
 // Occurrence indicators
 
@@ -375,10 +377,14 @@ fake non_terminal_production    ::= java_non_terminal_production_header java_blo
     methods=[header="java_non_terminal_production_header"]
 }
 
+fake regular_expression         ::=
+fake regexp_element             ::=
+
 
 // Some java grammar
 
-identifier                      ::=    IDENT {name="identifier"}
+identifier                      ::=    IDENT                {name="identifier"}
+private string_literal          ::=    STRING_LITERAL       {name="string literal"}
 
 
 boolean_literal                 ::=    "true" | "false"

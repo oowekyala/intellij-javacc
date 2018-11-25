@@ -2,8 +2,9 @@ package com.github.oowekyala.ijcc.reference
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.ResolveState
+import com.github.oowekyala.ijcc.lang.psi.match
+import com.intellij.psi.PsiPolyVariantReferenceBase
+import com.intellij.psi.ResolveResult
 
 /**
  * Reference from a literal regexp to a regexp spec covering its match.
@@ -11,20 +12,35 @@ import com.intellij.psi.ResolveState
  * @author Clément Fournier
  * @since 1.0
  */
-class JccStringTokenReference(element: JccLiteralRegularExpression) :
-    PsiReferenceBase<JccLiteralRegularExpression>(element) {
+class JccStringTokenReference(element: JccLiteralRegularExpression, val isRegexContext: Boolean) :
+    PsiPolyVariantReferenceBase<JccLiteralRegularExpression>(element) {
 
-    override fun resolve(): JccRegexprSpec? {
-        val processor = JccStringTokenReferenceProcessor(element)
+
+    override fun multiResolve(incompleteCode: Boolean): Array<MyResolveResult> {
         val file = element.containingFile
-        file.processDeclarations(processor, ResolveState.initial(), element, element)
-        return processor.result()
+
+        val grammar = file.lexicalGrammar
+
+        val matchedTokens = grammar.lexicalStates
+            .asSequence()
+            .map { it.matchLiteral(element.match, isRegexContext) }
+            .filterNotNull()
+            .map { MyResolveResult(it.regexprSpec) }
+            .distinct()
+
+        return matchedTokens.toList().toTypedArray()
     }
 
     override fun getVariants(): Array<Any> =
-            // todo flatmap to the string tokens
             element.containingFile
                 .globalNamedTokens
                 .filter { !it.isPrivate }.toList().toTypedArray()
 
+    companion object {
+        class MyResolveResult(private val regexprSpec: JccRegexprSpec) : ResolveResult {
+            override fun getElement(): JccRegexprSpec = regexprSpec
+
+            override fun isValidResult(): Boolean = true
+        }
+    }
 }

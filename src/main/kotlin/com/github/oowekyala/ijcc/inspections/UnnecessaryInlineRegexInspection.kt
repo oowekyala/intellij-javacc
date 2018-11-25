@@ -25,7 +25,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
         return object : JccVisitor() {
 
             override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-                val regex = o.regularExpression
+                val regex = o.regexpElement
                 if (regex is JccLiteralRegularExpression) {
                     holder.registerProblem(o, ProblemDescription)
                     holder.registerProblem(o, ProblemDescription, MyQuickFix())
@@ -35,7 +35,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
     }
 
 
-    companion object : BaseInspectionCompanion() {
+    companion object : LoggerCompanion {
 
         const val InspectionName = "Unnecessary angled braces around literal regex"
         const val ProblemDescription = "This inline regex could be replaced by a literal regex"
@@ -55,7 +55,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
 
                 try {
                     val inline = descriptor.psiElement as JccInlineRegularExpression
-                    val regex = inline.regularExpression!!
+                    val regex = inline.regexpElement!!
                     inline.replace(regex)
                 } catch (e: IncorrectOperationException) {
                     LOG.error(e)

@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.util.prevSiblingNoWhitespace
 
 interface JccNamedRegularExpression : JccRegularExpression, JccIdentifierOwner {
 
-    val regularExpression: JccRegularExpression?
+    val regexpElement: JccRegexpElement?
 
     override fun getNameIdentifier(): JccIdentifier
 
