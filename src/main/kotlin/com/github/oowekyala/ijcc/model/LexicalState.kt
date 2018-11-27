@@ -49,7 +49,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                 .map {
                     val matcher = it.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                    if (matcher?.find() == true) Pair(it, matcher.group(0))
+                    if (matcher?.matches() == true) Pair(it, matcher.group(0))
                     else null
                 }
                 .filterNotNull()

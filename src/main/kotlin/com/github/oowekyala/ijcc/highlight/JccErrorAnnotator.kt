@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.highlight
 
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.ifTrue
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.psi.PsiElement
 import org.apache.commons.lang3.StringEscapeUtils
@@ -14,6 +15,7 @@ class JccErrorAnnotator : JccBaseAnnotator() {
         when (element) {
             is JccCharacterDescriptor   -> holder.validateCharDescriptor(element)
             is JccTryCatchExpansionUnit -> holder.validateTryCatch(element)
+            is JccRegexprSpec           -> holder.validateRegexprSpec(element)
         }
     }
 
@@ -60,4 +62,23 @@ class JccErrorAnnotator : JccBaseAnnotator() {
         }
     }
 
+    private fun AnnotationHolder.validateRegexprSpec(element: JccRegexprSpec) {
+
+        fun getAsLiteral(regex: JccRegexpLike): JccLiteralRegularExpression? = when (regex) {
+            is JccLiteralRegularExpression -> regex
+            is JccInlineRegularExpression  -> regex.regexpElement?.let { getAsLiteral(it) }
+            is JccNamedRegularExpression   -> regex.regexpElement?.let { getAsLiteral(it) }
+            else                           -> null
+        }
+
+        val regex = getAsLiteral(element.regularExpression) ?: return
+
+        element.containingFile.globalTokenSpecs
+            .filter { !it.isPrivate }
+            .filter { it !== element }
+            .any { getAsLiteral(it.regularExpression)?.textMatches(regex) == true }
+            .ifTrue {
+                createErrorAnnotation(element, "Duplicate definition of string token ${regex.text}")
+            }
+    }
 }

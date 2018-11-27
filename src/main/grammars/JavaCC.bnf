@@ -116,6 +116,7 @@
   extends("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
   extends("regexp_sequence|regexp_unit|regexp_alternative")=regexp_element
   extends("regular_expression_.+|.+_regular_expression")=regular_expression
+  implements("regular_expression|regexp_element")=regexp_like
 
   implements("literal_regular_expression|regular_expression_reference")=regular_expression
 
@@ -385,6 +386,7 @@ fake non_terminal_production    ::= java_non_terminal_production_header java_blo
 
 fake regular_expression         ::=
 fake regexp_element             ::=
+fake regexp_like                 ::=
 
 
 // Some java grammar

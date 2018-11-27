@@ -15,7 +15,7 @@ import com.intellij.psi.util.strictParents
 
 
 /**
- * Complements the syntax highlighting lexer with some syntactic information.
+ * Complements the syntax highlighting lexer with some semantic information.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -28,14 +28,19 @@ class SmartHighlightingAnnotator : JccBaseAnnotator() {
                 holder.addHighlight(element.nameIdentifier, JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES)
             is JccOptionSection                   -> // highlight the "options" as a keyword
                 holder.addHighlight(element.firstChild, JAVACC_KEYWORD.keys)
-            is JccRegexprSpec                     ->
+            is JccRegexprSpec                     -> {
                 // highlight the name of a global named regex
                 element.regularExpression
                     .let { it as? JccNamedRegularExpression }
                     ?.run {
                         holder.addHighlight(nameIdentifier, TOKEN.keys)
                     }
-            is JccRegularExpression -> holder.dealWithRegexp(element)
+                element.lexicalState?.let { holder.addHighlight(it, LEXICAL_STATE.keys) }
+            }
+
+            is JccRegularExpression               -> holder.dealWithRegexp(element)
+            is JccRegularExprProduction           ->
+                element.lexicalStateList?.identifierList?.forEach { holder.addHighlight(it, LEXICAL_STATE.keys) }
             is JccNonTerminalExpansionUnit        ->
                 holder.highlightOrFlagReference(element, NONTERMINAL_REFERENCE.keys)
         }

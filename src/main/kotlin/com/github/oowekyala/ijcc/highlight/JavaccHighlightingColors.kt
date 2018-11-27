@@ -31,6 +31,8 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
     NONTERMINAL_DECLARATION(DefaultLanguageHighlighterColors.FUNCTION_DECLARATION),
     NONTERMINAL_REFERENCE(DefaultLanguageHighlighterColors.FUNCTION_CALL),
 
+    LEXICAL_STATE(DefaultLanguageHighlighterColors.METADATA),
+
     PARENTHESES(JavaHighlightingColors.PARENTHESES),
     DOT(JavaHighlightingColors.DOT),
     COMMA(JavaHighlightingColors.COMMA),
