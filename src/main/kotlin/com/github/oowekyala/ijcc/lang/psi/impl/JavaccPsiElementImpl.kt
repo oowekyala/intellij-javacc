@@ -7,7 +7,6 @@ import com.github.oowekyala.ijcc.reference.JccTerminalReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
-import com.intellij.psi.util.strictParents
 
 /**
  * Base impl for Jcc psi elements.

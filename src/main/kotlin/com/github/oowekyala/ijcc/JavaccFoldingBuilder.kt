@@ -11,7 +11,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 
 
 /**
@@ -22,6 +21,8 @@ import org.bouncycastle.asn1.x500.style.RFC4519Style.o
  * @since 1.0
  */
 class JavaccFoldingBuilder : CustomFoldingBuilder() {
+
+    // TODO add more general folding regions that are not collapsed by default
 
     override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
                                           root: PsiElement,

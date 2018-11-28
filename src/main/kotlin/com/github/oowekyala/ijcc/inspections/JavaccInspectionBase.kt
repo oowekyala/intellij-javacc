@@ -9,8 +9,9 @@ import com.intellij.codeInspection.ex.BaseLocalInspectionTool
  * @author Clément Fournier
  * @since 1.0
  */
-open class JavaccInspectionBase(private val myDisplayName: String) : BaseLocalInspectionTool() {
+abstract class JavaccInspectionBase(private val myDisplayName: String) : BaseLocalInspectionTool() {
 
     override fun getDisplayName(): String = myDisplayName
+    override fun getShortName(): String = myDisplayName.replace("\\s*", "")
     override fun getGroupDisplayName(): String = JavaccLanguage.displayName
 }

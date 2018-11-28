@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.injection.MultilineTextEscaper
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 

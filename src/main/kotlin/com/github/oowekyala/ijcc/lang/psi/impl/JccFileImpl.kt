@@ -59,21 +59,18 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                                      lastParent: PsiElement?,
                                      place: PsiElement): Boolean {
         return when (processor) {
-            is NonTerminalScopeProcessor -> executeUntilFound(nonTerminalProductions, state, processor)
+            is NonTerminalScopeProcessor -> processor.executeUntilFound(nonTerminalProductions, state)
             is TerminalScopeProcessor    -> {
                 val seq = if (processor.isRegexContext) globalNamedTokens else globalPublicNamedTokens
-                executeUntilFound(seq, state, processor)
+                processor.executeUntilFound(seq, state)
             }
-            //            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs, state, processor)
             else                         -> true
         }
     }
 
-    private fun executeUntilFound(list: Sequence<PsiElement>,
-                                  state: ResolveState,
-                                  processor: PsiScopeProcessor): Boolean {
+    private fun PsiScopeProcessor.executeUntilFound(list: Sequence<PsiElement>, state: ResolveState): Boolean {
         for (spec in list) {
-            if (!processor.execute(spec, state)) return false
+            if (!execute(spec, state)) return false
         }
         return true
     }

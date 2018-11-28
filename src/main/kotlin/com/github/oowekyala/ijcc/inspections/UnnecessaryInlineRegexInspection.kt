@@ -17,10 +17,6 @@ import com.intellij.util.IncorrectOperationException
  */
 class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
 
-    // unless the string is
-    // * in a token spec
-    // * or in a token spec
-
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : JccVisitor() {
 
@@ -38,7 +34,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
     companion object : LoggerCompanion {
 
         const val InspectionName = "Unnecessary angled braces around literal regex"
-        const val ProblemDescription = "This inline regex could be replaced by a literal regex"
+        const val ProblemDescription = "Unnecessary angled braces"
         const val QuickFixName = "Unwrap string literal"
 
         object Provider : InspectionToolProvider {
