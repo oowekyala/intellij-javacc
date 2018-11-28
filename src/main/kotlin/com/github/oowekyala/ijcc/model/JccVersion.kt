@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.util
+package com.github.oowekyala.ijcc.model
 
 /**
  * Version of Javacc, based on the versions published to maven.

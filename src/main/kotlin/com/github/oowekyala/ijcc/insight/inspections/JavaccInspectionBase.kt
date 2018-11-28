@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.inspections
+package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.intellij.codeInspection.ex.BaseLocalInspectionTool

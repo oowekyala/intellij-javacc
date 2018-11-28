@@ -58,10 +58,10 @@
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
-                                      implementationClass="com.github.oowekyala.ijcc.structure.JavaccStructureViewBuilderFactory"/>
+                                      implementationClass="com.github.oowekyala.ijcc.insight.structure.JavaccStructureViewBuilderFactory"/>
 
         <inspectionToolProvider
-                implementation="com.github.oowekyala.ijcc.inspections.UnnecessaryInlineRegexInspection$Companion$Provider"/>
+                implementation="com.github.oowekyala.ijcc.insight.inspections.UnnecessaryInlineRegexInspection$Companion$Provider"/>
 
     </extensions>
 </idea-plugin>

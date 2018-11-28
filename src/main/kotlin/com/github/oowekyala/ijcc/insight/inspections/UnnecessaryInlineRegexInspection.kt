@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.inspections
+package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression

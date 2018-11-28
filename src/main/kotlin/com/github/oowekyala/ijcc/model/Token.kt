@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.model
 
-import com.github.oowekyala.ijcc.inspections.LoggerCompanion
+import com.github.oowekyala.ijcc.insight.inspections.LoggerCompanion
 import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.toPattern

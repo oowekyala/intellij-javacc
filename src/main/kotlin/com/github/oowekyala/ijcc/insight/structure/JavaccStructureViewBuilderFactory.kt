@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.structure
+package com.github.oowekyala.ijcc.insight.structure
 
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.ide.structureView.StructureViewBuilder
