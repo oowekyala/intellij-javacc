@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.reference
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.match
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 
@@ -12,7 +11,7 @@ import com.intellij.psi.ResolveResult
  * @author Clément Fournier
  * @since 1.0
  */
-class JccStringTokenReference(element: JccLiteralRegularExpression, val isRegexContext: Boolean) :
+class JccStringTokenReference(element: JccLiteralRegularExpression) :
     PsiPolyVariantReferenceBase<JccLiteralRegularExpression>(element) {
 
 
@@ -23,7 +22,7 @@ class JccStringTokenReference(element: JccLiteralRegularExpression, val isRegexC
 
         val matchedTokens = grammar.lexicalStates
             .asSequence()
-            .map { it.matchLiteral(element.match, isRegexContext) }
+            .map { it.matchLiteral(element) }
             .filterNotNull()
             .map { MyResolveResult(it.regexprSpec) }
             .distinct()

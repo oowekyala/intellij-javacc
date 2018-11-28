@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parentOfType
+import com.intellij.psi.util.strictParents
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -158,6 +159,12 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegularExpressionDF
 //val JccCharacterDescriptor.toCharAsString: String?
 //
 
+/**
+ * Returns true if this regular expression occurs somewhere inside a RegexpSpec.
+ * In that case it may reference private regexes.
+ */
+fun JccRegularExpression.isInRegexContext(): Boolean =
+        strictParents().none { it is JccExpansion }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild

@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.model.LexicalGrammar
 import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
-import com.github.oowekyala.ijcc.lang.psi.childrenSequence
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType
@@ -50,9 +49,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = findChildByClass(JccOptionSection::class.java)
 
-
-    // TODO maybe rebuild that incrementally
-    override val lexicalGrammar: LexicalGrammar by lazy { LexicalGrammar(childrenSequence().filterMapAs()) }
+    override val lexicalGrammar: LexicalGrammar
+        get() = LexicalGrammar(childrenSequence().filterMapAs())
 
     override fun getContainingFile(): JccFile = this
 
@@ -61,13 +59,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                                      lastParent: PsiElement?,
                                      place: PsiElement): Boolean {
         return when (processor) {
-            is NonTerminalScopeProcessor        -> executeUntilFound(nonTerminalProductions, state, processor)
-            is TerminalScopeProcessor           -> {
+            is NonTerminalScopeProcessor -> executeUntilFound(nonTerminalProductions, state, processor)
+            is TerminalScopeProcessor    -> {
                 val seq = if (processor.isRegexContext) globalNamedTokens else globalPublicNamedTokens
                 executeUntilFound(seq, state, processor)
             }
-//            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs, state, processor)
-            else                                -> true
+            //            is JccStringTokenReferenceProcessor -> executeUntilFound(globalTokenSpecs, state, processor)
+            else                         -> true
         }
     }
 

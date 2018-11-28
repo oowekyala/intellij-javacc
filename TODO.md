@@ -11,6 +11,7 @@
 * Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
 ++ AUTOCOMPLETE
+* Group tokens by lexical state in structure view
 
 * Make a good plugin description
 * Make a readme
@@ -21,6 +22,9 @@
 
 ++ Duplicate string literals
 ++ Duplicate named token
+* Token name "DIGITS" refers to a private (with a #) regular expression.
+
+* Wrong option type
 
 ## Inspection ideas
 

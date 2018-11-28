@@ -1,6 +1,10 @@
 package com.github.oowekyala.ijcc.model
 
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccRegexpLike
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
+import com.github.oowekyala.ijcc.lang.psi.match
+import com.intellij.psi.util.parents
 import java.util.*
 
 /**
@@ -35,26 +39,32 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * the one with the earliest order of occurrence in the grammar file.
      *
      * @param toMatch String to match
-     * @param isRegexContext Whether to consider private regex specs
+     * @param regexContext The topmost regexp if it's in a regexp context
      * @param consideredRegexKinds Regex kinds to consider for the match. The default is just [RegexKind.TOKEN]
      *
      * @return the matched token if it was found
      */
-    fun matchLiteral(toMatch: String,
-                     isRegexContext: Boolean,
-                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? =
-            tokens.asSequence()
-                .filter { isRegexContext || !it.regexprSpec.isPrivate }
-                .filter { consideredRegexKinds.contains(it.regexKind) }
-                .map {
-                    val matcher = it.prefixPattern?.toPattern()?.matcher(toMatch)
+    fun matchLiteral(literal: JccLiteralRegularExpression,
+                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? {
 
-                    if (matcher?.matches() == true) Pair(it, matcher.group(0))
-                    else null
-                }
-                .filterNotNull()
-                .maxBy { it.second.length }
-                ?.let { it.first }
+        val toMatch = literal.match
+        val regexpContext = literal.parents().filter { it !is JccRegexpLike }.firstOrNull()
+
+        return tokens.asSequence()
+            // remove private regexps if we're not in regex context
+            .filterNot { regexpContext == null && it.regexprSpec.isPrivate }
+            .filter { consideredRegexKinds.contains(it.regexKind) }
+//            .takeWhile { regexpContext !== it.regexprSpec }
+            .map {
+                val matcher = it.prefixPattern?.toPattern()?.matcher(toMatch)
+
+                if (matcher?.matches() == true) Pair(it, matcher.group(0))
+                else null
+            }
+            .filterNotNull()
+            .maxBy { it.second.length }
+            ?.let { it.first }
+    }
 
 
     override fun equals(other: Any?): Boolean {

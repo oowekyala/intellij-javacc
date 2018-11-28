@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc.reference
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.ResolveState
@@ -12,8 +10,10 @@ import com.intellij.psi.ResolveState
  * @author Clément Fournier
  * @since 1.0
  */
-class JccTerminalReference(psiElement: JccIdentifier, private val isRegexContext: Boolean) :
-    PsiReferenceBase<JccIdentifier>(psiElement) {
+class JccTerminalReference(psiElement: JccRegularExpressionReference) :
+    PsiReferenceBase<JccIdentifier>(psiElement.nameIdentifier) {
+
+    private val isRegexContext = psiElement.isInRegexContext()
 
     override fun resolve(): PsiElement? {
         val processor = TerminalScopeProcessor(element.name, isRegexContext)
@@ -22,12 +22,12 @@ class JccTerminalReference(psiElement: JccIdentifier, private val isRegexContext
         return processor.result
     }
 
-    override fun getVariants(): Array<Any> {
-        val base = if (isRegexContext) element.containingFile.globalNamedTokens
-        else element.containingFile.globalPublicNamedTokens
-
-        return base.map { it.name!! }.toList().toTypedArray()
-    }
+    override fun getVariants(): Array<Any> =
+            element.containingFile.globalNamedTokens
+                .filter { isRegexContext || !it.isPrivate }
+                .map { it.name!! }
+                .toList()
+                .toTypedArray()
 
     private fun process(processor: JccBaseIdentifierScopeProcessor, file: JccFile) {
         file.processDeclarations(processor, ResolveState.initial(), element, element)

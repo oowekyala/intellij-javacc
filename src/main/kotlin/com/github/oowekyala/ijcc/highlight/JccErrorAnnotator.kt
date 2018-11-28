@@ -90,7 +90,6 @@ class JccErrorAnnotator : JccBaseAnnotator() {
         val regex = getAsLiteral(element.regularExpression) ?: return
 
         element.containingFile.globalTokenSpecs
-            .filter { !it.isPrivate }
             .filter { it !== element }
             .any { getAsLiteral(it.regularExpression)?.textMatches(regex) == true }
             .ifTrue {
