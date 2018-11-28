@@ -42,7 +42,7 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
     }
 }
 
-private class RegexResolutionVisitor(prefixMatch: Boolean) : RegularExpressionDFVisitor() {
+private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {
 
     val builder = StringBuilder()
 

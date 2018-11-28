@@ -32,12 +32,12 @@ fun PsiElement.descendantSequence(reversed: Boolean = false, depthFirst: Boolean
 }
 
 /** Lazy sequence of siblings.
-  *
-  * @param forward If true the sequence iterates on the following siblings, otherwise on the previous siblings
-  */
+ *
+ * @param forward If true the sequence iterates on the following siblings, otherwise on the previous siblings
+ */
 fun PsiElement.siblingSequence(forward: Boolean) =
         if (forward) generateSequence(this, PsiElement::getNextSibling)
-        else generateSequence(this, PsiElement::getPrevSibling)
+        else generateSequence(this) { it.prevSibling }
 
 /** Returns true if the node's token type is [TokenType.WHITE_SPACE]. */
 val PsiElement.isWhitespace: Boolean
@@ -48,3 +48,6 @@ val PsiElement.prevSiblingNoWhitespace: PsiElement?
 
 val PsiElement.lastChildNoWhitespace: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isWhitespace }
+
+fun PsiElement.parentSequence(includeSelf: Boolean = false) =
+        generateSequence(if (includeSelf) this else parent) { it.parent }

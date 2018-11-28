@@ -4,7 +4,7 @@ package com.github.oowekyala.ijcc.lang.psi
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class RegularExpressionDFVisitor : DepthFirstVisitor() {
+abstract class RegexLikeDFVisitor : DepthFirstVisitor() {
 
 
     abstract override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression)
