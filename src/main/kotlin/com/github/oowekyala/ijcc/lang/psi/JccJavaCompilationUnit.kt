@@ -17,6 +17,6 @@ interface JccJavaCompilationUnit : PsiLanguageInjectionHost, JavaccPsiElement {
             MultilineTextEscaper(this)
 
     @JvmDefault
-    override fun isValidHost(): Boolean = true
+    override fun isValidHost(): Boolean = false
 
 }
