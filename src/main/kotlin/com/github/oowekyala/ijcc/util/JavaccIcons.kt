@@ -9,7 +9,8 @@ import javax.swing.Icon
  */
 enum class JavaccIcons(icon: Icon) : Icon by icon {
     // Structure view
-    /** Terminal for headers.  */
+
+    /** Terminal (for headers).  */
     TOKEN_HEADER("terminal.png"),
     /** Terminal regex.  */
     TOKEN(PlatformIcons.FIELD_ICON),
@@ -19,6 +20,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
     /** Javacode production.  */
     JAVACODE_PRODUCTION(PlatformIcons.ABSTRACT_METHOD_ICON),
+
+    // other
 
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");

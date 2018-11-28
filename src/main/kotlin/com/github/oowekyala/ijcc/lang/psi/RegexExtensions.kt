@@ -2,14 +2,18 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.model.RegexKind
-import com.github.oowekyala.ijcc.util.lastChildNoWhitespace
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parentOfType
-import org.apache.commons.lang3.text.translate.JavaUnicodeEscaper
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
+
+/*
+
+    Extensions and utilities for the class hierarchy of JccRegularExpression.
+
+ */
 
 private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.psi.RegexExtensionsKt")
 
@@ -172,11 +176,11 @@ val JccCharacterDescriptor.baseCharAsString: String
 val JccCharacterDescriptor.toCharAsString: String?
     get() = toCharElement?.text?.removeSurrounding("\"")
 
-
 val JccCharacterList.isNegated
     get() = firstChild.node.elementType == JavaccTypes.JCC_TILDE
 
 
+/** Converts this node to the enum constant from [RegexKind]. */
 val JccRegexprKind.modelConstant: RegexKind
     get() = when (text.trim()) {
         "TOKEN"         -> RegexKind.TOKEN
@@ -190,23 +194,11 @@ val JccRegexprKind.modelConstant: RegexKind
 val JccCharacterList.isAnyMatch: Boolean
     get() = this.isNegated && this.characterDescriptorList.isEmpty()
 
-
+// TODO remove?
 fun JccRegexprSpec.getLiteralsExactMach() {
-
-
-    fun JccRegexpElement.gatherMatchingLiterals(result: MutableList<JccLiteralRegularExpression>): Boolean =
-            when (this) {
-                is JccRegexpSequence    ->
-                    regexpUnitList.size == 1 && regexpUnitList[0].gatherMatchingLiterals(result)
-                is JccRegexpAlternative -> regexpElementList.all {
-                    it.gatherMatchingLiterals(result)
-                }
-                else                    -> false
-            }
-
-    // Gathers literals that match this expression recursively. Returns whether a construct whether
-    // all expansions of this regex match a literal.
-    fun JccRegularExpression.gatherMatchingLiterals(result: MutableList<JccLiteralRegularExpression>): Boolean =
+    // Gathers literals that match this expression recursively. Returns true whether a construct all
+    // expansions of this regex match a literal, false if not.
+    fun JccRegexpLike.gatherMatchingLiterals(result: MutableList<JccLiteralRegularExpression>): Boolean =
             when (this) {
                 is JccLiteralRegularExpression -> {
                     result += this
@@ -214,6 +206,11 @@ fun JccRegexprSpec.getLiteralsExactMach() {
                 }
                 is JccNamedRegularExpression   -> regexpElement?.gatherMatchingLiterals(result) == true
                 is JccInlineRegularExpression  -> regexpElement?.gatherMatchingLiterals(result) == true
+                is JccRegexpSequence           ->
+                    regexpUnitList.size == 1 && regexpUnitList[0].gatherMatchingLiterals(result)
+                is JccRegexpAlternative        -> regexpElementList.all {
+                    it.gatherMatchingLiterals(result)
+                }
                 else                           -> false
             }
 

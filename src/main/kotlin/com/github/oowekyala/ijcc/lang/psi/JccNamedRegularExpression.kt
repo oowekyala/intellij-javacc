@@ -2,7 +2,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
-import com.github.oowekyala.ijcc.util.prevSiblingNoWhitespace
 
 interface JccNamedRegularExpression : JccRegularExpression, JccIdentifierOwner {
 
@@ -19,6 +18,6 @@ interface JccNamedRegularExpression : JccRegularExpression, JccIdentifierOwner {
      */
     @JvmDefault
     val isPrivate: Boolean
-        get() = nameIdentifier.prevSiblingNoWhitespace.node.elementType == JavaccTypes.JCC_POUND
+        get() = nameIdentifier.prevSiblingNoWhitespace?.node?.elementType == JavaccTypes.JCC_POUND
 
 }
