@@ -17,6 +17,10 @@
 * Check with JB about Intellij copyright
 * Find a license
 
+## JavaCC errors
+
+++ Duplicate string literals
+++ Duplicate named token
 
 ## Inspection ideas
 

@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.highlight
 
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.filterMapAs
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.psi.PsiElement
@@ -13,9 +14,10 @@ import org.apache.commons.lang3.StringEscapeUtils
 class JccErrorAnnotator : JccBaseAnnotator() {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         when (element) {
-            is JccCharacterDescriptor   -> holder.validateCharDescriptor(element)
-            is JccTryCatchExpansionUnit -> holder.validateTryCatch(element)
-            is JccRegexprSpec           -> holder.validateRegexprSpec(element)
+            is JccCharacterDescriptor    -> holder.validateCharDescriptor(element)
+            is JccTryCatchExpansionUnit  -> holder.validateTryCatch(element)
+            is JccRegexprSpec            -> holder.validateRegexprSpec(element)
+            is JccNamedRegularExpression -> holder.validateNameDuplicates(element)
         }
     }
 
@@ -61,6 +63,20 @@ class JccErrorAnnotator : JccBaseAnnotator() {
             )
         }
     }
+
+
+    private fun AnnotationHolder.validateNameDuplicates(element: JccNamedRegularExpression) {
+        element.containingFile
+            .descendantSequence()
+            .filterMapAs<JccNamedRegularExpression>()
+            .filter { element !== it && it.name == element.name }
+            .any()
+            .ifTrue {
+                // there was at least one duplicate
+                createErrorAnnotation(element, "Multiply defined lexical token name \"${element.name}\"")
+            }
+    }
+
 
     private fun AnnotationHolder.validateRegexprSpec(element: JccRegexprSpec) {
 
