@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegexpAlternative
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.reference.JccStringTokenReference
-import com.intellij.codeInspection.InspectionToolProvider
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
@@ -15,7 +14,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class TokenCanNeverBeMatched : JavaccInspectionBase(DisplayName) {
+class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription(): String? = """
         Reports tokens or parts of tokens that can never be matched
@@ -69,11 +68,6 @@ class TokenCanNeverBeMatched : JavaccInspectionBase(DisplayName) {
         const val DisplayName = "Token can never be matched"
         fun problemDescription(realMatch: JccRegexprSpec) =
                 "This token can never be matched, ${realMatch.name} matches its input instead"
-
-        object Provider : InspectionToolProvider {
-            override fun getInspectionClasses(): Array<Class<out Any>> =
-                    arrayOf(TokenCanNeverBeMatched::class.java)
-        }
 
         fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
                                              elt: JccLiteralRegularExpression,

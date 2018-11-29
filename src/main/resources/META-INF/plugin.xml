@@ -66,9 +66,6 @@
                                       implementationClass="com.github.oowekyala.ijcc.insight.structure.JavaccStructureViewBuilderFactory"/>
 
         <inspectionToolProvider
-                implementation="com.github.oowekyala.ijcc.insight.inspections.UnnecessaryInlineRegexInspection$Companion$Provider"/>
-
-        <inspectionToolProvider
-                implementation="com.github.oowekyala.ijcc.insight.inspections.TokenCanNeverBeMatched$Companion$Provider"/>
+                implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
     </extensions>
 </idea-plugin>

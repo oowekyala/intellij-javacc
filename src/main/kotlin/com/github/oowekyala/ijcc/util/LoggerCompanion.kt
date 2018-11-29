@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.inspections
+package com.github.oowekyala.ijcc.util
 
 import com.intellij.openapi.diagnostic.Logger
 
