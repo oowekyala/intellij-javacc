@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.model.RegexKind
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.parentOfType
+import com.intellij.psi.util.parents
 import com.intellij.psi.util.strictParents
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
@@ -18,12 +18,6 @@ import java.util.regex.PatternSyntaxException
 
 private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.psi.RegexExtensionsKt")
 
-val JccRegexprSpec.isPrivate: Boolean
-    get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
-
-/** Returns the list of lexical states this regexp applies to. */
-fun JccRegexprSpec.getLexicalStatesName(): List<String>? =
-        parentOfType<JccRegularExprProduction>()!!.lexicalStateList?.identifierList?.map { it.name }
 
 /** The text matched by this literal regex. */
 val JccLiteralRegularExpression.match: String
@@ -41,6 +35,11 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
         null
     }
 }
+
+/** Returns the regex spec this regex is declared in, or null if this is a regex inside an expansion. */
+val JccRegexpLike.specContext: JccRegexprSpec?
+    get() = parents().firstOrNull { it is JccRegexprSpec } as? JccRegexprSpec
+
 
 private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {
 

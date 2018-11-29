@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.isPrivate
-import com.github.oowekyala.ijcc.lang.psi.match
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.psi.util.parents
 import java.util.*
 
@@ -47,7 +44,7 @@ class LexicalState private constructor(val name: String, val tokens: List<JccReg
                      consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): JccRegexprSpec? {
 
         val toMatch = literal.match
-        val regexpContext = literal.parents().firstOrNull { it is JccRegexprSpec } as? JccRegexprSpec
+        val regexpContext = literal.specContext
 
         return tokens.asSequence()
             // remove private regexps if we're not in regex context
