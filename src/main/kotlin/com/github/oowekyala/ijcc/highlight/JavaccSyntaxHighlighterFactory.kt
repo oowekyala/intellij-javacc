@@ -8,5 +8,5 @@ import com.intellij.openapi.vfs.VirtualFile
 /** Extension point. */
 class JavaccSyntaxHighlighterFactory : SyntaxHighlighterFactory() {
     override fun getSyntaxHighlighter(project: Project?, virtualFile: VirtualFile?): SyntaxHighlighter =
-        JavaccSyntaxHighlighter()
+            JavaccSyntaxHighlighter()
 }

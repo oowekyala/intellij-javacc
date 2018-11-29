@@ -6,13 +6,11 @@ interface JccOptionSection : JavaccPsiElement {
     val optionBindingList: List<JccOptionBinding>
 
 
-
     companion object {
 
         enum class ValidOption {
             // TODO
         }
-
 
 
     }

@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.model.RegexKind
 import com.github.oowekyala.ijcc.util.LoggerCompanion
-import com.intellij.codeInspection.InspectionToolProvider
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.intellij.lang.annotations.Language

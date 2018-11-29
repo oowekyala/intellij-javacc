@@ -44,5 +44,5 @@ class JccFindUsagesProvider : FindUsagesProvider {
     override fun getHelpId(psiElement: PsiElement): String? = HelpID.FIND_OTHER_USAGES
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
-        psiElement is JccIdentifier
+            psiElement is JccIdentifier
 }

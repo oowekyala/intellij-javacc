@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.parentSequence
-import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 

@@ -1,7 +1,9 @@
 package com.github.oowekyala.ijcc.model
 
-import com.github.oowekyala.ijcc.lang.psi.*
-import com.intellij.psi.util.parents
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
+import com.github.oowekyala.ijcc.lang.psi.match
+import com.github.oowekyala.ijcc.lang.psi.specContext
 import java.util.*
 
 /**

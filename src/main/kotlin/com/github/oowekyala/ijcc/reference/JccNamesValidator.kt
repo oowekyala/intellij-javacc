@@ -25,9 +25,9 @@ object JccNamesValidator : JavaNamesValidator() {
     )
 
     override fun isKeyword(name: String, project: Project?): Boolean =
-        jccKeywords.contains(name) || super.isKeyword(name, project)
+            jccKeywords.contains(name) || super.isKeyword(name, project)
 
     override fun isIdentifier(name: String, project: Project?): Boolean =
-        !jccKeywords.contains(name) && super.isIdentifier(name, project)
+            !jccKeywords.contains(name) && super.isIdentifier(name, project)
 
 }

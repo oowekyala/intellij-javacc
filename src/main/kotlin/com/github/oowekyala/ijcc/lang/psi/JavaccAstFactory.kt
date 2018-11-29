@@ -22,9 +22,9 @@ object JavaccAstFactory : ASTFactory() {
     }
 
     override fun createLeaf(type: IElementType, text: CharSequence): LeafElement? {
-//        return if (type === JavaccTypes.JCC_IDENTIFIER) { // FIXME!!
-//            JccIdentifierImpl(type, text)
-//        } else
-    return LeafPsiElement(type, text)
+        //        return if (type === JavaccTypes.JCC_IDENTIFIER) { // FIXME!!
+        //            JccIdentifierImpl(type, text)
+        //        } else
+        return LeafPsiElement(type, text)
     }
 }

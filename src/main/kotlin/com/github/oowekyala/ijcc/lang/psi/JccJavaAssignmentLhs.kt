@@ -15,7 +15,7 @@ interface JccJavaAssignmentLhs : JavaccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-        this.replace(JccElementFactory.createJavaBlock(project, text)) as PsiLanguageInjectionHost
+            this.replace(JccElementFactory.createJavaBlock(project, text)) as PsiLanguageInjectionHost
 
     @JvmDefault
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {

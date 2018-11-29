@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.util.LoggerCompanion
-import com.intellij.codeInspection.InspectionToolProvider
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder

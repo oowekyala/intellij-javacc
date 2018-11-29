@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
  */
 object JavaccLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> =
-        mutableListOf(JccJavaCompilationUnit::class.java, JccNonTerminalProduction::class.java)
+            mutableListOf(JccJavaCompilationUnit::class.java, JccNonTerminalProduction::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
         when (context) {
@@ -26,7 +26,7 @@ object JavaccLanguageInjector : MultiHostInjector {
     }
 
     private fun rangeInside(psiElement: PsiElement, from: Int = 0, endOffset: Int = 0): TextRange =
-        TextRange(from, psiElement.textLength - endOffset)
+            TextRange(from, psiElement.textLength - endOffset)
 
     private fun injectIntoCompilationUnit(registrar: MultiHostRegistrar, context: JccJavaCompilationUnit) {
         registrar.startInjecting(JavaLanguage.INSTANCE)
@@ -87,6 +87,7 @@ object JavaccLanguageInjector : MultiHostInjector {
         override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
             registrar.addPlace(null, "= getToken(0);", o, rangeInside(o))
         }
+
         override fun visitJavaExpression(expr: JccJavaExpression) {
             //            if (expr.parent is JccLocalLookahead) {
             //                 then the block represents a boolean expression
