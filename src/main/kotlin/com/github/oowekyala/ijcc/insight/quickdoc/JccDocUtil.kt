@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.parentSequence
+import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 
@@ -12,7 +13,7 @@ import com.intellij.psi.PsiManager
  * @since 1.0
  */
 object JccDocUtil {
-
+    /** Finds the target of a link created by [getLinkRefTo]. */
     @Suppress("UNUSED_PARAMETER")
     fun findLinkTarget(psiManager: PsiManager?, ref: String?, context: PsiElement?): PsiElement? {
         val psiFile = context?.containingFile as? JccFile ?: return null
@@ -25,6 +26,10 @@ object JccDocUtil {
         }.filter { it.name == name }.firstOrNull()
     }
 
+    /**
+     * Gets the hyperlink suitable for use with [DocumentationManager.createHyperlink]
+     * to refer to the given [JccRegexprSpec] or [JccNonTerminalProduction].
+     */
     fun getLinkRefTo(jccPsiElement: PsiElement?): String? {
 
         val relevantParent = jccPsiElement?.parentSequence(includeSelf = true)

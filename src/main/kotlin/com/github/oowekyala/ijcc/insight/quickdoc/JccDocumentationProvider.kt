@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
-import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.model.LexicalState
-import com.intellij.codeInsight.documentation.DocumentationManager
+import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
+import com.github.oowekyala.ijcc.lang.psi.parentSequence
 import com.intellij.lang.documentation.AbstractDocumentationProvider
-import com.intellij.lang.documentation.DocumentationMarkup.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 
@@ -26,7 +26,7 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
             ?: return null
 
         return when (relevantNode) {
-            is JccNamedRegularExpression -> makeDoc(relevantNode)
+            is JccNamedRegularExpression -> JccTerminalDocMaker.makeDoc(relevantNode)
             else                         -> null
         }
     }
@@ -37,120 +37,5 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
                                                 context: PsiElement?): PsiElement? =
             JccDocUtil.findLinkTarget(psiManager, link, context)
 
-    private fun makeDoc(named: JccNamedRegularExpression): String {
-        val spec = named.parent as? JccRegexprSpec
-
-
-        return buildString {
-            append(DEFINITION_START)
-
-            val (tokenType, states) = if (spec != null) {
-                val prod = spec.production
-                Pair(prod.regexprKind.text + " ", lexicalStatesOf(prod))
-            } else Pair("", "")
-
-            append(tokenType).append("&lt;").append(named.name).append("&gt;")
-
-            append(DEFINITION_END)
-            append(SECTIONS_START)
-
-            if (states.isNotEmpty()) {
-                append(SECTION_HEADER_START).append("Lexical states").append(SECTION_SEPARATOR)
-                    .append("<p>").append(states).append(SECTION_END)
-            }
-            append(SECTION_HEADER_START).append("Definition").append(SECTION_SEPARATOR)
-                .append("<p>")
-            RegexDocVisitor(this).visitNamedRegularExpression(named)
-            append(SECTION_END)
-            append(SECTIONS_END)
-        }
-    }
-
-    /** Limit to the number of character descriptors expanded. */
-    private const val MaxChars = 10
-
-
-    private class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
-        override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-            sb.append(o.text)
-        }
-
-        override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-            o.regexpElement?.accept(this)
-        }
-
-        override fun visitEofRegularExpression(o: JccEofRegularExpression) {
-            sb.append("&lt;EOF&gt;")
-        }
-
-        override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-            DocumentationManager.createHyperlink(
-                sb,
-                JccDocUtil.getLinkRefTo(o.reference?.resolve()),
-                "&lt;${o.name}&gt;",
-                false
-            )
-        }
-
-        override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-            o.regexpElement?.accept(this)
-        }
-
-
-        override fun visitRegexpSequence(o: JccRegexpSequence) {
-            o.regexpUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
-        }
-
-
-        fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
-            val iterator = iterator()
-
-            if (iterator.hasNext())
-                main(iterator.next())
-            while (iterator.hasNext()) {
-                delim()
-                main(iterator.next())
-            }
-        }
-
-        override fun visitRegexpAlternative(o: JccRegexpAlternative) {
-            o.regexpElementList.foreachAndBetween({ sb.append(" | ") }) { it.accept(this) }
-        }
-
-
-        override fun visitCharacterList(o: JccCharacterList) {
-            if (o.isNegated) sb.append('~')
-            sb.append('[')
-            val chars = o.characterDescriptorList
-            if (chars.size > MaxChars) {
-                sb.append("...]")
-            } else {
-                o.characterDescriptorList.forEach { it.accept(this) }
-                sb.append(']')
-            }
-        }
-
-        override fun visitParenthesizedRegexpUnit(o: JccParenthesizedRegexpUnit) {
-            sb.append("( ")
-            o.regexpElement.accept(this)
-            sb.append(" )")
-            val occurrenceIndicator = o.lastChildNoWhitespace
-            if (occurrenceIndicator != null) {
-                sb.append(occurrenceIndicator.text)
-            }
-        }
-
-        override fun visitCharacterDescriptor(o: JccCharacterDescriptor) {
-            sb.append(o.text.replace("\\s*", ""))
-        }
-    }
-
-
-    private fun lexicalStatesOf(prod: JccRegularExprProduction): String = prod.lexicalStateList.let {
-        it?.identifierList?.let {
-            if (it.isEmpty()) "all"
-            else it.joinToString(separator = ", ") { it.name }
-        } ?: LexicalState.DefaultStateName
-    }
 
 }
