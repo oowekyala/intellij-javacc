@@ -10,6 +10,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.util.IncorrectOperationException
+import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
@@ -17,18 +18,23 @@ import com.intellij.util.IncorrectOperationException
  */
 class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : JccVisitor() {
+    @Language("HTML")
+    override fun getStaticDescription(): String? = """
+        Reports unnecessary angled braces around a string literal.
+        E.g. <b><code>&lt; "foo" &gt;</code></b> is equivalent to <b><code>"foo"</code></b>.
+    """.trimIndent()
 
-            override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-                val regex = o.regexpElement
-                if (regex is JccLiteralRegularExpression) {
-                    holder.registerProblem(o, ProblemDescription)
-                    holder.registerProblem(o, ProblemDescription, MyQuickFix())
+
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
+            object : JccVisitor() {
+                override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
+                    val regex = o.regexpElement
+                    if (regex is JccLiteralRegularExpression) {
+                        holder.registerProblem(o, ProblemDescription)
+                        holder.registerProblem(o, ProblemDescription, MyQuickFix())
+                    }
                 }
             }
-        }
-    }
 
 
     companion object : LoggerCompanion {

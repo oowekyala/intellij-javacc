@@ -68,5 +68,7 @@
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.UnnecessaryInlineRegexInspection$Companion$Provider"/>
 
+        <inspectionToolProvider
+                implementation="com.github.oowekyala.ijcc.insight.inspections.TokenCanNeverBeMatched$Companion$Provider"/>
     </extensions>
 </idea-plugin>

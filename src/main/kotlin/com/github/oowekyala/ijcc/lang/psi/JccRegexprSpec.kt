@@ -16,6 +16,16 @@ interface JccRegexprSpec : JavaccPsiElement {
 
     val production: JccRegularExprProduction
 
+    fun getRegexExpansion(): JccRegexpElement? {
+        val regex = regularExpression
+        return when (regex) {
+            is JccNamedRegularExpression  -> regex.regexpElement
+            is JccInlineRegularExpression -> regex.regexpElement
+            is JccRegexpElement           -> regex
+            else                          -> null // may be a regex reference or something
+        }
+    }
+
     /** Returns the list of lexical states this regexp applies to. */
     @JvmDefault
     fun getLexicalStatesName(): List<String>? = production.lexicalStateList?.identifierList?.map { it.name }
