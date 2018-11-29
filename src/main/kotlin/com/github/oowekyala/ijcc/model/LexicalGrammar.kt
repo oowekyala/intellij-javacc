@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExprProduction
-import com.github.oowekyala.ijcc.lang.psi.modelConstant
 import com.github.oowekyala.ijcc.model.LexicalState.Companion.DefaultStateName
 import com.github.oowekyala.ijcc.model.LexicalState.Companion.LexicalStateBuilder
 
@@ -45,21 +44,15 @@ class LexicalGrammar(regexpProductions: Sequence<JccRegularExprProduction>) {
                     names.map { builders.getOrPut(it) { LexicalStateBuilder(it) } }
                 }
 
-                val kind = regexpProduction.regexprKind.modelConstant
-
                 for (spec in regexpProduction.regexprSpecList) {
-                    val token = Token(kind, spec)
-                    relevantBuilders.forEach { it.addToken(token) }
+                    relevantBuilders.forEach { it.addToken(spec) }
                 }
             }
 
             for (regexpProduction in applyToAll) {
 
-                val kind = regexpProduction.regexprKind.modelConstant
-
                 for (spec in regexpProduction.regexprSpecList) {
-                    val token = Token(kind, spec)
-                    builders.values.asSequence().distinct().forEach { it.addToken(token) }
+                    builders.values.asSequence().distinct().forEach { it.addToken(spec) }
                 }
             }
 

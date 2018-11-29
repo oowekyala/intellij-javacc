@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccRegexpLike
+import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
 import com.github.oowekyala.ijcc.lang.psi.match
 import com.intellij.psi.util.parents
@@ -24,7 +24,7 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalState private constructor(val name: String, val tokens: List<Token>) {
+class LexicalState private constructor(val name: String, val tokens: List<JccRegexprSpec>) {
 
 
     /**
@@ -38,23 +38,23 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * matches (of the same length), the regular expression that is matched is
      * the one with the earliest order of occurrence in the grammar file.
      *
-     * @param toMatch String to match
-     * @param regexContext The topmost regexp if it's in a regexp context
+     * @param literal              String literal to match
      * @param consideredRegexKinds Regex kinds to consider for the match. The default is just [RegexKind.TOKEN]
      *
      * @return the matched token if it was found
      */
     fun matchLiteral(literal: JccLiteralRegularExpression,
-                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? {
+                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): JccRegexprSpec? {
 
         val toMatch = literal.match
-        val regexpContext = literal.parents().filter { it !is JccRegexpLike }.firstOrNull()
+        val regexpContext = literal.parents().firstOrNull { it is JccRegexprSpec } as? JccRegexprSpec
 
         return tokens.asSequence()
             // remove private regexps if we're not in regex context
-            .filterNot { regexpContext == null && it.regexprSpec.isPrivate }
+            .filterNot { regexpContext == null && it.isPrivate }
             .filter { consideredRegexKinds.contains(it.regexKind) }
-//            .takeWhile { regexpContext !== it.regexprSpec }
+            // Stop when below this regex context
+            .takeWhile { regexpContext == null || regexpContext !== it.prevSibling }
             .map {
                 val matcher = it.prefixPattern?.toPattern()?.matcher(toMatch)
 
@@ -89,10 +89,10 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
         class LexicalStateBuilder(val name: String) {
 
-            private val specs = mutableListOf<Token>()
+            private val specs = mutableListOf<JccRegexprSpec>()
 
             /** Must be called in document order. */
-            fun addToken(token: Token) {
+            fun addToken(token: JccRegexprSpec) {
                 specs.add(token)
             }
 

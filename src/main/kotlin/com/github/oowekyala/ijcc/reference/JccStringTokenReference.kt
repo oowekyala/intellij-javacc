@@ -24,7 +24,7 @@ class JccStringTokenReference(element: JccLiteralRegularExpression) :
             .asSequence()
             .map { it.matchLiteral(element) }
             .filterNotNull()
-            .map { MyResolveResult(it.regexprSpec) }
+            .map { MyResolveResult(it) }
             .distinct()
 
         return matchedTokens.toList().toTypedArray()

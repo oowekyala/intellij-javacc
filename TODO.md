@@ -12,6 +12,8 @@
 ++ Highlight scope of jjtree decoration and parser action
 ++ AUTOCOMPLETE
 * Group tokens by lexical state in structure view
+* BIG PERFORMANCE PROBLEM -> probably stop building lexical states
+
 
 * Make a good plugin description
 * Make a readme

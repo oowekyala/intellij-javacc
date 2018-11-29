@@ -45,7 +45,7 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
             append(DEFINITION_START)
 
             val (tokenType, states) = if (spec != null) {
-                val prod = spec.parent as JccRegularExprProduction
+                val prod = spec.production
                 Pair(prod.regexprKind.text + " ", lexicalStatesOf(prod))
             } else Pair("", "")
 
