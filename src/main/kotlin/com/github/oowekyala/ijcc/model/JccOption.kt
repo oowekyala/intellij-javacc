@@ -4,71 +4,60 @@ package com.github.oowekyala.ijcc.model
  * @author Clément Fournier
  * @since 1.0
  */
-enum class JccOption(val type: Type, val default: String) {
-    PARSER_SUPER_CLASS(Type.STRING, ""),
-    TOKEN_MANAGER_SUPER_CLASS(Type.STRING, ""),
-    LOOKAHEAD(Type.INTEGER, "1"),
-
-    CHOICE_AMBIGUITY_CHECK(Type.INTEGER, "0"),
-    OTHER_AMBIGUITY_CHECK(Type.INTEGER, "1"),
-    STATIC(Type.BOOLEAN, "true"),
-    PARSER_CODE_GENERATOR(Type.STRING, ""),
-    TOKEN_MANAGER_CODE_GENERATOR(Type.STRING, ""),
-    NO_DFA(Type.BOOLEAN, "false"),
-    DEBUG_PARSER(Type.BOOLEAN, "false"),
-
-    DEBUG_LOOKAHEAD(Type.BOOLEAN, "false"),
-    DEBUG_TOKEN_MANAGER(Type.BOOLEAN, "false"),
-    ERROR_REPORTING(Type.BOOLEAN, "true"),
-    JAVA_UNICODE_ESCAPE(Type.BOOLEAN, "false"),
-
-    UNICODE_INPUT(Type.BOOLEAN, "false"),
-    IGNORE_CASE(Type.BOOLEAN, "false"),
-    USER_TOKEN_MANAGER(Type.BOOLEAN, "false"),
-    USER_CHAR_STREAM(Type.BOOLEAN, "false"),
-
-    BUILD_PARSER(Type.BOOLEAN, "true"),
-    BUILD_TOKEN_MANAGER(Type.BOOLEAN, "true"),
-    TOKEN_MANAGER_USES_PARSER(Type.BOOLEAN, "false"),
-    SANITY_CHECK(Type.BOOLEAN, "true"),
-
-    FORCE_LA_CHECK(Type.BOOLEAN, "false"),
-    COMMON_TOKEN_ACTION(Type.BOOLEAN, "false"),
-    CACHE_TOKENS(Type.BOOLEAN, "false"),
-    KEEP_LINE_COLUMN(Type.BOOLEAN, "true"),
-
-    GENERATE_CHAINED_EXCEPTION(Type.BOOLEAN, "false"),
-    GENERATE_GENERICS(Type.BOOLEAN, "false"),
-    GENERATE_BOILERPLATE(Type.BOOLEAN, "true"),
-    GENERATE_STRING_BUILDER(Type.BOOLEAN, "false"),
-
-    GENERATE_ANNOTATIONS(Type.BOOLEAN, "false"),
-    SUPPORT_CLASS_VISIBILITY_PUBLIC(Type.BOOLEAN, "true"),
-    OUTPUT_DIRECTORY(Type.STRING, "."),
-    JDK_VERSION(Type.STRING, "1.5"),
-
-    TOKEN_EXTENDS(Type.STRING, ""),
-    TOKEN_FACTORY(Type.STRING, ""),
-    GRAMMAR_ENCODING(Type.STRING, ""),
-    OUTPUT_LANGUAGE(Type.STRING, "java"),
-
-    JAVA_TEMPLATE_TYPE(Type.STRING, "classic"),
-    CPP_NAMESPACE(Type.STRING, ""),
-    CPP_TOKEN_INCLUDES(Type.STRING, ""),
-    CPP_PARSER_INCLUDES(Type.STRING, ""),
-
-    CPP_TOKEN_MANAGER_INCLUDES(Type.STRING, ""),
-    CPP_IGNORE_ACTIONS(Type.BOOLEAN, "false"),
-    CPP_STOP_ON_FIRST_ERROR(Type.BOOLEAN, "false"),
-    CPP_TOKEN_MANAGER_SUPERCLASS(Type.STRING, ""),
-
-    DEPTH_LIMIT(Type.INTEGER, "0"),
-    CPP_STACK_LIMIT(Type.STRING, "");
+sealed class JccOption<T : Any>(override val type: OptionType<T>, override val staticDefaultValue: T?)
+    : GenericOption<T> {
 
 
-    companion object {
-        private enum class Type {
-            STRING, INTEGER, BOOLEAN
-        }
-    }
+    override val name: String = javaClass.simpleName
+
+    object PARSER_SUPER_CLASS : JccOption<String>(OptionType.STRING, "")
+    object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(OptionType.STRING, "")
+    object LOOKAHEAD : JccOption<Int>(OptionType.INTEGER, 1)
+    object CHOICE_AMBIGUITY_CHECK : JccOption<Int>(OptionType.INTEGER, 0)
+    object OTHER_AMBIGUITY_CHECK : JccOption<Int>(OptionType.INTEGER, 1)
+    object STATIC : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object PARSER_CODE_GENERATOR : JccOption<String>(OptionType.STRING, "")
+    object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(OptionType.STRING, "")
+    object NO_DFA : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object DEBUG_PARSER : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object DEBUG_LOOKAHEAD : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object DEBUG_TOKEN_MANAGER : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object ERROR_REPORTING : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object JAVA_UNICODE_ESCAPE : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object UNICODE_INPUT : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object IGNORE_CASE : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object USER_TOKEN_MANAGER : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object USER_CHAR_STREAM : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object BUILD_PARSER : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object BUILD_TOKEN_MANAGER : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object TOKEN_MANAGER_USES_PARSER : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object SANITY_CHECK : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object FORCE_LA_CHECK : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object COMMON_TOKEN_ACTION : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object CACHE_TOKENS : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object KEEP_LINE_COLUMN : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object GENERATE_CHAINED_EXCEPTION : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object GENERATE_GENERICS : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object GENERATE_BOILERPLATE : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object GENERATE_STRING_BUILDER : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object GENERATE_ANNOTATIONS : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object SUPPORT_CLASS_VISIBILITY_PUBLIC : JccOption<Boolean>(OptionType.BOOLEAN, true)
+    object OUTPUT_DIRECTORY : JccOption<String>(OptionType.STRING, ".")
+    object JDK_VERSION : JccOption<String>(OptionType.STRING, "1.5")
+    object TOKEN_EXTENDS : JccOption<String>(OptionType.STRING, "")
+    object TOKEN_FACTORY : JccOption<String>(OptionType.STRING, "")
+    object GRAMMAR_ENCODING : JccOption<String>(OptionType.STRING, "")
+    object OUTPUT_LANGUAGE : JccOption<String>(OptionType.STRING, "java")
+    object JAVA_TEMPLATE_TYPE : JccOption<String>(OptionType.STRING, "classic")
+    object CPP_NAMESPACE : JccOption<String>(OptionType.STRING, "")
+    object CPP_TOKEN_INCLUDES : JccOption<String>(OptionType.STRING, "")
+    object CPP_PARSER_INCLUDES : JccOption<String>(OptionType.STRING, "")
+    object CPP_TOKEN_MANAGER_INCLUDES : JccOption<String>(OptionType.STRING, "")
+    object CPP_IGNORE_ACTIONS : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object CPP_STOP_ON_FIRST_ERROR : JccOption<Boolean>(OptionType.BOOLEAN, false)
+    object CPP_TOKEN_MANAGER_SUPERCLASS : JccOption<String>(OptionType.STRING, "")
+    object DEPTH_LIMIT : JccOption<Int>(OptionType.INTEGER, 0)
+    object CPP_STACK_LIMIT : JccOption<String>(OptionType.STRING, "")
+
+
 }

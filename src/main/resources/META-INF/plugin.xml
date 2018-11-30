@@ -1,10 +1,10 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>com.github.oowekyala.intellij-javacc</id>
     <name>JavaCC Intellij Plugin</name>
     <description>Support for JavaCC .jj and .jjt files</description>
     <version>1.0.5-dirty</version>
     <vendor>oowekyala</vendor>
-    <idea-version since-build="15000"/>
+    <idea-version since-build="182"/>
 
     <application-components>
         <!-- Add your application components here -->

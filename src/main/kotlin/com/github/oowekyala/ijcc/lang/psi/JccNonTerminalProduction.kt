@@ -9,4 +9,6 @@ interface JccNonTerminalProduction : JavaccPsiElement, JccIdentifierOwner {
 
     @JvmDefault
     override fun getNameIdentifier(): JccIdentifier = header.nameIdentifier
+
+    val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
 }

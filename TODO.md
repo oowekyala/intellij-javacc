@@ -16,6 +16,11 @@
 ++ Doc is not displayed on tokens in structure view
 * Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
 ++ The ident also gives the type in the structure view...
+* Add some doc about keywords, etc
+* Add gutter links to node classes
+
+* Add MOAR tests
+
 
 * Make a good plugin description
 * Make a readme
@@ -55,6 +60,7 @@
 * Missing return statement
 * Expansion sequence can/ should be factored out (also for parser actions)
 * Lookahead issues (needs global CFA)
+* Detect left-recursion
 
 # Things not necessary before release
 

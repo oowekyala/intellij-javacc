@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.model.JavaccConfig
 import com.github.oowekyala.ijcc.model.LexicalGrammar
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
@@ -35,6 +36,9 @@ interface JccFile : PsiFile, JavaccPsiElement {
 
     /** Options section. */
     val options: JccOptionSection?
+
+    val javaccConfig: JavaccConfig
+
 
     companion object {
         /** Element type. */

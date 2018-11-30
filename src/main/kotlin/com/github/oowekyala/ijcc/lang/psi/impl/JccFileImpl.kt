@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.model.JavaccConfig
 import com.github.oowekyala.ijcc.model.LexicalGrammar
 import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
@@ -45,6 +46,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val options: JccOptionSection?
         get() = findChildByClass(JccOptionSection::class.java)
+
+    override val javaccConfig: JavaccConfig
+        get() = JavaccConfig(options, parserDeclaration)
 
     override val lexicalGrammar: LexicalGrammar
         get() = LexicalGrammar(childrenSequence().filterMapAs())

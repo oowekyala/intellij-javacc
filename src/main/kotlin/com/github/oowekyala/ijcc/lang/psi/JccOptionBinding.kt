@@ -28,7 +28,7 @@ interface JccOptionBinding : JccIdentifierOwner {
 
             return when {
                 int != null    -> int.text
-                string != null -> string.text
+                string != null -> string.text.removeSuffix("\"")
                 bool != null   -> bool.text
                 else           -> "??"
             }
