@@ -35,14 +35,15 @@ object JccElementFactory {
             PARSER_BEGIN(dummy)
             PARSER_END(dummy)
 
-            void foo() {} { $name }
+            void foo(): {} { $name }
         """.trimIndent()
         val file = createFile(project, fileText)
 
         return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
             .expansion
-            .let { it as JccLiteralRegularExpression }
+            .let { it as JccExpansionSequence }
+            .expansionUnitList[0] as JccLiteralRegularExpression
     }
 
     fun createIdentifier(project: Project, name: String): JccIdentifier {

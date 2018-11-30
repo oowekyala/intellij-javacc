@@ -1,41 +1,32 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
+import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionReference
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.EnclosedLogger
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement
+import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class TokenInliningIntention(psiElement: PsiElement) : LocalQuickFixAndIntentionActionOnPsiElement(psiElement) {
-    override fun getFamilyName(): String = name
+class TokenInliningIntention : PsiElementBaseIntentionAction() {
 
-    override fun getText(): String = "Inline literal reference"
+    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
+            element.takeIf { it.node.elementType == JavaccTypes.JCC_IDENT }
+                ?.let { it.parent as? JccIdentifier }
+                ?.let { it.parent as? JccRegularExpressionReference }
+                ?.let { it.reference.resolveToken()?.asSingleLiteral() } != null
 
-    override fun isAvailable(project: Project,
-                             file: PsiFile,
-                             startElement: PsiElement,
-                             endElement: PsiElement): Boolean {
+    override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
+        val ref = element.parent.parent as? JccRegularExpressionReference ?: return
 
-        return startElement is JccRegularExpressionReference && startElement.reference.resolveToken()?.asSingleLiteral() != null
-    }
-
-    override fun invoke(project: Project,
-                        file: PsiFile,
-                        editor: Editor?,
-                        startElement: PsiElement,
-                        endElement: PsiElement) {
-
-        val ref = startElement as? JccRegularExpressionReference ?: return
-
-        val literal = startElement.reference.resolveToken()?.asSingleLiteral()
+        val literal = ref.reference.resolveToken()?.asSingleLiteral()
         if (literal == null) {
             Log { debug("Weird input to the invoke method (asSingleLiteral is null)") }
             return
@@ -43,6 +34,11 @@ class TokenInliningIntention(psiElement: PsiElement) : LocalQuickFixAndIntention
 
         ref.replace(JccElementFactory.createLiteralRegex(project, literal.text))
     }
+
+    override fun getFamilyName(): String = text
+
+    override fun getText(): String = "Inline literal reference"
+
 
     private object Log : EnclosedLogger()
 }

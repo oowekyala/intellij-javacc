@@ -53,3 +53,72 @@ void node_descriptor_expression() #NodeDescriptorExpression
     tok = getNextToken();
   }
 }
+
+
+
+String ComparisonOperator() #void:
+{}
+{
+   ( <COMP> | <NE> | <EQ> | <LT> | <LE> | <GT> | <GE> | <IS> )
+   { return token.getImage(); }
+}
+
+
+
+void StringConcatExpr() #StringConcatExpr(>1):
+{}
+{
+  RangeExpr() ( "||" RangeExpr() )*
+}
+
+void RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+// In the following, we use nodes to represent the operators because there may be several expressions chained.
+// e.g. E1 + E2 - E3 ~> E1 PlusOperator E2 MinusOperator E3
+
+void AdditiveExpr() #AdditiveExpr(>1):
+{}
+{
+  MultiplicativeExpr() (AdditiveOperator() MultiplicativeExpr() )*
+}
+
+void AdditiveOperator():
+{}
+{
+    ( "+" | "-" ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+
+void MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+void MultiplicativeOperator():
+{}
+{
+    (   <STAR>
+      | <DIV>
+      | <IDIV>
+      | <MOD>
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+void UnionExpr() #UnionExpr(>1):
+{}
+{
+  IntersectExceptExpr() ( UnionOperator() IntersectExceptExpr() )*
+}
+
+void UnionOperator():
+{}
+{
+    ( <UNION>
+    | "|" { jjtThis.setShorthand(true); }
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
