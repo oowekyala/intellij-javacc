@@ -70,5 +70,9 @@
 
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>
