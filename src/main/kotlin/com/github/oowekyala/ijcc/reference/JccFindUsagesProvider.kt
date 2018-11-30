@@ -34,13 +34,20 @@ class JccFindUsagesProvider : FindUsagesProvider {
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
-    override fun getType(element: PsiElement): String = when (element) {
-        is JccRegexprSpec        -> "token"
-        is JccBnfProduction      -> "BNF production"
-        is JccJavacodeProduction -> "Javacode production"
-        else                     -> {
-            Log { debug("Defaulting type description because unhandled ${element.javaClass.simpleName}") }
-            "name"
+    override fun getType(element: PsiElement): String {
+
+        val parent = element.parent
+
+        return when (parent) {
+            is JccNamedRegularExpression          -> "token"
+            is JccJavaNonTerminalProductionHeader -> when {
+                parent.parent is JccBnfProduction      -> "BNF production"
+                parent.parent is JccJavacodeProduction -> "Javacode production"
+                else                                   -> null
+            }
+            else                                  -> null
+        } ?: "name".also {
+            Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }
         }
     }
 

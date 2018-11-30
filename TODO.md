@@ -13,9 +13,9 @@
 ++ AUTOCOMPLETE
 * Group tokens by lexical state in structure view
 ++ BIG PERFORMANCE PROBLEM -> probably stop building lexical states
-* Doc is not displayed on tokens in structure view
+++ Doc is not displayed on tokens in structure view
 * Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
-* The ident also gives the type in the structure view...
+++ The ident also gives the type in the structure view...
 
 * Make a good plugin description
 * Make a readme
