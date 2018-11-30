@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.insight.quickdoc
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.parentSequence
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
@@ -26,22 +25,10 @@ object JccDocUtil {
         }.filter { it.name == name }.firstOrNull()
     }
 
-    /**
-     * Gets the hyperlink suitable for use with [DocumentationManager.createHyperlink]
-     * to refer to the given [JccRegexprSpec] or [JccNonTerminalProduction].
-     */
-    fun getLinkRefTo(jccPsiElement: PsiElement?): String? {
+    /** Gets a hyperlink suitable for use with [DocumentationManager.createHyperlink]. */
+    fun getLinkRefTo(spec: JccRegexprSpec): String = "token/${spec.name}"
 
-        val relevantParent = jccPsiElement?.parentSequence(includeSelf = true)
-            ?.first { it is JccRegexprSpec || it is JccNonTerminalProduction }
-            ?: return null
-
-        return when (relevantParent) {
-            is JccRegexprSpec           -> "token/${relevantParent.name}"
-            is JccNonTerminalProduction -> "nonterminal/${relevantParent.name}"
-            else                        -> null
-        }
-    }
-
+    /** Gets a hyperlink suitable for use with [DocumentationManager.createHyperlink]. */
+    fun getLinkRefTo(production: JccNonTerminalProduction): String = "nonterminal/${production.name}"
 
 }

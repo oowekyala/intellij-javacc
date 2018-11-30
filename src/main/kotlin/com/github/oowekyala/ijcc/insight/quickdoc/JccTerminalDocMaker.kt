@@ -49,7 +49,12 @@ object JccTerminalDocMaker {
     private const val MaxChars = 10
 
 
-    private class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
+    class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
+
+        override fun visitRegexpLike(o: JccRegexpLike) {
+            o.accept(this)
+        }
+
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
             sb.append(o.text)
         }
@@ -63,10 +68,15 @@ object JccTerminalDocMaker {
         }
 
         override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+            val reffed = o.reference?.resolve() as? JccRegexprSpec
+
+            // make the linktext be the literal if needed.
+            val linkText = reffed?.asSingleLiteral()?.text ?: "&lt;${o.name}&gt;"
+
             DocumentationManager.createHyperlink(
                 sb,
-                JccDocUtil.getLinkRefTo(o.reference?.resolve()),
-                "&lt;${o.name}&gt;",
+                reffed?.let { JccDocUtil.getLinkRefTo(it) },
+                linkText,
                 false
             )
         }
@@ -113,10 +123,8 @@ object JccTerminalDocMaker {
             sb.append("( ")
             o.regexpElement.accept(this)
             sb.append(" )")
-            val occurrenceIndicator = o.lastChildNoWhitespace
-            if (occurrenceIndicator != null) {
-                sb.append(occurrenceIndicator.text)
-            }
+            o.occurrenceIndicator?.run { sb.append(text) }
+            o.repetitionRange?.run { sb.append(text) }
         }
 
         override fun visitCharacterDescriptor(o: JccCharacterDescriptor) {

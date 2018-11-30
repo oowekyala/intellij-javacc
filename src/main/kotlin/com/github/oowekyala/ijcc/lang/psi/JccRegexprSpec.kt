@@ -26,6 +26,22 @@ interface JccRegexprSpec : JavaccPsiElement {
         }
     }
 
+    /**
+     * Return the regex if it's a single literal, unwrapping
+     * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+     * if needed.
+     */
+    @JvmDefault
+    fun asSingleLiteral(): JccLiteralRegularExpression? {
+        val regex = regularExpression
+        return when (regex) {
+            is JccLiteralRegularExpression -> regex
+            is JccNamedRegularExpression   -> regex.regexpElement as? JccLiteralRegularExpression
+            is JccInlineRegularExpression  -> regex.regexpElement as? JccLiteralRegularExpression
+            else                           -> null
+        }
+    }
+
     /** Returns the list of lexical states this regexp applies to. */
     @JvmDefault
     fun getLexicalStatesName(): List<String>? = production.lexicalStateList?.identifierList?.map { it.name }

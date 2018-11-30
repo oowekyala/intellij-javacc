@@ -122,6 +122,9 @@
 
   extends("expansion_(alternative|sequence|unit)")=expansion
   extends(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
+
+  extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
+  implements("repetition_range|occurence_indicator")=occurrence_indicator_or_range
 }
 
 javacc_input 	::=
@@ -272,6 +275,7 @@ parser_actions_unit     ::=
 
 assigned_expansion_unit ::=
     java_assignment_lhs "=" (priv_regular_expression | non_terminal_expansion_unit)
+    {methods=[regexpUnitList=""]}
 
 local_lookahead 	::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
@@ -384,9 +388,11 @@ fake non_terminal_production    ::= java_non_terminal_production_header java_blo
     methods=[header="java_non_terminal_production_header"]
 }
 
+fake occurrence_indicator        ::=
+fake occurrence_indicator_or_range  ::=
 fake regular_expression         ::=
 fake regexp_element             ::=
-fake regexp_like                 ::=
+fake regexp_like                ::=
 
 
 // Some java grammar

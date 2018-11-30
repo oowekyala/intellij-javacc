@@ -26,3 +26,14 @@ inline fun Boolean.ifNot(block: () -> Unit) {
 }
 
 
+fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
+    val iterator = iterator()
+
+    if (iterator.hasNext())
+        main(iterator.next())
+    while (iterator.hasNext()) {
+        delim()
+        main(iterator.next())
+    }
+}
+

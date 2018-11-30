@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
-import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.parentSequence
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
@@ -27,6 +24,8 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
 
         return when (relevantNode) {
             is JccNamedRegularExpression -> JccTerminalDocMaker.makeDoc(relevantNode)
+            is JccBnfProduction          -> JccNonTerminalDocMaker.makeDoc(relevantNode)
+            is JccJavacodeProduction     -> JccNonTerminalDocMaker.makeDoc(relevantNode)
             else                         -> null
         }
     }
