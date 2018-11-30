@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.JavaccParserDefinition
+import com.github.oowekyala.ijcc.lang.TestResourcesPath
+import com.github.oowekyala.ijcc.lang.dataPath
 import com.intellij.testFramework.ParsingTestCase
 
 /**

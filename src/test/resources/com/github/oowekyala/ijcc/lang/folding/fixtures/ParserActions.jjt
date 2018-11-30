@@ -1,13 +1,15 @@
-PARSER_BEGIN(JJTreeParser)
-PARSER_END(JJTreeParser)
+<fold text='/PARSER DECLARATION/' expand='false'>PARSER_BEGIN(JJTreeParser)
+PARSER_END(JJTreeParser)</fold>
 
-< COMMENT_STATE >  SKIP : {  "(:" <fold text="{..}">{ commentNestingDepth++; }</fold> }
+<fold text='SKIP: {..}' expand='false'>< COMMENT_STATE >  SKIP : {
+    "(:"</fold> <fold text="{..}">{ commentNestingDepth++; }
+}
 
 
 void QuantifiedExpr():
 {}
 {
-  (<SOME> <fold text="{..}">{ jjtThis.setUniversallyQuantified(false); }</fold>)
+  (<SOME> <fold text="{..}">{ jjtThis.setUniversallyQuantified(false); })
   VarBindingList(false)
   <SATISFIES> ExprSingle()
 }

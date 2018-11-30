@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -22,7 +21,7 @@ import com.intellij.psi.TokenType
  */
 class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
-    // TODO add more general folding regions that are not collapsed by default
+    // TODO add more general folding.fixtures regions that are not collapsed by default
 
     override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
                                           root: PsiElement,
@@ -42,7 +41,10 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
     private fun TextRange.isProperTextRange() = startOffset in 0..endOffset
 
-    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = true
+    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = when (node.psi) {
+        is JccNonTerminalProduction -> false
+        else                        -> true
+    }
 
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
@@ -59,7 +61,11 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
                 } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
             }
-            else                             -> throw UnsupportedOperationException("Unhandled case")
+            is JccBnfProduction              -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+                ?: ""}/"
+            is JccJavacodeProduction         -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+                ?: ""}/"
+            else                             -> throw UnsupportedOperationException("Unhandled case $psi")
         }
     }
 
@@ -98,7 +104,18 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
             override fun visitRegularExprProduction(o: JccRegularExprProduction) {
                 result += FoldingDescriptor(o.node, o.textRange, regexpProductionsGroup)
+
+                currentJBlockGroup = FoldingGroup.newGroup("tokens:blocks:" + o.name)
+                super.visitRegularExprProduction(o)
+                currentJBlockGroup = null
             }
+
+            override fun visitRegexprSpec(o: JccRegexprSpec) {
+                o.javaBlock?.run {
+                    result += FoldingDescriptor(node, textRange, currentJBlockGroup)
+                }
+            }
+
 
             private fun trimWhitespace(o: PsiElement): TextRange {
                 var range = o.textRange
@@ -106,7 +123,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 if (o.nextSibling?.node?.elementType == TokenType.WHITE_SPACE
                     && o.nextSibling.textLength > 1
                 ) {
-                    range = UnfairTextRange(range.startOffset, range.endOffset + o.nextSibling.textLength - 1)
+                    range = TextRange(range.startOffset, range.endOffset + o.nextSibling.textLength - 1)
                 }
                 return range
             }
@@ -132,11 +149,13 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-                // don't fold children
+                result += FoldingDescriptor(o.node, o.textRange)
             }
 
 
             override fun visitBnfProduction(o: JccBnfProduction) {
+                result += FoldingDescriptor(o.node, o.textRange)
+
                 currentJBlockGroup = FoldingGroup.newGroup("bnf:blocks:" + o.name)
                 currentLookaheadGroup = FoldingGroup.newGroup("bnf:lookaheads:" + o.name)
                 super.visitBnfProduction(o)
