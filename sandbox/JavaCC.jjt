@@ -1181,7 +1181,7 @@ void local_lookahead() :
 	  commaAtEnd = true;
 	}
   ]
-  [ LOOKAHEAD(0, { getTokenType(1) != RPAREN && getTokenType(1) != LBRACE } )
+  [ LOOKAHEAD(0, { getTokenType(1) <= RPAREN && getTokenType(1) != LBRACE } )
     expansion_choices()
 	{
 	  emptyLA = false; commaAtEnd = false;

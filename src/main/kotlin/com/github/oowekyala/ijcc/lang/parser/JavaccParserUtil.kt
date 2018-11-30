@@ -53,7 +53,8 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
      */
     @JvmStatic
     fun parseJCompilationUnit(builder: PsiBuilder, level: Int): Boolean {
-        // PARSER_END should be the current token when this method returns
+        // PARSER_BEGIN should have been consumed at the start
+        // PARSER_END should be the current token when this method returns, not consumed
         while (builder.tokenType != JCC_PARSER_END_KEYWORD && !builder.eof()) {
             builder.advanceLexer()
         }
@@ -72,12 +73,22 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
      */
     @JvmStatic
     fun parseJExpression(builder: PsiBuilder, level: Int): Boolean {
-        if (builder.tokenType == JCC_RPARENTH) return false // when we're in a parameter list
-        return builder.javaContext {
-            JavaParser.INSTANCE.expressionParser.parse(it)
-            true
+        if (builder.tokenType == JCC_RPARENTH) return false // when we're in an empty parameter list
+
+        var depth = 1
+
+        while (depth > 0 && !builder.eof()) {
+            when (builder.tokenType) {
+                JCC_LBRACE, JCC_LPARENTH -> depth++
+                JCC_RBRACE, JCC_RPARENTH -> depth--
+            }
+            if (depth == 0) break
+            builder.advanceLexer()
         }
+
+        return true
     }
+
 
     //FIXME assignment lhs are for now restricted to IDENT ("." IDENT)*
     @JvmStatic
