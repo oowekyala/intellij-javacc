@@ -6,7 +6,7 @@ package com.github.oowekyala.ijcc.model
  */
 interface GenericOption<T : Any> {
 
-    val type: OptionType<T>
+    val type: JccOptionType<T>
 
     val name: String
 

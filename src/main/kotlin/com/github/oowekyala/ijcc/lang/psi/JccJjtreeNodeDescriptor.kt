@@ -1,7 +1,10 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.model.JavaccConfig
+import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import org.intellij.grammar.java.JavaHelper
 
 /**
  * Node descriptor.
@@ -12,7 +15,7 @@ import com.intellij.psi.TokenType
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
+interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNodeClassOwner {
 
     /**
      * Returns the expression if one was specified
@@ -23,6 +26,16 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
             is JccJjtreeNodeDescriptorExpr -> lastChild as JccJjtreeNodeDescriptorExpr
             else                           -> null
         }
+
+    @JvmDefault
+    override fun nodeClass(javaccConfig: JavaccConfig): NavigatablePsiElement? {
+        if (this.isVoid) return null
+
+        val nodePackage = javaccConfig.nodePackage
+        val nodeName = javaccConfig.nodePrefix + this.name
+
+        return JavaHelper.getJavaHelper(this).findClass("$nodePackage.$nodeName")
+    }
 
     /**
      * Gets the production header of the production to which this

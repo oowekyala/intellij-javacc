@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.model
 
 import kotlin.reflect.KClass
 
-sealed class OptionType<T : Any> constructor(val klass: KClass<T>) {
+sealed class JccOptionType<T : Any> constructor(val klass: KClass<T>) {
 
     @Suppress("UNCHECKED_CAST")
     fun parseStringValue(str: String): T? = when (this) {
@@ -12,8 +12,8 @@ sealed class OptionType<T : Any> constructor(val klass: KClass<T>) {
     }
 
 
-    object STRING : OptionType<String>(String::class)
-    object INTEGER : OptionType<Int>(Int::class)
-    object BOOLEAN : OptionType<Boolean>(Boolean::class)
+    object STRING : JccOptionType<String>(String::class)
+    object INTEGER : JccOptionType<Int>(Int::class)
+    object BOOLEAN : JccOptionType<Boolean>(Boolean::class)
 
 }

@@ -20,6 +20,12 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
 
     val outputDirectory: String get() = getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY)
 
+    val isDefaultVoid: Boolean get() = getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID)
+
+    val nodePrefix: String get() = getOptionValueOrDefault(JjtOption.NODE_PREFIX)
+
+    val lookahead: Int get() = getOptionValueOrDefault(JccOption.LOOKAHEAD)
+
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
             options?.getOverriddenOptionValue(genericOption) ?: genericOption.getDefaultValue(this)
 

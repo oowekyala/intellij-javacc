@@ -16,9 +16,4 @@ class JccCodeInsightTests : LightCodeInsightFixtureTestCase() {
         myFixture.testFoldingWithCollapseStatus("$FoldingTestDataPath/ParserActions.jjt")
     }
 
-    companion object {
-        private const val Fixtures = "fixtures"
-        val FoldingTestDataPath = TestResourcesPath + JccCodeInsightTests::class.dataPath("folding", Fixtures)
-
-    }
 }

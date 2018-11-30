@@ -100,7 +100,7 @@
 
   implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
 
-  extends("(bnf|javacode)_production") = non_terminal_production
+  implements("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
   implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit|option_binding")=identifier_owner
@@ -384,7 +384,7 @@ fake identifier_owner           ::= identifier {
     implements="com.intellij.psi.PsiNameIdentifierOwner"
 }
 
-fake non_terminal_production    ::= java_non_terminal_production_header java_block {
+fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block {
     methods=[header="java_non_terminal_production_header"]
 }
 
