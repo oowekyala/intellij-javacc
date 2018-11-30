@@ -19,23 +19,6 @@ import com.intellij.openapi.actionSystem.Shortcut
 class JavaccFileStructureViewModel(psiFile: JccFileImpl)
     : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile)), StructureViewModel.ElementInfoProvider {
 
-    /*
-     * [sort alpha:off] [show lexical structure:on] [show options:off]// later [show parser structure] [show jjtree node structure]
-     *
-     * + Parser declaration
-     *   - structure view of the compilation unit
-     *
-     * + (regexp prod icon) TOKEN <*>
-     *   - (token icon) (public icon)   <TOKEN1 : "foo">
-     *   - (token icon) (public icon)   <TOKEN2 : "bar">  -> <IN_XPATH_COMMENT>
-     *   - (token icon) (private icon)  <TOKEN3 : "bar">  -> <IN_XPATH_COMMENT>
-     * + (regexp prod icon) SKIP <LEXICAL_STATE>
-     *
-     * - (bnf production icon)      (public icon) // same presentation as a java method (argument types, return type)
-     * - (javacode production icon) (public icon) // same presentation as a java method (argument types, return type)
-     *
-     */
-
     init {
         withSuitableClasses(
             JccFileImpl::class.java,

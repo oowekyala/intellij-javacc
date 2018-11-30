@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.reference
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.lang.HelpID
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner
 import com.intellij.lang.cacheBuilder.WordsScanner
@@ -37,11 +38,16 @@ class JccFindUsagesProvider : FindUsagesProvider {
         is JccRegexprSpec        -> "token"
         is JccBnfProduction      -> "BNF production"
         is JccJavacodeProduction -> "Javacode production"
-        else                     -> "name"
+        else                     -> {
+            Log { debug("Defaulting type description because unhandled ${element.javaClass.simpleName}") }
+            "name"
+        }
     }
 
     override fun getHelpId(psiElement: PsiElement): String? = HelpID.FIND_OTHER_USAGES
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
             psiElement is JccIdentifier || psiElement is JccRegexprSpec || psiElement is JccNonTerminalProduction
+
+    private object Log : EnclosedLogger()
 }

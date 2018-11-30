@@ -8,12 +8,14 @@
 ++ Fix bugs with lookahead not expanding anymore
 ++ Rebuild the structure view
 ++ Make new icons
-* Add quick doc for options and productions
+++ Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
 ++ AUTOCOMPLETE
 * Group tokens by lexical state in structure view
-* BIG PERFORMANCE PROBLEM -> probably stop building lexical states
-
+++ BIG PERFORMANCE PROBLEM -> probably stop building lexical states
+* Doc is not displayed on tokens in structure view
+* Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
+* The ident also gives the type in the structure view...
 
 * Make a good plugin description
 * Make a readme
@@ -30,9 +32,11 @@
 
 ## Inspection ideas
 
-* Unnecessary #void annotation
+++ Unnecessary #void annotation
 ++ Unnecessary inline regex (in token specs)
-* Unnamed inline regex (in productions)
+++ Unnamed inline regex (in productions)
+* Unnecessary parentheses
+* Use bracketed expansion instead of ()? (when there's another set of parentheses inside)
 * String uncovered by literal regex
 * Regex reference can be replaced by string
   * String can be replaced by regex reference

@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.angles
+import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.bold
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.model.LexicalState
 import com.github.oowekyala.ijcc.util.foreachAndBetween
@@ -13,22 +15,24 @@ import org.intellij.lang.annotations.Language
  */
 object JccTerminalDocMaker {
 
-    private fun makeDef(name: String, regexKind: String): String =
-            """$regexKind${'\t'}<b>&lt;$name&gt;</b>""".trimIndent()
+    private fun makeDef(name: String, regexKind: String) = "$regexKind\t$name"
 
     @Language("HTML")
-    fun makeDoc(named: JccNamedRegularExpression): String {
+    fun makeDoc(spec: JccRegexprSpec): String {
 
-
-        val spec = named.parent as? JccRegexprSpec
-
-        val (regexpKind, states) = if (spec != null) {
+        val (regexpKind, states) = run {
             val prod = spec.production
             Pair(prod.regexprKind.text, lexicalStatesOf(prod))
-        } else Pair("", "")
+        }
 
-        val definition = makeDef(named.name ?: "", regexpKind)
-        val expansion = StringBuilder().also { named.accept(RegexDocVisitor(it)) }.toString()
+        val name =
+                spec.regularExpression
+                    .let { it as? JccNamedRegularExpression }
+                    ?.name
+                    ?.let { bold(angles(it)) } ?: "(unnamed)"
+
+        val definition = makeDef(name, regexpKind)
+        val expansion = StringBuilder().also { spec.regularExpression.accept(RegexDocVisitor(it)) }.toString()
 
         return """
             $DEFINITION_START$definition$DEFINITION_END
@@ -37,6 +41,7 @@ object JccTerminalDocMaker {
             ${SECTION_HEADER_START}Expansion:$SECTION_SEPARATOR<p>$expansion$SECTION_END
             $SECTIONS_END
         """.trimIndent()
+
     }
 
 

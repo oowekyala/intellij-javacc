@@ -40,4 +40,10 @@ object JccDocUtil {
     /** Gets a hyperlink suitable for use with [DocumentationManager.createHyperlink]. */
     fun getLinkRefTo(production: JccNonTerminalProduction): String = "$NonterminalRef/${production.name}"
 
+
+    fun emph(it: String) = "<i>$it</i>"
+    fun bold(it: String) = "<b>$it</b>"
+    fun angles(it: String) = "&lt;$it&gt;"
+
+
 }

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiReference
 
 /**
  * Base impl for Jcc psi elements.
@@ -13,7 +14,9 @@ import com.intellij.lang.ASTNode
 abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JavaccPsiElement {
 
     override fun getContainingFile() = super.getContainingFile() as JccFile
-
+    override fun getReference(): PsiReference? {
+        return super.getReference()
+    }
     override fun getName(): String? = when (this) {
         is JccIdentifierOwner -> this.nameIdentifier?.name
         is JccRegexprSpec     -> this.regularExpression.let { it as? JccNamedRegularExpression }?.name

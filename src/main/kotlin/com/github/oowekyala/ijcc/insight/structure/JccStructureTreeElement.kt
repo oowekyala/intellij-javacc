@@ -89,7 +89,6 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         return builder.toString()
     }
 
-
     override fun getLocationString(): String? {
         val element = element
         if (element is JccRegexprSpec) {
@@ -112,16 +111,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         return null
     }
 
-    private fun getRegexpProductionDisplayName(prod: JccRegularExprProduction): String {
-
-        val builder = StringBuilder()
-
-        builder.append(prod.regexprKind.text)
-
-
-
-        return builder.toString()
-    }
+    private fun getRegexpProductionDisplayName(prod: JccRegularExprProduction): String = prod.regexprKind.text
 
     private fun getProductionDisplayName(nonTerminalProduction: JccNonTerminalProduction): String {
         val header = nonTerminalProduction.header

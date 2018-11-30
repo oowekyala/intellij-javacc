@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.util.LoggerCompanion
+import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
@@ -36,7 +36,9 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
             }
 
 
-    companion object : LoggerCompanion {
+    companion object {
+
+        private object Log : EnclosedLogger()
 
         const val InspectionName = "Unnecessary angled braces around literal regex"
         const val ProblemDescription = "Unnecessary angled braces"
@@ -54,7 +56,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
                     val regex = inline.regexpElement!!
                     inline.replace(regex)
                 } catch (e: IncorrectOperationException) {
-                    LOG.error(e)
+                    Log { error(e) }
                 }
             }
         }
