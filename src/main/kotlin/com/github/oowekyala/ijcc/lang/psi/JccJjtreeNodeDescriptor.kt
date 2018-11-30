@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.model.JavaccConfig
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import org.intellij.grammar.java.JavaHelper
 
 /**
  * Node descriptor.
@@ -34,7 +33,7 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNod
         val nodePackage = javaccConfig.nodePackage
         val nodeName = javaccConfig.nodePrefix + this.name
 
-        return JavaHelper.getJavaHelper(this).findClass("$nodePackage.$nodeName")
+        return JccNodeClassOwner.getJavaClassFromQname(this, "$nodePackage.$nodeName")
     }
 
     /**

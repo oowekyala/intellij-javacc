@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.util
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.PlatformIcons
 import javax.swing.Icon
@@ -22,7 +23,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     JAVACODE_PRODUCTION(PlatformIcons.ABSTRACT_METHOD_ICON),
 
     // other
-
+    /** Node class for the gutter. */
+    GUTTER_NODE_CLASS(AllIcons.Gutter.OverridenMethod),
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");
 

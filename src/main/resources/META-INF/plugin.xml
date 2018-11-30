@@ -65,6 +65,9 @@
         <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.insight.structure.JavaccStructureViewBuilderFactory"/>
 
+        <codeInsight.lineMarkerProvider language="JavaCC"
+                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreeLineMarkerProvider"/>
+
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
     </extensions>
