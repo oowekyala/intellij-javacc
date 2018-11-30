@@ -72,7 +72,7 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
         fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
                                              elt: JccLiteralRegularExpression,
                                              specOwnsProblem: Boolean) {
-            val matchedBy = JccStringTokenReference(elt).resolve() as? JccRegexprSpec
+            val matchedBy: JccRegexprSpec? = JccStringTokenReference(elt).resolve()
             if (matchedBy != null && matchedBy !== spec) {
                 // so it's matched by something different
 

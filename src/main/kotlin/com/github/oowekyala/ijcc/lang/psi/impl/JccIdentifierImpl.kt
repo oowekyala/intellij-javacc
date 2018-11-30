@@ -1,12 +1,23 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiReference
 
 class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
+
+    override fun getReference(): PsiReference? {
+        return parent.reference
+        val parent = parent
+        return when (parent) {
+            is JccJavaNonTerminalProductionHeader -> parent.reference
+            is JccJavacodeProduction              -> parent.reference
+//            is JccNamedRegularExpression          ->
+            else                                  -> null
+        }
+    }
 
     fun accept(visitor: JccVisitor) {
         visitor.visitIdentifier(this)

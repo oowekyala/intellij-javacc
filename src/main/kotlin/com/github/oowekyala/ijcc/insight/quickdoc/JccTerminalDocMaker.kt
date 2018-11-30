@@ -65,7 +65,7 @@ object JccTerminalDocMaker {
         }
 
         override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-            val reffed = o.reference.resolve()
+            val reffed: JccRegexprSpec? = o.reference.resolveToken()
 
             // make the linktext be the literal if needed.
             val linkText = reffed?.asSingleLiteral()?.text ?: "&lt;${o.name}&gt;"

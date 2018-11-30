@@ -62,7 +62,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     }
 
     override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-        val ref = o.reference.resolve()
+        val ref = o.reference.resolveToken()
         if (ref == null)
             unresolved = true
         else

@@ -65,7 +65,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-            val reffed = o.reference?.resolve() as? JccRegexprSpec
+            val reffed: JccRegexprSpec? = o.reference?.resolve()
 
             if (reffed != null) {
                 DocumentationManager.createHyperlink(
@@ -98,7 +98,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
-            val reffed = o.reference.resolve()
+            val reffed = o.reference.resolveProduction()
 
             DocumentationManager.createHyperlink(
                 sb,

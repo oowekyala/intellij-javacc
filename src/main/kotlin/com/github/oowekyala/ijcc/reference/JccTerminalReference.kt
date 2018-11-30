@@ -1,10 +1,7 @@
 package com.github.oowekyala.ijcc.reference
 
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionReference
-import com.github.oowekyala.ijcc.lang.psi.isInRegexContext
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -20,7 +17,10 @@ class JccTerminalReference(psiElement: JccRegularExpressionReference) :
 
     private val isRegexContext = psiElement.isInRegexContext()
 
-    override fun resolve(): JccRegexprSpec? {
+    override fun resolve(): JccIdentifier? =
+            resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
+
+    fun resolveToken(): JccRegexprSpec? {
         val searchedName = element.name ?: return null
 
         val processor = TerminalScopeProcessor(searchedName, isRegexContext)

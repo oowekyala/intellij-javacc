@@ -15,6 +15,8 @@ class JccStringTokenReference(element: JccLiteralRegularExpression) :
     PsiPolyVariantReferenceBase<JccLiteralRegularExpression>(element) {
 
 
+    override fun resolve(): JccRegexprSpec? = super.resolve() as JccRegexprSpec?
+
     override fun multiResolve(incompleteCode: Boolean): Array<MyResolveResult> {
         val file = element.containingFile
 

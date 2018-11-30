@@ -133,7 +133,7 @@ class JccAnnotator : JccBaseAnnotator() {
     }
 
     private fun AnnotationHolder.highlightStringOrToken(literal: JccLiteralRegularExpression) {
-        val ref = literal.reference?.resolve()
+        val ref: JccRegexprSpec? = literal.reference?.resolve()
 
         // if so, the literal declares itself
         val isSelfReferential = ref != null && literal.strictParents().any { it === ref }

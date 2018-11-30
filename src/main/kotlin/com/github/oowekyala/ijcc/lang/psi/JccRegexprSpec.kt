@@ -54,7 +54,7 @@ interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
         return when (regex) {
             is JccLiteralRegularExpression   -> regex
             is JccNamedRegularExpression     -> regex.regexpElement
-            is JccRegularExpressionReference -> if (followReferences) regex.reference.resolve()?.getRootRegexElement() else null
+            is JccRegularExpressionReference -> if (followReferences) regex.reference.resolveToken()?.getRootRegexElement() else null
             is JccInlineRegularExpression    -> regex.regexpElement
             is JccEofRegularExpression       -> null
             else                             -> null

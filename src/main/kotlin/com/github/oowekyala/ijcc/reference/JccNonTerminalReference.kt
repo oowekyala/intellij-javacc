@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.reference
 
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
@@ -19,7 +20,9 @@ import com.intellij.psi.ResolveState
 class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
     PsiReferenceBase<JccNonTerminalExpansionUnit>(psiElement) {
 
-    override fun resolve(): JccNonTerminalProduction? {
+    override fun resolve(): JccIdentifier? = resolveProduction()?.nameIdentifier
+
+    fun resolveProduction(): JccNonTerminalProduction? {
         val searchedName = element.name ?: return null
 
         val processor = NonTerminalScopeProcessor(searchedName)
@@ -27,6 +30,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
         file.processDeclarations(processor, ResolveState.initial(), element, element)
         return processor.result
     }
+
 
     override fun getVariants(): Array<Any?> =
             element.containingFile.nonTerminalProductions.map { it.name }.toList().toTypedArray()

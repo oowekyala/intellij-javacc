@@ -68,9 +68,8 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         private val LOG = Logger.getInstance(JavaccFoldingBuilder::class.java)
 
 
-        private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
-            return regexRef.reference.resolve()?.asSingleLiteral()
-        }
+        private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? =
+                regexRef.reference.resolveToken()?.asSingleLiteral()
 
         private val newLines = CharArray(2)
 
