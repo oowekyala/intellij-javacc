@@ -43,7 +43,7 @@ object JccNonTerminalDocMaker {
             append(DocumentationMarkup.SECTION_HEADER_START).append("Definition:")
                 .append(DocumentationMarkup.SECTION_SEPARATOR)
                 .append("<p>")
-            prod.expansion?.run { ExpansionDocVisitor(this@buildString).visitExpansion(this) }
+            prod.expansion?.run { this.accept(ExpansionDocVisitor(this@buildString)) }
             append(DocumentationMarkup.SECTION_END)
             append(DocumentationMarkup.SECTIONS_END)
         }
@@ -61,7 +61,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitRegexpLike(o: JccRegexpLike) {
-            JccTerminalDocMaker.RegexDocVisitor(sb).visitRegexpLike(o)
+            o.accept(JccTerminalDocMaker.RegexDocVisitor(sb))
         }
 
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
@@ -98,7 +98,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
-            val reffed = o.reference?.resolve() as? JccNonTerminalProduction
+            val reffed = o.reference.resolve()
 
             DocumentationManager.createHyperlink(
                 sb,

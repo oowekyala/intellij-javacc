@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.model.LexicalState
+import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.lang.documentation.DocumentationMarkup
 import org.intellij.lang.annotations.Language
@@ -51,10 +52,6 @@ object JccTerminalDocMaker {
 
     class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
 
-        override fun visitRegexpLike(o: JccRegexpLike) {
-            o.accept(this)
-        }
-
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
             sb.append(o.text)
         }
@@ -68,7 +65,7 @@ object JccTerminalDocMaker {
         }
 
         override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-            val reffed = o.reference?.resolve() as? JccRegexprSpec
+            val reffed = o.reference.resolve()
 
             // make the linktext be the literal if needed.
             val linkText = reffed?.asSingleLiteral()?.text ?: "&lt;${o.name}&gt;"
@@ -88,18 +85,6 @@ object JccTerminalDocMaker {
 
         override fun visitRegexpSequence(o: JccRegexpSequence) {
             o.regexpUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
-        }
-
-
-        fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
-            val iterator = iterator()
-
-            if (iterator.hasNext())
-                main(iterator.next())
-            while (iterator.hasNext()) {
-                delim()
-                main(iterator.next())
-            }
         }
 
         override fun visitRegexpAlternative(o: JccRegexpAlternative) {

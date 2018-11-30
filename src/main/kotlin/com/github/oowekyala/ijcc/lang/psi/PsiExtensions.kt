@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -51,3 +52,10 @@ val PsiElement.lastChildNoWhitespace: PsiElement?
 
 fun PsiElement.parentSequence(includeSelf: Boolean = false) =
         generateSequence(if (includeSelf) this else parent) { it.parent }
+
+
+val PsiElement.textRangeInParent: TextRange
+    get() {
+        val offset = startOffsetInParent
+        return TextRange(offset, offset + textLength)
+    }

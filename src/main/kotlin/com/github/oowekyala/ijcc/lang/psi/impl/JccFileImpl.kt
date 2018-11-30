@@ -36,9 +36,6 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val globalNamedTokens: Sequence<JccNamedRegularExpression>
         get() = globalTokenSpecs.map { it.regularExpression }.filterMapAs()
 
-    override val globalPublicNamedTokens: Sequence<JccNamedRegularExpression>
-        get() = globalNamedTokens.filter { !it.isPrivate }
-
 
     override val globalTokenSpecs: Sequence<JccRegexprSpec>
         get() = childrenSequence(reversed = false)
@@ -61,7 +58,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         return when (processor) {
             is NonTerminalScopeProcessor -> processor.executeUntilFound(nonTerminalProductions, state)
             is TerminalScopeProcessor    -> {
-                val seq = if (processor.isRegexContext) globalNamedTokens else globalPublicNamedTokens
+                val seq = if (processor.isRegexContext) globalTokenSpecs else globalTokenSpecs.filter { !it.isPrivate }
                 processor.executeUntilFound(seq, state)
             }
             else                         -> true

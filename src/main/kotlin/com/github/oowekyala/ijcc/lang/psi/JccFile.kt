@@ -29,11 +29,6 @@ interface JccFile : PsiFile, JavaccPsiElement {
      * May contain private regexes.
      */
     val globalNamedTokens: Sequence<JccNamedRegularExpression>
-    /**
-     * Named regexes of the TOKEN kind defined globally in the file.
-     * Doesn't contain private regexes.
-     */
-    val globalPublicNamedTokens: Sequence<JccNamedRegularExpression>
 
     /** Regexpr specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
     val globalTokenSpecs: Sequence<JccRegexprSpec>

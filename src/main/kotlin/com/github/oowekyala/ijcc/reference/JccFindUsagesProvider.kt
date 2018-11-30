@@ -8,6 +8,7 @@ import com.intellij.lang.cacheBuilder.DefaultWordsScanner
 import com.intellij.lang.cacheBuilder.WordsScanner
 import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
 
 /**
@@ -28,21 +29,19 @@ class JccFindUsagesProvider : FindUsagesProvider {
         TokenSet.create(JavaccTypes.JCC_STRING_LITERAL)
     )
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as JccIdentifier).name
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as PsiNamedElement).name!!
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
-    override fun getType(element: PsiElement): String = when (element.parent) {
-        is JccNamedRegularExpression          -> "terminal"
-        is JccRegularExpressionReference      -> "terminal" // TODO other cases
-
-        is JccJavaNonTerminalProductionHeader -> "non-terminal"
-        is JccNonTerminalExpansionUnit        -> "non-terminal"
-        else                                  -> throw IllegalStateException("FIXME: Unhandled context ${element.parent}")
+    override fun getType(element: PsiElement): String = when (element) {
+        is JccRegexprSpec        -> "token"
+        is JccBnfProduction      -> "BNF production"
+        is JccJavacodeProduction -> "Javacode production"
+        else                     -> "name"
     }
 
     override fun getHelpId(psiElement: PsiElement): String? = HelpID.FIND_OTHER_USAGES
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
-            psiElement is JccIdentifier
+            psiElement is JccIdentifier || psiElement is JccRegexprSpec || psiElement is JccNonTerminalProduction
 }

@@ -1,6 +1,11 @@
 package com.github.oowekyala.ijcc.reference
 
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
+import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionReference
+import com.github.oowekyala.ijcc.lang.psi.isInRegexContext
+import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
+import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.ResolveState
@@ -11,14 +16,16 @@ import com.intellij.psi.ResolveState
  * @since 1.0
  */
 class JccTerminalReference(psiElement: JccRegularExpressionReference) :
-    PsiReferenceBase<JccIdentifier>(psiElement.nameIdentifier) {
+    PsiReferenceBase<JccRegularExpressionReference>(psiElement) {
 
     private val isRegexContext = psiElement.isInRegexContext()
 
-    override fun resolve(): PsiElement? {
-        val processor = TerminalScopeProcessor(element.name, isRegexContext)
+    override fun resolve(): JccRegexprSpec? {
+        val searchedName = element.name ?: return null
+
+        val processor = TerminalScopeProcessor(searchedName, isRegexContext)
         val file = element.containingFile
-        process(processor, file)
+        file.processDeclarations(processor, ResolveState.initial(), element, element)
         return processor.result
     }
 
@@ -29,7 +36,11 @@ class JccTerminalReference(psiElement: JccRegularExpressionReference) :
                 .toList()
                 .toTypedArray()
 
-    private fun process(processor: JccBaseIdentifierScopeProcessor, file: JccFile) {
-        file.processDeclarations(processor, ResolveState.initial(), element, element)
+
+    override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
+
+    override fun handleElementRename(newElementName: String?): PsiElement = newElementName.toString().let {
+        val id = element.nameIdentifier
+        JccIdentifierManipulator().handleContentChange(id, newElementName)!!
     }
 }

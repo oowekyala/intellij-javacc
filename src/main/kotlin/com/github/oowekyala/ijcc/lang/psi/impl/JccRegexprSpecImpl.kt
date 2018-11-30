@@ -4,10 +4,10 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.model.RegexKind
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 
 class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexprSpec {
-
 
     override val pattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = false) }
     override val prefixPattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = true) }
@@ -29,6 +29,11 @@ class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexpr
 
     fun accept(visitor: JccVisitor) {
         visitor.visitRegexprSpec(this)
+    }
+
+    override fun setName(name: String): PsiElement {
+        regularExpression.let { it as? JccNamedRegularExpression }?.setName(name)
+        return this
     }
 
     override fun accept(visitor: PsiElementVisitor) {

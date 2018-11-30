@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.model.RegexKind
+import com.intellij.psi.PsiNamedElement
 
-interface JccRegexprSpec : JavaccPsiElement {
+interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
 
     val javaBlock: JccJavaBlock?
 
@@ -39,6 +40,24 @@ interface JccRegexprSpec : JavaccPsiElement {
             is JccNamedRegularExpression   -> regex.regexpElement as? JccLiteralRegularExpression
             is JccInlineRegularExpression  -> regex.regexpElement as? JccLiteralRegularExpression
             else                           -> null
+        }
+    }
+
+    /**
+     * Returns the root regex element, unwrapping
+     * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+     * if needed.
+     */
+    @JvmDefault
+    fun getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
+        val regex = regularExpression
+        return when (regex) {
+            is JccLiteralRegularExpression   -> regex
+            is JccNamedRegularExpression     -> regex.regexpElement
+            is JccRegularExpressionReference -> if (followReferences) regex.reference.resolve()?.getRootRegexElement() else null
+            is JccInlineRegularExpression    -> regex.regexpElement
+            is JccEofRegularExpression       -> null
+            else                             -> null
         }
     }
 

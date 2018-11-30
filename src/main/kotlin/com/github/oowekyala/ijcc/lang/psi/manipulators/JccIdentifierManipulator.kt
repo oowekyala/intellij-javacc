@@ -13,10 +13,10 @@ import com.intellij.util.IncorrectOperationException
  */
 class JccIdentifierManipulator : AbstractElementManipulator<JccIdentifier>() {
     @Throws(IncorrectOperationException::class)
-    override fun handleContentChange(identifier: JccIdentifier, range: TextRange, newContent: String): JccIdentifier? {
+    override fun handleContentChange(identifier: JccIdentifier, range: TextRange, newContent: String): JccIdentifier {
         val oldText = identifier.text
         val newText = oldText.substring(0, range.startOffset) + newContent +
                 oldText.substring(range.endOffset)
-        return identifier.replace(JccElementFactory.createIdentifier(identifier.project, newText)) as JccIdentifier?
+        return identifier.replace(JccElementFactory.createIdentifier(identifier.project, newText)) as JccIdentifier
     }
 }

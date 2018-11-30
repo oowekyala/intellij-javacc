@@ -1,44 +1,41 @@
 package com.github.oowekyala.ijcc.reference
 
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner
-import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
 
 
-sealed class JccBaseIdentifierScopeProcessor(val searchedName: String) : PsiScopeProcessor {
+class TerminalScopeProcessor(val searchedName: String, val isRegexContext: Boolean) : PsiScopeProcessor {
 
-    var result: JccIdentifier? = null
-        protected set(value) {
+    var result: JccRegexprSpec? = null
+        private set(value) {
             field = value
         }
 
     override fun execute(element: PsiElement, state: ResolveState): Boolean {
-        if (element is JccIdentifierOwner && matches(element)) {
-            result = element.nameIdentifier
+        if (element is JccRegexprSpec && element.name == searchedName) {
+            result = element
             return false
         }
         return true
     }
 
-    protected abstract fun matches(psiElement: JccIdentifierOwner): Boolean
-
-
 }
 
-class TerminalScopeProcessor(searchedName: String, val isRegexContext: Boolean)
-    : JccBaseIdentifierScopeProcessor(searchedName) {
+class NonTerminalScopeProcessor(val searchedName: String) : PsiScopeProcessor {
 
+    var result: JccNonTerminalProduction? = null
+        private set(value) {
+            field = value
+        }
 
-    override fun matches(psiElement: JccIdentifierOwner): Boolean =
-            psiElement is JccNamedRegularExpression && psiElement.name == searchedName
-}
-
-class NonTerminalScopeProcessor(searchedName: String) : JccBaseIdentifierScopeProcessor(searchedName) {
-
-    override fun matches(psiElement: JccIdentifierOwner): Boolean =
-            psiElement is JccNonTerminalProduction && psiElement.name == searchedName
+    override fun execute(element: PsiElement, state: ResolveState): Boolean {
+        if (element is JccNonTerminalProduction && element.name == searchedName) {
+            result = element
+            return false
+        }
+        return true
+    }
 }

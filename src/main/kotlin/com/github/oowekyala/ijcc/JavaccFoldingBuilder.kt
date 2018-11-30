@@ -69,10 +69,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
 
         private fun literalRegexpForRef(regexRef: JccRegularExpressionReference): JccLiteralRegularExpression? {
-            return regexRef.reference?.resolve()
-                .let { it as? JccIdentifier }
-                .let { it?.parent as? JccNamedRegularExpression }
-                .let { it?.regexpElement as? JccLiteralRegularExpression }
+            return regexRef.reference.resolve()?.asSingleLiteral()
         }
 
         private val newLines = CharArray(2)

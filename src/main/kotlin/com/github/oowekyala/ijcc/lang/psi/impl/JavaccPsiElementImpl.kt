@@ -1,12 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.reference.JccNonTerminalReference
-import com.github.oowekyala.ijcc.reference.JccStringTokenReference
-import com.github.oowekyala.ijcc.reference.JccTerminalReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiReference
 
 /**
  * Base impl for Jcc psi elements.
@@ -23,12 +19,5 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
         is JccRegexprSpec     -> this.regularExpression.let { it as? JccNamedRegularExpression }?.name
         // JccIdentifier overrides this directly
         else                  -> null
-    }
-
-    override fun getReference(): PsiReference? = when (this) {
-        is JccLiteralRegularExpression   -> JccStringTokenReference(this).takeUnless { specContext != null }
-        is JccNonTerminalExpansionUnit   -> JccNonTerminalReference(this.nameIdentifier)
-        is JccRegularExpressionReference -> JccTerminalReference(this)
-        else                             -> null
     }
 }
