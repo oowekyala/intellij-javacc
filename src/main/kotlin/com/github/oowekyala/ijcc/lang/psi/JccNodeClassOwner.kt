@@ -13,7 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccNodeClassOwner : JavaccPsiElement {
+interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 
     fun nodeClass(javaccConfig: JavaccConfig): NavigatablePsiElement?
 

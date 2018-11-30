@@ -17,7 +17,8 @@
 * Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
 ++ The ident also gives the type in the structure view...
 * Add some doc about keywords, etc
-* Add gutter links to node classes
+++ Add gutter links to node classes
+* Add gutter links from node classes to productions
 
 * Add MOAR tests
 

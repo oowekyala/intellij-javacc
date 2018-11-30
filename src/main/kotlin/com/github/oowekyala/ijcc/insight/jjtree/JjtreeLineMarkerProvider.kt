@@ -7,15 +7,13 @@ import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import gnu.trove.THashSet
 
 /**
- * Adds a gutter icon for JJTree node class.
+ * Adds a gutter icon linking a production to a JJTree node class.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -28,7 +26,8 @@ class JjtreeLineMarkerProvider : RelatedItemLineMarkerProvider() {
         val visited = if (forNavigation) THashSet<PsiElement>() else null
         for (element in elements) {
             val elt = element as? JccNodeClassOwner ?: continue
-            val isNodeId = (elt is JccNonTerminalProduction || elt is JccJjtreeNodeDescriptor && !elt.isVoid)
+            val isNodeId = (elt is JccNonTerminalProduction
+                    || elt is JccJjtreeNodeDescriptor && !elt.isVoid && elt.parent !is JccNonTerminalProduction)
             if (!(isNodeId)) continue
 
             if (forNavigation && !visited!!.add(elt)) continue
@@ -36,22 +35,11 @@ class JjtreeLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
             val psiClass = getNodePsiClass(elt) ?: continue
 
-
-            val action = ActionManager.getInstance().getAction("GotoRelated")
-            var tooltipAd = ""
-            var popupTitleAd = ""
-            if (action != null) {
-                val shortcutText = KeymapUtil.getFirstKeyboardShortcutText(action)
-                val actionText =
-                        if (StringUtil.isEmpty(shortcutText)) "'" + action.templatePresentation.text + "' action" else shortcutText
-                tooltipAd = "\nGo to sub-expression code via $actionText"
-                popupTitleAd = " (for sub-expressions use $actionText)"
-            }
-            val title = "Node class"
+            val title = "class ${psiClass.name}"
             val builder = NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_NODE_CLASS).setTarget(psiClass)
-                .setTooltipText("Click to navigate to $title$tooltipAd")
-                .setPopupTitle(StringUtil.capitalize(title) + popupTitleAd)
-            result.add(builder.createLineMarkerInfo(element))
+                .setTooltipText("Click to navigate to $title")
+                .setPopupTitle(StringUtil.capitalize(title))
+            result.add(builder.createLineMarkerInfo(element.nameIdentifier!!))
         }
     }
 
