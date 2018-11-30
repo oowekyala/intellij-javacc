@@ -74,5 +74,9 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceLiteralWithReferenceIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>

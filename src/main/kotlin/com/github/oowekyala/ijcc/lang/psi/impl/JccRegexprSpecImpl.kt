@@ -27,6 +27,8 @@ class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexpr
     override val lexicalState: JccIdentifier?
         get() = findChildByClass(JccIdentifier::class.java)
 
+    override fun getName(): String? = regularExpression.let { it as? JccNamedRegularExpression }?.name
+
     fun accept(visitor: JccVisitor) {
         visitor.visitRegexprSpec(this)
     }

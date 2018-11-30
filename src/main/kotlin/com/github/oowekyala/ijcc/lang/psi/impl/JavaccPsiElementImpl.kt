@@ -15,8 +15,6 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
     override fun getContainingFile() = super.getContainingFile() as JccFile
     override fun getName(): String? = when (this) {
         is JccIdentifierOwner -> this.nameIdentifier?.name
-        is JccRegexprSpec     -> this.regularExpression.let { it as? JccNamedRegularExpression }?.name
-        // JccIdentifier overrides this directly
         else                  -> null
     }
 }

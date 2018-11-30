@@ -30,6 +30,22 @@ object JccElementFactory {
         get() = PsiFileFactory.getInstance(this)
 
 
+    fun createRegexReference(project: Project, name: String): JccRegularExpressionReference {
+        val fileText = """
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+            void foo(): {} { $name }
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions.first()
+            .let { it as JccBnfProduction }
+            .expansion
+            .let { it as JccExpansionSequence }
+            .expansionUnitList[0] as JccRegularExpressionReference
+    }
+
     fun createLiteralRegex(project: Project, name: String): JccLiteralRegularExpression {
         val fileText = """
             PARSER_BEGIN(dummy)
