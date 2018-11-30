@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.model.LexicalState
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
-import com.intellij.lang.documentation.DocumentationMarkup
+import com.intellij.lang.documentation.DocumentationMarkup.*
 import org.intellij.lang.annotations.Language
 
 /**
@@ -13,36 +13,30 @@ import org.intellij.lang.annotations.Language
  */
 object JccTerminalDocMaker {
 
+    private fun makeDef(name: String, regexKind: String): String =
+            """$regexKind${'\t'}<b>&lt;$name&gt;</b>""".trimIndent()
+
     @Language("HTML")
     fun makeDoc(named: JccNamedRegularExpression): String {
+
+
         val spec = named.parent as? JccRegexprSpec
 
+        val (regexpKind, states) = if (spec != null) {
+            val prod = spec.production
+            Pair(prod.regexprKind.text, lexicalStatesOf(prod))
+        } else Pair("", "")
 
-        return buildString {
-            append(DocumentationMarkup.DEFINITION_START)
+        val definition = makeDef(named.name ?: "", regexpKind)
+        val expansion = StringBuilder().also { named.accept(RegexDocVisitor(it)) }.toString()
 
-            val (tokenType, states) = if (spec != null) {
-                val prod = spec.production
-                Pair(prod.regexprKind.text + " ", lexicalStatesOf(prod))
-            } else Pair("", "")
-
-            append(tokenType).append("&lt;").append(named.name).append("&gt;")
-
-            append(DocumentationMarkup.DEFINITION_END)
-            append(DocumentationMarkup.SECTIONS_START)
-
-            if (states.isNotEmpty()) {
-                append(DocumentationMarkup.SECTION_HEADER_START).append("Lexical states")
-                    .append(DocumentationMarkup.SECTION_SEPARATOR)
-                    .append("<p>").append(states).append(DocumentationMarkup.SECTION_END)
-            }
-            append(DocumentationMarkup.SECTION_HEADER_START).append("Definition")
-                .append(DocumentationMarkup.SECTION_SEPARATOR)
-                .append("<p>")
-            RegexDocVisitor(this).visitNamedRegularExpression(named)
-            append(DocumentationMarkup.SECTION_END)
-            append(DocumentationMarkup.SECTIONS_END)
-        }
+        return """
+            $DEFINITION_START$definition$DEFINITION_END
+            $SECTIONS_START
+            ${SECTION_HEADER_START}Lexical states:$SECTION_SEPARATOR<p>$states$SECTION_END
+            ${SECTION_HEADER_START}Expansion:$SECTION_SEPARATOR<p>$expansion$SECTION_END
+            $SECTIONS_END
+        """.trimIndent()
     }
 
 
@@ -120,7 +114,7 @@ object JccTerminalDocMaker {
 
     private fun lexicalStatesOf(prod: JccRegularExprProduction): String = prod.lexicalStateList.let {
         it?.identifierList?.let {
-            if (it.isEmpty()) "all"
+            if (it.isEmpty()) "All"
             else it.joinToString(separator = ", ") { it.name }
         } ?: LexicalState.DefaultStateName
     }

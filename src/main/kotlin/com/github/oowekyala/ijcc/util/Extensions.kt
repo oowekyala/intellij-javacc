@@ -12,6 +12,9 @@ fun runCatchAll(block: () -> Unit) {
     }
 }
 
+// lulz
+operator fun Unit.invoke(): Unit = Unit()()()()()()()()
+
 inline fun Boolean.ifTrue(block: () -> Unit): Boolean {
     if (this) {
         block()

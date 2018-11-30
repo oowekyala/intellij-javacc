@@ -13,6 +13,10 @@ import com.intellij.psi.PsiManager
  */
 object JccDocUtil {
 
+    const val LeftRightStart = "<p style='text-align:left;'>"
+    const val LeftRightMiddle = "<span style='float:right;'>"
+    const val LeftRightEnd = "</span></p>"
+
     private const val TerminalRef = "token"
     private const val NonterminalRef = "nonterminal"
 
