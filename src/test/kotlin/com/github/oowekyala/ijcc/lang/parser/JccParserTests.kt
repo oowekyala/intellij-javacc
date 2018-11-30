@@ -7,13 +7,12 @@ import com.intellij.testFramework.ParsingTestCase
  * @author Clément Fournier
  * @since 1.0
  */
-class FullParserTest : ParsingTestCase("", "jjt", JavaccParserDefinition) {
+class JccParserTests : ParsingTestCase(JccParserTests::class.dataPath(), "jjt", JavaccParserDefinition) {
 
-    fun testFullGrammar() = doTest(true)
+    fun testProductions() = doTest(true)
+    fun testTokens() = doTest(true)
 
-    override fun getTestDataPath(): String = "testData"
+    override fun getTestDataPath(): String = TestResourcesPath
 
     override fun skipSpaces(): Boolean = false
-
-    override fun includeRanges(): Boolean = true
 }

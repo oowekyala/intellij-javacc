@@ -8,16 +8,7 @@ import com.intellij.psi.PsiReference
 
 class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
 
-    override fun getReference(): PsiReference? {
-        return parent.reference
-        val parent = parent
-        return when (parent) {
-            is JccJavaNonTerminalProductionHeader -> parent.reference
-            is JccJavacodeProduction              -> parent.reference
-//            is JccNamedRegularExpression          ->
-            else                                  -> null
-        }
-    }
+    override fun getReference(): PsiReference? = parent?.reference
 
     fun accept(visitor: JccVisitor) {
         visitor.visitIdentifier(this)

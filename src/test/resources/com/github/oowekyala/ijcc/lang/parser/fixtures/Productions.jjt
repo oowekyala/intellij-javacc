@@ -20,24 +20,6 @@ PARSER_BEGIN(JJTreeParser)
 PARSER_END(JJTreeParser)
 
 
-TOKEN :
-{
-//  Options is no longer a reserved word (Issue 126)
-//  < _OPTIONS: "options" >
-  < _LOOKAHEAD: "LOOKAHEAD" >
-| < _IGNORE_CASE: "IGNORE_CASE" >
-| < _PARSER_BEGIN: "PARSER_BEGIN" >
-| < _PARSER_END: "PARSER_END" >
-| < _JAVACODE: "JAVACODE" >
-| < _TOKEN: "TOKEN" >
-| < _SPECIAL_TOKEN: "SPECIAL_TOKEN" >
-| < _MORE: "MORE" >
-| < _SKIP: "SKIP" >
-| < _TOKEN_MGR_DECLS: "TOKEN_MGR_DECLS" >
-| < _EOF: "EOF" >
-}
-
-
 
 void option_binding() #OptionBinding :
 	{

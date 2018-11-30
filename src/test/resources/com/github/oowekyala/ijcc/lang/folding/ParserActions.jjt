@@ -1,0 +1,32 @@
+PARSER_BEGIN(JJTreeParser)
+PARSER_END(JJTreeParser)
+
+< COMMENT_STATE >  SKIP : {  "(:" <fold text="{..}">{ commentNestingDepth++; }</fold> }
+
+
+void QuantifiedExpr():
+{}
+{
+  (<SOME> <fold text="{..}">{ jjtThis.setUniversallyQuantified(false); }</fold>)
+  VarBindingList(false)
+  <SATISFIES> ExprSingle()
+}
+
+JAVACODE
+void node_descriptor_expression() #NodeDescriptorExpression
+{
+  Token tok;
+  int nesting = 1;
+  while (true) {
+    tok = getToken(1);
+    if (tok.kind == 0) {
+      throw new ParseException();
+    }
+    if (tok.kind == LPAREN) nesting++;
+    if (tok.kind == RPAREN) {
+      nesting--;
+      if (nesting == 0) break;
+    }
+    tok = getNextToken();
+  }
+}
