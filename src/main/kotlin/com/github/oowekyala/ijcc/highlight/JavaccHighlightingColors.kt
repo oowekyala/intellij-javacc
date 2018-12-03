@@ -102,15 +102,6 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
                 JCC_PRIMITIVE_TYPE,
                 JCC_FALSE_KEYWORD,
                 JCC_TRUE_KEYWORD,
-                JavaTokenType.NULL_KEYWORD,
-                JavaTokenType.CLASS_KEYWORD,
-                JavaTokenType.INTERFACE_KEYWORD,
-                JavaTokenType.RETURN_KEYWORD,
-                JavaTokenType.SUPER_KEYWORD,
-                JavaTokenType.THIS_KEYWORD,
-                JavaTokenType.THROW_KEYWORD,
-                JavaTokenType.ABSTRACT_KEYWORD,
-                JavaTokenType.STATIC_KEYWORD,
                 JCC_PRIVATE_KEYWORD,
                 JCC_PROTECTED_KEYWORD,
                 JCC_PUBLIC_KEYWORD,
@@ -118,17 +109,89 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
                 JCC_TRY_KEYWORD,
                 JCC_CATCH_KEYWORD,
                 JCC_FINALLY_KEYWORD,
-                JCC_VOID_KEYWORD
+                JCC_VOID_KEYWORD,
+
+
+                JavaTokenType.NULL_KEYWORD,
+
+                JavaTokenType.ASSERT_KEYWORD,   // since 1.4
+                JavaTokenType.ENUM_KEYWORD,     // since 1.5
+
+                JavaTokenType.ABSTRACT_KEYWORD,
+                JavaTokenType.BREAK_KEYWORD,
+                JavaTokenType.CASE_KEYWORD,
+                JavaTokenType.CLASS_KEYWORD,
+                JavaTokenType.CONST_KEYWORD,
+                JavaTokenType.CONTINUE_KEYWORD,
+                JavaTokenType.DEFAULT_KEYWORD,
+                JavaTokenType.DO_KEYWORD,
+                JavaTokenType.ELSE_KEYWORD,
+
+                JavaTokenType.EXTENDS_KEYWORD,
+                JavaTokenType.FINAL_KEYWORD,
+                JavaTokenType.FOR_KEYWORD,
+                JavaTokenType.GOTO_KEYWORD,
+                JavaTokenType.IF_KEYWORD,
+                JavaTokenType.IMPLEMENTS_KEYWORD,
+                JavaTokenType.IMPORT_KEYWORD,
+                JavaTokenType.INSTANCEOF_KEYWORD,
+                JavaTokenType.INTERFACE_KEYWORD,
+                JavaTokenType.NATIVE_KEYWORD,
+                JavaTokenType.NEW_KEYWORD,
+                JavaTokenType.PACKAGE_KEYWORD,
+                JavaTokenType.SUPER_KEYWORD,
+                JavaTokenType.SWITCH_KEYWORD,
+                JavaTokenType.SYNCHRONIZED_KEYWORD,
+                JavaTokenType.THIS_KEYWORD,
+                JavaTokenType.THROW_KEYWORD,
+                JavaTokenType.TRANSIENT_KEYWORD,
+                JavaTokenType.RETURN_KEYWORD,
+                JavaTokenType.STATIC_KEYWORD,
+                JavaTokenType.STRICTFP_KEYWORD,
+                JavaTokenType.WHILE_KEYWORD,
+                JavaTokenType.VOLATILE_KEYWORD
             )
 
             OPERATOR_SIGN(
                 JCC_GT,
                 JCC_LT,
                 JCC_TILDE,
+                JCC_UNION,
                 JCC_COLON,
                 JCC_EQ,
+
                 JCC_PLUS,
-                JCC_MINUS
+                JCC_MINUS,
+                JCC_ASTERISK,
+                JCC_QUESTION,
+
+                JavaTokenType.EQEQ,
+                JavaTokenType.NE,
+                JavaTokenType.OROR,
+                JavaTokenType.PLUSPLUS,
+                JavaTokenType.MINUSMINUS,
+                JavaTokenType.ANDAND,
+
+                JavaTokenType.AND,
+                JavaTokenType.LE,
+                JavaTokenType.GE,
+
+                JavaTokenType.PLUSEQ,
+                JavaTokenType.MINUSEQ,
+                JavaTokenType.ASTERISKEQ,
+                JavaTokenType.DIVEQ,
+                JavaTokenType.ANDEQ,
+                JavaTokenType.OREQ,
+                JavaTokenType.XOREQ,
+                JavaTokenType.PERCEQ,
+
+                JavaTokenType.EXCL,
+                JavaTokenType.DIV,
+                JavaTokenType.PERC,
+                JavaTokenType.AT,
+
+                JavaTokenType.DOUBLE_COLON,
+                JavaTokenType.ARROW
             )
 
             NUMBER(
@@ -142,7 +205,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
             SEMICOLON(JCC_SEMICOLON)
             COMMA(JCC_COMMA)
-            DOT(JCC_DOT)
+            DOT(JCC_DOT, JCC_ELLIPSIS)
             PARENTHESES(JCC_LPARENTH, JCC_RPARENTH)
             BRACKETS(JCC_LBRACKET, JCC_RBRACKET)
             BRACES(JCC_LBRACE, JCC_RBRACE)

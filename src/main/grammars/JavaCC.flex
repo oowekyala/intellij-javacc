@@ -35,19 +35,19 @@ import static com.github.oowekyala.ijcc.lang.JavaccTypes.*;
 
 
 %{
-  private boolean myAssertKeyword;
-  private boolean myEnumKeyword;
+    private boolean myAssertKeyword;
+    private boolean myEnumKeyword;
 
-  public JavaccLexer() {
-    this((java.io.Reader)null);
-    myAssertKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_4);
-    myEnumKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_5);
-  }
+    public JavaccLexer() {
+      this(null);
+      myAssertKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_4);
+      myEnumKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_5);
+    }
 
-  public void goTo(int offset) {
-    zzCurrentPos = zzMarkedPos = zzStartRead = offset;
-    zzAtEOF = false;
-  }
+    public void goTo(int offset) {
+      zzCurrentPos = zzMarkedPos = zzStartRead = offset;
+      zzAtEOF = false;
+    }
 %}
 
 
@@ -251,4 +251,4 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 }
 
 
-[^]                           { return JCC_BAD_CHARACTER; }
+[^]                             { return JCC_BAD_CHARACTER; }
