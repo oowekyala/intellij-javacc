@@ -8,11 +8,10 @@ interface JccOptionSection : JavaccPsiElement {
     val optionBindingList: List<JccOptionBinding>
 
     /**
-     * Gets the overriden option value if present. Returns null if the type is invalid,
-     * or the option is not overridden.
+     * Gets the binding for the given option value if present.
      */
     @JvmDefault
-    fun <T : Any> getOverriddenOptionValue(genericOption: GenericOption<T>): T? =
-            optionBindingList.firstOrNull { it.name == genericOption.name }?.getValue(genericOption.type)
+    fun <T : Any> getBindingFor(genericOption: GenericOption<T>): JccOptionBinding? =
+            optionBindingList.firstOrNull { it.name == genericOption.name }
 
 }

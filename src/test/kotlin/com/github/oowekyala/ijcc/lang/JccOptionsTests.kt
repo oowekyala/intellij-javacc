@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.lang
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.insight.model.GenericOption
 import com.github.oowekyala.ijcc.insight.model.JccOption
 import com.github.oowekyala.ijcc.insight.model.JjtOption
+import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.shouldBe
 
@@ -43,10 +44,17 @@ class JccOptionsTests : LightCodeInsightFixtureTestCase() {
     fun testInvalidOptionType() {
         myFixture.configureByFiles("$OptionsTestDataPath/InvalidOptionType.jjt")
         val file = myFixture.file as JccFile
+        val config = file.javaccConfig
 
-        file.options!!.getOverriddenOptionValue(JjtOption.NODE_DEFAULT_VOID) shouldBe null
-        file.options!!.getOverriddenOptionValue(JjtOption.NODE_PACKAGE) shouldBe null
-        file.options!!.getOverriddenOptionValue(JccOption.LOOKAHEAD) shouldBe null
+        fun check(opt: GenericOption<*>) {
+            val binding = file.options!!.getBindingFor(opt)!!
+            binding.matchesType(opt.type) shouldBe false
+            opt.getValue(binding, config) shouldBe opt.getValue(null, config) // assert the default value is used
+        }
+
+        check(JjtOption.NODE_DEFAULT_VOID)
+        check(JjtOption.NODE_PACKAGE)
+        check(JccOption.LOOKAHEAD)
     }
 
 

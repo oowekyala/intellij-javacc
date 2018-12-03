@@ -27,11 +27,9 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
     val lookahead: Int get() = getOptionValueOrDefault(JccOption.LOOKAHEAD)
 
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
-            options?.getOverriddenOptionValue(genericOption) ?: genericOption.getDefaultValue(this)
+            genericOption.getValue(options?.getBindingFor(genericOption), this)
 
     companion object {
         val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
-
-
     }
 }

@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
  */
 object JavaccLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> =
-            mutableListOf(JccJavaCompilationUnit::class.java, JccNonTerminalProduction::class.java)
+            mutableListOf(JccJavaCompilationUnit::class.java, JccJavacodeProduction::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
         when (context) {
