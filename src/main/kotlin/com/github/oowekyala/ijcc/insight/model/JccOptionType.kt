@@ -19,22 +19,26 @@ sealed class JccOptionType<T : Any> {
         object BOOLEAN : BaseOptionType<Boolean>()
     }
 
+    override fun toString(): String = javaClass.name.toLowerCase()
 
     abstract val projection: BaseOptionType<T>
 
     /** Refinement over another type to allow for e.g. reference injection. */
     sealed class RefinedOptionType<T : Any>(override val projection: BaseOptionType<T>) : JccOptionType<T>() {
 
-        override fun toString(): String = javaClass.name + " name"
+        override fun toString(): String = super.toString() + " name"
 
-        /** Expects a FQCN as a string. */
+        /** Expects a type FQCN as a string. */
         object TYPE : RefinedOptionType<String>(BaseOptionType.STRING)
+
+        /** Expects a package FQCN as a string. */
+        object PACKAGE : RefinedOptionType<String>(BaseOptionType.STRING)
 
         /** Expects a directory as a string. */
         object DIRECTORY : RefinedOptionType<String>(BaseOptionType.STRING)
 
         /** Expects a file as a string. */
-        object FILE: RefinedOptionType<String>(BaseOptionType.STRING)
+        object FILE : RefinedOptionType<String>(BaseOptionType.STRING)
     }
 
 

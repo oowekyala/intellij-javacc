@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.insight.model.GenericOption
+import com.github.oowekyala.ijcc.insight.model.GenericOption.Companion.knownOptions
 import com.github.oowekyala.ijcc.insight.model.JccOption
 import com.github.oowekyala.ijcc.insight.model.JjtOption
 import com.github.oowekyala.ijcc.lang.JavaccTypes
@@ -131,7 +132,7 @@ class JccAnnotator : JccBaseAnnotator() {
         }
 
         if (!element.matchesType(opt.expectedType)) {
-            element.valueNode?.let { createErrorAnnotation(it, "Expected ${opt.expectedType}") }
+            element.optionValue?.let { createErrorAnnotation(it, "Expected ${opt.expectedType}") }
         }
 
     }
@@ -204,13 +205,6 @@ class JccAnnotator : JccBaseAnnotator() {
         } else {
             createErrorAnnotation(getRangeFor(nodeDescriptor), "Dangling node descriptor")
         }
-    }
-
-    private companion object {
-
-        val knownOptions: Map<String, GenericOption<*>> =
-                JccOption.values.associateBy { it.name }.plus(JjtOption.values.associateBy { it.name })
-
     }
 
 }

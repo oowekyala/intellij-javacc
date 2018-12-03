@@ -135,38 +135,14 @@ javacc_input 	::=
 option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
 
-option_binding 	    ::=
-    option_name "=" (INTEGER_LITERAL | string_literal | boolean_literal) ";" {pin=1 recoverWhile="#auto"}
+option_binding	    ::=
+    option_name "=" option_value ";" {pin=1 recoverWhile="#auto"}
+
+option_value        ::=
+    (INTEGER_LITERAL | string_literal | boolean_literal)
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?
-//      "LOOKAHEAD" "=" INTEGER_LITERAL ";"
-//	| 	"CHOICE_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
-//	| 	"OTHER_AMBIGUITY_CHECK" "=" INTEGER_LITERAL ";"
-//	| 	"AUTOMATIC_ERROR_RECOVERY" "=" java_boolean_literal ";"
-//	| 	"STATIC" "=" java_boolean_literal ";"
-//	| 	"SUPPORT_CLASS_VISIBILITY_PUBLIC" "=" java_boolean_literal ";"
-//	| 	"DEBUG_PARSER" "=" java_boolean_literal ";"
-//	| 	"DEBUG_LOOKAHEAD" "=" java_boolean_literal ";"
-//	| 	"DEBUG_TOKEN_MANAGER" "=" java_boolean_literal ";"
-//	| 	"ERROR_REPORTING" "=" java_boolean_literal ";"
-//	| 	"JAVA_UNICODE_ESCAPE" "=" java_boolean_literal ";"
-//	| 	"UNICODE_INPUT" "=" java_boolean_literal ";"
-//	| 	"IGNORE_CASE" "=" java_boolean_literal ";"
-//	| 	"USER_TOKEN_MANAGER" "=" java_boolean_literal ";"
-//	| 	"USER_CHAR_STREAM" "=" java_boolean_literal ";"
-//	| 	"BUILD_PARSER" "=" java_boolean_literal ";"
-//	| 	"BUILD_TOKEN_MANAGER" "=" java_boolean_literal ";"
-//	| 	"TOKEN_EXTENDS" "=" string_literal ";"
-//	| 	"TOKEN_FACTORY" "=" string_literal ";"
-//	| 	"TOKEN_MANAGER_USES_PARSER" "=" java_boolean_literal ";"
-//	| 	"SANITY_CHECK" "=" java_boolean_literal ";"
-//	| 	"FORCE_LA_CHECK" "=" java_boolean_literal ";"
-//	| 	"COMMON_TOKEN_ACTION" "=" java_boolean_literal ";"
-//	| 	"CACHE_TOKENS" "=" java_boolean_literal ";"
-//	| 	"NODE_DEFAULT_VOID" "=" java_boolean_literal ";"
-//	| 	"OUTPUT_DIRECTORY" "=" string_literal ";"
-
 
 parser_declaration  ::=
     "PARSER_BEGIN" "(" identifier ")"

@@ -1,17 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.insight.model.GenericOption
 import com.github.oowekyala.ijcc.insight.model.JccOptionType
-import com.github.oowekyala.ijcc.insight.model.JccOptionType.BaseOptionType
-import com.intellij.psi.PsiElement
 
 interface JccOptionBinding : JccIdentifierOwner {
 
-    val integerLiteral: PsiElement?
-
-    val stringLiteral: PsiElement?
-
-    val booleanLiteral: JccBooleanLiteral?
+    val optionValue: JccOptionValue?
 
     override fun getName(): String
 
@@ -21,39 +16,19 @@ interface JccOptionBinding : JccIdentifierOwner {
      */
     override fun getNameIdentifier(): JccIdentifier?
 
-    val valueNode
-        get() = listOf(integerLiteral, stringLiteral, booleanLiteral).first { it != null }
+    @JvmDefault
+    val modelOption: GenericOption<*>?
+        get() = GenericOption.knownOptions[name]
 
-    /**
-     * Returns false if the type is incorrect.
-     */
-    fun <T : Any> matchesType(expectedType: JccOptionType<T>): Boolean {
-        val int = integerLiteral
-        val string = stringLiteral
-        val bool = booleanLiteral
 
-        return when {
-            int != null    -> expectedType.projection == BaseOptionType.INTEGER
-            string != null -> expectedType.projection == BaseOptionType.STRING
-            bool != null   -> expectedType.projection == BaseOptionType.BOOLEAN
-            else           -> false
-        }
-    }
+    /** Returns true if types match. */
+    @JvmDefault
+    fun <T : Any> matchesType(expectedType: JccOptionType<T>): Boolean =
+            expectedType.projection == optionValue?.optionType
 
     /** Returns the string value for presentation. */
+    @JvmDefault
     val stringValue: String
-        get() {
-            val int = integerLiteral
-            val string = stringLiteral
-            val bool = booleanLiteral
-
-            return when {
-                int != null    -> int.text
-                string != null -> string.text.removeSurrounding("\"")
-                bool != null   -> bool.text
-                else           -> "??"
-            }
-
-        }
+        get() = optionValue?.stringValue ?: ""
 
 }
