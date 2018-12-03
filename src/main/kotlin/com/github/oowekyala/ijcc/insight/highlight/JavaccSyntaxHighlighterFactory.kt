@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.highlight
+package com.github.oowekyala.ijcc.insight.highlight
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.highlight
+package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.intellij.lexer.Lexer

@@ -2,7 +2,7 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor

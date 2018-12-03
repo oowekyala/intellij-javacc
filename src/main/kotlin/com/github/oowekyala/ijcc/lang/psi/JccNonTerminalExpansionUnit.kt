@@ -1,7 +1,7 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.reference.JccNonTerminalReference
+import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 
 interface JccNonTerminalExpansionUnit : JccExpansionUnit, JccIdentifierOwner {
 

@@ -4,7 +4,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionReference
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.reference.JccTerminalReference
+import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 

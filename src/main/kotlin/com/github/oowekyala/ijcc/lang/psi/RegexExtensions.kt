@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
-import com.github.oowekyala.ijcc.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.reference
+package com.github.oowekyala.ijcc.lang.refs
 
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit

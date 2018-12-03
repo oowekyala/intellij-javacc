@@ -1,8 +1,8 @@
-package com.github.oowekyala.ijcc.model
+package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExprProduction
-import com.github.oowekyala.ijcc.model.LexicalState.Companion.DefaultStateName
-import com.github.oowekyala.ijcc.model.LexicalState.Companion.LexicalStateBuilder
+import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.DefaultStateName
+import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.LexicalStateBuilder
 
 /**
  * @author Clément Fournier

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.model
+package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
 import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration

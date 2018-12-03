@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.model.JccOption
-import com.github.oowekyala.ijcc.model.JjtOption
+import com.github.oowekyala.ijcc.insight.model.JccOption
+import com.github.oowekyala.ijcc.insight.model.JjtOption
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.shouldBe
 

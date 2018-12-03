@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegexpAlternative
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.reference.JccStringTokenReference
+import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor

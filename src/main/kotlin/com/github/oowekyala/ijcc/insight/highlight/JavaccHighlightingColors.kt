@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.highlight
+package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor

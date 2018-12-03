@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.intellij.lang.annotations.Language

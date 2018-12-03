@@ -21,23 +21,23 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
-        <colorSettingsPage implementation="com.github.oowekyala.ijcc.highlight.JavaccColorSettingsPage"/>
+        <colorSettingsPage implementation="com.github.oowekyala.ijcc.insight.highlight.JavaccColorSettingsPage"/>
 
-        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.reference.JccRenameProcessor"/>
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.lang.refs.JccRenameProcessor"/>
         <lang.namesValidator language="JavaCC"
-                             implementationClass="com.github.oowekyala.ijcc.reference.JccNamesValidator"/>
+                             implementationClass="com.github.oowekyala.ijcc.lang.refs.JccNamesValidator"/>
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="JavaCC"
-                implementationClass="com.github.oowekyala.ijcc.highlight.JavaccSyntaxHighlighterFactory"/>
+                implementationClass="com.github.oowekyala.ijcc.insight.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
         <!-- Annotator passes -->
         <annotator language="JavaCC"
                    id="JccQuickAnnotator"
                    order="first"
-                   implementationClass="com.github.oowekyala.ijcc.highlight.JccAnnotator"/>
+                   implementationClass="com.github.oowekyala.ijcc.insight.highlight.JccAnnotator"/>
 
         <!-- TODO v2.0 -->
         <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
@@ -57,8 +57,8 @@
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JavaccTemplateContext"/>
 
         <lang.findUsagesProvider language="JavaCC"
-                                 implementationClass="com.github.oowekyala.ijcc.reference.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.reference.JccDescriptionProvider"/>
+                                 implementationClass="com.github.oowekyala.ijcc.lang.refs.JccFindUsagesProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.lang.refs.JccDescriptionProvider"/>
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 

@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccJavaExpressionList
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.reference.JccNonTerminalReference
+import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 

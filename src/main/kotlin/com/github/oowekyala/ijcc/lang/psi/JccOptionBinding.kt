@@ -1,8 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.model.JccOptionType
-import com.github.oowekyala.ijcc.model.JccOptionType.*
+import com.github.oowekyala.ijcc.insight.model.JccOptionType
+import com.github.oowekyala.ijcc.insight.model.JccOptionType.*
 import com.intellij.psi.PsiElement
 
 interface JccOptionBinding : JccIdentifierOwner {

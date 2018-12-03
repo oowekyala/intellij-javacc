@@ -3,10 +3,10 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.model.JavaccConfig
-import com.github.oowekyala.ijcc.model.LexicalGrammar
-import com.github.oowekyala.ijcc.reference.NonTerminalScopeProcessor
-import com.github.oowekyala.ijcc.reference.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
+import com.github.oowekyala.ijcc.lang.refs.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.openapi.fileTypes.FileType

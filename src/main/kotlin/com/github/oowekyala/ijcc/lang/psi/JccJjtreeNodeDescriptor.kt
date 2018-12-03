@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType

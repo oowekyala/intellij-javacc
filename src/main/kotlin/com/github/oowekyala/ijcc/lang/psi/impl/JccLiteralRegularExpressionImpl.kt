@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes.JCC_STRING_LITERAL
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.lang.psi.specContext
-import com.github.oowekyala.ijcc.reference.JccStringTokenReference
+import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor

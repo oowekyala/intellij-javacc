@@ -1,7 +1,7 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.model.GenericOption
+import com.github.oowekyala.ijcc.insight.model.GenericOption
 
 interface JccOptionSection : JavaccPsiElement {
 

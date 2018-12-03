@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.model
+package com.github.oowekyala.ijcc.insight.model
 
 import kotlin.reflect.KClass
 

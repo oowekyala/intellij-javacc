@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.quickdoc
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.angles
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.bold
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.model.LexicalState
+import com.github.oowekyala.ijcc.insight.model.LexicalState
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.lang.documentation.DocumentationMarkup.*
