@@ -49,8 +49,6 @@
 
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
-        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccOptionValue"
-                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccOptionValueManipulator"/>
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
