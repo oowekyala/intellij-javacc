@@ -30,6 +30,9 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
             genericOption.getValue(options?.getBindingFor(genericOption), this)
 
     companion object {
-        val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
+        private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
+
+        val knownOptions: Map<String, GenericOption<*>> = JccOption.values.plus(JjtOption.values).associateBy { it.name }
+
     }
 }

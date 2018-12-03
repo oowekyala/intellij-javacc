@@ -30,6 +30,20 @@ object JccElementFactory {
         get() = PsiFileFactory.getInstance(this)
 
 
+    fun createOptionValue(project: Project, name: String): JccOptionValue {
+        val fileText = """
+            options {
+             FOO = $name;
+            }
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.options!!.optionBindingList[0].optionValue!!
+    }
+
     fun createRegexReference(project: Project, name: String): JccRegularExpressionReference {
         val fileText = """
             PARSER_BEGIN(dummy)

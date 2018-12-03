@@ -47,10 +47,5 @@ abstract class GenericOption<T : Any>(
     protected open fun defaultValueFallback(config: JavaccConfig): T =
             staticDefaultValue ?: TODO("Should have been implemented!")
 
-    companion object {
 
-        val knownOptions: Map<String, GenericOption<*>> by lazy {
-            JccOption.values.associateBy { it.name }.plus(JjtOption.values.associateBy { it.name })
-        }
-    }
 }

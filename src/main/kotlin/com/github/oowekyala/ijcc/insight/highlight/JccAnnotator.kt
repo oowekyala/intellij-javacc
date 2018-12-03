@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
-import com.github.oowekyala.ijcc.insight.model.GenericOption
-import com.github.oowekyala.ijcc.insight.model.GenericOption.Companion.knownOptions
-import com.github.oowekyala.ijcc.insight.model.JccOption
-import com.github.oowekyala.ijcc.insight.model.JjtOption
+import com.github.oowekyala.ijcc.insight.model.JavaccConfig.Companion.knownOptions
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.filterMapAs

@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.insight.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.insight.model.JccOptionType.RefinedOptionType
+import com.github.oowekyala.ijcc.insight.model.JccOptionType.RefinedOptionType.PACKAGE
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 
 /**
@@ -52,7 +53,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  The package to generate the node classes into. The default for
      *  this is the parser package.
      */
-    object NODE_PACKAGE : JjtOption<String>(STRING, null) {
+    object NODE_PACKAGE : JjtOption<String>(PACKAGE, null) {
         override fun defaultValueFallback(config: JavaccConfig): String = config.parserPackage
     }
 
@@ -136,6 +137,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
     }
 
 
+
     companion object {
         val values = listOf(
             MULTI,
@@ -148,7 +150,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
             TRACK_TOKENS,
 
             NODE_PREFIX,
-            NODE_PACKAGE,
+            NODE_PACKAGE,/////
             NODE_EXTENDS,
             NODE_CLASS,
             NODE_FACTORY,

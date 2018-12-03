@@ -2,6 +2,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.insight.model.GenericOption
+import com.github.oowekyala.ijcc.insight.model.JavaccConfig.Companion.knownOptions
 import com.github.oowekyala.ijcc.insight.model.JccOptionType
 
 interface JccOptionBinding : JccIdentifierOwner {
@@ -18,7 +19,7 @@ interface JccOptionBinding : JccIdentifierOwner {
 
     @JvmDefault
     val modelOption: GenericOption<*>?
-        get() = GenericOption.knownOptions[name]
+        get() = knownOptions[name]
 
 
     /** Returns true if types match. */
