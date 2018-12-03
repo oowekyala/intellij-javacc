@@ -12,7 +12,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
  */
 abstract class GenericOption<T : Any>(
     /** Type of value the option expects. */
-    val type: JccOptionType<T>,
+    val expectedType: JccOptionType<T>,
     /**
      * Static default value used by JavaCC to represent a
      * default. See [getActualValue].
@@ -27,8 +27,8 @@ abstract class GenericOption<T : Any>(
     /** Gets the value of this option from an binding. If it's null then the default value is used. */
     open fun getValue(optionBinding: JccOptionBinding?, config: JavaccConfig): T =
             optionBinding
-                ?.takeIf { it.matchesType(type) }
-                ?.let { type.projection.parseStringValue(optionBinding.stringValue) }
+                ?.takeIf { it.matchesType(expectedType) }
+                ?.let { expectedType.projection.parseStringValue(optionBinding.stringValue) }
                 .let { getActualValue(it, config) }
 
 

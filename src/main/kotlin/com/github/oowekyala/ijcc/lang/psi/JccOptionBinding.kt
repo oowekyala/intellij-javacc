@@ -21,6 +21,9 @@ interface JccOptionBinding : JccIdentifierOwner {
      */
     override fun getNameIdentifier(): JccIdentifier?
 
+    val valueNode
+        get() = listOf(integerLiteral, stringLiteral, booleanLiteral).first { it != null }
+
     /**
      * Returns false if the type is incorrect.
      */

@@ -48,7 +48,7 @@ class JccOptionsTests : LightCodeInsightFixtureTestCase() {
 
         fun check(opt: GenericOption<*>) {
             val binding = file.options!!.getBindingFor(opt)!!
-            binding.matchesType(opt.type) shouldBe false
+            binding.matchesType(opt.expectedType) shouldBe false
             opt.getValue(binding, config) shouldBe opt.getValue(null, config) // assert the default value is used
         }
 
