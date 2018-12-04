@@ -42,8 +42,8 @@ class JccAnnotator : JccBaseAnnotator() {
                 holder.highlightStringOrToken(element)
             is JccCharacterDescriptor             -> holder.validateCharDescriptor(element)
             is JccTryCatchExpansionUnit           -> holder.validateTryCatch(element)
-            // DONE
             is JccNamedRegularExpression          -> holder.validateNameDuplicates(element)
+            // DONE
 
             is JccRegexprSpec                     -> {
                 // highlight the name of a global named regex

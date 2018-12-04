@@ -9,6 +9,8 @@ import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferen
 import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.filterMapAs
+import com.github.oowekyala.ijcc.util.ifTrue
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
 import com.intellij.openapi.util.TextRange
@@ -205,5 +207,16 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         }
     }
 
+    override fun visitNamedRegularExpression(element: JccNamedRegularExpression) {
+        myFile
+            .descendantSequence()
+            .filterMapAs<JccNamedRegularExpression>()
+            .filter { element !== it && it.name == element.name }
+            .any()
+            .ifTrue {
+                // there was at least one duplicate
+                myHolder += errorInfo(element, "Multiply defined lexical token name \"${element.name}\"")
+            }
+    }
 
 }
