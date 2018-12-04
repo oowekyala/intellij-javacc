@@ -83,8 +83,8 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
 
         if (header == null && expansionUnit != null) {
             myHolder += highlightInfo(
-                trimWhitespace(expansionUnit),
-                JJTREE_NODE_SCOPE.highlightType,
+                textRange = trimWhitespace(expansionUnit),
+                type = JJTREE_NODE_SCOPE.highlightType,
                 message = "In the node scope of #${nodeDescriptor.name ?: "void"}"
             )
 
@@ -100,8 +100,8 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
                     else "Renames this production's node to ${nodeDescriptor.name}"
 
             myHolder += highlightInfo(
-                rangeOf(nodeDescriptor),
-                JJTREE_DECORATION.highlightType,
+                textRange = rangeOf(nodeDescriptor),
+                type = JJTREE_DECORATION.highlightType,
                 message = message
             )
         }
@@ -219,4 +219,38 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
             }
     }
 
+    override fun visitRegexprSpec(element: JccRegexprSpec) {
+        // highlight the name of a global named regex
+        element.regularExpression
+            .let { it as? JccNamedRegularExpression }
+            ?.run {
+                myHolder += highlightInfo(nameIdentifier, JavaccHighlightingColors.TOKEN_REFERENCE.highlightType)
+            }
+        element.lexicalState?.let {
+            myHolder += highlightInfo(
+                it,
+                JavaccHighlightingColors.LEXICAL_STATE.highlightType
+            )
+        }
+        checkValidity(element)
+    }
+
+    private fun checkValidity(spec: JccRegexprSpec) {
+
+        fun getAsLiteral(regex: JccRegexpLike): JccLiteralRegularExpression? = when (regex) {
+            is JccLiteralRegularExpression -> regex
+            is JccInlineRegularExpression  -> regex.regexpElement?.let { getAsLiteral(it) }
+            is JccNamedRegularExpression   -> regex.regexpElement?.let { getAsLiteral(it) }
+            else                           -> null
+        }
+
+        val regex = getAsLiteral(spec.regularExpression) ?: return
+
+        spec.containingFile.globalTokenSpecs
+            .filter { it !== spec }
+            .any { getAsLiteral(it.regularExpression)?.textMatches(regex) == true }
+            .ifTrue {
+                myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
+            }
+    }
 }

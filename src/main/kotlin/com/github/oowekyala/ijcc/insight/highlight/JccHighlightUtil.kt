@@ -49,20 +49,23 @@ internal object JccHighlightUtil {
             wrongReferenceInfo(element.textRange, message)
 
     fun wrongReferenceInfo(range: TextRange, message: String): HighlightInfo =
-            HighlightInfo
-                .newHighlightInfo(HighlightInfoType.WRONG_REF)
-                .range(range)
-                .descriptionAndTooltip(message).createUnconditionally()
+            highlightInfo(
+                textRange = range,
+                severity = HighlightSeverity.ERROR,
+                type = HighlightInfoType.WRONG_REF,
+                message = message
+            )
 
     fun errorInfo(element: PsiElement, message: String?): HighlightInfo =
             errorInfo(element.textRange, message)
 
     fun errorInfo(range: TextRange, message: String?): HighlightInfo =
-            HighlightInfo
-                .newHighlightInfo(HighlightInfoType.ERROR)
-                .range(range)
-                .also { if (message != null) it.descriptionAndTooltip(message) }
-                .createUnconditionally()
+            highlightInfo(
+                textRange = range,
+                severity = HighlightSeverity.ERROR,
+                type = HighlightInfoType.ERROR,
+                message = message
+            )
 
     fun checkReference(element: JccIdentifierOwner,
                        normalType: HighlightInfoType): HighlightInfo {
