@@ -28,10 +28,9 @@ class JccAnnotator : JccBaseAnnotator() {
             is JccOptionBinding                   -> holder.validateOptionBinding(element)
             is JccJavaNonTerminalProductionHeader ->
                 holder.addHighlight(element.nameIdentifier, JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES)
-            // DONE
             is JccOptionSection                   -> // highlight the "options" as a keyword
                 holder.addHighlight(element.firstChild, JavaccHighlightingColors.JAVACC_KEYWORD.keys)
-
+            // DONE
             is JccNonTerminalExpansionUnit        ->
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys)
 

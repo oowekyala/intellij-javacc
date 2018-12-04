@@ -123,5 +123,9 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         myHolder += highlightInfo(element.nameIdentifier, NONTERMINAL_DECLARATION.highlightType)
     }
 
+    override fun visitOptionSection(o: JccOptionSection) {
+        myHolder += highlightInfo(o.firstChild, JavaccHighlightingColors.JAVACC_KEYWORD.highlightType)
+    }
+
 
 }
