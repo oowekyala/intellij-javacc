@@ -40,8 +40,8 @@ class JccAnnotator : JccBaseAnnotator() {
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.TOKEN_REFERENCE.keys)
             is JccLiteralRegularExpression        ->
                 holder.highlightStringOrToken(element)
-            // DONE
             is JccCharacterDescriptor             -> holder.validateCharDescriptor(element)
+            // DONE
             is JccTryCatchExpansionUnit           -> holder.validateTryCatch(element)
             is JccNamedRegularExpression          -> holder.validateNameDuplicates(element)
 

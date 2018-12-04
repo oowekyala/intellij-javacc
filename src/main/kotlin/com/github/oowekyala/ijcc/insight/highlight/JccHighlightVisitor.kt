@@ -16,6 +16,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.strictParents
+import org.apache.commons.lang3.StringEscapeUtils
 
 /**
  * @author Clément Fournier
@@ -158,6 +159,44 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
                 message = "Matched by $tokenName"
             )
         } // else stay default
+    }
+
+    override fun visitCharacterDescriptor(descriptor: JccCharacterDescriptor) {
+
+        fun checkCharLength(psiElement: PsiElement, unescaped: String): Boolean {
+            if (unescaped.length != 1) {
+                myHolder += errorInfo(psiElement, "String in character list may contain only one character.")
+                return false
+            }
+            return true
+        }
+
+
+        val left: String = try {
+            StringEscapeUtils.unescapeJava(descriptor.baseCharAsString)
+        } catch (e: IllegalArgumentException) {
+            myHolder += errorInfo(descriptor.baseCharElement, e.message)
+            return
+        }
+        val right: String? = try {
+            StringEscapeUtils.unescapeJava(descriptor.toCharAsString)
+        } catch (e: IllegalArgumentException) {
+            // if toCharAsString is null then unescapeJava can't throw an exception
+            myHolder += errorInfo(descriptor.toCharElement!!, e.message)
+            return
+        }
+
+        val checkRange =
+                checkCharLength(descriptor.baseCharElement, left)
+                        && right != null && checkCharLength(descriptor.toCharElement!!, right)
+
+        if (checkRange && (left[0].toInt() > right!![0].toInt())) {
+
+            myHolder += errorInfo(
+                descriptor,
+                "Right end of character range \'$right\' has a lower ordinal value than the left end of character range \'$left\'."
+            )
+        }
     }
 
 

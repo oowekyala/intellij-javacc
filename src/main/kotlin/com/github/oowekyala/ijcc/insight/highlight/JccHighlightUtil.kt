@@ -54,14 +54,15 @@ internal object JccHighlightUtil {
                 .range(range)
                 .descriptionAndTooltip(message).createUnconditionally()
 
-    fun errorInfo(element: PsiElement, message: String): HighlightInfo =
+    fun errorInfo(element: PsiElement, message: String?): HighlightInfo =
             errorInfo(element.textRange, message)
 
-    fun errorInfo(range: TextRange, message: String): HighlightInfo =
+    fun errorInfo(range: TextRange, message: String?): HighlightInfo =
             HighlightInfo
                 .newHighlightInfo(HighlightInfoType.ERROR)
                 .range(range)
-                .descriptionAndTooltip(message).createUnconditionally()
+                .also { if (message != null) it.descriptionAndTooltip(message) }
+                .createUnconditionally()
 
     fun checkReference(element: JccIdentifierOwner,
                        normalType: HighlightInfoType): HighlightInfo {
