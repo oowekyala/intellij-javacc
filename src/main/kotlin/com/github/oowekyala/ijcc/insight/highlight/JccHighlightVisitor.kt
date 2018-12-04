@@ -1,17 +1,13 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
-import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.JJTREE_DECORATION
-import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.JJTREE_NODE_SCOPE
+import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.trimWhitespace
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
 import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.github.oowekyala.ijcc.lang.JavaccTypes
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
-import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
 import com.intellij.openapi.util.TextRange
@@ -121,7 +117,10 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
                 myHolder += errorInfo(this, "Expected ${opt.expectedType}")
             }
         }
+    }
 
+    override fun visitJavaNonTerminalProductionHeader(element: JccJavaNonTerminalProductionHeader) {
+        myHolder += highlightInfo(element.nameIdentifier, NONTERMINAL_DECLARATION.highlightType)
     }
 
 
