@@ -199,5 +199,11 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         }
     }
 
+    override fun visitTryCatchExpansionUnit(tryCatch: JccTryCatchExpansionUnit) {
+        if (tryCatch.catchClauseList.isEmpty() && tryCatch.finallyClause == null) {
+            myHolder += errorInfo(tryCatch, "Try block must contain at least one catch or finally block.")
+        }
+    }
+
 
 }

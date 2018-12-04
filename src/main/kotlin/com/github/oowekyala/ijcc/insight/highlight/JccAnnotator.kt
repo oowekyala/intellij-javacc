@@ -41,8 +41,8 @@ class JccAnnotator : JccBaseAnnotator() {
             is JccLiteralRegularExpression        ->
                 holder.highlightStringOrToken(element)
             is JccCharacterDescriptor             -> holder.validateCharDescriptor(element)
-            // DONE
             is JccTryCatchExpansionUnit           -> holder.validateTryCatch(element)
+            // DONE
             is JccNamedRegularExpression          -> holder.validateNameDuplicates(element)
 
             is JccRegexprSpec                     -> {
