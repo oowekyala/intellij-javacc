@@ -33,12 +33,6 @@
                 implementationClass="com.github.oowekyala.ijcc.insight.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
-        <!-- Annotator passes -->
-        <annotator language="JavaCC"
-                   id="JccQuickAnnotator"
-                   order="first"
-                   implementationClass="com.github.oowekyala.ijcc.insight.highlight.JccAnnotator"/>
-
         <!-- TODO v2.0 -->
         <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
 
@@ -70,6 +64,8 @@
 
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
+
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.insight.highlight.JccHighlightVisitor"/>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>

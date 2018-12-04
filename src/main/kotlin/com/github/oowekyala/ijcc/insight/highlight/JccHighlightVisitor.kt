@@ -16,6 +16,8 @@ import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.strictParents
 import org.apache.commons.lang3.StringEscapeUtils
@@ -24,9 +26,7 @@ import org.apache.commons.lang3.StringEscapeUtils
  * @author Clément Fournier
  * @since 1.0
  */
-class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
-
-    override fun suitableForFile(file: PsiFile): Boolean = file is JccFile
+open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
 
     override fun clone(): HighlightVisitor = JccHighlightVisitor()
 
@@ -38,9 +38,9 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     private val myHolder: HighlightInfoHolder // never null during analysis
         get() = myHolderImpl!!
 
-    private var myFileImpl: JccFile? = null
+    private var myFileImpl: SmartPsiElementPointer<JccFile>? = null
     private val myFile: JccFile // never null during analysis
-        get() = myFileImpl!!
+        get() = myFileImpl!!.element!!
 
     override fun analyze(file: PsiFile,
                          updateWholeFile: Boolean,
@@ -57,13 +57,11 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         return true
     }
 
-    fun prepareToRunAsInspection(holder: HighlightInfoHolder) {
-        prepare(holder, holder.contextFile)
-    }
+    override fun suitableForFile(file: PsiFile): Boolean = file is JccFile
 
     private fun prepare(holder: HighlightInfoHolder, file: PsiFile) {
         myHolderImpl = holder
-        myFileImpl = file as JccFile
+        myFileImpl = SmartPointerManager.createPointer(file as JccFile)
     }
 
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
