@@ -35,7 +35,7 @@ class JavaccColorSettingsPage : ColorSettingsPage {
         "jdoccomment" to JavaccHighlightingColors.C_COMMENT.keys,
         "jmethod" to JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES,
         "jtype" to JavaHighlightingColors.CLASS_NAME_ATTRIBUTES,
-        "token" to JavaccHighlightingColors.TOKEN.keys,
+        "token" to JavaccHighlightingColors.TOKEN_REFERENCE.keys,
         "jjtree" to JavaccHighlightingColors.JJTREE_DECORATION.keys,
         "unknown" to CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES,
         "knownprod" to JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys,

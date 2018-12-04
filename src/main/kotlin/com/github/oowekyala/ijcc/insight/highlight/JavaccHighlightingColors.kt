@@ -47,8 +47,11 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
     BRACES(JavaHighlightingColors.BRACES),
 
     STRING(JavaHighlightingColors.STRING),
-    // used for strings that match a token
-    TOKEN(DefaultLanguageHighlighterColors.INSTANCE_FIELD),
+
+    TOKEN_DECLARATION(DefaultLanguageHighlighterColors.INSTANCE_FIELD),
+    TOKEN_REFERENCE(TOKEN_DECLARATION.keys),
+    TOKEN_LITERAL_REFERENCE(TOKEN_REFERENCE.keys),    // used for strings that match a token
+
     PRIVATE_REGEX(DefaultLanguageHighlighterColors.INSTANCE_FIELD),
 
     CHARACTER(JavaHighlightingColors.STRING),

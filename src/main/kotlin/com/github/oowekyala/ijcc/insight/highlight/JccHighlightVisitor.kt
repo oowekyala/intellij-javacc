@@ -138,7 +138,9 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         }
     }
 
-
+    override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+        myHolder += checkReference(o, TOKEN_REFERENCE.highlightType)
+    }
 
 
 }

@@ -38,7 +38,7 @@ class JccAnnotator : JccBaseAnnotator() {
                 }
             // DONE
             is JccRegularExpressionReference      ->
-                holder.highlightOrFlagReference(element, JavaccHighlightingColors.TOKEN.keys)
+                holder.highlightOrFlagReference(element, JavaccHighlightingColors.TOKEN_REFERENCE.keys)
             is JccLiteralRegularExpression        ->
                 holder.highlightStringOrToken(element)
             is JccCharacterDescriptor             -> holder.validateCharDescriptor(element)
@@ -50,7 +50,7 @@ class JccAnnotator : JccBaseAnnotator() {
                 element.regularExpression
                     .let { it as? JccNamedRegularExpression }
                     ?.run {
-                        holder.addHighlight(nameIdentifier, JavaccHighlightingColors.TOKEN.keys)
+                        holder.addHighlight(nameIdentifier, JavaccHighlightingColors.TOKEN_REFERENCE.keys)
                     }
                 element.lexicalState?.let { holder.addHighlight(it, JavaccHighlightingColors.LEXICAL_STATE.keys) }
                 holder.validateRegexprSpec(element)
@@ -159,7 +159,7 @@ class JccAnnotator : JccBaseAnnotator() {
         val isSelfReferential = ref != null && literal.strictParents().any { it === ref }
 
         if (ref != null && !isSelfReferential) {
-            addHighlight(literal, JavaccHighlightingColors.TOKEN.keys, message = "Matched by a token")
+            addHighlight(literal, JavaccHighlightingColors.TOKEN_REFERENCE.keys, message = "Matched by a token")
         } // else stay default
     }
 
