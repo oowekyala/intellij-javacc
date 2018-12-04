@@ -2,7 +2,9 @@ package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
+import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.ide.highlighter.JavaHighlightingColors
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.markup.EffectType
@@ -22,6 +24,9 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
     JJTREE_DECORATION(DefaultLanguageHighlighterColors.INTERFACE_NAME),
     /** For [JccJjtreeNodeDescriptor.expansionUnit]. */
     JJTREE_NODE_SCOPE(null) {
+
+        override val highlightType: HighlightInfoType = createSymbolTypeInfo(HighlightSeverity.INFORMATION)
+
         override fun overrideDefaults(key: TextAttributesKey) {
             key.defaultAttributes.effectColor = JJTREE_DECORATION.keys.defaultAttributes.foregroundColor
             key.defaultAttributes.effectType = EffectType.BOLD_DOTTED_LINE
@@ -54,6 +59,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
     BAD_CHARACTER(JavaHighlightingColors.INVALID_STRING_ESCAPE);
 
+
     val keys: TextAttributesKey =
             TextAttributesKey.createTextAttributesKey("JavaCC.$name", base).also { overrideDefaults(it) }
 
@@ -67,6 +73,11 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
         .replace("Jjtree", "JJTree")
         .replace("Javacc", "JavaCC")
 
+    open val highlightType: HighlightInfoType = createSymbolTypeInfo(HighlightInfoType.SYMBOL_TYPE_SEVERITY)
+
+    protected fun createSymbolTypeInfo(severity: HighlightSeverity): HighlightInfoType {
+        return HighlightInfoType.HighlightInfoTypeImpl(severity, keys, false)
+    }
 
     companion object {
         private val TOKEN_TYPE_TO_STYLE: Map<IElementType, TextAttributesKey>

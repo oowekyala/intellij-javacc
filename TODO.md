@@ -19,8 +19,9 @@
 * Add some doc about keywords, etc
 ++ Add gutter links to node classes
 * Add gutter links from node classes to productions
+* Migrate annotator to inspection-like
 
-* Add MOAR tests
+* Add moar tests
 
 
 * Make a good plugin description
@@ -44,8 +45,8 @@
 * Unnecessary parentheses
 * Use bracketed expansion instead of ()? (when there's another set of parentheses inside)
 * String uncovered by literal regex
-* Regex reference can be replaced by string
-  * String can be replaced by regex reference
+++ Regex reference can be replaced by string
+  ++ String can be replaced by regex reference
   * Only apply if the regex reference is exactly just the string and vice versa
 * Collapsible regex productions (consecutive (no comment in between), same regex kind, same lexical states)
 * Empty parser actions
