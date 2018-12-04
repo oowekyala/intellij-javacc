@@ -132,5 +132,13 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         myHolder += checkReference(o, NONTERMINAL_REFERENCE.highlightType)
     }
 
+    override fun visitRegularExprProduction(o: JccRegularExprProduction) {
+        o.lexicalStateList?.identifierList?.forEach {
+            myHolder += highlightInfo(it, LEXICAL_STATE.highlightType)
+        }
+    }
+
+
+
 
 }

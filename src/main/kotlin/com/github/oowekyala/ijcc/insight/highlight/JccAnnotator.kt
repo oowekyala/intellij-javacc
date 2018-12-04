@@ -32,12 +32,11 @@ class JccAnnotator : JccBaseAnnotator() {
                 holder.addHighlight(element.firstChild, JavaccHighlightingColors.JAVACC_KEYWORD.keys)
             is JccNonTerminalExpansionUnit        ->
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys)
-            // DONE
-
             is JccRegularExprProduction           ->
                 element.lexicalStateList?.identifierList?.forEach {
                     holder.addHighlight(it, JavaccHighlightingColors.LEXICAL_STATE.keys)
                 }
+            // DONE
             is JccRegularExpressionReference      ->
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.TOKEN.keys)
             is JccLiteralRegularExpression        ->
