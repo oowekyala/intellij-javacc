@@ -43,9 +43,28 @@ internal object JccHighlightUtil {
 
         return range
     }
+
+    fun wrongReferenceInfo(element: PsiElement, message: String): HighlightInfo =
+            wrongReferenceInfo(element.textRange, message)
+
+    fun wrongReferenceInfo(range: TextRange, message: String): HighlightInfo =
+            HighlightInfo
+                .newHighlightInfo(HighlightInfoType.WRONG_REF)
+                .range(range)
+                .descriptionAndTooltip(message).createUnconditionally()
+
+    fun errorInfo(element: PsiElement, message: String): HighlightInfo =
+            errorInfo(element.textRange, message)
+
+    fun errorInfo(range: TextRange, message: String): HighlightInfo =
+            HighlightInfo
+                .newHighlightInfo(HighlightInfoType.ERROR)
+                .range(range)
+                .descriptionAndTooltip(message).createUnconditionally()
+
 }
 
-operator fun HighlightInfoHolder.plusAssign(highlightInfo: HighlightInfo) {
+internal operator fun HighlightInfoHolder.plusAssign(highlightInfo: HighlightInfo) {
     add(highlightInfo)
 
 }
