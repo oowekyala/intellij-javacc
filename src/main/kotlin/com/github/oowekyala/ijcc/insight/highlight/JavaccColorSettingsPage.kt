@@ -35,7 +35,9 @@ class JavaccColorSettingsPage : ColorSettingsPage {
         "jdoccomment" to JavaccHighlightingColors.C_COMMENT.keys,
         "jmethod" to JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES,
         "jtype" to JavaHighlightingColors.CLASS_NAME_ATTRIBUTES,
-        "token" to JavaccHighlightingColors.TOKEN_REFERENCE.keys,
+        "token" to JavaccHighlightingColors.TOKEN_DECLARATION.keys,
+        "token-lit-ref" to JavaccHighlightingColors.TOKEN_LITERAL_REFERENCE.keys,
+        "token-ref" to JavaccHighlightingColors.TOKEN_REFERENCE.keys,
         "jjtree" to JavaccHighlightingColors.JJTREE_DECORATION.keys,
         "unknown" to CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES,
         "knownprod" to JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys,
@@ -80,7 +82,7 @@ TOKEN :
 
 void <pdecl>BinaryExpression</pdecl>(): {}
 {
-    <knownprod>UnaryExpression</knownprod>() ( <token>"+"</token> | <token>"-"</token> ) <knownprod>UnaryExpression</knownprod>()
+    <knownprod>UnaryExpression</knownprod>() ( <token-lit-ref>"+"</token-lit-ref> | <token-lit-ref>"-"</token-lit-ref> ) <knownprod>UnaryExpression</knownprod>()
 }
 
 void <pdecl>UnaryExpression</pdecl>() <jjtree>#void</jjtree>: {}
@@ -90,7 +92,7 @@ void <pdecl>UnaryExpression</pdecl>() <jjtree>#void</jjtree>: {}
 
 void <pdecl>Integer</pdecl>() <jjtree>#IntegerLiteral</jjtree>: {}
 {
-  <<token>INTEGER</token>>
+  <<token-ref>INTEGER</token-ref>>
 }
 """
 

@@ -222,7 +222,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         element.regularExpression
             .let { it as? JccNamedRegularExpression }
             ?.run {
-                myHolder += highlightInfo(nameIdentifier, JavaccHighlightingColors.TOKEN_REFERENCE.highlightType)
+                myHolder += highlightInfo(nameIdentifier, JavaccHighlightingColors.TOKEN_DECLARATION.highlightType)
             }
         element.lexicalState?.let {
             myHolder += highlightInfo(
