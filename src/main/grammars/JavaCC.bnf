@@ -254,14 +254,23 @@ assigned_expansion_unit ::=
     {methods=[regexpUnitList=""]}
 
 local_lookahead 	::=
-    "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
+    "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=local_lookahead_tail}
 
 
 private local_lookahead_tail    ::=
-    // java_expression takes precedence over expansion_choices
-    INTEGER_LITERAL [ "," "{" java_expression "}" ]
-    | "{" java_expression "}"
-    | [ INTEGER_LITERAL "," ] expansion_choices [ "," "{" java_expression "}" ]
+      INTEGER_LITERAL [ "," expansion_choices "," braced_expression ]
+      // java_expression takes precedence over expansion_choices
+      // but only if the construct starts with a "{"
+      // JavaCC effectively prohibits e.g. LOOKAHEAD({...}, {...}), so we do the same
+    | [ INTEGER_LITERAL "," ] braced_expression
+    | [ INTEGER_LITERAL "," ] expansion_choices [ "," braced_expression ]
+    {recoverWhile=lookahead_recover}
+
+private braced_expression       ::=
+    "{" java_expression "}"
+
+private lookahead_recover       ::=
+    !(")")
 
 non_terminal_expansion_unit     ::=
     identifier "(" java_expression_list ")" {pin=1}

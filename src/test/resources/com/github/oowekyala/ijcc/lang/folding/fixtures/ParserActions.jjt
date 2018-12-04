@@ -1,7 +1,7 @@
 <fold text='/PARSER DECLARATION/' expand='false'>PARSER_BEGIN(JJTreeParser)
 PARSER_END(JJTreeParser)</fold>
 
-<fold text='SKIP: {..}' expand='false'>< COMMENT_STATE >  SKIP : {
+<fold text='SKIP: {..}' expand='false'>SKIP : {
     "(:"</fold> <fold text="{..}">{ commentNestingDepth++; }
 }
 

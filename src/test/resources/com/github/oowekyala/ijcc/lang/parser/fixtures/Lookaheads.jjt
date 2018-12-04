@@ -1,0 +1,22 @@
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+
+void lookaheads(): {}
+{
+    LOOKAHEAD(1, ID(), {getToken(1).kind != NATURAL})       // lexical, syntactic, semantic
+    LOOKAHEAD({getToken(1).kind != NATURAL})                // semantic, not syntactic
+    LOOKAHEAD(1)                                            // lexical
+    LOOKAHEAD(TableAlias(), {getToken(1).kind != NATURAL})  // syntactic, semantic
+    LOOKAHEAD({ doSth(); }, {getToken(1).kind != NATURAL})  // invalid parse
+}
