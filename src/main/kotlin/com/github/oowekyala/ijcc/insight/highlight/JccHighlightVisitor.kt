@@ -15,6 +15,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.strictParents
 
 /**
  * @author Clément Fournier
@@ -140,6 +141,23 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
 
     override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
         myHolder += checkReference(o, TOKEN_REFERENCE.highlightType)
+    }
+
+    override fun visitLiteralRegularExpression(literal: JccLiteralRegularExpression) {
+        val ref: JccRegexprSpec? = literal.reference?.resolve()
+
+        // if so, the literal declares itself
+        val isSelfReferential = ref != null && literal.strictParents().any { it === ref }
+
+        if (ref != null && !isSelfReferential) {
+
+            val tokenName = ref.name?.let { "token <$it>" } ?: "a token"
+            myHolder += highlightInfo(
+                literal,
+                JavaccHighlightingColors.TOKEN_LITERAL_REFERENCE.highlightType,
+                message = "Matched by $tokenName"
+            )
+        } // else stay default
     }
 
 

@@ -36,11 +36,11 @@ class JccAnnotator : JccBaseAnnotator() {
                 element.lexicalStateList?.identifierList?.forEach {
                     holder.addHighlight(it, JavaccHighlightingColors.LEXICAL_STATE.keys)
                 }
-            // DONE
             is JccRegularExpressionReference      ->
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.TOKEN_REFERENCE.keys)
             is JccLiteralRegularExpression        ->
                 holder.highlightStringOrToken(element)
+            // DONE
             is JccCharacterDescriptor             -> holder.validateCharDescriptor(element)
             is JccTryCatchExpansionUnit           -> holder.validateTryCatch(element)
             is JccNamedRegularExpression          -> holder.validateNameDuplicates(element)
