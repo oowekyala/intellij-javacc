@@ -30,9 +30,9 @@ class JccAnnotator : JccBaseAnnotator() {
                 holder.addHighlight(element.nameIdentifier, JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES)
             is JccOptionSection                   -> // highlight the "options" as a keyword
                 holder.addHighlight(element.firstChild, JavaccHighlightingColors.JAVACC_KEYWORD.keys)
-            // DONE
             is JccNonTerminalExpansionUnit        ->
                 holder.highlightOrFlagReference(element, JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys)
+            // DONE
 
             is JccRegularExprProduction           ->
                 element.lexicalStateList?.identifierList?.forEach {

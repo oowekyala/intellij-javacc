@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
@@ -61,6 +62,18 @@ internal object JccHighlightUtil {
                 .newHighlightInfo(HighlightInfoType.ERROR)
                 .range(range)
                 .descriptionAndTooltip(message).createUnconditionally()
+
+    fun checkReference(element: JccIdentifierOwner,
+                       normalType: HighlightInfoType): HighlightInfo {
+        return if (element.reference?.resolve() == null) {
+            wrongReferenceInfo(
+                element.nameIdentifier!!, // may not be supported for some elements (eg JjtNodeDescriptor)
+                "Unresolved reference: ${element.name}"
+            )
+        } else {
+            highlightInfo(element.nameIdentifier!!, normalType)
+        }
+    }
 
 }
 

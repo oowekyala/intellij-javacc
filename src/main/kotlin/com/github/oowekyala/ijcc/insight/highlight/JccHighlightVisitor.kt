@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
+import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.checkReference
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.trimWhitespace
@@ -124,7 +125,11 @@ class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     }
 
     override fun visitOptionSection(o: JccOptionSection) {
-        myHolder += highlightInfo(o.firstChild, JavaccHighlightingColors.JAVACC_KEYWORD.highlightType)
+        myHolder += highlightInfo(o.firstChild, JAVACC_KEYWORD.highlightType)
+    }
+
+    override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
+        myHolder += checkReference(o, NONTERMINAL_REFERENCE.highlightType)
     }
 
 
