@@ -19,7 +19,6 @@
 * Add some doc about keywords, etc
 ++ Add gutter links to node classes
 * Add gutter links from node classes to productions
-* Migrate annotator to inspection-like
 
 * Add moar tests
 
@@ -33,9 +32,9 @@
 
 ++ Duplicate string literals
 ++ Duplicate named token
-* Token name "DIGITS" refers to a private (with a #) regular expression.
+++ Token name "DIGITS" refers to a private (with a #) regular expression.
 
-* Wrong option type
+++ Wrong option type
 
 ## Inspection ideas
 
@@ -47,7 +46,7 @@
 * String uncovered by literal regex
 ++ Regex reference can be replaced by string
   ++ String can be replaced by regex reference
-  * Only apply if the regex reference is exactly just the string and vice versa
+  ++ Only apply if the regex reference is exactly just the string and vice versa
 * Collapsible regex productions (consecutive (no comment in between), same regex kind, same lexical states)
 * Empty parser actions
 * Consecutive parser actions
