@@ -21,6 +21,32 @@ import com.intellij.psi.tree.java.IJavaElementType
  */
 object JavaccParserUtil : GeneratedParserUtilBase() {
 
+
+    /**
+     * Parse a lookahead expression, right after the opening "(".
+     */
+    @JvmStatic
+    fun parseLookaheadExpr(builder: PsiBuilder, level: Int): Boolean {
+        //     INTEGER_LITERAL [ "," expansion_choices  "," braced_expression? ]
+        //      // java_expression takes precedence over expansion_choices
+        //      // but only if the construct starts with a "{"
+        //      // JavaCC effectively prohibits e.g. LOOKAHEAD({...}, {...}), so we do the same
+        //    | [ INTEGER_LITERAL "," ] braced_expression
+        //    | [ INTEGER_LITERAL "," ] expansion_choices [ "," braced_expression ]
+        //    | INTEGER_LITERAL
+        //
+
+
+
+
+
+
+
+
+        return true
+    }
+
+
     /**
      * Parse a Java block. This implementation just eats up
      * to the matching closing brace. Java injection takes

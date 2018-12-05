@@ -18,5 +18,7 @@ void lookaheads(): {}
     LOOKAHEAD({getToken(1).kind != NATURAL})                // semantic, not syntactic
     LOOKAHEAD(1)                                            // lexical
     LOOKAHEAD(TableAlias(), {getToken(1).kind != NATURAL})  // syntactic, semantic
+    LOOKAHEAD(1, ("foo" | "bar") )                          // lexical, semantic
+
     LOOKAHEAD({ doSth(); }, {getToken(1).kind != NATURAL})  // invalid parse
 }
