@@ -47,18 +47,34 @@ object JccNonTerminalDocMaker {
                 appendHeader(prod.header)
             }
             sections {
-                buildSection("BNF") {
-                    prod.expansion?.accept(ExpansionDocVisitor(this))
+                buildSection("BNF", sectionDelim = " ::=") {
+                    prod.expansion?.let { ExpansionMinifierVisitor(this).startOn(it) }
                 }
             }
         }
     }
 
-    // TODO this should be formatted to remove unnecessary parentheses and stuff
-    private class ExpansionDocVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
+
+    private class ExpansionMinifierVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
+
+        // spread out the top level alternatives
+        var spreadAlternatives: Boolean = false
+
+        fun startOn(jccExpansion: JccExpansion) {
+            if (jccExpansion is JccExpansionAlternative)
+                spreadAlternatives = true
+
+            jccExpansion.accept(this)
+        }
 
         override fun visitExpansionAlternative(o: JccExpansionAlternative) {
-            o.expansionList.foreachAndBetween({ sb.append(" | ") }) { it.accept(this) }
+            val (prefix, delim) = if (spreadAlternatives) {
+                spreadAlternatives = false
+                Pair("&nbsp;&nbsp;", "<br/>| ")
+            } else Pair("", " | ")
+
+            sb.append(prefix)
+            o.expansionList.foreachAndBetween({ sb.append(delim) }) { it.accept(this) }
         }
 
         override fun visitExpansionSequence(o: JccExpansionSequence) {

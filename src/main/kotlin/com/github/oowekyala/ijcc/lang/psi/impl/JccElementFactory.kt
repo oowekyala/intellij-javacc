@@ -61,6 +61,12 @@ object JccElementFactory {
     }
 
     fun createLiteralRegex(project: Project, name: String): JccLiteralRegularExpression {
+        return createBnfExpansion(project, name)
+            .let { it as JccExpansionSequence }
+            .expansionUnitList[0] as JccLiteralRegularExpression
+    }
+
+    fun createBnfExpansion(project: Project, name: String): JccExpansion {
         val fileText = """
             PARSER_BEGIN(dummy)
             PARSER_END(dummy)
@@ -71,9 +77,7 @@ object JccElementFactory {
 
         return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
-            .expansion
-            .let { it as JccExpansionSequence }
-            .expansionUnitList[0] as JccLiteralRegularExpression
+            .expansion!!
     }
 
     fun createIdentifier(project: Project, name: String): JccIdentifier {

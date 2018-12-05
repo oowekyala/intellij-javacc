@@ -9,14 +9,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 
 /**
+ * Utilities to build the quickdoc.
+ *
  * @author Clément Fournier
  * @since 1.0
  */
 object JccDocUtil {
-
-    const val LeftRightStart = "<p style='text-align:left;'>"
-    const val LeftRightMiddle = "<span style='float:right;'>"
-    const val LeftRightEnd = "</span></p>"
 
     private const val TerminalRef = "token"
     private const val NonterminalRef = "nonterminal"
@@ -46,6 +44,7 @@ object JccDocUtil {
     fun bold(it: String) = "<b>$it</b>"
     fun angles(it: String) = "&lt;$it&gt;"
 
+    /** Builds a quickdoc using a DSL, hiding most HTML formatting away. */
     fun buildQuickDoc(spec: DocBuilder.() -> Unit): String = StringBuilder().also { DocBuilder(it).spec() }.toString()
 
     class DocBuilder(private val stringBuilder: StringBuilder) {
@@ -70,23 +69,18 @@ object JccDocUtil {
 
     }
 
-    class SectionsBuilder(val stringBuilder: StringBuilder) {
+    class SectionsBuilder(private val stringBuilder: StringBuilder) {
 
-        fun emptySection(header: String) {
-            stringBuilder.append(SECTION_HEADER_START)
-            stringBuilder.append(header)
-            stringBuilder.append(SECTION_SEPARATOR)
-            stringBuilder.append(SECTION_END).append("\n")
-        }
+        fun emptySection(header: String) = buildSection(header, sectionDelim = "") { }
 
-        fun section(header: String, body: () -> String) =
-                buildSection(header) {
+        fun section(header: String, sectionDelim: String = ":", body: () -> String) =
+                buildSection(header, sectionDelim) {
                     append(body())
                 }
 
-        fun buildSection(header: String, body: java.lang.StringBuilder.() -> Unit) {
+        fun buildSection(header: String, sectionDelim: String = ":", body: java.lang.StringBuilder.() -> Unit) {
             stringBuilder.append(SECTION_HEADER_START)
-            stringBuilder.append(header).append(':')
+            stringBuilder.append(header).append(sectionDelim)
             stringBuilder.append(SECTION_SEPARATOR).append("<p>")
             stringBuilder.body()
             stringBuilder.append(SECTION_END).append("\n")
