@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.intellij.codeInsight.documentation.DocumentationManager
+import com.intellij.lang.documentation.DocumentationMarkup.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 
@@ -45,5 +46,51 @@ object JccDocUtil {
     fun bold(it: String) = "<b>$it</b>"
     fun angles(it: String) = "&lt;$it&gt;"
 
+    fun buildQuickDoc(spec: DocBuilder.() -> Unit): String = StringBuilder().also { DocBuilder(it).spec() }.toString()
+
+    class DocBuilder(private val stringBuilder: StringBuilder) {
+
+        fun definition(defContents: () -> String) =
+                buildDefinition {
+                    append(defContents())
+                }
+
+
+        fun buildDefinition(defContents: java.lang.StringBuilder.() -> Unit) {
+            stringBuilder.append(DEFINITION_START)
+            stringBuilder.defContents()
+            stringBuilder.append(DEFINITION_END).append("\n")
+        }
+
+        fun sections(sectionDefs: SectionsBuilder.() -> Unit) {
+            stringBuilder.append(SECTIONS_START)
+            SectionsBuilder(stringBuilder).sectionDefs()
+            stringBuilder.append(SECTIONS_END)
+        }
+
+    }
+
+    class SectionsBuilder(val stringBuilder: StringBuilder) {
+
+        fun emptySection(header: String) {
+            stringBuilder.append(SECTION_HEADER_START)
+            stringBuilder.append(header)
+            stringBuilder.append(SECTION_SEPARATOR)
+            stringBuilder.append(SECTION_END).append("\n")
+        }
+
+        fun section(header: String, body: () -> String) =
+                buildSection(header) {
+                    append(body())
+                }
+
+        fun buildSection(header: String, body: java.lang.StringBuilder.() -> Unit) {
+            stringBuilder.append(SECTION_HEADER_START)
+            stringBuilder.append(header).append(':')
+            stringBuilder.append(SECTION_SEPARATOR).append("<p>")
+            stringBuilder.body()
+            stringBuilder.append(SECTION_END).append("\n")
+        }
+    }
 
 }

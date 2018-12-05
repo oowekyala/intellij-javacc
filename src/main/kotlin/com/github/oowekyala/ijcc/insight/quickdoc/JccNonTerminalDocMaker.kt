@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
-import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
@@ -17,18 +17,12 @@ import org.intellij.lang.annotations.Language
 object JccNonTerminalDocMaker {
 
 
-    fun makeDoc(prod: JccJavacodeProduction): String {
-        return buildString {
-            append(DocumentationMarkup.DEFINITION_START)
+    fun makeDoc(prod: JccJavacodeProduction): String = buildQuickDoc {
+        buildDefinition {
             appendHeader(prod.header)
-
-            append(DocumentationMarkup.DEFINITION_END)
-            append(DocumentationMarkup.SECTIONS_START)
-
-            append(DocumentationMarkup.SECTION_HEADER_START).append("(JAVACODE)")
-                .append(DocumentationMarkup.SECTION_SEPARATOR)
-            append(DocumentationMarkup.SECTION_END)
-            append(DocumentationMarkup.SECTIONS_END)
+        }
+        sections {
+            emptySection("(JAVACODE)")
         }
     }
 
@@ -48,20 +42,15 @@ object JccNonTerminalDocMaker {
 
     @Language("HTML")
     fun makeDoc(prod: JccBnfProduction): String {
-        return buildString {
-            append(DocumentationMarkup.DEFINITION_START)
-//            append("(BNF) ")
-            appendHeader(prod.header)
-
-            append(DocumentationMarkup.DEFINITION_END)
-            append(DocumentationMarkup.SECTIONS_START)
-
-            append(DocumentationMarkup.SECTION_HEADER_START).append("BNF:")
-                .append(DocumentationMarkup.SECTION_SEPARATOR)
-                .append("<p>")
-            prod.expansion?.run { this.accept(ExpansionDocVisitor(this@buildString)) }
-            append(DocumentationMarkup.SECTION_END)
-            append(DocumentationMarkup.SECTIONS_END)
+        return buildQuickDoc {
+            buildDefinition {
+                appendHeader(prod.header)
+            }
+            sections {
+                buildSection("BNF") {
+                    prod.expansion?.accept(ExpansionDocVisitor(this))
+                }
+            }
         }
     }
 

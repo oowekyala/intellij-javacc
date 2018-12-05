@@ -1,12 +1,12 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.model.LexicalState
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.angles
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.bold
+import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.insight.model.LexicalState
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
-import com.intellij.lang.documentation.DocumentationMarkup.*
 import org.intellij.lang.annotations.Language
 
 /**
@@ -15,33 +15,28 @@ import org.intellij.lang.annotations.Language
  */
 object JccTerminalDocMaker {
 
-    private fun makeDef(name: String, regexKind: String) = "$regexKind\t$name"
-
     @Language("HTML")
-    fun makeDoc(spec: JccRegexprSpec): String {
+    fun makeDoc(spec: JccRegexprSpec): String = buildQuickDoc {
+        val prod = spec.production
 
-        val (regexpKind, states) = run {
-            val prod = spec.production
-            Pair(prod.regexprKind.text, lexicalStatesOf(prod))
+        definition {
+            val name =
+                    spec.regularExpression
+                        .let { it as? JccNamedRegularExpression }
+                        ?.name
+                        ?.let { bold(angles(it)) } ?: "(unnamed)"
+
+            "${prod.regexprKind.text}\t$name"
         }
 
-        val name =
-                spec.regularExpression
-                    .let { it as? JccNamedRegularExpression }
-                    ?.name
-                    ?.let { bold(angles(it)) } ?: "(unnamed)"
-
-        val definition = makeDef(name, regexpKind)
-        val expansion = StringBuilder().also { spec.regularExpression.accept(RegexDocVisitor(it)) }.toString()
-
-        return """
-            $DEFINITION_START$definition$DEFINITION_END
-            $SECTIONS_START
-            ${SECTION_HEADER_START}Lexical states:$SECTION_SEPARATOR<p>$states$SECTION_END
-            ${SECTION_HEADER_START}Expansion:$SECTION_SEPARATOR<p>$expansion$SECTION_END
-            $SECTIONS_END
-        """.trimIndent()
-
+        sections {
+            section("Lexical states") {
+                lexicalStatesOf(prod)
+            }
+            buildSection("Expansion") {
+                spec.regularExpression.accept(RegexDocVisitor(this))
+            }
+        }
     }
 
 
