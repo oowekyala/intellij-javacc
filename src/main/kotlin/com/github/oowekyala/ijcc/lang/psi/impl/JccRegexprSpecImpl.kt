@@ -1,12 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 
+/**
+ * TODO is this needed? maybe because of setName()
+ */
 class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexprSpec {
 
     override val pattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = false) }

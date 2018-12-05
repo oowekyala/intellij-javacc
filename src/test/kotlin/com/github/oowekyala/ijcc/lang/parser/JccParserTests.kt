@@ -13,6 +13,7 @@ class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition) {
 
     fun testProductions() = doTest(true)
     fun testTokens() = doTest(true)
+    fun testParentheses() = doTest(true)
     fun testLookaheads() = doTest(true)
 
     override fun getTestDataPath(): String = ParserTestDataPath

@@ -20,7 +20,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         if (element !is JccIdentifier) return false
 
         val namedParent = PsiTreeUtil.findFirstParent(element) {
-            it is JccRegularExpressionReference || it is JccNonTerminalExpansionUnit
+            it is JccTokenReferenceUnit || it is JccNonTerminalExpansionUnit
                     || it is JccNamedRegularExpression || it is JccJavaNonTerminalProductionHeader
         }
 

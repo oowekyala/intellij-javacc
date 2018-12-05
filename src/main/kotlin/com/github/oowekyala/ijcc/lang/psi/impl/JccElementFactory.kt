@@ -44,7 +44,7 @@ object JccElementFactory {
         return file.options!!.optionBindingList[0].optionValue!!
     }
 
-    fun createRegexReference(project: Project, name: String): JccRegularExpressionReference {
+    fun createRegexReference(project: Project, name: String): JccTokenReferenceUnit {
         val fileText = """
             PARSER_BEGIN(dummy)
             PARSER_END(dummy)
@@ -57,13 +57,13 @@ object JccElementFactory {
             .let { it as JccBnfProduction }
             .expansion
             .let { it as JccExpansionSequence }
-            .expansionUnitList[0] as JccRegularExpressionReference
+            .expansionUnitList[0] as JccTokenReferenceUnit
     }
 
-    fun createLiteralRegex(project: Project, name: String): JccLiteralRegularExpression {
+    fun createLiteralRegex(project: Project, name: String): JccLiteralRegexpUnit {
         return createBnfExpansion(project, name)
             .let { it as JccExpansionSequence }
-            .expansionUnitList[0] as JccLiteralRegularExpression
+            .expansionUnitList[0] as JccLiteralRegexpUnit
     }
 
     fun createBnfExpansion(project: Project, name: String): JccExpansion {

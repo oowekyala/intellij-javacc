@@ -1,8 +1,12 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
+import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
+import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiReference
 
 /**
  * Base impl for Jcc psi elements.
@@ -16,5 +20,12 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
     override fun getName(): String? = when (this) {
         is JccIdentifierOwner -> this.nameIdentifier?.name
         else                  -> null
+    }
+
+    override fun getReference(): PsiReference? = when (this) {
+        is JccTokenReferenceUnit       -> JccTerminalReference(this)
+        is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
+        is JccLiteralRegexpUnit        -> JccStringTokenReference(this)
+        else                           -> null
     }
 }

@@ -16,7 +16,7 @@
   psiImplPackage="com.github.oowekyala.ijcc.lang.psi.impl"
 
   // not on the classpath...
-  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiImplUtil"
+  psiImplUtilClass="com.github.oowekyala.ijcc.lang.psi.impl.JccPsiImplUtil"
 
   generate=[java="8"]
 
@@ -98,14 +98,12 @@
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 
-  implements("(bnf|javacode)_production") = 'com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction'
-
-  implements("(bnf|javacode)_production") = non_terminal_production
+  extends("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
-  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit|option_binding")=identifier_owner
+  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding")=identifier_owner
 
-  methods(".*production_header|jjtree_node_descriptor|named_regular_expression|regular_expression_reference|non_terminal_expansion_unit|option_binding") = [
+  methods(".*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
   ]
 
@@ -113,18 +111,22 @@
 
   consumeTokenMethod(".*_regexp_.*")="consumeTokenFast"
 
-  extends("literal_regular_expression|regular_expression_reference|character_list|parenthesized_regexp_unit")=regexp_unit
+  // Use implements for fake rules
+  // Use extends for real rules
+
+  extends("character_list|.*_regexp_unit|token_reference_unit")=regexp_unit
   extends("regexp_sequence|regexp_unit|regexp_alternative")=regexp_element
   extends("regular_expression_.+|.+_regular_expression")=regular_expression
   implements("regular_expression|regexp_element")=regexp_like
 
-  implements("literal_regular_expression|regular_expression_reference")=regular_expression
-
-  extends(".*_expansion_unit|regular_expression|parser_actions_unit|local_lookahead")=expansion_unit
+  extends("regexp_expansion_unit|non_terminal_expansion_unit")=assignable_expansion_unit
+  extends(".*_expansion_unit|parser_actions_unit|local_lookahead")=expansion_unit
   extends("expansion_(alternative|sequence|unit)")=expansion
 
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
-  implements("repetition_range|occurence_indicator")=occurrence_indicator_or_range
+  extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
+
+  implements("jjtree_node_descriptor|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
 }
 
 javacc_input 	::=
@@ -217,8 +219,9 @@ regexpr_kind 	    ::=
 	| 	"MORE"
 
 regexpr_spec 	    ::=
-    priv_regular_expression [ java_block ] [ ":" identifier ] {
-        methods=[lexicalState="identifier" regexp_unit=""]
+    regular_expression [ java_block ] [ ":" identifier ]
+    {
+        methods=[lexicalState="identifier"]
         recoverWhile="#auto"
     }
 
@@ -229,33 +232,44 @@ private expansion_choices 	        ::=
     |   expansion_sequence
 
 expansion_alternative       ::=
-    expansion_sequence ( "|" expansion_sequence )+
+    expansion_sequence ( "|" expansion_sequence )+ {pin="|"}
 
 expansion_sequence 	        ::=
-    ( priv_expansion_unit jjtree_node_descriptor? )+ {pin=1}
+    ( expansion_unit )+ {recoverWhile="#auto"}
 
 
-private priv_expansion_unit 	            ::=
+
+expansion_unit 	            ::=
+    priv_expansion_unit scoped_expansion_unit?
+
+left scoped_expansion_unit  ::=
+    jjtree_node_descriptor
+
+priv_expansion_unit 	            ::=
     (   local_lookahead
 	| 	parser_actions_unit
 	| 	parenthesized_expansion_unit
 	| 	optional_expansion_unit
 	|   try_catch_expansion_unit
 	|   assigned_expansion_unit
-	|   priv_regular_expression
-	|   non_terminal_expansion_unit
-    ) {recoverWhile="#auto" methods=[expansion_unit="" literal_regular_expression="" regular_expression_reference=""]}
+	|   assignable_expansion_unit
+    )
 
 parser_actions_unit     ::=
     java_block
 
-assigned_expansion_unit ::=
-    java_assignment_lhs "=" (priv_regular_expression | non_terminal_expansion_unit)
-    {methods=[regexpUnitList=""]}
+assignable_expansion_unit ::=
+      regexp_expansion_unit
+    | non_terminal_expansion_unit
 
-local_lookahead 	::=
+assigned_expansion_unit ::=
+    java_assignment_lhs "=" assignable_expansion_unit
+
+local_lookahead 	    ::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=local_lookahead_tail}
 
+regexp_expansion_unit   ::=
+    regular_expression
 
 private local_lookahead_tail    ::=
       INTEGER_LITERAL [ "," expansion_choices "," braced_expression ]
@@ -276,7 +290,7 @@ non_terminal_expansion_unit     ::=
     identifier "(" java_expression_list ")" {pin=1}
 
 parenthesized_expansion_unit    ::=
-    "(" expansion_choices ")" [ one_or_more | zero_or_more | zero_or_one ]  {pin=1}
+    "(" expansion_choices ")" occurrence_indicator?  {pin=1}
 
 optional_expansion_unit         ::=
     "[" expansion_choices "]"
@@ -296,7 +310,7 @@ finally_clause                  ::=
 
 /* Regular expressions */
 
-private priv_regular_expression	::=
+regular_expression	::=
         literal_regular_expression
     |   eof_regular_expression
     // Pins try to match these in order to allow autocompletion
@@ -306,10 +320,10 @@ private priv_regular_expression	::=
 	|   named_regular_expression
 	|   regular_expression_reference
 	|   inline_regular_expression
-	{methods=[named_regular_expression=""]}
 
 literal_regular_expression      ::=
-    string_literal
+    literal_regexp_unit
+    {methods=[unit="literal_regexp_unit"]}
 
 eof_regular_expression          ::=
 	"<" "EOF" ">"
@@ -319,8 +333,8 @@ named_regular_expression        ::=
     {pin=":"}
 
 regular_expression_reference    ::=
-	"<" identifier ">"
-    {pin=identifier}
+    token_reference_unit
+    {methods=[unit="token_reference_unit" nameIdentifier="token_reference_unit/identifier"]}
 
 inline_regular_expression       ::=
 	"<" complex_regexp_choices ">"
@@ -335,16 +349,25 @@ regexp_alternative 	            ::=
     regexp_sequence ( "|" regexp_sequence )+
 
 regexp_sequence                 ::=
-    priv_regexp_unit+ {pin('.*')=1}
+    regexp_unit+ {pin('.*')=1}
 
-private priv_regexp_unit 	                ::=
-        literal_regular_expression
-	| 	regular_expression_reference
+regexp_unit 	    ::=
+        literal_regexp_unit
+	| 	token_reference_unit
 	| 	character_list
 	| 	parenthesized_regexp_unit
+	{recoverWhile="#auto"}
+
+literal_regexp_unit              ::=
+    string_literal
+
+token_reference_unit            ::=
+	"<" identifier ">"
+    {pin=identifier}
 
 parenthesized_regexp_unit       ::=
-    "(" complex_regexp_choices ")" [ one_or_more | zero_or_more | zero_or_one | repetition_range ]
+    "(" complex_regexp_choices ")" occurrence_indicator_or_range?
+    {methods=[occurrence_indicator="occurrence_indicator_or_range"]}
 
 character_list                  ::=
     [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin="["}
@@ -355,6 +378,8 @@ character_descriptor 	        ::=
 
 // Occurrence indicators
 
+occurrence_indicator_or_range   ::= occurrence_indicator | repetition_range
+occurrence_indicator            ::= one_or_more | zero_or_one | zero_or_more
 one_or_more                     ::= "+"
 zero_or_more                    ::= "*"
 zero_or_one                     ::= "?"
@@ -370,17 +395,14 @@ fake identifier_owner           ::= identifier {
 }
 
 fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block {
-    methods=[header="java_non_terminal_production_header"]
+    methods=[
+        header="java_non_terminal_production_header"
+        nameIdentifier="java_non_terminal_production_header/identifier"
+    ]
 }
 
-fake occurrence_indicator        ::=
-fake occurrence_indicator_or_range  ::=
-fake regular_expression         ::=
 fake regexp_element             ::=
 fake regexp_like                ::=
-fake regexp_unit                ::=
-
-fake expansion_unit             ::=
 
 // Some java grammar
 

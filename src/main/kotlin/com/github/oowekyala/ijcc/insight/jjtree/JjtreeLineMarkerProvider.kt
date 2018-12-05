@@ -26,8 +26,9 @@ class JjtreeLineMarkerProvider : RelatedItemLineMarkerProvider() {
         val visited = if (forNavigation) THashSet<PsiElement>() else null
         for (element in elements) {
             val elt = element as? JccNodeClassOwner ?: continue
-            val isNodeId = (elt is JccNonTerminalProduction
-                    || elt is JccJjtreeNodeDescriptor && !elt.isVoid && elt.parent !is JccNonTerminalProduction)
+
+            val isNodeId =
+                    (elt is JccNonTerminalProduction || elt is JccJjtreeNodeDescriptor && !elt.isVoid && elt.parent !is JccNonTerminalProduction)
             if (!(isNodeId)) continue
 
             if (forNavigation && !visited!!.add(elt)) continue
@@ -45,5 +46,5 @@ class JjtreeLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
 
     private fun getNodePsiClass(element: JccNodeClassOwner): NavigatablePsiElement? =
-            element.nodeClass(element.containingFile.javaccConfig)
+            element.getNodeClass(element.containingFile.javaccConfig)
 }

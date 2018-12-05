@@ -17,31 +17,14 @@ interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
 
     val production: JccRegularExprProduction
 
-    fun getRegexExpansion(): JccRegexpElement? {
-        val regex = regularExpression
-        return when (regex) {
-            is JccNamedRegularExpression  -> regex.regexpElement
-            is JccInlineRegularExpression -> regex.regexpElement
-            is JccRegexpElement           -> regex
-            else                          -> null // may be a regex reference or something
-        }
-    }
-
     /**
      * Return the regex if it's a single literal, unwrapping
      * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
      * if needed.
      */
     @JvmDefault
-    fun asSingleLiteral(): JccLiteralRegularExpression? {
-        val regex = regularExpression
-        return when (regex) {
-            is JccLiteralRegularExpression -> regex
-            is JccNamedRegularExpression   -> regex.regexpElement as? JccLiteralRegularExpression
-            is JccInlineRegularExpression  -> regex.regexpElement as? JccLiteralRegularExpression
-            else                           -> null
-        }
-    }
+    fun asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexpUnit? =
+            getRootRegexElement(followReferences) as? JccLiteralRegexpUnit
 
     /**
      * Returns the root regex element, unwrapping
@@ -52,11 +35,10 @@ interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
     fun getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
         val regex = regularExpression
         return when (regex) {
-            is JccLiteralRegularExpression   -> regex
+            is JccLiteralRegularExpression   -> regex.unit
             is JccNamedRegularExpression     -> regex.regexpElement
-            is JccRegularExpressionReference -> if (followReferences) regex.reference.resolveToken()?.getRootRegexElement() else null
+            is JccRegularExpressionReference -> if (followReferences) regex.unit.typedReference.resolveToken()?.getRootRegexElement() else null
             is JccInlineRegularExpression    -> regex.regexpElement
-            is JccEofRegularExpression       -> null
             else                             -> null
         }
     }

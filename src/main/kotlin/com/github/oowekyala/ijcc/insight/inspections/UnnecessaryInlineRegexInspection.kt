@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
@@ -29,7 +29,7 @@ class UnnecessaryInlineRegexInspection : JavaccInspectionBase(InspectionName) {
             object : JccVisitor() {
                 override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
                     val regex = o.regexpElement
-                    if (regex is JccLiteralRegularExpression) {
+                    if (regex is JccLiteralRegexpUnit) {
                         holder.registerProblem(o, ProblemDescription, MyQuickFix())
                     }
                 }

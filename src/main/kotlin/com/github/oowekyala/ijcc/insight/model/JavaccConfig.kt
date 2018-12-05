@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
 import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration
+import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 
 /**
  * Toplevel model object representing the options bundle

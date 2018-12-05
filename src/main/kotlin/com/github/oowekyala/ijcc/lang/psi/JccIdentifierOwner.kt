@@ -11,7 +11,6 @@ import com.intellij.psi.PsiNameIdentifierOwner
  */
 interface JccIdentifierOwner : PsiNameIdentifierOwner, JavaccPsiElement {
 
-
     override fun getNameIdentifier(): JccIdentifier?
 
     @JvmDefault

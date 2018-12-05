@@ -9,6 +9,7 @@ import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
 import org.intellij.lang.annotations.Language
+import java.awt.SystemColor.text
 
 /**
  * @author Clément Fournier
@@ -81,12 +82,12 @@ object JccNonTerminalDocMaker {
             o.expansionUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
         }
 
-        override fun visitRegexpLike(o: JccRegexpLike) {
-            o.accept(JccTerminalDocMaker.RegexDocVisitor(sb))
+        override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+            o.regularExpression.accept(JccTerminalDocMaker.RegexDocVisitor(sb))
         }
 
-        override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-            val reffed: JccRegexprSpec? = o.reference?.resolve()
+        override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+            val reffed: JccRegexprSpec? = o.typedReference?.resolve()
 
             if (reffed != null) {
                 DocumentationManager.createHyperlink(
@@ -119,7 +120,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
-            val reffed = o.reference.resolveProduction()
+            val reffed = o.typedReference.resolveProduction()
 
             DocumentationManager.createHyperlink(
                 sb,
@@ -131,11 +132,7 @@ object JccNonTerminalDocMaker {
 
         override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
             // ignore lhs
-            if (o.regularExpression != null) {
-                o.regularExpression?.accept(this)
-            } else if (o.nonTerminalExpansionUnit != null) {
-                o.nonTerminalExpansionUnit?.accept(this)
-            }
+            o.assignableExpansionUnit.accept(this)
         }
 
 

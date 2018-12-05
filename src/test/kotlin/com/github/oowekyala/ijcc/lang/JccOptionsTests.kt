@@ -4,6 +4,8 @@ import com.github.oowekyala.ijcc.insight.model.GenericOption
 import com.github.oowekyala.ijcc.insight.model.JccOption
 import com.github.oowekyala.ijcc.insight.model.JjtOption
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.getBindingFor
+import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.shouldBe
 

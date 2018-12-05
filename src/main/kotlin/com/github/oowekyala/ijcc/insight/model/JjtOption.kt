@@ -4,6 +4,8 @@ import com.github.oowekyala.ijcc.insight.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.insight.model.JccOptionType.RefinedOptionType
 import com.github.oowekyala.ijcc.insight.model.JccOptionType.RefinedOptionType.PACKAGE
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
+import com.github.oowekyala.ijcc.lang.psi.matchesType
+import com.github.oowekyala.ijcc.lang.psi.stringValue
 
 /**
  * @author Clément Fournier

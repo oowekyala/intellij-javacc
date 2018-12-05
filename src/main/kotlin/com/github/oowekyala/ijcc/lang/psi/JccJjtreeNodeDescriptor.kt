@@ -1,7 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
-import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -26,15 +24,6 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNod
             else                           -> null
         }
 
-    @JvmDefault
-    override fun nodeClass(javaccConfig: JavaccConfig): NavigatablePsiElement? {
-        if (this.isVoid) return null
-
-        val nodePackage = javaccConfig.nodePackage
-        val nodeName = javaccConfig.nodePrefix + this.name
-
-        return JccNodeClassOwner.getJavaClassFromQname(this, "$nodePackage.$nodeName")
-    }
 
     /**
      * Gets the production header of the production to which this

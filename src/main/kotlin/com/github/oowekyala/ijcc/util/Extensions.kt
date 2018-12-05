@@ -12,6 +12,9 @@ fun runCatchAll(block: () -> Unit) {
     }
 }
 
+inline fun <T> T.runIt(block: (T) -> Unit) = block(this)
+
+
 // lulz
 operator fun Unit.invoke(): Unit = Unit()()()()()()()()
 

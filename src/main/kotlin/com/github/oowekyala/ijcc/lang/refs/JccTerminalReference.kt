@@ -12,8 +12,8 @@ import com.intellij.psi.ResolveState
  * @author Clément Fournier
  * @since 1.0
  */
-class JccTerminalReference(psiElement: JccRegularExpressionReference) :
-    PsiReferenceBase<JccRegularExpressionReference>(psiElement) {
+class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
+    PsiReferenceBase<JccTokenReferenceUnit>(psiElement) {
 
     private val isRegexContext = psiElement.isInRegexContext()
 

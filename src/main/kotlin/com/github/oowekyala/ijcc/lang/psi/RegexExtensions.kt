@@ -1,12 +1,11 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parents
-import com.intellij.psi.util.strictParents
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -20,7 +19,7 @@ private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.ps
 
 
 /** The text matched by this literal regex. */
-val JccLiteralRegularExpression.match: String
+val JccLiteralRegexpUnit.match: String
     get() = stringLiteral.text.removeSurrounding("\"")
 
 fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
@@ -52,7 +51,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     var unresolved = false
 
     override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-        builder.append(Pattern.quote(o.match))
+        builder.append(Pattern.quote(o.unit.match))
     }
 
     override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
@@ -61,16 +60,20 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         else regex.accept(this)
     }
 
-    override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-        val ref = o.reference.resolveToken()
+    override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
+        val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
         else
             ref.getRootRegexElement()?.accept(this@RegexResolutionVisitor)
     }
 
+    override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+        o.unit.accept(this)
+    }
+
     override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-        o.regexpElement?.accept(this)
+        o.regexpElement.accept(this)
     }
 
     override fun visitRegexpSequence(o: JccRegexpSequence) {
@@ -148,12 +151,22 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     }
 }
 
+/**
+ * Returns true if this regex is private, ie if it mentions the "#" before its name.
+ * Such regular expressions may not be referred to from expansion units, but only
+ * from within other regular expressions.  Private regular expressions are not matched
+ * as tokens by the token manager. Their purpose is solely to facilitate the definition
+ * of other more complex regular expressions.
+ */
+val JccNamedRegularExpression.isPrivate: Boolean
+    get() = nameIdentifier.prevSiblingNoWhitespace?.node?.elementType == JavaccTypes.JCC_POUND
+
 
 /**
  * Returns true if this regular expression occurs somewhere inside a RegexpSpec.
  * In that case it may reference private regexes.
  */
-fun JccRegularExpression.isInRegexContext(): Boolean =
+fun JccTokenReferenceUnit.isInRegexContext(): Boolean =
         parentSequence(includeSelf = false).any { it is JccRegexprSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
@@ -195,23 +208,23 @@ val JccCharacterList.isAnyMatch: Boolean
 fun JccRegexprSpec.getLiteralsExactMach() {
     // Gathers literals that match this expression recursively. Returns true whether a construct all
     // expansions of this regex match a literal, false if not.
-    fun JccRegexpLike.gatherMatchingLiterals(result: MutableList<JccLiteralRegularExpression>): Boolean =
+    fun JccRegexpLike.gatherMatchingLiterals(result: MutableList<JccLiteralRegexpUnit>): Boolean =
             when (this) {
-                is JccLiteralRegularExpression -> {
+                is JccLiteralRegexpUnit       -> {
                     result += this
                     true
                 }
-                is JccNamedRegularExpression   -> regexpElement?.gatherMatchingLiterals(result) == true
-                is JccInlineRegularExpression  -> regexpElement?.gatherMatchingLiterals(result) == true
-                is JccRegexpSequence           ->
+                is JccNamedRegularExpression  -> regexpElement.gatherMatchingLiterals(result)
+                is JccInlineRegularExpression -> regexpElement?.gatherMatchingLiterals(result) == true
+                is JccRegexpSequence          ->
                     regexpUnitList.size == 1 && regexpUnitList[0].gatherMatchingLiterals(result)
-                is JccRegexpAlternative        -> regexpElementList.all {
+                is JccRegexpAlternative       -> regexpElementList.all {
                     it.gatherMatchingLiterals(result)
                 }
-                else                           -> false
+                else                          -> false
             }
 
-    val result = mutableListOf<JccLiteralRegularExpression>()
+    val result = mutableListOf<JccLiteralRegexpUnit>()
 
     this.regularExpression.gatherMatchingLiterals(result)
 }

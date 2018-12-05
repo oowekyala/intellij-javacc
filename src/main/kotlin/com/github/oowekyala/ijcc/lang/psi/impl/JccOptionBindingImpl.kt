@@ -8,6 +8,9 @@ import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
+/**
+ * This impl is needed to make getName() return non-null
+ */
 class JccOptionBindingImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccOptionBinding {
 
     override val optionValue: JccOptionValue?

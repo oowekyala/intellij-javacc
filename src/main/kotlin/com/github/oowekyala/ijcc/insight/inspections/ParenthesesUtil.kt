@@ -35,7 +35,7 @@ fun JccParenthesizedExpansionUnit.isNecessary(skipUndocumentable: Boolean = fals
 
         // ("foo" | "bar") "bzaz"   // necessary
         // ("foo" | "bar") | "bzaz" // unnecessary
-        inside is JccExpansionAlternative                                 -> outside.parent !is JccExpansionAlternative // TODO outside is usually an ExpansionSequence
+        inside is JccExpansionAlternative                                 -> outside !is JccExpansionAlternative
 
         // ("foo" "bar")  {}                // unnecessary
         // ("foo" "bar")  (hello() | "f")   // unnecessary, necessary

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.match
 import com.github.oowekyala.ijcc.lang.psi.specContext
@@ -42,7 +42,7 @@ class LexicalState private constructor(val name: String, val tokens: List<JccReg
      *
      * @return the matched token if it was found
      */
-    fun matchLiteral(literal: JccLiteralRegularExpression,
+    fun matchLiteral(literal: JccLiteralRegexpUnit,
                      consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): JccRegexprSpec? {
 
         val toMatch = literal.match

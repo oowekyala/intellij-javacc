@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
+import com.github.oowekyala.ijcc.lang.psi.matchesType
+import com.github.oowekyala.ijcc.lang.psi.stringValue
 
 /**
  * Generic option for JavaCC or its preprocessors.

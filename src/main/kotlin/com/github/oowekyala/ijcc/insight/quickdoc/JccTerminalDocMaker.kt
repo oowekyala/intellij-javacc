@@ -8,6 +8,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
 import org.intellij.lang.annotations.Language
+import java.awt.SystemColor.text
 
 /**
  * @author Clément Fournier
@@ -46,20 +47,24 @@ object JccTerminalDocMaker {
 
     class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
 
-        override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
+        override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
             sb.append(o.text)
         }
 
+        override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
+            o.unit.accept(this)
+        }
+
         override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-            o.regexpElement?.accept(this)
+            o.regexpElement.accept(this)
         }
 
         override fun visitEofRegularExpression(o: JccEofRegularExpression) {
             sb.append("&lt;EOF&gt;")
         }
 
-        override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-            val reffed: JccRegexprSpec? = o.reference.resolveToken()
+        override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
+            val reffed: JccRegexprSpec? = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
             val linkText = reffed?.asSingleLiteral()?.text ?: "&lt;${o.name}&gt;"
@@ -70,6 +75,10 @@ object JccTerminalDocMaker {
                 linkText,
                 false
             )
+        }
+
+        override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+           o.unit.accept(this)
         }
 
         override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
@@ -103,7 +112,6 @@ object JccTerminalDocMaker {
             o.regexpElement.accept(this)
             sb.append(" )")
             o.occurrenceIndicator?.run { sb.append(text) }
-            o.repetitionRange?.run { sb.append(text) }
         }
 
         override fun visitCharacterDescriptor(o: JccCharacterDescriptor) {

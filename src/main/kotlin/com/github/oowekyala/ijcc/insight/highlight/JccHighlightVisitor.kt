@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.insight.highlight
 import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
-import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.trimWhitespace
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
 import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.github.oowekyala.ijcc.lang.JavaccTypes
@@ -63,6 +62,14 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         myFileImpl = SmartPointerManager.createPointer(file as JccFile)
     }
 
+    override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
+        myHolder += highlightInfo(
+            element = o.expansionUnit,
+            type = JJTREE_NODE_SCOPE.highlightType,
+            message = "In the node scope of #${o.jjtreeNodeDescriptor.name ?: "void"}"
+        )
+    }
+
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
         // extracts the range of the "#" + the range of the ident or "void" kword
         fun rangeOf(element: JccJjtreeNodeDescriptor): TextRange {
@@ -75,33 +82,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
                 ?: poundRange
         }
 
-        val header = nodeDescriptor.productionHeader
-        val expansionUnit = nodeDescriptor.expansionUnit
 
-        if (header == null && expansionUnit != null) {
-            myHolder += highlightInfo(
-                textRange = trimWhitespace(expansionUnit),
-                type = JJTREE_NODE_SCOPE.highlightType,
-                message = "In the node scope of #${nodeDescriptor.name ?: "void"}"
-            )
-
-            myHolder += highlightInfo(rangeOf(nodeDescriptor), JJTREE_DECORATION.highlightType)
-            //            TODO should be its own inspection
-            //            if (nodeDescriptor.isVoid) {
-            //                myHolder += createWeakWarningAnnotation(getRangeFor(nodeDescriptor), "Useless #void annotation")
-            //            }
-        } else if (header != null && expansionUnit == null) {
-            // TODO move that message to quickdoc
-            val message =
-                    if (nodeDescriptor.isVoid) "Discards the node created by this production"
-                    else "Renames this production's node to ${nodeDescriptor.name}"
-
-            myHolder += highlightInfo(
-                textRange = rangeOf(nodeDescriptor),
-                type = JJTREE_DECORATION.highlightType,
-                message = message
-            )
-        }
+        myHolder += highlightInfo(rangeOf(nodeDescriptor), JJTREE_DECORATION.highlightType)
     }
 
     override fun visitOptionBinding(binding: JccOptionBinding) {
@@ -130,7 +112,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     }
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
-        myHolder += if (o.reference.resolve() == null) {
+        myHolder += if (o.typedReference.resolve() == null) {
             wrongReferenceInfo(
                 o.nameIdentifier,
                 "Non-terminal ${o.name} has not been defined"
@@ -146,8 +128,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         }
     }
 
-    override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-        val reffed = o.reference.resolveToken()
+    override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
+        val reffed = o.typedReference.resolveToken()
         myHolder +=
                 if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
                 else if (reffed.isPrivate && !o.isInRegexContext()) {
@@ -156,23 +138,24 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"
                     )
                 } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
+
     }
 
-    override fun visitLiteralRegularExpression(literal: JccLiteralRegularExpression) {
-        val ref: JccRegexprSpec? = literal.reference?.resolve()
+    override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+        val ref: JccRegexprSpec? = o.typedReference?.resolve()
 
         // if so, the literal declares itself
-        val isSelfReferential = ref != null && literal.strictParents().any { it === ref }
+        val isSelfReferential = ref != null && o.strictParents().any { it === ref }
 
         if (ref != null && !isSelfReferential) {
 
             val tokenName = ref.name?.let { "token <$it>" } ?: "a token"
             myHolder += highlightInfo(
-                literal,
+                o,
                 TOKEN_LITERAL_REFERENCE.highlightType,
                 message = "Matched by $tokenName"
             )
-        } // else stay default
+        } // else stay default}
     }
 
     override fun visitCharacterDescriptor(descriptor: JccCharacterDescriptor) {
@@ -259,11 +242,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
 
     private fun checkValidity(spec: JccRegexprSpec) {
 
-        fun getAsLiteral(regex: JccRegexpLike): JccLiteralRegularExpression? = when (regex) {
-            is JccLiteralRegularExpression -> regex
-            is JccInlineRegularExpression  -> regex.regexpElement?.let { getAsLiteral(it) }
-            is JccNamedRegularExpression   -> regex.regexpElement?.let { getAsLiteral(it) }
-            else                           -> null
+        fun getAsLiteral(regex: JccRegexpLike): JccLiteralRegexpUnit? = when (regex) {
+            is JccLiteralRegexpUnit       -> regex
+            is JccInlineRegularExpression -> regex.regexpElement?.let { getAsLiteral(it) }
+            is JccNamedRegularExpression  -> regex.regexpElement?.let { getAsLiteral(it) }
+            else                          -> null
         }
 
         val regex = getAsLiteral(spec.regularExpression) ?: return

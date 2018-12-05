@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccRegexpAlternative
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
@@ -38,17 +35,17 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
             object : JccVisitor() {
 
                 override fun visitRegexprSpec(spec: JccRegexprSpec) {
-                    val expansion = spec.getRegexExpansion()
+                    val expansion = spec.getRootRegexElement(followReferences = false)
                     if (expansion != null) {
                         when (expansion) {
-                            is JccLiteralRegularExpression -> holder.checkRegexElement(
+                            is JccLiteralRegexpUnit -> holder.checkRegexElement(
                                 spec,
                                 expansion,
                                 specOwnsProblem = true
                             )
-                            is JccRegexpAlternative        -> {
+                            is JccRegexpAlternative                                    -> {
                                 expansion.regexpElementList.forEach {
-                                    if (it is JccLiteralRegularExpression) {
+                                    if (it is JccLiteralRegexpUnit) {
                                         holder.checkRegexElement(spec, it, specOwnsProblem = false)
                                     }
                                 }
@@ -64,7 +61,7 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
                 "This token can never be matched, ${realMatch.name} matches its input instead"
 
         fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
-                                             elt: JccLiteralRegularExpression,
+                                             elt: JccLiteralRegexpUnit,
                                              specOwnsProblem: Boolean) {
             val matchedBy: JccRegexprSpec? = JccStringTokenReference(elt).resolve()
             if (matchedBy != null && matchedBy !== spec) {
