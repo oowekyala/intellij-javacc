@@ -155,7 +155,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
             val tokenName = ref.name?.let { "token <$it>" } ?: "a token"
             myHolder += highlightInfo(
                 literal,
-                JavaccHighlightingColors.TOKEN_LITERAL_REFERENCE.highlightType,
+                TOKEN_LITERAL_REFERENCE.highlightType,
                 message = "Matched by $tokenName"
             )
         } // else stay default
@@ -222,12 +222,22 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         element.regularExpression
             .let { it as? JccNamedRegularExpression }
             ?.run {
-                myHolder += highlightInfo(nameIdentifier, JavaccHighlightingColors.TOKEN_DECLARATION.highlightType)
+                val (range, type) = if (isPrivate) {
+                    val r = this.node.findChildByType(JavaccTypes.JCC_POUND)
+                        ?.textRange
+                        ?.let { it.union(nameIdentifier.textRange) }
+                        ?: nameIdentifier.textRange!!
+                    Pair(r, PRIVATE_REGEX_DECLARATION)
+                } else {
+                    Pair(nameIdentifier.textRange, TOKEN_DECLARATION)
+                }
+
+                myHolder += highlightInfo(range, type.highlightType)
             }
         element.lexicalState?.let {
             myHolder += highlightInfo(
                 it,
-                JavaccHighlightingColors.LEXICAL_STATE.highlightType
+                LEXICAL_STATE.highlightType
             )
         }
         checkValidity(element)

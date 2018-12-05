@@ -34,14 +34,18 @@ class JavaccColorSettingsPage : ColorSettingsPage {
         "jcckeyword" to JavaccHighlightingColors.JAVACC_KEYWORD.keys,
         "jdoccomment" to JavaccHighlightingColors.C_COMMENT.keys,
         "jmethod" to JavaHighlightingColors.METHOD_DECLARATION_ATTRIBUTES,
+        "jmethodcall" to JavaHighlightingColors.METHOD_CALL_ATTRIBUTES,
         "jtype" to JavaHighlightingColors.CLASS_NAME_ATTRIBUTES,
         "token" to JavaccHighlightingColors.TOKEN_DECLARATION.keys,
+        "priv-token" to JavaccHighlightingColors.PRIVATE_REGEX_DECLARATION.keys,
         "token-lit-ref" to JavaccHighlightingColors.TOKEN_LITERAL_REFERENCE.keys,
         "token-ref" to JavaccHighlightingColors.TOKEN_REFERENCE.keys,
         "jjtree" to JavaccHighlightingColors.JJTREE_DECORATION.keys,
+        "jjtree-scope" to JavaccHighlightingColors.JJTREE_NODE_SCOPE.keys,
         "unknown" to CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES,
         "knownprod" to JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys,
-        "pdecl" to JavaccHighlightingColors.NONTERMINAL_DECLARATION.keys
+        "pdecl" to JavaccHighlightingColors.NONTERMINAL_DECLARATION.keys,
+        "lexstate" to JavaccHighlightingColors.LEXICAL_STATE.keys
     )
 
 
@@ -54,7 +58,7 @@ class JavaccColorSettingsPage : ColorSettingsPage {
     FORCE_LA_CHECK = false;
 }
 
-PARSER_BEGIN(JJTreeParser)
+<jcckeyword>PARSER_BEGIN</jcckeyword>(JJTreeParser)
 
     package org.javacc.jjtree;
 
@@ -64,28 +68,37 @@ PARSER_BEGIN(JJTreeParser)
     public class <jtype>JJTreeParser</jtype> {
 
       void <jmethod>jjtreeOpenNodeScope</jmethod>(<jtype>Node</jtype> n) {
-        ((<jtype>JJTreeNode</jtype>)n).setFirstToken(getToken(1));
+        ((<jtype>JJTreeNode</jtype>)n).<jmethodcall>setFirstToken</jmethodcall>(<jmethodcall>getToken</jmethodcall>(1));
       }
 
     }
 
-PARSER_END(JJTreeParser)
+<jcckeyword>PARSER_END</jcckeyword>(JJTreeParser)
 
 // Some token declarations
-TOKEN :
+<<lexstate>DEFAULT</lexstate>>
+<jcckeyword>TOKEN</jcckeyword> :
 {
 | < <token>PLUS</token>: "+" >
 | < <token>MINUS</token>: "-" >
-| < <token>VOID</token>: "void" >
-| < <token>INTEGER</token>: "1" | "2" >
+| < <token>NULL</token>: "null" >
+| < <token>INTEGER</token>: ["+" | "-"] <<token-ref>DIGITS</token-ref>> >
+| < <priv-token>#DIGITS</priv-token>: (["0"-"9"])+ >
 }
 
-void <pdecl>BinaryExpression</pdecl>(): {}
+
+void <pdecl>Expression</pdecl>(): {}
 {
-    <knownprod>UnaryExpression</knownprod>() ( <token-lit-ref>"+"</token-lit-ref> | <token-lit-ref>"-"</token-lit-ref> ) <knownprod>UnaryExpression</knownprod>()
+      <knownprod>BinaryExpression</knownprod>()
+    | <jjtree-scope><<token-ref>NULL</token-ref>></jjtree-scope>   <jjtree>#NullLiteral</jjtree>
 }
 
-void <pdecl>UnaryExpression</pdecl>() <jjtree>#void</jjtree>: {}
+void <pdecl>BinaryExpression</pdecl>() <jjtree>#BinaryExpression</jjtree>(>1): {}
+{
+    <knownprod>UnaryExpression</knownprod>() [ ( <token-lit-ref>"+"</token-lit-ref> | <token-lit-ref>"-"</token-lit-ref> ) <knownprod>UnaryExpression</knownprod>() ]
+}
+
+void <pdecl>UnaryExpression</pdecl>() <jjtree>#<jjtree>void</jjtree></jjtree>: {}
 {
   "(" <unknown>Expression</unknown>() ")" | <knownprod>Integer</knownprod>()
 }
