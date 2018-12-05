@@ -147,10 +147,9 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     }
 
     private fun visibilityIcon(prod: JccRegexprSpec): Icon {
-        val regex = prod.regularExpression
         return when {
-            regex is JccNamedRegularExpression && regex.isPrivate -> PlatformIcons.PRIVATE_ICON
-            else                                                  -> PlatformIcons.PUBLIC_ICON
+            prod.isPrivate -> PlatformIcons.PRIVATE_ICON
+            else           -> PlatformIcons.PUBLIC_ICON
         }
     }
 

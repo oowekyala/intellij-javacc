@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -37,21 +38,22 @@ fun PsiElement.descendantSequence(reversed: Boolean = false, depthFirst: Boolean
  * @param forward If true the sequence iterates on the following siblings, otherwise on the previous siblings
  */
 fun PsiElement.siblingSequence(forward: Boolean) =
-        if (forward) generateSequence(this, PsiElement::getNextSibling)
-        else generateSequence(this) { it.prevSibling }
+        if (forward) generateSequence(this.nextSibling) { it.nextSibling }
+        else generateSequence(this.prevSibling) { it.prevSibling }
 
 /** Returns true if the node's token type is [TokenType.WHITE_SPACE]. */
 val PsiElement.isWhitespace: Boolean
     get() = node.elementType == TokenType.WHITE_SPACE
 
 val PsiElement.prevSiblingNoWhitespace: PsiElement?
-    inline get() = siblingSequence(forward = false).firstOrNull { !it.isWhitespace }
+    get() = siblingSequence(forward = false).firstOrNull { !it.isWhitespace }
 
 val PsiElement.lastChildNoWhitespace: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isWhitespace }
 
-fun PsiElement.parentSequence(includeSelf: Boolean = false) =
-        generateSequence(if (includeSelf) this else parent) { it.parent }
+/** Parent sequence, stopping at the file node. */
+fun PsiElement.parentSequence(includeSelf: Boolean) =
+        generateSequence(if (includeSelf) this else parent) { it.parent }.takeWhile { it !is PsiDirectory }
 
 
 val PsiElement.textRangeInParent: TextRange

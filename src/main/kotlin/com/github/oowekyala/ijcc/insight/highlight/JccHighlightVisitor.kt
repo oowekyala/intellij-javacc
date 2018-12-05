@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
 import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
-import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.checkReference
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.trimWhitespace
@@ -131,7 +130,14 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     }
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
-        myHolder += checkReference(o, NONTERMINAL_REFERENCE.highlightType)
+        myHolder += if (o.reference.resolve() == null) {
+            wrongReferenceInfo(
+                o.nameIdentifier,
+                "Non-terminal ${o.name} has not been defined"
+            )
+        } else {
+            highlightInfo(o.nameIdentifier, NONTERMINAL_REFERENCE.highlightType)
+        }
     }
 
     override fun visitRegularExprProduction(o: JccRegularExprProduction) {
@@ -141,7 +147,15 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     }
 
     override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-        myHolder += checkReference(o, TOKEN_REFERENCE.highlightType)
+        val reffed = o.reference.resolveToken()
+        myHolder +=
+                if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
+                else if (reffed.isPrivate && !o.isInRegexContext()) {
+                    errorInfo(
+                        o.nameIdentifier,
+                        "Token name \"${o.name}\" refers to a private (with a #) regular expression"
+                    )
+                } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
     }
 
     override fun visitLiteralRegularExpression(literal: JccLiteralRegularExpression) {

@@ -67,18 +67,6 @@ internal object JccHighlightUtil {
                 message = message
             )
 
-    fun checkReference(element: JccIdentifierOwner,
-                       normalType: HighlightInfoType): HighlightInfo {
-        return if (element.reference?.resolve() == null) {
-            wrongReferenceInfo(
-                element.nameIdentifier!!, // may not be supported for some elements (eg JjtNodeDescriptor)
-                "Unresolved reference: ${element.name}"
-            )
-        } else {
-            highlightInfo(element.nameIdentifier!!, normalType)
-        }
-    }
-
 }
 
 internal operator fun HighlightInfoHolder.plusAssign(highlightInfo: HighlightInfo) {

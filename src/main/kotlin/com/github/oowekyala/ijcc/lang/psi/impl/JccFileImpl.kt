@@ -61,10 +61,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                                      place: PsiElement): Boolean {
         return when (processor) {
             is NonTerminalScopeProcessor -> processor.executeUntilFound(nonTerminalProductions, state)
-            is TerminalScopeProcessor    -> {
-                val seq = if (processor.isRegexContext) globalTokenSpecs else globalTokenSpecs.filter { !it.isPrivate }
-                processor.executeUntilFound(seq, state)
-            }
+            is TerminalScopeProcessor    -> processor.executeUntilFound(globalTokenSpecs, state)
             else                         -> true
         }
     }

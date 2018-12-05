@@ -158,7 +158,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
  * In that case it may reference private regexes.
  */
 fun JccRegularExpression.isInRegexContext(): Boolean =
-        strictParents().none { it is JccExpansion }
+        parentSequence(includeSelf = false).any { it is JccRegexprSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild
