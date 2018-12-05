@@ -36,12 +36,6 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
-                override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-                    val spec = o.parent as? JccRegexprSpec
-                    if (spec != null) {
-
-                    }
-                }
 
                 override fun visitRegexprSpec(spec: JccRegexprSpec) {
                     val expansion = spec.getRegexExpansion()
@@ -66,7 +60,7 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
 
     companion object {
         const val DisplayName = "Token can never be matched"
-        fun problemDescription(realMatch: JccRegexprSpec) =
+        private fun problemDescription(realMatch: JccRegexprSpec) =
                 "This token can never be matched, ${realMatch.name} matches its input instead"
 
         fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
