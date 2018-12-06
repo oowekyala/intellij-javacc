@@ -15,7 +15,7 @@ import com.intellij.psi.ResolveState
 class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
     PsiReferenceBase<JccTokenReferenceUnit>(psiElement) {
 
-    private val isRegexContext = psiElement.isInRegexContext()
+    private val isRegexContext = psiElement.isInRegexContext
 
     override fun resolve(): JccIdentifier? =
             resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier

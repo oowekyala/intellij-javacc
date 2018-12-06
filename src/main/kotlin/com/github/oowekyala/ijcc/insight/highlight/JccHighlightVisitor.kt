@@ -132,7 +132,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
                 if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
-                else if (reffed.isPrivate && !o.isInRegexContext()) {
+                else if (reffed.isPrivate && !o.isInRegexContext) {
                     errorInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"

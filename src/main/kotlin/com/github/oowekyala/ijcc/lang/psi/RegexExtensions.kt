@@ -169,8 +169,8 @@ val JccNamedRegularExpression.isPrivate: Boolean
  * Returns true if this regular expression occurs somewhere inside a RegexpSpec.
  * In that case it may reference private regexes.
  */
-fun JccTokenReferenceUnit.isInRegexContext(): Boolean =
-        parentSequence(includeSelf = false).any { it is JccRegexprSpec }
+val JccTokenReferenceUnit.isInRegexContext: Boolean
+    get() = parentSequence(includeSelf = false).any { it is JccRegexprSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild
@@ -206,28 +206,3 @@ val JccRegexprKind.modelConstant: RegexKind
 /** True if this [JccCharacterList] is of the form `~[]`, which matches any character. */
 val JccCharacterList.isAnyMatch: Boolean
     get() = this.isNegated && this.characterDescriptorList.isEmpty()
-
-// TODO remove?
-fun JccRegexprSpec.getLiteralsExactMach() {
-    // Gathers literals that match this expression recursively. Returns true whether a construct all
-    // expansions of this regex match a literal, false if not.
-    fun JccRegexpLike.gatherMatchingLiterals(result: MutableList<JccLiteralRegexpUnit>): Boolean =
-            when (this) {
-                is JccLiteralRegexpUnit       -> {
-                    result += this
-                    true
-                }
-                is JccNamedRegularExpression  -> regexpElement?.gatherMatchingLiterals(result) == true
-                is JccInlineRegularExpression -> regexpElement?.gatherMatchingLiterals(result) == true
-                is JccRegexpSequence          ->
-                    regexpUnitList.size == 1 && regexpUnitList[0].gatherMatchingLiterals(result)
-                is JccRegexpAlternative       -> regexpElementList.all {
-                    it.gatherMatchingLiterals(result)
-                }
-                else                          -> false
-            }
-
-    val result = mutableListOf<JccLiteralRegexpUnit>()
-
-    this.regularExpression.gatherMatchingLiterals(result)
-}
