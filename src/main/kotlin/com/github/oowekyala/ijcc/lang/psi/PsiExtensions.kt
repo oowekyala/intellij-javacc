@@ -48,6 +48,9 @@ val PsiElement.isWhitespace: Boolean
 val PsiElement.prevSiblingNoWhitespace: PsiElement?
     get() = siblingSequence(forward = false).firstOrNull { !it.isWhitespace }
 
+val PsiElement.nextSiblingNoWhitespace: PsiElement?
+    get() = siblingSequence(forward = true).firstOrNull { !it.isWhitespace }
+
 val PsiElement.lastChildNoWhitespace: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isWhitespace }
 
