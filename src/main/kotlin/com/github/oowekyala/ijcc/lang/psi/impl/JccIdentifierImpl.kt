@@ -6,11 +6,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiReference
 
-/**
- * TODO is this needed?
- */
 class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
-
+    // TODO is this needed?
     override fun getReference(): PsiReference? = parent?.reference
 
     fun accept(visitor: JccVisitor) {

@@ -11,6 +11,7 @@ object JavaccInspectionsProvider : InspectionToolProvider {
         TokenCanNeverBeMatchedInspection::class.java,
         UnnamedRegexInspection::class.java,
         UnnecessaryInlineRegexInspection::class.java,
-        UnnecessaryParenthesesInspection::class.java
+        UnnecessaryParenthesesInspection::class.java,
+        SuspiciousNodeDescriptorExprInspection::class.java
     )
 }

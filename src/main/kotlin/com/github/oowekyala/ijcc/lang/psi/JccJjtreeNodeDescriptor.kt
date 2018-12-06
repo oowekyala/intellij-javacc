@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.intellij.psi.PsiElement
-import com.intellij.psi.TokenType
 
 /**
  * Node descriptor.
@@ -24,6 +24,13 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNod
             else                           -> null
         }
 
+    /** Is null if this is void. */
+    override fun getNameIdentifier(): JccIdentifier?
+
+    /** Either the identifier or the void element. */
+    @JvmDefault
+    val namingLeaf: PsiElement
+        get() = nameIdentifier ?: node.findChildByType(JavaccTypes.JCC_VOID_KEYWORD)!!.psi
 
     /**
      * Gets the production header of the production to which this
@@ -32,7 +39,7 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNod
      */
     @JvmDefault
     val productionHeader: JccJavaNonTerminalProductionHeader?
-        get() = prevSiblingNonWhitespace() as? JccJavaNonTerminalProductionHeader
+        get() = parent.let { it as? JccNonTerminalProduction }?.header
 
     /**
      * Gets the expansion unit that is the scope of this node.
@@ -41,12 +48,7 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNod
      */
     @JvmDefault
     val expansionUnit: JccExpansionUnit?
-        get() = prevSiblingNonWhitespace() as? JccExpansionUnit
-
-    private fun prevSiblingNonWhitespace(): PsiElement =
-            if (prevSibling.node.elementType == TokenType.WHITE_SPACE)
-                prevSibling.prevSibling
-            else prevSibling
+        get() = parent.let { it as? JccScopedExpansionUnit }?.expansionUnit
 
     /**
      * Returns true if this is a "#void" annotation.

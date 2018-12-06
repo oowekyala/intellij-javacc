@@ -186,13 +186,12 @@ java_throws_list ::=
 
 jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
-    [ "(" jjtree_node_descriptor_expr ")" ]
-//    {pin=1}
+    [ jjtree_node_descriptor_expr ]
+    {pin=2}
 
+// The expr is integer valued for definite nodes, is boolean valued for conditional nodes
 jjtree_node_descriptor_expr ::=
-    [ ">" ] // GT-expression
-    java_expression  // Is integer valued for definite nodes, is boolean valued for conditional nodes
-
+    "(" [ ">" ] java_expression ")"
 
 token_manager_decls ::=
         "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here

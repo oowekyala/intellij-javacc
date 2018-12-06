@@ -10,7 +10,7 @@ import com.intellij.psi.PsiRecursiveVisitor
 open class DepthFirstVisitor : JccVisitor(), PsiRecursiveVisitor {
 
     override fun visitElement(o: PsiElement?) {
-        o?.children?.forEach { it.accept(this) }
+        o?.acceptChildren(this)
     }
 
 }

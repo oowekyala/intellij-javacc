@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.util
 
+import org.jetbrains.annotations.Contract
+
 /** Select only those elements that are of type R. */
 inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> =
         this.filter { it is R }.map { it as R }
@@ -13,6 +15,15 @@ fun runCatchAll(block: () -> Unit) {
 }
 
 inline fun <T> T.runIt(block: (T) -> Unit) = block(this)
+
+/** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
+@Contract(pure = true)
+fun String.insert(offset: Int, sub: String): String = when {
+    offset >= length -> throw IndexOutOfBoundsException()
+    this.isEmpty()   -> sub
+    sub.isEmpty()    -> this
+    else             -> substring(0, offset) + sub + substring(offset, length)
+}
 
 
 // lulz
