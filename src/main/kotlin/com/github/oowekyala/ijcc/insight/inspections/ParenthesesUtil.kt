@@ -20,14 +20,14 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // (..)+  // necessary
         // (..)*  // necessary
         // (..)?  // necessary
-        occurrenceIndicator != null                                          -> true
+        occurrenceIndicator != null                                       -> true
 
         // void foo():{}{ (..) } // unnecessary
-        outside !is JccExpansion                                             -> false // top level parens are unnecessary, unless there's an occurrence indicator
+        outside !is JccExpansion                                          -> false // top level parens are unnecessary, unless there's an occurrence indicator
 
         // (a=foo())        // clarifying
         // (a="f")          // unnecessary
-        inside is JccAssignedExpansionUnit                                   -> config.keepAroundAssignment
+        inside is JccAssignedExpansionUnit                                -> config.keepAroundAssignment
 
         // ("f")            // unnecessary
         // (foo())          // unnecessary
@@ -37,21 +37,30 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // (["hello"])      // unnecessary
         // ((..)?)          // unnecessary
         // ("(") #Node      // unnecessary
-        inside is JccExpansionUnit                                           -> false // expansions units are indivisible
+        inside is JccExpansionUnit                                        -> false // expansions units are indivisible
 
         //  ("(" Expr() ")")     #Node    // necessary unless doc
-        outside is JccScopedExpansionUnit                                    -> config.keepUndocumented
+        outside is JccScopedExpansionUnit                                 -> config.keepUndocumented
         // LOOKAHEAD( ("foo" | "bar") )   // unnecessary
         // LOOKAHEAD(1, ("foo" | "bar") ) // unnecessary
-        outside is JccLocalLookahead                                         -> false // then it's top level of a semantic lookahead
+        outside is JccLocalLookahead                                      -> false // then it's top level of a semantic lookahead
 
-        // ("foo" | "bar") "bzaz"   // necessary
-        // ("foo" | "bar") | "bzaz" // unnecessary
-        inside is JccExpansionAlternative                                    -> outside !is JccExpansionAlternative
+        inside is JccExpansionAlternative                                 -> {
+            val fst = inside.expansionList[0]
+            when {
+                // (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
+                // (LOOKAHEAD(2) "foo" "f" | "foo" "bar") // clarifying
+                config.keepUndocumented && config.keepAroundLookahead -> fst is JccLocalLookahead
+                        || fst is JccExpansionSequence && fst.expansionUnitList[0] is JccLocalLookahead
+                // ("foo" | "bar") "bzaz"   // necessary
+                // ("foo" | "bar") | "bzaz" // unnecessary
+                else                                                  -> outside !is JccExpansionAlternative
+            }
+        }
 
         // ("foo" "bar")  {}                // unnecessary
         // ("foo" "bar")  (hello() | "f")   // unnecessary, necessary
-        outside is JccExpansionSequence && inside is JccExpansionSequence    -> {
+        outside is JccExpansionSequence && inside is JccExpansionSequence -> {
             val nextSibling = nextSiblingNoWhitespace
             when {
                 // ("foo" "bar")  {foo();}            // clarifying
@@ -61,11 +70,7 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
                 else                                             -> false
             }
         }
-        // (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
-        outside is JccExpansionSequence && inside is JccExpansionAlternative ->
-            inside.expansionList[0].let { it as JccExpansionSequence }.expansionUnitList[0] is JccLocalLookahead
-                    && config.keepUndocumented && config.keepAroundLookahead
-        else                                                                 -> true
+        else                                                              -> true
     }
 }
 /* TESTS

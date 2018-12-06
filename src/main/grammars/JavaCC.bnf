@@ -121,7 +121,8 @@
 
   extends("regexp_expansion_unit|non_terminal_expansion_unit")=assignable_expansion_unit
   extends(".*_expansion_unit|parser_actions_unit|local_lookahead")=expansion_unit
-  extends("expansion_(alternative|sequence|unit)")=expansion
+  extends("expansion_(sequence|unit)")=expansion_sequence_or_unit
+  extends("expansion_(alternative|sequence_or_unit)")=expansion
 
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
@@ -204,7 +205,6 @@ regular_expr_production 	::=
 
 private regexpr_spec_list   ::=
     regexpr_spec ( "|" regexpr_spec )*
-	{pin(".*")=1}
 
 
 lexical_state_list 	::=
@@ -224,14 +224,15 @@ regexpr_spec 	    ::=
         recoverWhile="#auto"
     }
 
-fake expansion ::=
+fake expansion                      ::=
+fake expansion_sequence_or_unit     ::=
 
 private expansion_choices 	        ::=
         expansion_alternative
     |   expansion_sequence
 
 expansion_alternative       ::=
-    expansion_sequence ( "|" expansion_sequence )+ {pin="|"}
+    expansion_sequence ( "|" expansion_sequence )+ {pin="|" methods=[expansionList="expansion_sequence_or_unit"]}
 
 expansion_sequence 	        ::=
     ( expansion_unit )+ {recoverWhile="#auto"}
@@ -240,11 +241,12 @@ expansion_sequence 	        ::=
 
 expansion_unit 	            ::=
     priv_expansion_unit scoped_expansion_unit?
+    {recoverWhile="#auto"}
 
 left scoped_expansion_unit  ::=
     jjtree_node_descriptor
 
-priv_expansion_unit 	            ::=
+priv_expansion_unit 	    ::=
     (   local_lookahead
 	| 	parser_actions_unit
 	| 	parenthesized_expansion_unit
