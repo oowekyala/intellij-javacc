@@ -50,8 +50,12 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
 
     var unresolved = false
 
+    override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+        builder.append(Pattern.quote(o.match))
+    }
+
     override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-        builder.append(Pattern.quote(o.unit.match))
+        o.unit.acceptChildren(this)
     }
 
     override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
@@ -64,8 +68,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
-        else
-            ref.getRootRegexElement()?.accept(this@RegexResolutionVisitor)
+        else ref.pattern?.toString().let { builder.append(it) }
     }
 
     override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
@@ -110,7 +113,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         builder.append('(')
         o.regexpElement.accept(this)
         builder.append(')')
-        val occurrenceIndicator = o.lastChildNoWhitespace
+        val occurrenceIndicator = o.occurrenceIndicator
         if (occurrenceIndicator != null) {
             builder.append(occurrenceIndicator.text)
         }
