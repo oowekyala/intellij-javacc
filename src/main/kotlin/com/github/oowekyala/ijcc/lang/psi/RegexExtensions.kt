@@ -73,7 +73,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     }
 
     override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-        o.regexpElement.accept(this)
+        o.regexpElement?.accept(this)
     }
 
     override fun visitRegexpSequence(o: JccRegexpSequence) {
@@ -214,7 +214,7 @@ fun JccRegexprSpec.getLiteralsExactMach() {
                     result += this
                     true
                 }
-                is JccNamedRegularExpression  -> regexpElement.gatherMatchingLiterals(result)
+                is JccNamedRegularExpression  -> regexpElement?.gatherMatchingLiterals(result) == true
                 is JccInlineRegularExpression -> regexpElement?.gatherMatchingLiterals(result) == true
                 is JccRegexpSequence          ->
                     regexpUnitList.size == 1 && regexpUnitList[0].gatherMatchingLiterals(result)

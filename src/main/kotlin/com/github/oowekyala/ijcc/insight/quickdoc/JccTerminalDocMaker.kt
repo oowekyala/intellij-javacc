@@ -56,7 +56,7 @@ object JccTerminalDocMaker {
         }
 
         override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-            o.regexpElement.accept(this)
+            o.regexpElement?.accept(this)
         }
 
         override fun visitEofRegularExpression(o: JccEofRegularExpression) {

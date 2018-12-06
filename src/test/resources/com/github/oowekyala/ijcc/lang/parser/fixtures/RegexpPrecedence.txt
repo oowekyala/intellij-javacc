@@ -54,15 +54,14 @@ JCC_FILE
     PsiElement({)('{')
     PsiWhiteSpace('\n   ')
     JccRegexpExpansionUnitImpl(JCC_REGEXP_EXPANSION_UNIT)
-      JccRegularExpressionReferenceImpl(JCC_REGULAR_EXPRESSION_REFERENCE)
-        JccTokenReferenceUnitImpl(JCC_TOKEN_REFERENCE_UNIT)
-          PsiElement(<)('<')
-          PsiWhiteSpace(' ')
-          JccIdentifierImpl(JCC_IDENTIFIER)
-            PsiElement(IDENT)('foo')
-          PsiErrorElement:':' or '>' expected, got ':'
-            <empty list>
-      PsiElement(:)(':')
+      JccNamedRegularExpressionImpl(JCC_NAMED_REGULAR_EXPRESSION)
+        PsiElement(<)('<')
+        PsiWhiteSpace(' ')
+        JccIdentifierImpl(JCC_IDENTIFIER)
+          PsiElement(IDENT)('foo')
+        PsiElement(:)(':')
+        PsiErrorElement:<regexp unit> or '|' expected, got '}'
+          <empty list>
     PsiWhiteSpace('\n')
     PsiElement(})('}')
   PsiWhiteSpace('\n\n')

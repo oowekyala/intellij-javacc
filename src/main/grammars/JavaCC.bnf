@@ -327,7 +327,7 @@ eof_regular_expression          ::=
 
 named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regexp_choices ">"
-    {pin=":"}
+    {pin=4}
 
 regular_expression_reference    ::=
     token_reference_unit
