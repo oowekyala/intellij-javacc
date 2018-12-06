@@ -19,6 +19,8 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <additionalTextAttributes scheme="Darcula" file="com/github/oowekyala/ijcc/colorSchemes/Darcula_Javacc.xml"/>
+        <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.insight.highlight.JavaccColorSettingsPage"/>
