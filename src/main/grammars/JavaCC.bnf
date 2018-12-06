@@ -255,15 +255,16 @@ priv_expansion_unit 	            ::=
 	|   assignable_expansion_unit
     )
 
-parser_actions_unit     ::=
-    java_block
-
 assignable_expansion_unit ::=
       regexp_expansion_unit
     | non_terminal_expansion_unit
 
 assigned_expansion_unit ::=
     java_assignment_lhs "=" assignable_expansion_unit
+    {pin=2}
+
+parser_actions_unit     ::=
+    java_block
 
 regexp_expansion_unit   ::=
     regular_expression

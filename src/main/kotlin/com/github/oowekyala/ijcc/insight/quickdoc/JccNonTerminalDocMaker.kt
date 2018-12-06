@@ -132,7 +132,7 @@ object JccNonTerminalDocMaker {
 
         override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
             // ignore lhs
-            o.assignableExpansionUnit.accept(this)
+            o.assignableExpansionUnit?.accept(this)
         }
 
 

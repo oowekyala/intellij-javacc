@@ -42,9 +42,6 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // LOOKAHEAD( ("foo" | "bar") )   // unnecessary
         // LOOKAHEAD(1, ("foo" | "bar") ) // unnecessary
         outside is JccLocalLookahead                                      -> false // then it's top level of a semantic lookahead
-        // a=("f")          // unnecessary
-        // a=(h())          // unnecessary
-        outside is JccAssignedExpansionUnit                               -> false
 
         // ("foo" | "bar") "bzaz"   // necessary
         // ("foo" | "bar") | "bzaz" // unnecessary
@@ -86,8 +83,6 @@ void parens() :
  (try{""}catch(foo f){})          // unnecessary
  (["hello"])                      // unnecessary
  (("")?)                          // unnecessary
- a=("f")                          // unnecessary
- a=(h())                          // unnecessary
 
  LOOKAHEAD( ("foo" | "bar") )     // unnecessary
  LOOKAHEAD(1, ("foo" | "bar") )   // unnecessary
