@@ -15,6 +15,9 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
     val inside = expansion ?: return true // empty parentheses are an error, but we consider them necessary
     val outside = parent!!
 
+    val keepLookahead = config.keepUndocumented && config.keepAroundLookahead
+    val keepParserActions = config.keepUndocumented && config.keepBeforeParserActions
+    val keepAssignment = config.keepUndocumented && config.keepAroundAssignment
 
     return when {
         // (..)+  // necessary
@@ -27,7 +30,7 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
 
         // (a=foo())        // clarifying
         // (a="f")          // unnecessary
-        inside is JccAssignedExpansionUnit                                -> config.keepAroundAssignment
+        inside is JccAssignedExpansionUnit                                -> keepAssignment
 
         // ("f")            // unnecessary
         // (foo())          // unnecessary
@@ -45,18 +48,13 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // LOOKAHEAD(1, ("foo" | "bar") ) // unnecessary
         outside is JccLocalLookahead                                      -> false // then it's top level of a semantic lookahead
 
-        inside is JccExpansionAlternative                                 -> {
-            val fst = inside.expansionList[0]
-            when {
-                // (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
-                // (LOOKAHEAD(2) "foo" "f" | "foo" "bar") // clarifying
-                config.keepUndocumented && config.keepAroundLookahead -> fst is JccLocalLookahead
-                        || fst is JccExpansionSequence && fst.expansionUnitList[0] is JccLocalLookahead
-                // ("foo" | "bar") "bzaz"   // necessary
-                // ("foo" | "bar") | "bzaz" // unnecessary
-                else                                                  -> outside !is JccExpansionAlternative
-            }
-        }
+        // (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
+        // (LOOKAHEAD(2) "foo" "f" | "foo" "bar") // clarifying
+        // ("foo" | "bar") "bzaz"   // necessary
+        // ("foo" | "bar") | "bzaz" // unnecessary
+        inside is JccExpansionAlternative                                 ->
+            keepLookahead && inside.isLookahead() || outside !is JccExpansionAlternative
+
 
         // ("foo" "bar")  {}                // unnecessary
         // ("foo" "bar")  (hello() | "f")   // unnecessary, necessary
@@ -64,14 +62,20 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
             val nextSibling = nextSiblingNoWhitespace
             when {
                 // ("foo" "bar")  {foo();}            // clarifying
-                nextSibling is JccParserActionsUnit              -> config.keepUndocumented && config.keepBeforeParserActions
+                nextSibling is JccParserActionsUnit -> keepParserActions
                 // (LOOKAHEAD(2) "foo" "foo" "bar") // clarifying
-                inside.expansionUnitList[0] is JccLocalLookahead -> config.keepUndocumented && config.keepAroundLookahead
-                else                                             -> false
+                inside.isLookahead()                -> keepLookahead
+                else                                -> false
             }
         }
         else                                                              -> true
     }
+}
+
+private fun JccExpansionSequence.isLookahead() = expansionUnitList[0] is JccLocalLookahead
+private fun JccExpansionAlternative.isLookahead(): Boolean {
+    val fst = expansionList[0]
+    return fst is JccLocalLookahead || fst is JccExpansionSequence && fst.isLookahead()
 }
 /* TESTS
 
@@ -106,10 +110,14 @@ void parens() :
  ("foo" "bar")  (foo() | "f")     // unnecessary, necessary
  ("(" Expr() ")")     #Node       // necessary
  ("(")     #Node                  // unnecessary
- (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
+ (LOOKAHEAD(2) "foo" | "foo" "bar")     // clarifying
+ (LOOKAHEAD(2) "foo" "f" | "foo" "bar") // necessary
+ ((LOOKAHEAD(2) "foo" "f" | "foo" "bar") | "f") // clarifying
+
 }
 
  void foo():{}{ ("") }            // unnecessary
+ void bar():{}{ ("")? }           // necessary
 
 
 */
