@@ -41,7 +41,8 @@
 ++ Unnecessary #void annotation
 ++ Unnecessary inline regex (in token specs)
 ++ Unnamed inline regex (in productions)
-* Unnecessary parentheses
+++ Unnecessary parentheses
+* Lookahead is not at a choice point
 * Use bracketed expansion instead of ()? (when there's another set of parentheses inside)
 * String uncovered by literal regex
 ++ Regex reference can be replaced by string
