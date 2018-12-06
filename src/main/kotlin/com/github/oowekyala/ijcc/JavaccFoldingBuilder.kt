@@ -129,11 +129,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitLocalLookahead(o: JccLocalLookahead) {
-                result +=
-                        if (o.integerLiteral != null && o.expansion == null && o.javaExpression == null)
-                            FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
-                        else
-                            FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
+                result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
             override fun visitOptionSection(o: JccOptionSection) {
