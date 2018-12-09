@@ -49,23 +49,23 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is JccTokenReferenceUnit -> literalRegexpForRef(psi)!!.stringLiteral.text
-            is JccParserDeclaration                                     -> "/PARSER DECLARATION/"
-            is JccTokenManagerDecls                                     -> "/TOKEN MANAGER DECLARATIONS/"
-            is JccRegularExprProduction                                 -> "${psi.regexprKind.text}: {..}"
-            is JccOptionSection                                         -> "options {..}"
-            is JccJavaBlock                                             -> "{..}"
-            is JccParserActionsUnit                                     -> "{..}"
-            is JccLocalLookahead                                        -> {
+            is JccTokenReferenceUnit    -> literalRegexpForRef(psi)!!.stringLiteral.text
+            is JccParserDeclaration     -> "/PARSER DECLARATION/"
+            is JccTokenManagerDecls     -> "/TOKEN MANAGER DECLARATIONS/"
+            is JccRegularExprProduction -> "${psi.regexprKind.text}: {..}"
+            is JccOptionSection         -> "options {..}"
+            is JccJavaBlock             -> "{..}"
+            is JccParserActionsUnit     -> "{..}"
+            is JccLocalLookahead        -> {
                 if (psi.integerLiteral != null && psi.expansion == null && psi.javaExpression == null) {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
                 } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
             }
-            is JccBnfProduction                                         -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+            is JccBnfProduction         -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
                 ?: ""}/"
-            is JccJavacodeProduction                                    -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+            is JccJavacodeProduction    -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
                 ?: ""}/"
-            else                                                        -> throw UnsupportedOperationException("Unhandled case $psi")
+            else                        -> throw UnsupportedOperationException("Unhandled case $psi")
         }
     }
 

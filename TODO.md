@@ -11,14 +11,15 @@
 ++ Add quick doc for options and productions
 ++ Highlight scope of jjtree decoration and parser action
 ++ AUTOCOMPLETE
-* Group tokens by lexical state in structure view
 ++ BIG PERFORMANCE PROBLEM -> probably stop building lexical states
 ++ Doc is not displayed on tokens in structure view
-* Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
 ++ The ident also gives the type in the structure view...
-* Add some doc about keywords, etc
 ++ Add gutter links to node classes
+
+* Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
+* Add some doc about keywords, etc
 * Add gutter links from node classes to productions
+* Group tokens by lexical state in structure view
 
 * Add moar tests
 

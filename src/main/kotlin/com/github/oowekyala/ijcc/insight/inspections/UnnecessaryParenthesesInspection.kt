@@ -29,7 +29,7 @@ class UnnecessaryParenthesesInspection : JavaccInspectionBase(InspectionName) {
             This inspection reports parentheses when they are redundant.
             E.g. in BNF expansions:
             <code>
-                ("foo" | "bar") | "bzaz"         // unnecessary
+                ("foo" "bar") | "bzaz"           // unnecessary
                 ("foo" | "bar") "bzaz"           // necessary
             </code>
             The checkboxes below allow to whitelist some constructs for which

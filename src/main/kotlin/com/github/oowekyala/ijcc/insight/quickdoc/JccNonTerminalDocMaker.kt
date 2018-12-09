@@ -9,7 +9,6 @@ import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
 import org.intellij.lang.annotations.Language
-import java.awt.SystemColor.text
 
 /**
  * @author Clément Fournier

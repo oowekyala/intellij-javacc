@@ -75,8 +75,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
         fun getTokenHighlight(tokenType: IElementType?): TextAttributesKey? = TOKEN_TYPE_TO_STYLE[tokenType]
 
         init {
-            val keys =
-                    HashMap<IElementType, TextAttributesKey>()
+            val keys = HashMap<IElementType, TextAttributesKey>()
 
             operator fun JavaccHighlightingColors.invoke(vararg tokenType: IElementType) {
                 tokenType.forEach { keys[it] = this.keys }

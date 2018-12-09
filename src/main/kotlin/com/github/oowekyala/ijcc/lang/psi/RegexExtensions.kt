@@ -150,7 +150,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         val UnicodeStringRegex = Regex("""\\u[0-9a-fA-F]{4}""")
         // this is a last resort to prevent some chars to throw PatternSyntaxExceptions
         // it doesn't look like it's needed rn
-        val UnicodeStopList = listOf<String>()//"\\u212f")
+        val UnicodeStopList = listOf<String>() //"\\u212f")
     }
 }
 

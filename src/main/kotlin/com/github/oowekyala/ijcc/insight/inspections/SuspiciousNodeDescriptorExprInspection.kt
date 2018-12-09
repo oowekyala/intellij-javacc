@@ -90,7 +90,8 @@ class SuspiciousNodeDescriptorExprInspection : JavaccInspectionBase(InspectionNa
 
                     val ident = scopedUnit.jjtreeNodeDescriptor.namingLeaf
 
-                    val identEndOffset = nodeDescriptor.startOffsetInParent + ident.startOffsetInParent + ident.textLength
+                    val identEndOffset =
+                            nodeDescriptor.startOffsetInParent + ident.startOffsetInParent + ident.textLength
                     val newText = scopedUnit.text.insert(identEndOffset, "(true)")
 
                     val newExpansion =

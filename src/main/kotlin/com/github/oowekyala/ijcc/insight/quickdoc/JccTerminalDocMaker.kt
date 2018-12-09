@@ -8,7 +8,6 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
 import org.intellij.lang.annotations.Language
-import java.awt.SystemColor.text
 
 /**
  * @author Clément Fournier
@@ -78,7 +77,7 @@ object JccTerminalDocMaker {
         }
 
         override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
-           o.unit.accept(this)
+            o.unit.accept(this)
         }
 
         override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {

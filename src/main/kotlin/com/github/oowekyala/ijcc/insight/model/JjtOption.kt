@@ -139,7 +139,6 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
     }
 
 
-
     companion object {
         val values = listOf(
             MULTI,
@@ -152,7 +151,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
             TRACK_TOKENS,
 
             NODE_PREFIX,
-            NODE_PACKAGE,/////
+            NODE_PACKAGE,
             NODE_EXTENDS,
             NODE_CLASS,
             NODE_FACTORY,

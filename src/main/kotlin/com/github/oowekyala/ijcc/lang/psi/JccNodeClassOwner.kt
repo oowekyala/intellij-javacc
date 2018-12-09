@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.insight.model.JavaccConfig
-import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.NavigatablePsiElement

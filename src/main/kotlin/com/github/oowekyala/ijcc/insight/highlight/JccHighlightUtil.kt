@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifierOwner
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
