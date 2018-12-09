@@ -31,6 +31,9 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
     LEXICAL_STATE(DefaultLanguageHighlighterColors.METADATA),
 
+    /** Name of a [JCC_OPTION_BINDING]. */
+    OPTION_NAME(NONTERMINAL_DECLARATION.keys),
+
     PARENTHESES(JavaHighlightingColors.PARENTHESES),
     DOT(JavaHighlightingColors.DOT),
     COMMA(JavaHighlightingColors.COMMA),
@@ -58,11 +61,11 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
     val keys: TextAttributesKey = TextAttributesKey.createTextAttributesKey("JAVACC_$name", base)
 
-    val displayName = name.removePrefix("JavaCC.")
-        .replace('_', ' ')
-        .toLowerCase().capitalize()
-        .replace("Jjtree", "JJTree")
-        .replace("Javacc", "JavaCC")
+    val displayName =
+            name.replace('_', ' ')
+                .toLowerCase().capitalize()
+                .replace("Jjtree", "JJTree")
+                .replace("Javacc", "JavaCC")
 
     open val highlightType: HighlightInfoType = createSymbolTypeInfo(HighlightInfoType.SYMBOL_TYPE_SEVERITY)
 

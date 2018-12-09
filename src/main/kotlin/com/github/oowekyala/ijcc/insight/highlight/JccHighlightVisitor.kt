@@ -90,10 +90,12 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         val opt = JavaccConfig.knownOptions[binding.name]
         if (opt == null) {
             myHolder += wrongReferenceInfo(
-                binding.nameIdentifier!!, // may not be supported for some elements (eg JjtNodeDescriptor)
+                binding.nameIdentifier!!,
                 "Unknown option: ${binding.name}"
             )
             return
+        } else {
+            myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)
         }
 
         if (!binding.matchesType(opt.expectedType)) {
