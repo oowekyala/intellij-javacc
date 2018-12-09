@@ -5,8 +5,9 @@ import com.github.oowekyala.ijcc.lang.psi.*
 
 data class ParenthesesConfig(val keepAroundAssignment: Boolean = false,
                              val keepAroundLookahead: Boolean = false,
-                             val keepBeforeParserActions: Boolean = false,
-                             val keepUndocumented: Boolean)
+                             val keepBeforeParserActions: Boolean = false)
+
+fun JccParenthesizedExpansionUnit.isUnnecessary(config: ParenthesesConfig): Boolean = !isNecessary(config)
 
 fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolean {
 
@@ -15,9 +16,9 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
     val inside = expansion ?: return true // empty parentheses are an error, but we consider them necessary
     val outside = parent!!
 
-    val keepLookahead = config.keepUndocumented && config.keepAroundLookahead
-    val keepParserActions = config.keepUndocumented && config.keepBeforeParserActions
-    val keepAssignment = config.keepUndocumented && config.keepAroundAssignment
+    val keepLookahead = config.keepAroundLookahead
+    val keepParserActions = config.keepBeforeParserActions
+    val keepAssignment = config.keepAroundAssignment
 
     return when {
         // (..)+  // necessary
@@ -43,7 +44,8 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         inside is JccExpansionUnit                                        -> false // expansions units are indivisible
 
         //  ("(" Expr() ")")     #Node    // necessary unless doc
-        outside is JccScopedExpansionUnit                                 -> config.keepUndocumented
+        outside is JccScopedExpansionUnit                                 -> true
+
         // LOOKAHEAD( ("foo" | "bar") )   // unnecessary
         // LOOKAHEAD(1, ("foo" | "bar") ) // unnecessary
         outside is JccLocalLookahead                                      -> false // then it's top level of a semantic lookahead
@@ -62,14 +64,21 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
             val nextSibling = nextSiblingNoWhitespace
             when {
                 // ("foo" "bar")  {foo();}            // clarifying
-                nextSibling is JccParserActionsUnit -> keepParserActions
+                keepParserActions && nextSibling is JccParserActionsUnit -> true
                 // (LOOKAHEAD(2) "foo" "foo" "bar") // clarifying
-                inside.isLookahead()                -> keepLookahead
-                else                                -> false
+                keepLookahead && inside.isLookahead()                    -> true
+                else                                                     -> false
             }
         }
+
         else                                                              -> true
     }
+}
+
+private fun JccExpansionUnit.isDocumented() = when (this) {
+    is JccParserActionsUnit -> false
+    is JccLocalLookahead    -> false
+    else                    -> true
 }
 
 private fun JccExpansionSequence.isLookahead() = expansionUnitList[0] is JccLocalLookahead
@@ -79,7 +88,15 @@ private fun JccExpansionAlternative.isLookahead(): Boolean {
 }
 /* TESTS
 
+void docParens1():{} // doc should be "a"
+{
+  ( "a" ) { foo(); }
+}
 
+void docParens2():{} // doc should be "a" \n| "b"
+{
+  ( "a" | "b" ) { foo(); }
+}
 
 void parens() :
 {}
@@ -121,3 +138,34 @@ void parens() :
 
 
 */
+
+/** specialized for the quickdoc maker */
+fun JccParenthesizedExpansionUnit.docIsNecessary(): Boolean {
+
+
+    // ()    // necessary?
+    val inside = expansion ?: return true // empty parentheses are an error, but we consider them necessary
+    val outside = parent!!
+
+    return when {
+        occurrenceIndicator != null                                             -> true
+
+        outside !is JccExpansion                                                -> false // top level parens are unnecessary, unless there's an occurrence indicator
+
+        inside is JccExpansionUnit                                              -> false // expansions units are indivisible
+
+        //  ("(" Expr() ")")     #Node    // necessary unless doc
+        outside is JccScopedExpansionUnit                                       -> false
+
+        outside is JccExpansionSequence && inside is JccExpansionSequence       -> false
+        outside is JccExpansionAlternative && inside is JccExpansionAlternative -> false
+        outside is JccExpansionAlternative && inside is JccExpansionSequence    -> false
+
+        outside is JccExpansionSequence && inside is JccExpansionAlternative    ->
+            // parens are then needed, unless the rest of the sequence is only undocumented elements
+            outside.expansionUnitList.filter { it !== this }.any { it.isDocumented() }
+
+
+        else                                                                    -> true
+    }
+}

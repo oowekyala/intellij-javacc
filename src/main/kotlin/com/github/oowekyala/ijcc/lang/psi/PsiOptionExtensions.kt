@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.insight.model.GenericOption
 import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.github.oowekyala.ijcc.insight.model.JccOptionType
+import com.intellij.psi.PsiElement
 
 /**
  * Gets the binding for the given option value if present.
@@ -40,6 +41,9 @@ val JccOptionValue.optionType: JccOptionType.BaseOptionType<*>
             else           -> throw IllegalStateException()
         }
     }
+
+val JccOptionBinding.namingLeaf: PsiElement
+    get() = node.firstChildNode.psi!!
 
 
 val JccOptionBinding.modelOption: GenericOption<*>?

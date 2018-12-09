@@ -53,15 +53,14 @@ class UnnecessaryParenthesesInspection : JavaccInspectionBase(InspectionName) {
     private fun getConfig() = ParenthesesConfig(
         keepAroundAssignment = keepAroundAssignment,
         keepAroundLookahead = keepAroundLookahead,
-        keepBeforeParserActions = keepBeforeParserActions,
-        keepUndocumented = true
+        keepBeforeParserActions = keepBeforeParserActions
     )
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
                 private val config = getConfig()
                 override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
-                    if (!o.isNecessary(config)) {
+                    if (o.isUnnecessary(config)) {
                         holder.registerProblem(
                             o,
                             ProblemDescription,

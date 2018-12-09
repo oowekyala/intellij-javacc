@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.inspections.docIsNecessary
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
@@ -35,7 +36,7 @@ object JccNonTerminalDocMaker {
             PsiFormatUtilBase.SHOW_NAME or PsiFormatUtilBase.SHOW_TYPE or PsiFormatUtilBase.SHOW_PARAMETERS,
             PsiFormatUtilBase.SHOW_TYPE or PsiFormatUtilBase.SHOW_NAME
         ).let {
-            this.append(it)
+            append(it)
         }
 
     }
@@ -54,17 +55,37 @@ object JccNonTerminalDocMaker {
         }
     }
 
-
     private class ExpansionMinifierVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
 
         // spread out the top level alternatives
         var spreadAlternatives: Boolean = false
 
+
         fun startOn(jccExpansion: JccExpansion) {
-            if (jccExpansion is JccExpansionAlternative)
+
+            fun skipUninteresting(exp: JccExpansion): JccExpansion? = when {
+                exp is JccParenthesizedExpansionUnit && !exp.docIsNecessary() ->
+                    exp.expansion?.let { skipUninteresting(it) }
+                exp is JccScopedExpansionUnit                                 -> skipUninteresting(exp.expansionUnit)
+                exp is JccExpansionSequence && exp.expansionUnitList.count { it.isDocumented() } == 1 ->
+                    skipUninteresting(exp.expansionUnitList.first { it.isDocumented() })
+                else                                                          -> exp
+            }
+
+            val root = skipUninteresting(jccExpansion) ?: return
+
+            if (root is JccExpansionAlternative)
                 spreadAlternatives = true
 
             jccExpansion.accept(this)
+        }
+
+        private fun JccExpansion.isDocumented(): Boolean = when (this) {
+            is JccParserActionsUnit    -> false
+            is JccLocalLookahead       -> false
+            is JccExpansionSequence    -> expansionUnitList.any { it.isDocumented() }
+            is JccExpansionAlternative -> expansionList.any { it.isDocumented() }
+            else                       -> true
         }
 
         override fun visitExpansionAlternative(o: JccExpansionAlternative) {
@@ -74,11 +95,13 @@ object JccNonTerminalDocMaker {
             } else Pair("", " | ")
 
             sb.append(prefix)
-            o.expansionList.foreachAndBetween({ sb.append(delim) }) { it.accept(this) }
+            // filtering avoids adding superfluous spaces
+            o.expansionList.filter { it.isDocumented() }.foreachAndBetween({ sb.append(delim) }) { it.accept(this) }
         }
 
         override fun visitExpansionSequence(o: JccExpansionSequence) {
-            o.expansionUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
+            // filtering avoids adding superfluous spaces
+            o.expansionUnitList.filter { it.isDocumented() }.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
         }
 
         override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
@@ -136,10 +159,23 @@ object JccNonTerminalDocMaker {
 
 
         override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
+            if (o.myIsUnnecessary()) {
+                o.expansion?.accept(this)
+                return
+            }
+            // else
+
             sb.append("( ")
             o.expansion?.accept(this)
             sb.append(" )")
             o.occurrenceIndicator?.run { sb.append(text) }
+        }
+
+        private companion object {
+
+            fun JccParenthesizedExpansionUnit.myIsUnnecessary(): Boolean = !docIsNecessary()
+
+
         }
     }
 
