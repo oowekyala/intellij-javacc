@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNodeClassOwner {
+interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
 
     /**
      * Returns the expression if one was specified

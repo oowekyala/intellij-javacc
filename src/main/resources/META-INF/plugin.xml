@@ -36,7 +36,7 @@
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
         <!-- TODO v2.0 -->
-        <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
+        <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.documentationProvider language="JavaCC"
                                     implementationClass="com.github.oowekyala.ijcc.insight.quickdoc.JccDocumentationProvider"/>

@@ -9,7 +9,7 @@ interface JccJavaExpression : JavaccPsiElement, PsiLanguageInjectionHost {
 
 
     @JvmDefault
-    override fun isValidHost(): Boolean = false
+    override fun isValidHost(): Boolean = true
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =

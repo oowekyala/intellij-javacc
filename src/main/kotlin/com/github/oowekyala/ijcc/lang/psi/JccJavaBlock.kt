@@ -9,7 +9,7 @@ import com.intellij.psi.PsiLanguageInjectionHost
 interface JccJavaBlock : JavaccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
-    override fun isValidHost(): Boolean = false
+    override fun isValidHost(): Boolean = true
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
