@@ -101,7 +101,7 @@
   extends("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
-  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding")=identifier_owner
+  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
 
   methods(".*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
@@ -127,7 +127,7 @@
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
 
-  implements("jjtree_node_descriptor|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
+  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
 }
 
 javacc_input 	::=
@@ -245,6 +245,7 @@ expansion_unit 	            ::=
 
 left scoped_expansion_unit  ::=
     jjtree_node_descriptor
+    { methods=[nameIdentifier="jjtree_node_descriptor/identifier"] }
 
 priv_expansion_unit 	    ::=
     (   local_lookahead

@@ -15,17 +15,17 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
 
 
     // TODO parse from the PARSER def
-    val parserPackage: String = packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: ""
+    val parserPackage: String  by lazy { packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }
 
-    val nodePackage: String get() = getOptionValueOrDefault(JjtOption.NODE_PACKAGE)
+    val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 
-    val outputDirectory: String get() = getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY)
+    val outputDirectory: String by lazy { getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY) }
 
-    val isDefaultVoid: Boolean get() = getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID)
+    val isDefaultVoid: Boolean by lazy { getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID) }
 
-    val nodePrefix: String get() = getOptionValueOrDefault(JjtOption.NODE_PREFIX)
+    val nodePrefix: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PREFIX) }
 
-    val lookahead: Int get() = getOptionValueOrDefault(JccOption.LOOKAHEAD)
+    val lookahead: Int by lazy { getOptionValueOrDefault(JccOption.LOOKAHEAD) }
 
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
             genericOption.getValue(options?.getBindingFor(genericOption), this)

@@ -47,8 +47,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = findChildByClass(JccOptionSection::class.java)
 
-    override val javaccConfig: JavaccConfig
-        get() = JavaccConfig(options, parserDeclaration)
+    override val javaccConfig: JavaccConfig by lazy { JavaccConfig(options, parserDeclaration) } // todo is lazy safe?
 
     override val lexicalGrammar: LexicalGrammar
         get() = LexicalGrammar(childrenSequence().filterMapAs())

@@ -1,11 +1,16 @@
 package com.github.oowekyala.ijcc.lang.injection
 
+import com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector.InjectedTreeNode.*
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.plusAssign
+import com.github.oowekyala.ijcc.util.pop
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiLanguageInjectionHost
+import java.util.*
 
 /**
  * Language injector for the compilation unit.
@@ -47,19 +52,44 @@ object JavaccLanguageInjector : MultiHostInjector {
         registrar.doneInjecting()
     }
 
+    private fun getParserDeclText(jccParserDeclaration: JccParserDeclaration): String {
+
+        return jccParserDeclaration.javaCompilationUnit?.text?.trim()?.removeSuffix("}")
+            ?: "class MyParser {"
+
+    }
+
+    private fun injectIntoFile(registrar: MultiHostRegistrar, jccFile: JccFile) {
+        registrar.startInjecting(JavaLanguage.INSTANCE, "java")
+
+        // inject into parser decl and productions separately
+
+        val sb = StringBuilder()
+
+        sb += getParserDeclText(jccFile.parserDeclaration)
+
+        for (prod in jccFile.nonTerminalProductions) {
+
+
+        }
+
+    }
+
 
     private fun injectIntoBnf(registrar: MultiHostRegistrar, context: JccBnfProduction) {
         if (context.javaBlock != null) {
-            registrar.startInjecting(JavaLanguage.INSTANCE, "java")
 
             // TODO add package + imports + methods from the ACU
             //        registrar.addPlace("class Dummy {", null, context.header, rangeInside(context.header))
 
-            //  TODO get ast class prefix + package
+            val config = context.containingFile.javaccConfig
+            val prefix = config.nodePrefix
+
+
             val jjtThisTypeName = "AST${context.name}"
             // Add prelude declarations
             registrar.addPlace(
-                "class Dummy{ ${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();\n",
+                "${context.header.toJavaMethodHeader()}{ $jjtThisTypeName jjtThis = new $jjtThisTypeName();\n",
                 "\n",
                 context.javaBlock,
                 rangeInside(context.javaBlock, 1, 1)
@@ -68,43 +98,176 @@ object JavaccLanguageInjector : MultiHostInjector {
             if (context.expansion != null)
                 BnfInjectionVisitor(registrar).visitExpansion(context.expansion!!)
 
-            // skipping lines is important, otherwise the smarkey will jump to the closing brace, which is physically
+            // skipping lines is important, otherwise the smartkey will jump to the closing brace, which is physically
             // represented at the top of the injection (production header)
             registrar.addPlace(null, "\n\n\n}}", context.javaBlock, TextRange.EMPTY_RANGE)
-            registrar.doneInjecting()
         }
     }
 
-    fun javaBlockInsides(javaBlock: JccJavaBlock): TextRange = rangeInside(javaBlock, 1, 1) // remove braces
+    private sealed class InjectedTreeNode {
 
-    private class BnfInjectionVisitor(private val registrar: MultiHostRegistrar) : DepthFirstVisitor() {
-        companion object {
+        object EmptyLeaf : InjectedTreeNode()
+
+        data class StringLeaf(val string: String) : InjectedTreeNode()
+
+        data class HostLeaf(val host: PsiLanguageInjectionHost) : InjectedTreeNode()
+
+        data class SurroundNode(val child: InjectedTreeNode,
+                                val prefix: String,
+                                val suffix: String) : InjectedTreeNode()
+
+        data class MultiChildNode(val children: List<InjectedTreeNode>,
+                                  val delimiter: () -> String) : InjectedTreeNode()
+
+    }
+
+
+
+    private class InjectedTreeSegmentVisitor : JccVisitor() {
+        // build an injected tree
+
+
+        private companion object {
             private var i = 0
             fun freshName() = "ident${i++}"
         }
 
+        private val nodeStack: Deque<InjectedTreeNode> = LinkedList()
 
         override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
-            registrar.addPlace(null, "= getToken(0);", o, rangeInside(o))
+            nodeStack += HostLeaf(o)
         }
 
-        override fun visitJavaExpression(expr: JccJavaExpression) {
-            //            if (expr.parent is JccLocalLookahead) {
-            //                 then the block represents a boolean expression
-            //                registrar.addPlace(
-            //                    "if (",
-            //                    ");", // FIXME
-            //                    expr,
-            //                    rangeInside(expr)
-            //                )
-            //                                endBlockBuilder.append('}')
-            //            } else {
-            registrar.addPlace("\nObject ${freshName()} = ", ";", expr, rangeInside(expr))
-            //            }
+        override fun visitJavaExpression(o: JccJavaExpression) {
+            nodeStack += HostLeaf(o)
         }
 
-        override fun visitJavaBlock(block: JccJavaBlock) {
-            registrar.addPlace("\n", "\n", block, rangeInside(block, 1, 1))
+        override fun visitJavaBlock(o: JccJavaBlock) {
+            nodeStack += HostLeaf(o)
+        }
+
+        // catch all methods
+        override fun visitExpansion(o: JccExpansion) {
+            nodeStack += EmptyLeaf
+        }
+
+        override fun visitJavaccPsiElement(o: JavaccPsiElement) {
+            nodeStack += EmptyLeaf
+        }
+
+        // control flow tree builders
+
+
+        override fun visitOptionalExpansionUnit(o: JccOptionalExpansionUnit) {
+            val expansion = o.expansion ?: return super.visitOptionalExpansionUnit(o)
+
+            expansion.accept(this)
+
+            surroundTop(
+                prefix = "if (${freshName()}()) {",
+                suffix = "}"
+            )
+        }
+
+        override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
+
+            o.expansion?.accept(this) ?: return super.visitParenthesizedExpansionUnit(o)
+
+            val ind = o.occurrenceIndicator
+
+            when (ind) {
+                null /* exactly one */            -> {
+                    // do nothing, keep the expansion node on top of the stack
+                }
+                is JccZeroOrOne                   -> {
+                    surroundTop("if (${freshName()}()) {", "}")
+                }
+                is JccOneOrMore, is JccZeroOrMore -> {
+                    surroundTop("while (${freshName()}()) {", "}")
+                }
+            }
+        }
+
+        override fun visitExpansionSequence(o: JccExpansionSequence) {
+
+            val children = o.expansionUnitList
+
+            o.expansionUnitList.forEach { it.accept(this) }
+
+            val nodes = nodeStack.pop(children.size)
+
+            nodeStack += MultiChildNode(nodes, delimiter = { "\n" })
+        }
+
+        override fun visitExpansionAlternative(o: JccExpansionAlternative) {
+
+            val children = o.expansionList
+
+            o.expansionList.forEach { it.accept(this) }
+
+            val nodes = nodeStack.pop(children.size)
+
+            val seq = MultiChildNode(nodes, delimiter = { "} else if (${freshName()}()) {" })
+            nodeStack += SurroundNode(
+                seq,
+                prefix = "if (${freshName()}()) {",
+                suffix = "}"
+            )
+        }
+
+        override fun visitLocalLookahead(o: JccLocalLookahead) {
+
+            o.javaExpression?.accept(this) ?: return super.visitLocalLookahead(o)
+
+            surroundTop("if (", ");") //fixme?
+        }
+
+        fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
+                jccNodeClassOwner.nodeSimpleName?.let { "$it jjtThis = new $it();\n" } ?: ""
+
+        override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
+
+            o.expansionUnit.accept(this)
+
+            surroundTop(
+                prefix = "{ ${jjtThisDecl(o)}",
+                suffix = "}"
+            )
+
+        }
+
+        override fun visitBnfProduction(o: JccBnfProduction) {
+
+            o.expansion?.accept(this) ?: return super.visitBnfProduction(o)
+
+            surroundTop(
+                prefix = "${o.header.toJavaMethodHeader()} {\n ${jjtThisDecl(o)}",
+                suffix = "\n}"
+            )
+
+        }
+
+        override fun visitJavacodeProduction(o: JccJavacodeProduction) {
+            visitJavaBlock(o.javaBlock)
+
+            surroundTop(
+                prefix = "${o.header.toJavaMethodHeader()} {\n",
+                suffix = "\n}"
+            )
+        }
+
+
+        // helper methods
+
+        private fun surroundTop(prefix: String, suffix: String) = replaceTop { SurroundNode(it, prefix, suffix) }
+
+        private fun replaceTop(mapper: (InjectedTreeNode) -> InjectedTreeNode) {
+            nodeStack += mapper(nodeStack.pop())
+        }
+
+        private fun replaceTop(n: Int, mapper: (List<InjectedTreeNode>) -> InjectedTreeNode) {
+            nodeStack += mapper(nodeStack.pop(n))
         }
     }
+
 }

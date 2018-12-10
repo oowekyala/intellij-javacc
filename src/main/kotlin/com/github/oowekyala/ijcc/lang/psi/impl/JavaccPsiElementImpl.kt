@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
+import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
@@ -16,7 +17,11 @@ import com.intellij.psi.PsiReference
  */
 abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JavaccPsiElement {
 
+    override val javaccConfig: JavaccConfig
+        get() = containingFile.javaccConfig
+
     override fun getContainingFile() = super.getContainingFile() as JccFile
+
     override fun getName(): String? = when (this) {
         is JccIdentifierOwner -> this.nameIdentifier?.name
         else                  -> null

@@ -37,7 +37,7 @@ interface JccFile : PsiFile, JavaccPsiElement {
     /** Options section. */
     val options: JccOptionSection?
 
-    val javaccConfig: JavaccConfig
+    override val javaccConfig: JavaccConfig
 
 
     companion object {
