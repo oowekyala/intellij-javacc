@@ -11,13 +11,13 @@ class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : Inj
 
     private val prefixBuilder = StringBuilder()
     private val lastPrefixBuilder = StringBuilder()
-    var lastVisitedHost: InjectionStructureTree.HostLeaf? = null
+    private var lastVisitedHost: InjectionStructureTree.HostLeaf? = null
 
     private object LOG : EnclosedLogger()
 
     fun startOn(root: InjectionStructureTree) {
         lastVisitedHost = root.getLastHostInPrefixOrder() ?: run {
-            LOG { error("No last host in injection tree") }
+            LOG { debug("Nothing to inject") }
             return@startOn
         }
         registrar.startInjecting(JavaLanguage.INSTANCE, "java")
@@ -28,14 +28,13 @@ class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : Inj
             lastPrefixBuilder.toString(),
             prefixBuilder.toString(),
             lastVisitedHost!!.host,
-            rangeInside(lastVisitedHost!!.host)
+            lastVisitedHost!!.rangeInsideHost
         )
 
         registrar.doneInjecting()
     }
 
-    private fun rangeInside(psiElement: PsiElement, from: Int = 0, endOffset: Int = 0): TextRange =
-            TextRange(from, psiElement.textLength - endOffset)
+
 
     override fun visit(hostLeaf: InjectionStructureTree.HostLeaf) {
         if (hostLeaf === lastVisitedHost) {
@@ -47,7 +46,7 @@ class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : Inj
 
         val prefix = prefixBuilder.toString()
         prefixBuilder.clear()
-        registrar.addPlace(prefix, null, hostLeaf.host, rangeInside(hostLeaf.host))
+        registrar.addPlace(prefix, null, hostLeaf.host, hostLeaf.rangeInsideHost)
     }
 
     override fun visit(surroundNode: InjectionStructureTree.SurroundNode) {

@@ -15,6 +15,7 @@ fun runCatchAll(block: () -> Unit) {
     }
 }
 
+/** Like [run], but doesn't use a lambda with receiver. */
 inline fun <T> T.runIt(block: (T) -> Unit) = block(this)
 
 /** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
@@ -43,7 +44,7 @@ fun <T> Deque<T>.pop(n: Int): List<T> {
         result += pop()
     }
 
-    return result
+    return result.asReversed()
 }
 
 

@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.util.indent
 import com.intellij.lang.injection.MultiHostRegistrar
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
 
 /**
@@ -41,8 +42,11 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     /**
      * Leaf wrapping a [PsiLanguageInjectionHost].
      */
-    data class HostLeaf(val host: PsiLanguageInjectionHost) : InjectionStructureTree() {
+    data class HostLeaf(val host: PsiLanguageInjectionHost, val rangeInsideHost: TextRange)
+        : InjectionStructureTree() {
+
         override fun accept(visitor: InjectionStructureTreeVisitor) = visitor.visit(this)
+
         override fun toString(): String = """
             HostLeaf: {
                 ${host.text.myIndent()}

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.injection
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
 import java.util.*
 
@@ -40,15 +41,18 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     // leaves
 
-    private fun visitInjectionHost(o: PsiLanguageInjectionHost) {
-        nodeStackImpl.push(HostLeaf(o))
+    private fun visitInjectionHost(o: PsiLanguageInjectionHost,
+                                   rangeGetter: (PsiLanguageInjectionHost) -> TextRange = { it.innerRange() }) {
+        nodeStackImpl.push(HostLeaf(o, rangeGetter(o)))
     }
 
     override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) = visitInjectionHost(o)
 
     override fun visitJavaExpression(o: JccJavaExpression) = visitInjectionHost(o)
 
-    override fun visitJavaBlock(o: JccJavaBlock) = visitInjectionHost(o)
+    override fun visitJavaBlock(o: JccJavaBlock) = visitInjectionHost(o) {
+        it.innerRange(1, 1) // remove the braces
+    }
 
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
@@ -149,7 +153,11 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     override fun visitBnfProduction(o: JccBnfProduction) {
 
+        visitJavaBlock(o.javaBlock)
+
         o.expansion?.accept(this) ?: return super.visitBnfProduction(o)
+
+        mergeTopN(n = 2) { "\n" }
 
         surroundTop(
             prefix = "${o.header.toJavaMethodHeader()} {\n ${jjtThisDecl(o)}",
