@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.lang.injection
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiLanguageInjectionHost
 import java.util.*
 
@@ -20,17 +19,15 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     // root
 
-    override fun visitFile(file: PsiFile?) {
-        if (file !is JccFile) return
-
+    override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
         // TODO add implicit decls
 
-        file.nonTerminalProductions.forEach { it.accept(this) }
+        o.containingFile.nonTerminalProductions.forEach { it.accept(this) }
 
 
         replaceTop(nodeStackImpl.size) {
 
-            val jcu = file.parserDeclaration.javaCompilationUnit
+            val jcu = o.parserDeclaration.javaCompilationUnit
 
             SurroundNode(
                 MultiChildNode(it) { "\n" },
@@ -73,7 +70,6 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         args.forEach { visitJavaExpression(it) }
 
         mergeTopN(args.size) { ", " }
-
     }
 
     override fun visitOptionalExpansionUnit(o: JccOptionalExpansionUnit) {

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
@@ -13,17 +13,17 @@ import com.intellij.psi.PsiElement
  */
 object JavaccLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> =
-            mutableListOf(JccFile::class.java)
+            mutableListOf(JccGrammarFileRoot::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
         when (context) {
-            is JccFile -> injectIntoFile(registrar, context)
+            is JccGrammarFileRoot -> injectIntoFile(registrar, context)
         }
     }
 
 
-    private fun injectIntoFile(registrar: MultiHostRegistrar, jccFile: JccFile) {
-        val root = InjectedTreeBuilderVisitor().also { it.visitFile(jccFile) }.nodeStack[0]
+    private fun injectIntoFile(registrar: MultiHostRegistrar, root: JccGrammarFileRoot) {
+        val root = InjectedTreeBuilderVisitor().also { it.visitGrammarFileRoot(root) }.nodeStack[0]
         InjectionRegistrarVisitor(registrar).startOn(root)
     }
 }

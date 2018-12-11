@@ -33,7 +33,8 @@ operator fun StringBuilder.plusAssign(any: Any) {
 
 /** Pops the [n] first elements of the stack. */
 fun <T> Deque<T>.pop(n: Int): List<T> {
-    if (n < 1 || n > size) throw IndexOutOfBoundsException()
+    if (n < 0 || n > size) throw IndexOutOfBoundsException()
+    if (n == 0) return emptyList()
     if (n == 1) return listOf(pop())
 
     var i = n
