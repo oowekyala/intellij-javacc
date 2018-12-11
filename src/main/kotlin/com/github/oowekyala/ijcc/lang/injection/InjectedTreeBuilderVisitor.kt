@@ -138,7 +138,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     }
 
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-            jccNodeClassOwner.nodeSimpleName?.let { "$it jjtThis = new $it();\n" } ?: ""
+            jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n" } ?: ""
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
 

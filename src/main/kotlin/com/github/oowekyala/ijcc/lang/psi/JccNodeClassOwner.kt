@@ -14,13 +14,18 @@ import com.intellij.psi.search.GlobalSearchScope
  */
 interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 
-    @JvmDefault
-    val nodeClass: NavigatablePsiElement?
-        get() = nodeSimpleName?.let {
-            getJavaClassFromQname(containingFile, "${javaccConfig.nodePackage}.$it")
-        }
 
     val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
+
+    @JvmDefault
+    val nodeClass: NavigatablePsiElement?
+        get() = nodeQualifiedName?.let {
+            getJavaClassFromQname(containingFile, it)
+        }
+
+    @JvmDefault
+    val nodeQualifiedName: String?
+        get() = nodeSimpleName?.let { "${javaccConfig.nodePackage}.$it" }
 
     @JvmDefault
     val nodeSimpleName: String?
@@ -42,6 +47,7 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 
         private fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? {
 
+            // this is mostly a hack...
             val scope = ModuleUtil.findModuleForFile(context)
                 ?.let { GlobalSearchScope.moduleScope(it) }
                 ?: GlobalSearchScope.allScope(context.project)
