@@ -21,7 +21,7 @@ interface JccFile : PsiFile, JavaccPsiElement {
     val nonTerminalProductions: Sequence<JccNonTerminalProduction>
 
     /** All terminal productions. */
-    val regexpProductions: List<JccRegularExprProduction>
+    val regexpProductions: Sequence<JccRegularExprProduction>
 
     val lexicalGrammar: LexicalGrammar
 

@@ -33,6 +33,7 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
     companion object {
         private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
 
+        /** Indexes all known JavaCC or JJTree options by their name.*/
         val knownOptions: Map<String, GenericOption<*>> =
                 JccOption.values.plus(JjtOption.values).associateBy { it.name }
 

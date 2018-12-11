@@ -23,34 +23,39 @@ import com.intellij.psi.scope.PsiScopeProcessor
  * @since 1.0
  */
 class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
-    override val regexpProductions: List<JccRegularExprProduction>
-        get() = findChildrenByClass(JccRegularExprProduction::class.java).asList()
 
     override fun getFileType(): FileType = JavaccFileType
 
+    private val grammarFileRoot
+        get() = findChildByClass(JccGrammarFileRoot::class.java)!!
+
+    override val regexpProductions: Sequence<JccRegularExprProduction>
+        get() = grammarFileRoot.childrenSequence().filterMapAs()
+
     override val parserDeclaration: JccParserDeclaration
-        get() = findChildByClass(JccParserDeclaration::class.java)!!
+        get() = grammarFileRoot.parserDeclaration
 
     override val nonTerminalProductions: Sequence<JccNonTerminalProduction>
-        get() = findChildrenByClass(JccNonTerminalProduction::class.java).asSequence()
+        get() = grammarFileRoot.childrenSequence().filterMapAs()
 
     override val globalNamedTokens: Sequence<JccNamedRegularExpression>
         get() = globalTokenSpecs.map { it.regularExpression }.filterMapAs()
 
 
     override val globalTokenSpecs: Sequence<JccRegexprSpec>
-        get() = childrenSequence(reversed = false)
-            .filterMapAs<JccRegularExprProduction>()
-            .filter { it.regexprKind.text == "TOKEN" }
-            .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
+        get() =
+            grammarFileRoot.childrenSequence(reversed = false)
+                .filterMapAs<JccRegularExprProduction>()
+                .filter { it.regexprKind.text == "TOKEN" }
+                .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
 
     override val options: JccOptionSection?
-        get() = findChildByClass(JccOptionSection::class.java)
+        get() = grammarFileRoot.optionSection
 
     override val javaccConfig: JavaccConfig by lazy { JavaccConfig(options, parserDeclaration) } // todo is lazy safe?
 
     override val lexicalGrammar: LexicalGrammar
-        get() = LexicalGrammar(childrenSequence().filterMapAs())
+        get() = LexicalGrammar(grammarFileRoot.childrenSequence().filterMapAs())
 
     override fun getContainingFile(): JccFile = this
 

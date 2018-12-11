@@ -131,6 +131,9 @@
 }
 
 javacc_input 	::=
+    grammar_file_root
+
+grammar_file_root ::=
     option_section?
 	parser_declaration
 	( production )*
