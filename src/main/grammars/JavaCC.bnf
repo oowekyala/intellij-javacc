@@ -387,7 +387,7 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 
 // Meta and fake rules
 
-meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
+private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
 
 fake identifier_owner           ::= identifier {
     methods=[nameIdentifier="identifier"]

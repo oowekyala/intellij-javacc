@@ -74,3 +74,5 @@ fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
     }
 }
 
+fun String.indent(level: Int) = prependIndent("    ".repeat(level))
+

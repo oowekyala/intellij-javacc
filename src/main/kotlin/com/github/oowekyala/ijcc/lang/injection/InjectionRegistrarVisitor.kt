@@ -7,7 +7,7 @@ import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 
-class InjectionRegisterVisitor(private val registrar: MultiHostRegistrar) : InjectionStructureTree.Companion.PrefixVisitor() {
+class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : InjectionStructureTree.Companion.PrefixVisitor() {
 
     private val prefixBuilder = StringBuilder()
     private val lastPrefixBuilder = StringBuilder()

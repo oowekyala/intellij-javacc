@@ -7,6 +7,7 @@ const val PackagePath = "com/github/oowekyala/ijcc/"
 private const val Fixtures = "fixtures"
 const val FoldingTestDataPath = "$TestResourcesPath${PackagePath}lang/folding/$Fixtures"
 const val OptionsTestDataPath = "$TestResourcesPath${PackagePath}lang/options/$Fixtures"
+const val InjectionTestDataPath = "$TestResourcesPath${PackagePath}lang/injection/$Fixtures"
 const val ParserTestDataPath = "$TestResourcesPath${PackagePath}lang/parser/$Fixtures"
 
 

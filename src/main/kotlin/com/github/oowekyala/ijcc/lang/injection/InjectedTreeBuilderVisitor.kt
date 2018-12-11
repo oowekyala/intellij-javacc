@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiLanguageInjectionHost
 import java.util.*
 
 /**
@@ -13,7 +14,9 @@ import java.util.*
 class InjectedTreeBuilderVisitor : JccVisitor() {
 
 
-    val nodeStack: Deque<InjectionStructureTree> = LinkedList()
+    private val nodeStackImpl: Deque<InjectionStructureTree> = LinkedList()
+    val nodeStack: List<InjectionStructureTree>
+        get() = nodeStackImpl.toList()
 
     // root
 
@@ -25,13 +28,13 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         file.nonTerminalProductions.forEach { it.accept(this) }
 
 
-        replaceTop(nodeStack.size) {
+        replaceTop(nodeStackImpl.size) {
 
             val jcu = file.parserDeclaration.javaCompilationUnit
 
             SurroundNode(
                 MultiChildNode(it) { "\n" },
-                prefix = jcu?.text?.trim()?.removeSuffix("}") ?: "class MyParser {",
+                prefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {",
                 suffix = "}"
             )
         }
@@ -40,27 +43,38 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     // leaves
 
-    override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) {
-        nodeStack += HostLeaf(o)
+    private fun visitInjectionHost(o: PsiLanguageInjectionHost) {
+        nodeStackImpl.push(HostLeaf(o))
     }
 
-    override fun visitJavaExpression(o: JccJavaExpression) {
-        nodeStack += HostLeaf(o)
-    }
+    override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) = visitInjectionHost(o)
 
-    override fun visitJavaBlock(o: JccJavaBlock) {
-        nodeStack += HostLeaf(o)
-    }
+    override fun visitJavaExpression(o: JccJavaExpression) = visitInjectionHost(o)
+
+    override fun visitJavaBlock(o: JccJavaBlock) = visitInjectionHost(o)
 
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
 
     override fun visitJavaccPsiElement(o: JavaccPsiElement) {
-        nodeStack += EmptyLeaf
+        nodeStackImpl.push(EmptyLeaf)
     }
 
     // control flow tree builders
 
+    override fun visitParserActionsUnit(o: JccParserActionsUnit) {
+        visitJavaBlock(o.javaBlock)
+    }
+
+    override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
+
+        val args = o.javaExpressionList?.javaExpressionList ?: return super.visitNonTerminalExpansionUnit(o)
+
+        args.forEach { visitJavaExpression(it) }
+
+        mergeTopN(args.size) { ", " }
+
+    }
 
     override fun visitOptionalExpansionUnit(o: JccOptionalExpansionUnit) {
         val expansion = o.expansion ?: return super.visitOptionalExpansionUnit(o)
@@ -68,7 +82,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         expansion.accept(this)
 
         surroundTop(
-            prefix = "if (${freshName()}()) {",
+            prefix = "if (/*opt*/${freshName()}()) {",
             suffix = "}"
         )
     }
@@ -80,14 +94,14 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         val ind = o.occurrenceIndicator
 
         when (ind) {
-            null /* exactly one */ -> {
+            null /* exactly one */            -> {
                 // do nothing, keep the expansion node on top of the stack
             }
-            is JccZeroOrOne -> {
-                surroundTop("if (${freshName()}()) {", "}")
+            is JccZeroOrOne                   -> {
+                surroundTop("if (/*?*/${freshName()}()) {", "}")
             }
             is JccOneOrMore, is JccZeroOrMore -> {
-                surroundTop("while (${freshName()}()) {", "}")
+                surroundTop("while (/* +* */${freshName()}()) {", "}")
             }
         }
     }
@@ -98,11 +112,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
         o.expansionUnitList.forEach { it.accept(this) }
 
-        val nodes = nodeStack.pop(children.size)
-
-        nodeStack += MultiChildNode(
-            nodes,
-            delimiter = { "\n" })
+        mergeTopN(children.size) { "/*seq*/\n" }
     }
 
     override fun visitExpansionAlternative(o: JccExpansionAlternative) {
@@ -111,13 +121,10 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
         o.expansionList.forEach { it.accept(this) }
 
-        val nodes = nodeStack.pop(children.size)
-
-        val seq = MultiChildNode(
-            nodes,
-            delimiter = { "} else if (${freshName()}()) {" })
-        nodeStack += SurroundNode(
-            seq,
+        mergeTopN(children.size) {
+            "} else if (/*alt*/${freshName()}()) {"
+        }
+        surroundTop(
             prefix = "if (${freshName()}()) {",
             suffix = "}"
         )
@@ -127,7 +134,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
         o.javaExpression?.accept(this) ?: return super.visitLocalLookahead(o)
 
-        surroundTop("if (", ");") //fixme?
+        surroundTop("if /*lookahead*/ (", ");") //fixme?
     }
 
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
@@ -171,16 +178,21 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
             replaceTop { SurroundNode(it, prefix, suffix) }
 
     private fun replaceTop(mapper: (InjectionStructureTree) -> InjectionStructureTree) {
-        nodeStack += mapper(nodeStack.pop())
+        nodeStackImpl.push(mapper(nodeStackImpl.pop()))
     }
 
     private fun replaceTop(n: Int, mapper: (List<InjectionStructureTree>) -> InjectionStructureTree) {
-        nodeStack += mapper(nodeStack.pop(n))
+        nodeStackImpl.push(mapper(nodeStackImpl.pop(n)))
+    }
+
+
+    private fun mergeTopN(n: Int, delimiter: () -> String) {
+        nodeStackImpl.push(MultiChildNode(nodeStackImpl.pop(n), delimiter))
     }
 
 
     private companion object {
         private var i = 0
-        fun freshName() = "ident${i++}"
+        fun freshName() = "i${i++}"
     }
 }
