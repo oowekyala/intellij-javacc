@@ -101,6 +101,9 @@ compileTestKotlin {
 }
 
 
+runIde {
+    jvmArgs '-Xmx2G'
+}
 
 
 intellij {

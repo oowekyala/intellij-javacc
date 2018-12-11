@@ -68,6 +68,7 @@
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
 
         <highlightVisitor implementation="com.github.oowekyala.ijcc.insight.highlight.JccHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>

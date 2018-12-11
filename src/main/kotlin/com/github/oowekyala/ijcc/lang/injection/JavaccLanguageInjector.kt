@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
-import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.lang.injection.MultiHostInjector
@@ -30,9 +29,30 @@ object JavaccLanguageInjector : MultiHostInjector {
     private fun JavaccPsiElement.wrapWithFileContext(node: InjectionStructureTree): InjectionStructureTree {
         val jcu = containingFile.parserDeclaration.javaCompilationUnit
 
+        // TODO stop ignoring contents of the ACU, in order to modify its structure!
+        // TODO add declarations inserted by JJTree (and implements clauses)
+
+        val jccDecls = """
+        /** Get the next Token. */
+          final public Token getNextToken() {
+            // not important
+            return null;
+          }
+
+        /** Get the specific Token. */
+          final public Token getToken(int index) {
+            // not important
+            return null;
+          }
+        """.trimIndent()
+
+        val commonPrefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {"
+
+
+
         return InjectionStructureTree.SurroundNode(
             node,
-            prefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {",
+            prefix = commonPrefix + jccDecls,
             suffix = "}"
         )
     }

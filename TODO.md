@@ -29,6 +29,17 @@
 * Check with JB about Intellij copyright
 * Find a license
 
+
+
+* Java injection
+  -- ~File-wide injection~ -> not resilient enough
+  ++ Avoid bug with the java expressions (&&)
+  ++ Avoid bugs with braces
+  ++ Fix control flow in injected blocks (hard)
+  ++ Avoid injection preventing live template insertion
+  ++ Adapt rich highlighting
+  ++ Adapt documentation provider
+
 ## JavaCC errors
 
 ++ Duplicate string literals
@@ -65,13 +76,3 @@
 * Lookahead issues (needs global CFA)
 * Detect left-recursion
 
-# Things not necessary before release
-
-
-* Java injection
-  * File-wide injection -> will depend on its resilience
-  * Avoid bug with the java expressions (&&)
-  * Avoid bugs with braces
-  * Fix control flow in injected blocks (hard)
-  * Avoid injection preventing live template insertion
-  * Highlight unresolved jjtThis references (when in no node scope)

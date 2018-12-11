@@ -69,11 +69,26 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
 
-        val args = o.javaExpressionList?.javaExpressionList ?: return super.visitNonTerminalExpansionUnit(o)
+
+        val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 1 } ?: return super.visitNonTerminalExpansionUnit(o)
 
         args.forEach { visitJavaExpression(it) }
 
         mergeTopN(args.size) { ", " }
+        surroundTop(prefix = "${o.name}(", suffix = ");")
+    }
+
+    override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
+
+        visitJavaAssignmentLhs(o.javaAssignmentLhs)
+
+        val hasRhs = o.assignableExpansionUnit?.accept(this) != null
+
+        if (hasRhs) {
+            mergeTopN(n = 2) { " = " }
+        } else {
+            surroundTop(prefix = "", suffix = " = ;")
+        }
     }
 
     override fun visitOptionalExpansionUnit(o: JccOptionalExpansionUnit) {
@@ -138,7 +153,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     }
 
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-            jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n" } ?: ""
+            jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
 
