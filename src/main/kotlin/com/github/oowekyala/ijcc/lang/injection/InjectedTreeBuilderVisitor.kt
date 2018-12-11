@@ -21,21 +21,14 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     // root
 
     override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
-        // TODO add implicit decls
+
+        // FIXME the compilation unit is not injected in the same injection file as the productions
+        // o.parserDeclaration.javaCompilationUnit?.accept(this)
 
         o.containingFile.nonTerminalProductions.forEach { it.accept(this) }
 
-
-        replaceTop(nodeStackImpl.size) {
-
-            val jcu = o.parserDeclaration.javaCompilationUnit
-
-            SurroundNode(
-                MultiChildNode(it) { "\n" },
-                prefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {",
-                suffix = "}"
-            )
-        }
+        mergeTopN(nodeStackImpl.size) { "\n" }
+        replaceTop { wrapInFileContext(o, it) }
     }
 
 
@@ -54,6 +47,8 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         it.innerRange(1, 1) // remove the braces
     }
 
+    override fun visitJavaCompilationUnit(o: JccJavaCompilationUnit)  = visitInjectionHost(o)
+
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
 
@@ -70,7 +65,8 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
 
 
-        val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 1 } ?: return super.visitNonTerminalExpansionUnit(o)
+        val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 1 }
+            ?: return super.visitNonTerminalExpansionUnit(o)
 
         args.forEach { visitJavaExpression(it) }
 
@@ -210,8 +206,41 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     }
 
 
-    private companion object {
+    companion object {
         private var i = 0
-        fun freshName() = "i${i++}"
+        private fun freshName() = "i${i++}"
+
+
+        fun wrapInFileContext(element: JavaccPsiElement,
+                              node: InjectionStructureTree): InjectionStructureTree {
+            val jcu = element.containingFile.parserDeclaration.javaCompilationUnit
+
+            // TODO stop ignoring contents of the ACU, in order to modify its structure!
+            // TODO add declarations inserted by JJTree (and implements clauses)
+
+            val jccDecls = """
+        /** Get the next Token. */
+          final public Token getNextToken() {
+            // not important
+            return null;
+          }
+
+        /** Get the specific Token. */
+          final public Token getToken(int index) {
+            // not important
+            return null;
+          }
+        """.trimIndent()
+
+            val commonPrefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {"
+
+
+
+            return SurroundNode(
+                node,
+                prefix = commonPrefix + jccDecls,
+                suffix = "}"
+            )
+        }
     }
 }
