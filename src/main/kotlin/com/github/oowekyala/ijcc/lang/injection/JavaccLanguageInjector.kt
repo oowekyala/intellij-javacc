@@ -1,13 +1,12 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
-import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
-import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
-import com.github.oowekyala.ijcc.lang.psi.innerRange
+import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 
 /**
@@ -28,9 +27,12 @@ object JavaccLanguageInjector : MultiHostInjector {
         }
     }
 
-    private fun MultiHostRegistrar.injectIntoJCU(javaCompilationUnit: JccJavaCompilationUnit) {
+    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
         startInjecting(JavaLanguage.INSTANCE)
-        addPlace(null, null, javaCompilationUnit, javaCompilationUnit.innerRange())
+
+        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(jcu.containingFile) + "}"
+
+        addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
         doneInjecting()
     }
 

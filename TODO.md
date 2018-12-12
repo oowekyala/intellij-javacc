@@ -39,6 +39,7 @@
   ++ Avoid injection preventing live template insertion
   ++ Adapt rich highlighting
   ++ Adapt documentation provider
+  * Allow to opt-out!!
 
 ## JavaCC errors
 

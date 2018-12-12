@@ -16,6 +16,7 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
 
     // TODO parse from the PARSER def
     val parserPackage: String  by lazy { packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }
+    val parserSimpleName: String  by lazy { packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }
 
     val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 
@@ -32,6 +33,7 @@ class JavaccConfig(private val options: JccOptionSection?, private val parserDec
 
     companion object {
         private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
+        private val classRegex = Regex("\\bclass\\s+(\\w+)")
 
         /** Indexes all known JavaCC or JJTree options by their name.*/
         val knownOptions: Map<String, GenericOption<*>> =
