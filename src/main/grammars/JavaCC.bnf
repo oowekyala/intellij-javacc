@@ -413,7 +413,7 @@ identifier                      ::=    IDENT                {name="identifier"}
 private string_literal          ::=    STRING_LITERAL       {name="string literal"}
 
 
-boolean_literal                 ::=    "true" | "false"
+boolean_literal                 ::=    "true" | "false"     {name="boolean literal"}
 
 java_name                       ::=    identifier ("." identifier)* {pin=1}
 
@@ -436,7 +436,8 @@ java_block                          ::=     "{" ext_java_block
 external ext_java_block             ::=     parseJBlock
 
 java_assignment_lhs                 ::=     ext_java_assignment_lhs
-private ext_java_assignment_lhs     ::=     java_name   // FIXME only handles field accesses
+private ext_java_assignment_lhs     ::=     java_name  // FIXME
+//external ext_java_assignment_lhs    ::=     parseJAssignmentLhs
 
 java_expression                     ::=     ext_java_expression
 external ext_java_expression        ::=     parseJExpression

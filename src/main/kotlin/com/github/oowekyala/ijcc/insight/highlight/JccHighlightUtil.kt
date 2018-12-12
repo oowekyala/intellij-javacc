@@ -12,7 +12,7 @@ import com.intellij.psi.TokenType
  * @author Clément Fournier
  * @since 1.0
  */
-internal object JccHighlightUtil {
+object JccHighlightUtil {
 
     fun highlightInfo(element: PsiElement,
                       type: HighlightInfoType,
