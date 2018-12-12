@@ -74,7 +74,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         args.forEach { visitJavaExpression(it) }
 
         mergeTopN(args.size) { ", " }
-        surroundTop(prefix = "${o.name}(", suffix = ");")
+        surroundTop(prefix = "${o.name}(", suffix = ")")
     }
 
     override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
@@ -85,6 +85,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
         if (hasRhs) {
             mergeTopN(n = 2) { " = " }
+            surroundTop(prefix = "", suffix = ";")
         } else {
             surroundTop(prefix = "", suffix = " = ;")
         }
@@ -154,24 +155,52 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
             jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
+    override fun visitJjtreeNodeDescriptorExpr(o: JccJjtreeNodeDescriptorExpr) {
+        visitJavaExpression(o.javaExpression)
+
+        if (o.isGtExpression) {
+            surroundTop(prefix = "jjtree.arity() > ", suffix = "")
+        }
+    }
+
+    override fun visitJjtreeNodeDescriptor(o: JccJjtreeNodeDescriptor) {
+
+        o.descriptorExpr?.accept(this) ?: return super.visitJjtreeNodeDescriptor(o)
+
+        surroundTop(prefix = "jjtree.closeNodeScope(jjtThis, ", suffix = ");")
+    }
+
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
 
         o.expansionUnit.accept(this)
+        o.jjtreeNodeDescriptor.accept(this)
 
+        mergeTopN(n = 2) { "\n" }
         surroundTop(
-            prefix = "{ ${jjtThisDecl(o)}",
+            prefix = "{ ${jjtThisDecl(o)}", // this is technically not valid java but it's ok
             suffix = "}"
         )
 
     }
 
-    override fun visitBnfProduction(o: JccBnfProduction) {
-
+    override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         visitJavaBlock(o.javaBlock)
 
-        o.expansion?.accept(this) ?: return super.visitBnfProduction(o)
+        val baseNumChildren = when (o) {
+            is JccBnfProduction -> {
+                o.expansion?.accept(this) ?: return super.visitBnfProduction(o)
+                2
+            }
+            else                -> 1
+        }
 
-        mergeTopN(n = 2) { "\n" }
+        val totalNumChildren = when (o.jjtreeNodeDescriptor?.accept(this)) {
+            null -> baseNumChildren // the node descriptor doesn't exist
+            else -> baseNumChildren + 1
+        }
+
+
+        mergeTopN(totalNumChildren) { "\n" }
 
         surroundTop(
             prefix = "${o.header.toJavaMethodHeader()} {\n ${jjtThisDecl(o)}",
@@ -180,32 +209,21 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     }
 
-    override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-        visitJavaBlock(o.javaBlock)
-
-        surroundTop(
-            prefix = "${o.header.toJavaMethodHeader()} {\n",
-            suffix = "\n}"
-        )
-    }
-
-
     // helper methods
 
-    private fun surroundTop(prefix: String, suffix: String) =
-            replaceTop { SurroundNode(it, prefix, suffix) }
 
-    private fun replaceTop(mapper: (InjectionStructureTree) -> InjectionStructureTree) {
+    /** Merge the [n] nodes on top of the stack into a [MultiChildNode], delimited by [delimiter]. */
+    private fun mergeTopN(n: Int, delimiter: () -> String) = replaceTop(n) { MultiChildNode(it, delimiter) }
+
+    /** Surrounds the node on top of the stack with a [SurroundNode], using the given [prefix] and [suffix]. */
+    private fun surroundTop(prefix: String, suffix: String) = replaceTop { SurroundNode(it, prefix, suffix) }
+
+    private inline fun replaceTop(mapper: (InjectionStructureTree) -> InjectionStructureTree) {
         nodeStackImpl.push(mapper(nodeStackImpl.pop()))
     }
 
-    private fun replaceTop(n: Int, mapper: (List<InjectionStructureTree>) -> InjectionStructureTree) {
+    private inline fun replaceTop(n: Int, mapper: (List<InjectionStructureTree>) -> InjectionStructureTree) {
         nodeStackImpl.push(mapper(nodeStackImpl.pop(n)))
-    }
-
-
-    private fun mergeTopN(n: Int, delimiter: () -> String) {
-        nodeStackImpl.push(MultiChildNode(nodeStackImpl.pop(n), delimiter))
     }
 
 
@@ -214,85 +232,92 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         private fun freshName() = "i${i++}"
 
 
-        fun javaccInsertedDecls(file: JccFile) = """
-                /** Get the next Token. */
-                final public Token getNextToken() {}
+        fun javaccInsertedDecls(file: JccFile): String {
+            val parserName = file.javaccConfig.parserSimpleName
 
-                /** Get the specific Token. */
-                final public Token getToken(int index) {}
+            return """
+                        /** Only available in JJTree grammars. */
+                        protected JJT${parserName}State jjtree = new JJT${parserName}State();
 
-                /** Generate ParseException. */
-                public ParseException generateParseException() {}
-                private void jj_save(int index, int xla) {}
-                private void jj_rescan_token() {}
-                private int trace_indent = 0;
-                private boolean trace_enabled;
+                        /** Get the next Token. */
+                        final public Token getNextToken() {}
 
-                /** Trace enabled. */
-                final public boolean trace_enabled() {}
+                        /** Get the specific Token. */
+                        final public Token getToken(int index) {}
 
-                /** Enable tracing. */
-                final public void enable_tracing() {}
+                        /** Generate ParseException. */
+                        public ParseException generateParseException() {}
+                        private void jj_save(int index, int xla) {}
+                        private void jj_rescan_token() {}
+                        private int trace_indent = 0;
+                        private boolean trace_enabled;
 
-                /** Disable tracing. */
-                final public void disable_tracing() {}
+                        /** Trace enabled. */
+                        final public boolean trace_enabled() {}
 
-                private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
-                private int[] jj_expentry;
-                private int jj_kind = -1;
-                private int[] jj_lasttokens = new int[100];
-                private int jj_endpos;
+                        /** Enable tracing. */
+                        final public void enable_tracing() {}
 
-                private void jj_add_error_token(int kind, int pos) {}
-                static private final class LookaheadSuccess extends java.lang.Error { }
-                final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-                private boolean jj_scan_token(int kind) {}
-                private Token jj_consume_token(int kind) throws ParseException {}
-                public void ReInit(XPathParserTokenManager tm) {}
+                        /** Disable tracing. */
+                        final public void disable_tracing() {}
 
-                /** Generated Token Manager. */
-                public ${file.javaccConfig.parserSimpleName}TokenManager token_source;
-                /** Current token. */
-                public Token token;
-                /** Next token. */
-                public Token jj_nt;
-                private Token jj_scanpos, jj_lastpos;
-                private int jj_la;
-                private int jj_gen;
-                final private int[] jj_la1 = new int[75];
-                static private int[] jj_la1_0;
-                static private int[] jj_la1_1;
-                static private int[] jj_la1_2;
-                static private int[] jj_la1_3;
-                static {
-                   jj_la1_init_0();
-                   jj_la1_init_1();
-                   jj_la1_init_2();
-                   jj_la1_init_3();
-                }
-                private static void jj_la1_init_0() {
-                   jj_la1_0 = new int[] {0x20000000,0x900b4400,0x0,0x20000000,0x40000000,0x0,0x0,0x40000,0x40000,0x1000,0x0,0x4000,0x4000,0x0,0x0,0x2000,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x4000,0x4000,0x4000,0x8000,0x90080400,0x900b0400,0x30000,0x30000,0x10000000,0x0,0x10000000,0x0,0x0,0x0,0x0,0x280000,0x280000,0x20000000,0x900b4400,0x900b4400,0x200000,0x80000,0x0,0x80080400,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x20000000,0x0,0x400,0x400,0x0,0x0,0x80000,0x80000,0x0,0x20000000,0x80000,0x0,0x0,0x0,};
-                }
-                private static void jj_la1_init_1() {
-                   jj_la1_1 = new int[] {0x0,0xffffe3b9,0x0,0x0,0x0,0x4000000,0x8000000,0x0,0x0,0x0,0x0,0x10,0x10,0x70000008,0x70000008,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x10,0x0,0xffffe3a9,0xffffe3a9,0x0,0x0,0xffffe009,0x8000,0xffffe009,0x3ff6000,0xffffe008,0xffffe008,0x8,0x0,0x0,0x0,0xffffe3bd,0xffffe3bd,0x0,0x0,0x0,0x3a0,0x380,0x0,0x0,0x0,0x20,0x0,0x0,0x0,0x0,0x8,0x4,0x0,0x8,0x8,0x0,0x8,0x0,0x0,0x1c,0x1c,0x0,0x0,0x0,0x0,0x0,0x4,0xffffe000,0x0,};
-                }
-                private static void jj_la1_init_2() {
-                   jj_la1_2 = new int[] {0x0,0xffffffff,0x4100,0x0,0x200,0x0,0x0,0x10fc,0x10fc,0x0,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x3,0x40000,0x20000,0x10000,0x8000,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0xffffffff,0x0,0xffffffff,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x800,0xf0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfc000000,0xf8000000,0x0,0x0,0xfc000000,0x0,0xffffffff,0x0,};
-                }
-                private static void jj_la1_init_3() {
-                   jj_la1_3 = new int[] {0x0,0x7ff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x7ff,0x0,0x7ff,0x0,0x7ff,0x7ff,0x1c0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x620,0x620,0x0,0x620,0x0,0x0,0x0,0x0,0x1f,0x18,0x18,0x600,0x0,0x0,0x600,0x600,0x0,0x600,0x200,0x200,0x0,0x0,0x63f,0x63f,0x20,0x0,0x63f,0x0,0x63f,0x600,};
-                }
-                final private JJCalls[] jj_2_rtns = new JJCalls[5];
-                private boolean jj_rescan = false;
-                private int jj_gc = 0;
+                        private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+                        private int[] jj_expentry;
+                        private int jj_kind = -1;
+                        private int[] jj_lasttokens = new int[100];
+                        private int jj_endpos;
 
-                static final class JJCalls {
-                    int gen;
-                    Token first;
-                    int arg;
-                    JJCalls next;
-                }
-        """.trimIndent()
+                        private void jj_add_error_token(int kind, int pos) {}
+                        static private final class LookaheadSuccess extends java.lang.Error { }
+                        final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+                        private boolean jj_scan_token(int kind) {}
+                        private Token jj_consume_token(int kind) throws ParseException {}
+                        public void ReInit(XPathParserTokenManager tm) {}
+
+                        /** Generated Token Manager. */
+                        public ${parserName}TokenManager token_source;
+                        /** Current token. */
+                        public Token token;
+                        /** Next token. */
+                        public Token jj_nt;
+                        private Token jj_scanpos, jj_lastpos;
+                        private int jj_la;
+                        private int jj_gen;
+                        final private int[] jj_la1 = new int[75];
+                        static private int[] jj_la1_0;
+                        static private int[] jj_la1_1;
+                        static private int[] jj_la1_2;
+                        static private int[] jj_la1_3;
+                        static {
+                           jj_la1_init_0();
+                           jj_la1_init_1();
+                           jj_la1_init_2();
+                           jj_la1_init_3();
+                        }
+                        private static void jj_la1_init_0() {
+                           jj_la1_0 = new int[] {0x20000000,0x900b4400,0x0,0x20000000,0x40000000,0x0,0x0,0x40000,0x40000,0x1000,0x0,0x4000,0x4000,0x0,0x0,0x2000,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x4000,0x4000,0x4000,0x8000,0x90080400,0x900b0400,0x30000,0x30000,0x10000000,0x0,0x10000000,0x0,0x0,0x0,0x0,0x280000,0x280000,0x20000000,0x900b4400,0x900b4400,0x200000,0x80000,0x0,0x80080400,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x20000000,0x0,0x400,0x400,0x0,0x0,0x80000,0x80000,0x0,0x20000000,0x80000,0x0,0x0,0x0,};
+                        }
+                        private static void jj_la1_init_1() {
+                           jj_la1_1 = new int[] {0x0,0xffffe3b9,0x0,0x0,0x0,0x4000000,0x8000000,0x0,0x0,0x0,0x0,0x10,0x10,0x70000008,0x70000008,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x10,0x0,0xffffe3a9,0xffffe3a9,0x0,0x0,0xffffe009,0x8000,0xffffe009,0x3ff6000,0xffffe008,0xffffe008,0x8,0x0,0x0,0x0,0xffffe3bd,0xffffe3bd,0x0,0x0,0x0,0x3a0,0x380,0x0,0x0,0x0,0x20,0x0,0x0,0x0,0x0,0x8,0x4,0x0,0x8,0x8,0x0,0x8,0x0,0x0,0x1c,0x1c,0x0,0x0,0x0,0x0,0x0,0x4,0xffffe000,0x0,};
+                        }
+                        private static void jj_la1_init_2() {
+                           jj_la1_2 = new int[] {0x0,0xffffffff,0x4100,0x0,0x200,0x0,0x0,0x10fc,0x10fc,0x0,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x3,0x40000,0x20000,0x10000,0x8000,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0xffffffff,0x0,0xffffffff,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x800,0xf0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfc000000,0xf8000000,0x0,0x0,0xfc000000,0x0,0xffffffff,0x0,};
+                        }
+                        private static void jj_la1_init_3() {
+                           jj_la1_3 = new int[] {0x0,0x7ff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x7ff,0x0,0x7ff,0x0,0x7ff,0x7ff,0x1c0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x620,0x620,0x0,0x620,0x0,0x0,0x0,0x0,0x1f,0x18,0x18,0x600,0x0,0x0,0x600,0x600,0x0,0x600,0x200,0x200,0x0,0x0,0x63f,0x63f,0x20,0x0,0x63f,0x0,0x63f,0x600,};
+                        }
+                        final private JJCalls[] jj_2_rtns = new JJCalls[5];
+                        private boolean jj_rescan = false;
+                        private int jj_gc = 0;
+
+                        static final class JJCalls {
+                            int gen;
+                            Token first;
+                            int arg;
+                            JJCalls next;
+                        }
+                """.trimIndent()
+        }
 
         fun wrapInFileContext(element: JavaccPsiElement,
                               node: InjectionStructureTree): InjectionStructureTree {
