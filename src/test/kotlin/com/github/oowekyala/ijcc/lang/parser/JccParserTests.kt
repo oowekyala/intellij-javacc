@@ -21,5 +21,5 @@ class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition) {
 
     override fun getTestDataPath(): String = ParserTestDataPath
 
-    override fun skipSpaces(): Boolean = false
+    override fun skipSpaces(): Boolean = true
 }
