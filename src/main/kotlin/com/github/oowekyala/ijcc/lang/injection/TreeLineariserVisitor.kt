@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.injection
 
+import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 
 /**
@@ -11,7 +12,7 @@ class TreeLineariserVisitor : InjectionStructureTree.Companion.PrefixVisitor() {
 
     private val prefixBuilder = StringBuilder()
     private val lastPrefixBuilder = StringBuilder()
-    private var lastVisitedHost: InjectionStructureTree.HostLeaf? = null
+    private var lastVisitedHost: HostLeaf? = null
 
     private val hostSpecs: MutableList<HostSpec> = mutableListOf()
 
@@ -29,7 +30,7 @@ class TreeLineariserVisitor : InjectionStructureTree.Companion.PrefixVisitor() {
     }
 
 
-    override fun visit(hostLeaf: InjectionStructureTree.HostLeaf) {
+    override fun visit(hostLeaf: HostLeaf) {
         if (hostLeaf === lastVisitedHost) {
             // taken care of in the root
             lastPrefixBuilder.append(prefixBuilder)
@@ -42,17 +43,17 @@ class TreeLineariserVisitor : InjectionStructureTree.Companion.PrefixVisitor() {
         hostSpecs += hostLeaf.toSpec(prefix, null)
     }
 
-    override fun visit(surroundNode: InjectionStructureTree.SurroundNode) {
+    override fun visit(surroundNode: SurroundNode) {
         prefixBuilder.append(surroundNode.prefix)
         surroundNode.child.accept(this)
         prefixBuilder.append(surroundNode.suffix)
     }
 
-    override fun visit(emptyLeaf: InjectionStructureTree.EmptyLeaf) {
+    override fun visit(emptyLeaf: EmptyLeaf) {
         // do nothing
     }
 
-    override fun visit(multiChildNode: InjectionStructureTree.MultiChildNode) {
+    override fun visit(multiChildNode: MultiChildNode) {
         multiChildNode.children.foreachAndBetween({ prefixBuilder.append(multiChildNode.delimiter()) }) {
             it.accept(this)
         }

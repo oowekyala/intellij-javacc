@@ -21,7 +21,7 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LinearInjectedStructure(val hostSpecs: List<HostSpec>) {
+class LinearInjectedStructure(private val hostSpecs: List<HostSpec>) {
     private object LOG : EnclosedLogger()
 
     fun register(registrar: MultiHostRegistrar) {
