@@ -9,11 +9,14 @@ import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.lang.refs.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
+import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.util.IncorrectOperationException
 
 
 /**
@@ -58,6 +61,24 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         get() = LexicalGrammar(grammarFileRoot.childrenSequence().filterMapAs())
 
     override fun getContainingFile(): JccFile = this
+
+    override fun getPackageName(): String = javaccConfig.parserPackage
+
+    override fun setPackageName(packageName: String?) {
+        throw IncorrectOperationException("Cannot set the package of the parser that way")
+    }
+
+    override fun getClasses(): Array<PsiClass> {
+
+        val injected =
+                InjectedLanguageManager.getInstance(project).getInjectedPsiFiles(grammarFileRoot)
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: return emptyArray()
+
+        return injected.mapNotNull {
+            it.first.descendantSequence().map { it as? PsiClass }.firstOrNull { it != null }
+        }.toTypedArray()
+    }
 
     override fun processDeclarations(processor: PsiScopeProcessor,
                                      state: ResolveState,
