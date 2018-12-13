@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.util.EnclosedLogger
-import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.util.TextRange
@@ -22,12 +21,10 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LinearInjectedStructure(private var hostSpecs: List<HostSpec>) {
+class LinearInjectedStructure(val hostSpecs: List<HostSpec>) {
     private object LOG : EnclosedLogger()
 
     fun register(registrar: MultiHostRegistrar) {
-        hostSpecs = removeStaleSpecs(hostSpecs)
-
         if (hostSpecs.isEmpty()) {
             LOG { debug("Nothing to inject") }
             return
@@ -36,60 +33,12 @@ class LinearInjectedStructure(private var hostSpecs: List<HostSpec>) {
         registrar.startInjecting(JavaLanguage.INSTANCE, "java")
 
         for (spec in hostSpecs) {
-            val host = spec.host!!
-            registrar.addPlace(spec.prefix, spec.suffix, host, spec.getRangeInsideHost(host))
+            registrar.addPlace(spec.prefix, spec.suffix, spec.host, spec.rangeInsideHost)
         }
 
         registrar.doneInjecting()
     }
 
-
-    private companion object {
-        fun removeStaleSpecs(specs: List<HostSpec>): List<HostSpec> {
-
-            if (specs.isEmpty()) return emptyList()
-
-            var lastValidSpec: HostSpec? = null
-            val nextPrefixBuilder = StringBuilder()
-
-            // only yields valid specs, the last suffix needs to be adjusted though
-            val preFilterSeq = sequence {
-                val specSeq = specs.asSequence()
-
-                for (spec in specSeq) {
-                    val host = spec.host
-
-                    if (host != null) {
-                        val myRes = if (nextPrefixBuilder.isNotEmpty()) {
-                            // merge previous empty specs in the prefix
-                            val myPrefix = nextPrefixBuilder.append(spec.prefix).toString()
-                            nextPrefixBuilder.clear()
-                            HostSpec(myPrefix, spec.suffix, host, spec.rangeGetter)
-                        } else spec
-
-                        lastValidSpec = myRes
-
-                        yield(myRes)
-                    } else {
-                        // host == null
-                        nextPrefixBuilder += spec.prefix.orEmpty()
-                        nextPrefixBuilder += spec.suffix.orEmpty()
-                        // continue until the next valid spec
-                    }
-                }
-            }
-
-            if (lastValidSpec == null) return emptyList()
-
-            return if (lastValidSpec != null && nextPrefixBuilder.isNotEmpty()) {
-                preFilterSeq.map {
-                    if (it == lastValidSpec) {
-                        HostSpec(it.prefix, it.suffix + nextPrefixBuilder.toString(), it.host!!, it.rangeGetter)
-                    } else it
-                }.toList()
-            } else preFilterSeq.toList()
-        }
-    }
 }
 
 /**
@@ -98,17 +47,17 @@ class LinearInjectedStructure(private var hostSpecs: List<HostSpec>) {
  */
 class HostSpec(val prefix: String?, val suffix: String?,
                host: PsiLanguageInjectionHost,
-               val rangeGetter: (PsiLanguageInjectionHost) -> TextRange) {
+               private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange) {
 
     init {
         remapHost(host)
     }
 
-    fun getRangeInsideHost(theHost: PsiLanguageInjectionHost) = rangeGetter(theHost)
+    val rangeInsideHost: TextRange get() = rangeGetter(host)
 
-    val host: PsiLanguageInjectionHost?
+    val host: PsiLanguageInjectionHost
         get() {
-            val curHost = HostIndex[this]!!.element ?: return null // stale pointer
+            val curHost = HostIndex[this]!!.element!!
 
             var replacedHost = curHost
             var replacementHost = ReplaceMap[curHost]
