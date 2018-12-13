@@ -1,7 +1,7 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree
+import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure
 
 interface JccGrammarFileRoot : JavaccPsiElement {
 
@@ -15,6 +15,6 @@ interface JccGrammarFileRoot : JavaccPsiElement {
 
     val tokenManagerDeclsList: List<JccTokenManagerDecls>
 
-    val injectionStructureTree: InjectionStructureTree
+    val linearInjectedStructure: LinearInjectedStructure
 
 }

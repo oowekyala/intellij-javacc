@@ -2,15 +2,18 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor
-import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree
+import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure
+import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 
 class JccGrammarFileRootImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccGrammarFileRoot {
-    override val injectionStructureTree: InjectionStructureTree by lazy {
-        InjectedTreeBuilderVisitor.getSubtreeFor(this)
+    override val linearInjectedStructure: LinearInjectedStructure by lazy {
+        InjectedTreeBuilderVisitor.getSubtreeFor(this).let {
+            TreeLineariserVisitor().startOn(it)
+        }
     }
 
     override val nonTerminalProductionList: List<JccNonTerminalProduction>

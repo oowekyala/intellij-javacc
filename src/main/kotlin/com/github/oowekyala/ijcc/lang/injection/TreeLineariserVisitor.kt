@@ -1,36 +1,31 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.foreachAndBetween
-import com.intellij.lang.injection.MultiHostRegistrar
-import com.intellij.lang.java.JavaLanguage
 
-class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar)
-    : InjectionStructureTree.Companion.PrefixVisitor() {
+/**
+ * Does a prefix traversal on an [InjectionStructureTree] and merges
+ * string contexts around [InjectionStructureTree.HostLeaf] into
+ * [HostSpec]s.
+ */
+class TreeLineariserVisitor : InjectionStructureTree.Companion.PrefixVisitor() {
 
     private val prefixBuilder = StringBuilder()
     private val lastPrefixBuilder = StringBuilder()
     private var lastVisitedHost: InjectionStructureTree.HostLeaf? = null
 
-    private object LOG : EnclosedLogger()
+    private val hostSpecs: MutableList<HostSpec> = mutableListOf()
 
-    fun startOn(root: InjectionStructureTree) {
-        lastVisitedHost = root.getLastHostInPrefixOrder() ?: run {
-            LOG { debug("Nothing to inject") }
-            return@startOn
-        }
-        registrar.startInjecting(JavaLanguage.INSTANCE, "java")
+    fun startOn(root: InjectionStructureTree): LinearInjectedStructure {
+        lastVisitedHost = root.getLastHostInPrefixOrder() ?: return LinearInjectedStructure(emptyList())
+
         root.accept(this)
 
-        // add the last host
-        registrar.addPlace(
+        hostSpecs += lastVisitedHost!!.toSpec(
             lastPrefixBuilder.toString(),
-            prefixBuilder.toString(),
-            lastVisitedHost!!.host,
-            lastVisitedHost!!.rangeInsideHost
+            prefixBuilder.toString()
         )
 
-        registrar.doneInjecting()
+        return LinearInjectedStructure(hostSpecs.toList())
     }
 
 
@@ -44,7 +39,7 @@ class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar)
 
         val prefix = prefixBuilder.toString()
         prefixBuilder.clear()
-        registrar.addPlace(prefix, null, hostLeaf.host, hostLeaf.rangeInsideHost)
+        hostSpecs += hostLeaf.toSpec(prefix, null)
     }
 
     override fun visit(surroundNode: InjectionStructureTree.SurroundNode) {

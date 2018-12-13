@@ -1,17 +1,12 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.HostLeaf
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.innerRange
-import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.SmartPointerManager
-import com.intellij.psi.SmartPsiElementPointer
 
 /**
  * Injects Java into the whole grammar file.
@@ -41,8 +36,6 @@ object JavaccLanguageInjector : MultiHostInjector {
     }
 
     private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
-        context.injectionStructureTree.runIt {
-            InjectionRegistrarVisitor(this).startOn(it)
-        }
+        context.linearInjectedStructure.register(this)
     }
 }
