@@ -1,10 +1,15 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.InjectionTestDataPath
-import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
+import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.util.NWrapper
+import com.github.oowekyala.ijcc.lang.util.matchInjectionTree
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import io.kotlintest.shouldBe
+import io.kotlintest.Matcher
+import io.kotlintest.Result
+import io.kotlintest.should
 
 /**
  * @author Clément Fournier
@@ -23,21 +28,25 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
         commonFileImpl = myFixture.file as JccFile
     }
 
+    private inline fun <reified N : InjectionStructureTree> matchExpansionTree(ignoreChildren: Boolean = false,
+                                                                               noinline nodeSpec: NWrapper<InjectionStructureTree, N>.() -> Unit): Matcher<String> =
+            object : Matcher<String> {
+                override fun test(value: String): Result =
+                        JccElementFactory.createBnfExpansion(project, value)
+                            .let { InjectedTreeBuilderVisitor.getSubtreeFor(it) }
+                            .let {
+                                matchInjectionTree(ignoreChildren, nodeSpec).test(it)
+                            }
+            }
+
+
     fun testSimpleBnf() {
 
-        /*
-        void test1() #OptionBinding :
-        {}
-        {
-          "ff" {jjtThis.foo();}
+        """ "ff" {jjtThis.foo();} """ should matchExpansionTree<MultiChildNode> {
+            child<EmptyLeaf> { }
+            child<HostLeaf> { }
         }
-         */
 
-        val bnf = commonFile.nonTerminalProductions.first { it.name == "test1" } as JccBnfProduction
-
-        val bnfStack = InjectedTreeBuilderVisitor().also { it.visitBnfProduction(bnf) }.nodeStack
-
-        bnfStack.size shouldBe 1
     }
 
 }

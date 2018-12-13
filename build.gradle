@@ -32,6 +32,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.10'
     testCompile group: "org.jetbrains.kotlin", name: "kotlin-reflect", version: KotlinVersion
+    testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.1.11'
+
 }
 
 sourceSets {
@@ -42,6 +44,10 @@ sourceSets {
             srcDirs 'src/main/java'
         }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 task generateParser(type: GenerateParser) {
