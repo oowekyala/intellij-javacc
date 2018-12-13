@@ -74,7 +74,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
 
-        val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 1 }
+        val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 0 }
             ?: run {
                 pushStringLeaf(o.name + "()")
                 return

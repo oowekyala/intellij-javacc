@@ -10,6 +10,7 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.Matcher
 import io.kotlintest.Result
 import io.kotlintest.should
+import io.kotlintest.shouldBe
 
 /**
  * @author Clément Fournier
@@ -28,8 +29,8 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
         commonFileImpl = myFixture.file as JccFile
     }
 
-    private inline fun <reified N : InjectionStructureTree> matchExpansionTree(ignoreChildren: Boolean = false,
-                                                                               noinline nodeSpec: NWrapper<InjectionStructureTree, N>.() -> Unit): Matcher<String> =
+    private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
+                                                                             noinline nodeSpec: NWrapper<InjectionStructureTree, N>.() -> Unit): Matcher<String> =
             object : Matcher<String> {
                 override fun test(value: String): Result =
                         JccElementFactory.createBnfExpansion(project, value)
@@ -40,13 +41,36 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
             }
 
 
-    fun testSimpleBnf() {
+    fun testExpansionSequences() {
 
-        """ "ff" {jjtThis.foo();} """ should matchExpansionTree<MultiChildNode> {
+        """ "ff" {jjtThis.foo();} """ should matchAsExpansion<MultiChildNode> {
             child<EmptyLeaf> { }
             child<HostLeaf> { }
         }
 
+    }
+
+    fun testNonterminalExpansions() {
+
+        """ Ola(quetal) """ should matchAsExpansion<SurroundNode> {
+            it.prefix shouldBe "Ola("
+            it.suffix shouldBe ")"
+
+            child<MultiChildNode> {
+                it.delimiter() shouldBe ", "
+
+                child<HostLeaf> {
+                    it.host.text shouldBe "quetal"
+                }
+            }
+        }
+
+
+        """ Ola() """ should matchAsExpansion<SurroundNode> {
+            it.prefix shouldBe "Ola()"
+            it.suffix shouldBe ""
+            child<EmptyLeaf> {}
+        }
     }
 
 }
