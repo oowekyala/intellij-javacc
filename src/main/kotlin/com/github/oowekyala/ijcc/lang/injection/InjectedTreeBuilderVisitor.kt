@@ -66,11 +66,19 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         visitJavaBlock(o.javaBlock)
     }
 
+    override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+        if (o.parent is JccAssignedExpansionUnit) {
+            pushStringLeaf("getToken(1)")
+        } else super.visitRegexpExpansionUnit(o)
+    }
+
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
 
-
         val args = o.javaExpressionList?.javaExpressionList?.takeIf { it.size > 1 }
-            ?: return super.visitNonTerminalExpansionUnit(o)
+            ?: run {
+                pushStringLeaf(o.name + "()")
+                return
+            }
 
         args.forEach { visitJavaExpression(it) }
 
@@ -218,6 +226,12 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
     /** Surrounds the node on top of the stack with a [SurroundNode], using the given [prefix] and [suffix]. */
     private fun surroundTop(prefix: String, suffix: String) = replaceTop { SurroundNode(it, prefix, suffix) }
+
+    /** Pushes the equivalent of a leaf holding the given text on the stack. */
+    private fun pushStringLeaf(text: String) {
+        nodeStackImpl.push(SurroundNode(EmptyLeaf, prefix = text, suffix = ""))
+    }
+
 
     private inline fun replaceTop(mapper: (InjectionStructureTree) -> InjectionStructureTree) {
         nodeStackImpl.push(mapper(nodeStackImpl.pop()))

@@ -12,7 +12,8 @@ interface JccJjtreeNodeDescriptorExpr : JavaccPsiElement {
 
     @JvmDefault
     val isGtExpression: Boolean
-        get() = firstChild.node.elementType === JavaccTypes.JCC_GT
+        // the first child is the parenthesis
+        get() = firstChild.nextSiblingNoWhitespace?.node?.elementType === JavaccTypes.JCC_GT
 
     val javaExpression: JccJavaExpression
 }
