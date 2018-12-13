@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
 import java.util.*
 
@@ -55,7 +56,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
 
-    override fun visitJavaccPsiElement(o: JavaccPsiElement) {
+    override fun visitElement(element: PsiElement?) {
         nodeStackImpl.push(EmptyLeaf)
     }
 
