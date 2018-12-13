@@ -1,9 +1,13 @@
 package com.github.oowekyala.ijcc.lang.injection
 
+import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.indent
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
+import java.util.*
 
 /**
  * Tree that mirrors the control flow structure
@@ -42,8 +46,41 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     /**
      * Leaf wrapping a [PsiLanguageInjectionHost].
      */
-    data class HostLeaf(val host: PsiLanguageInjectionHost, val rangeInsideHost: TextRange)
+    class HostLeaf(host: PsiLanguageInjectionHost, private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange)
         : InjectionStructureTree() {
+
+        init {
+            remapHost(host)
+        }
+
+        private object LOG : EnclosedLogger()
+
+        val rangeInsideHost : TextRange get() = rangeGetter(host)
+
+        val host: PsiLanguageInjectionHost
+            get() {
+                val curHost = HostIndex[this]!!.element!!
+
+                var replacedHost = curHost
+                var replacementHost = ReplaceMap[curHost]
+                while (replacementHost != null) {
+                    // follow replacement indirections and remove references
+                    ReplaceMap.remove(replacedHost)
+                    replacedHost = replacementHost
+                    replacementHost = ReplaceMap[replacedHost]
+                }
+
+                return if (replacedHost !== curHost) {
+                    remapHost(replacedHost)
+                    replacedHost
+                } else {
+                    curHost
+                }
+            }
+
+        private fun remapHost(newHost: PsiLanguageInjectionHost) {
+            HostIndex[this] = SmartPointerManager.createPointer(newHost)
+        }
 
         override fun accept(visitor: InjectionStructureTreeVisitor) = visitor.visit(this)
 
@@ -52,6 +89,19 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
                 ${host.text.myIndent()}
             }
         """.trimIndent()
+
+        companion object {
+            /** Global index of leaves to actual injection hosts. */
+            private val HostIndex: MutableMap<HostLeaf, SmartPsiElementPointer<PsiLanguageInjectionHost>> =
+                    HashMap()
+
+            private val ReplaceMap: MutableMap<PsiLanguageInjectionHost, PsiLanguageInjectionHost> =
+                    HashMap()
+
+            fun replaceHost(replaced: PsiLanguageInjectionHost, replacement: PsiLanguageInjectionHost) {
+                ReplaceMap[replaced] = replacement
+            }
+        }
     }
 
     /**

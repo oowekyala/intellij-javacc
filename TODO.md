@@ -32,13 +32,14 @@
 
 
 * Java injection
-  -- ~File-wide injection~ -> not resilient enough
+  ++ File-wide injection
   ++ Avoid bug with the java expressions (&&)
   ++ Avoid bugs with braces
   ++ Fix control flow in injected blocks (hard)
   ++ Avoid injection preventing live template insertion
   ++ Adapt rich highlighting
   ++ Adapt documentation provider
+  * Fix accessibility problems
   * Allow to opt-out!!
 
 ## JavaCC errors

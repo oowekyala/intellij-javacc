@@ -5,13 +5,14 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.SmartPointerManager
 import java.util.*
 
 /**
  * Visitor building a [InjectionStructureTree] from a grammar file.
  * The tree is built bottom-up.
  */
-class InjectedTreeBuilderVisitor : JccVisitor() {
+class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
     // Each visit method must push exactly one node on the stack
     // If visiting a node entails visiting other subtrees, these must be merged into a single node
@@ -39,7 +40,7 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
 
     private fun visitInjectionHost(o: PsiLanguageInjectionHost,
                                    rangeGetter: (PsiLanguageInjectionHost) -> TextRange = { it.innerRange() }) {
-        nodeStackImpl.push(HostLeaf(o, rangeGetter(o)))
+        nodeStackImpl.push(HostLeaf(o, rangeGetter))
     }
 
     override fun visitJavaAssignmentLhs(o: JccJavaAssignmentLhs) = visitInjectionHost(o)
@@ -231,7 +232,13 @@ class InjectedTreeBuilderVisitor : JccVisitor() {
         private var i = 0
         private fun freshName() = "i${i++}"
 
+        /** Gets the injection subtree for the given node. */
+        fun getSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =
+                InjectedTreeBuilderVisitor()
+                    .also { node.accept(it) }
+                    .nodeStack[0]
 
+        // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
             val parserName = file.javaccConfig.parserSimpleName
 

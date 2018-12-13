@@ -1,13 +1,17 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.HostLeaf
+import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
+import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
+import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 
 /**
  * Injects Java into the whole grammar file.
@@ -23,7 +27,7 @@ object JavaccLanguageInjector : MultiHostInjector {
         when (context) {
             // FIXME inject both into the same injection file
             is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
-            is JccGrammarFileRoot     -> registrar.injectInto(context)
+            is JccGrammarFileRoot     -> registrar.injectIntoGrammar(context)
         }
     }
 
@@ -36,17 +40,9 @@ object JavaccLanguageInjector : MultiHostInjector {
         doneInjecting()
     }
 
-    private fun MultiHostRegistrar.injectInto(context: JavaccPsiElement) {
-        InjectedTreeBuilderVisitor()
-            .also { context.accept(it) }
-            .nodeStack[0]
-            .let {
-                when (it) {
-                    is JccGrammarFileRoot -> it // already wrapped in the file context
-                    else                  -> InjectedTreeBuilderVisitor.wrapInFileContext(context, it)
-                }
-            }.runIt {
-                InjectionRegistrarVisitor(this).startOn(it)
-            }
+    private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
+        context.injectionStructureTree.runIt {
+            InjectionRegistrarVisitor(this).startOn(it)
+        }
     }
 }

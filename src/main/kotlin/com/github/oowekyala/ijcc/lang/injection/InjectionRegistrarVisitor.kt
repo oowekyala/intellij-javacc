@@ -4,10 +4,9 @@ import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 
-class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : InjectionStructureTree.Companion.PrefixVisitor() {
+class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar)
+    : InjectionStructureTree.Companion.PrefixVisitor() {
 
     private val prefixBuilder = StringBuilder()
     private val lastPrefixBuilder = StringBuilder()
@@ -33,7 +32,6 @@ class InjectionRegistrarVisitor(private val registrar: MultiHostRegistrar) : Inj
 
         registrar.doneInjecting()
     }
-
 
 
     override fun visit(hostLeaf: InjectionStructureTree.HostLeaf) {
