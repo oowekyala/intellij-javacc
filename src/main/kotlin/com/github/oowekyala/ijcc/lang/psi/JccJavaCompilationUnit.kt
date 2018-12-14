@@ -10,7 +10,7 @@ import com.intellij.psi.PsiLanguageInjectionHost
 interface JccJavaCompilationUnit : PsiLanguageInjectionHost, JavaccPsiElement {
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createAcu(project, text))
+            this.replace(JccElementFactory.createJcu(project, text))
                 .let { it as PsiLanguageInjectionHost }
                 .also { HostSpec.replaceHost(this, it) }
 

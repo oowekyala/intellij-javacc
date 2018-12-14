@@ -22,7 +22,12 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LinearInjectedStructure(private var hostSpecs: List<HostSpec>) {
+class LinearInjectedStructure(hostSpecs: List<HostSpec>) {
+
+
+    var hostSpecs = hostSpecs
+        private set
+
     private object LOG : EnclosedLogger()
 
     fun register(registrar: MultiHostRegistrar) {
@@ -132,7 +137,7 @@ class HostSpec(val prefix: String?, val suffix: String?,
             HostSpec(
                 prefix = prefix,
                 suffix = (suffix ?: "") + additionalSuffix,
-                host = host,
+                host = host!!,
                 rangeGetter = rangeGetter
             ).also {
                 // this makes this spec unusable

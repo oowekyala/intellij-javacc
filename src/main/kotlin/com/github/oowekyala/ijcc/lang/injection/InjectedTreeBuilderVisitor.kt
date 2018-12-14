@@ -193,11 +193,11 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     }
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
-        visitJavaBlock(o.javaBlock)
+        o.javaBlock?.accept(this) ?: return super.visitNonTerminalProduction(o)
 
         val baseNumChildren = when (o) {
             is JccBnfProduction -> {
-                o.expansion?.accept(this) ?: return super.visitBnfProduction(o)
+                o.expansion?.accept(this) ?: return super.visitNonTerminalProduction(o)
                 2
             }
             else                -> 1

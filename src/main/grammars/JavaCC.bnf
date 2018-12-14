@@ -397,7 +397,7 @@ fake identifier_owner           ::= identifier {
     implements="com.intellij.psi.PsiNameIdentifierOwner"
 }
 
-fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block {
+fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block? {
     methods=[
         header="java_non_terminal_production_header"
         nameIdentifier="java_non_terminal_production_header/identifier"

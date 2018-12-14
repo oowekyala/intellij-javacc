@@ -115,7 +115,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions.first().javaBlock
+        return file.nonTerminalProductions.first().javaBlock!!
     }
 
 
@@ -150,7 +150,7 @@ object JccElementFactory {
         return file.nonTerminalProductions.first().header
     }
 
-    fun createAcu(project: Project, text: String): JccJavaCompilationUnit {
+    fun createJcu(project: Project, text: String): JccJavaCompilationUnit {
         val fileText = """
             PARSER_BEGIN(dummy)
                 $text
