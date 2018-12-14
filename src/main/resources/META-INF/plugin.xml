@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.github.oowekyala.intellij-javacc</id>
+    <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
     <description>Support for JavaCC and JJTree grammar files</description>
     <version>1.0.5-dirty</version>
@@ -19,6 +19,18 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+
+
+        <projectConfigurable
+                instance="com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsConfigurable"
+                displayName="JavaCC"
+                id="language.javacc"
+                groupId="language"
+        />
+
+        <projectService serviceInterface="com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsService"
+                        serviceImplementation="com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsServiceImpl"/>
+
         <additionalTextAttributes scheme="Darcula" file="com/github/oowekyala/ijcc/colorSchemes/Darcula_Javacc.xml"/>
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
@@ -35,7 +47,6 @@
                 implementationClass="com.github.oowekyala.ijcc.insight.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
-        <!-- TODO v2.0 -->
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.documentationProvider language="JavaCC"

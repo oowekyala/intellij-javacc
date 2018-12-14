@@ -52,7 +52,7 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     /**
      * Leaf wrapping a [PsiLanguageInjectionHost].
      */
-    data class HostLeaf(private val host: PsiLanguageInjectionHost,
+    data class HostLeaf(internal val host: PsiLanguageInjectionHost,
                         private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange)
         : InjectionStructureTree() {
 

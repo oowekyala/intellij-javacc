@@ -104,27 +104,27 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
             linear.hostSpecs.eachShouldMatchInOrder(
                 {
                     it.prefix should endWith("void MapExpr() { ASTMapExpr jjtThis = new ASTMapExpr();")
-                    it.host.text shouldBe "{}"
+                    it.host!!.text shouldBe "{}"
                     it.suffix shouldBe null
                 },
                 {
                     it.prefix shouldBe "PathExpr()/*seq*/ while (/* +* */i6()) {/*seq*/ PathExpr()} jjtree.closeNodeScope(jjtThis, jjtree.arity() >"
-                    it.host.text shouldBe "1"
+                    it.host!!.text shouldBe "1"
                     it.suffix shouldBe "); }"
                 },
                 {
                     it.prefix shouldBe "void PathExpr() { ASTPathExpr jjtThis = new ASTPathExpr();"
-                    it.host.text shouldBe "{ boolean trivial = false; }"
+                    it.host!!.text shouldBe "{ boolean trivial = false; }"
                     it.suffix shouldBe null
                 },
                 {
                     it.prefix shouldBe "RelativePathExpr()/*seq*/"
-                    it.host.text shouldBe "{ jjtThis.setRelativeAnchor(); }"
+                    it.host!!.text shouldBe "{ jjtThis.setRelativeAnchor(); }"
                     it.suffix shouldBe null
                 },
                 {
                     it.prefix shouldBe "jjtree.closeNodeScope(jjtThis,"
-                    it.host.text shouldBe "!trivial"
+                    it.host!!.text shouldBe "!trivial"
                     it.suffix shouldBe "); }}" // the last } closes the class
                 }
             )
