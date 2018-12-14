@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.injection
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.plusAssign
+import com.github.oowekyala.ijcc.util.removeLast
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.util.TextRange
@@ -57,42 +58,44 @@ class LinearInjectedStructure(hostSpecs: List<HostSpec>) {
             var lastValidSpec: HostSpec? = null
             val nextPrefixBuilder = StringBuilder()
 
+            val preFilterList = mutableListOf<HostSpec>()
+
             // only yields valid specs, the last suffix needs to be adjusted though
-            val preFilterSeq = sequence {
-                val specSeq = specs.asSequence()
+            val specSeq = specs.asSequence()
 
-                for (spec in specSeq) {
-                    val host = spec.host
+            for (spec in specSeq) {
+                val host = spec.host
 
-                    if (host != null) {
-                        val myRes = if (nextPrefixBuilder.isNotEmpty()) {
-                            // merge previous empty specs in the prefix
-                            val myPrefix = nextPrefixBuilder.append(spec.prefix).toString()
-                            nextPrefixBuilder.clear()
-                            HostSpec(myPrefix, spec.suffix, host, spec.rangeGetter)
-                        } else spec
+                if (host != null) {
+                    val myRes = if (nextPrefixBuilder.isNotEmpty()) {
+                        // merge previous empty specs in the prefix
+                        val myPrefix = nextPrefixBuilder.append(spec.prefix).toString()
+                        nextPrefixBuilder.clear()
+                        HostSpec(myPrefix, spec.suffix, host, spec.rangeGetter)
+                    } else spec
 
-                        lastValidSpec = myRes
+                    lastValidSpec = myRes
 
-                        yield(myRes)
-                    } else {
-                        // host == null
-                        nextPrefixBuilder += spec.prefix.orEmpty()
-                        nextPrefixBuilder += spec.suffix.orEmpty()
-                        // continue until the next valid spec
-                    }
+                    preFilterList += myRes
+                } else {
+                    // host == null
+                    LOG { debug("Removed null host") }
+                    nextPrefixBuilder += spec.prefix.orEmpty()
+                    nextPrefixBuilder += spec.suffix.orEmpty()
+                    // continue until the next valid spec
                 }
             }
 
+
             if (lastValidSpec == null) return emptyList()
 
-            return if (lastValidSpec != null && nextPrefixBuilder.isNotEmpty()) {
-                preFilterSeq.map {
-                    if (it == lastValidSpec) {
-                        HostSpec(it.prefix, it.suffix + nextPrefixBuilder.toString(), it.host!!, it.rangeGetter)
-                    } else it
-                }.toList()
-            } else preFilterSeq.toList()
+            if (nextPrefixBuilder.isNotEmpty()) {
+                preFilterList += preFilterList.removeLast().let {
+                    HostSpec(it.prefix, it.suffix + nextPrefixBuilder.toString(), it.host!!, it.rangeGetter)
+                }
+            }
+
+            return preFilterList
         }
     }
 }
