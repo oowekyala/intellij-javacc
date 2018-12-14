@@ -52,7 +52,8 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     /**
      * Leaf wrapping a [PsiLanguageInjectionHost].
      */
-    class HostLeaf(val host: PsiLanguageInjectionHost, private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange)
+    data class HostLeaf(private val host: PsiLanguageInjectionHost,
+                        private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange)
         : InjectionStructureTree() {
 
         fun toSpec(prefix: String?, suffix: String?): HostSpec = HostSpec(prefix, suffix, host, rangeGetter)
