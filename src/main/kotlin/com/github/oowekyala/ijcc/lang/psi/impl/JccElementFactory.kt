@@ -174,8 +174,8 @@ object JccElementFactory {
             .findChildOfType(PsiMethod::class.java)!!
     }
 
-    private fun createFile(project: Project, text: String): JccFileImpl =
-            project.psiFileFactory.createFileFromText("dummy.javacc", JavaccFileType, text) as JccFileImpl
+    fun createFile(project: Project, text: String): JccFile =
+            project.psiFileFactory.createFileFromText("dummy.javacc", JavaccFileType, text) as JccFile
 
     /**
      * Create from an AST node, used by the parser.

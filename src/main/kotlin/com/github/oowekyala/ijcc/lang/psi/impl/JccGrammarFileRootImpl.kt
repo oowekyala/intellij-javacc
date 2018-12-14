@@ -1,9 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor
+import com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector
 import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure
-import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
@@ -11,9 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class JccGrammarFileRootImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccGrammarFileRoot {
     override val linearInjectedStructure: LinearInjectedStructure by lazy {
-        InjectedTreeBuilderVisitor.getSubtreeFor(this).let {
-            TreeLineariserVisitor().startOn(it)
-        }
+        JavaccLanguageInjector.getLinearStructureFor(this)
     }
 
     override val nonTerminalProductionList: List<JccNonTerminalProduction>

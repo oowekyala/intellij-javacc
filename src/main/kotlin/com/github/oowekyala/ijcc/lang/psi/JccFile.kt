@@ -24,6 +24,9 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
     /** All terminal productions. */
     val regexpProductions: Sequence<JccRegularExprProduction>
 
+    /** The injectable file root. */
+    val grammarFileRoot: JccGrammarFileRoot
+
     val lexicalGrammar: LexicalGrammar
 
     /**

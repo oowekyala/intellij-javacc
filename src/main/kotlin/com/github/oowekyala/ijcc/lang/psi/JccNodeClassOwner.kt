@@ -25,7 +25,12 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 
     @JvmDefault
     val nodeQualifiedName: String?
-        get() = nodeSimpleName?.let { "${javaccConfig.nodePackage}.$it" }
+        get() = nodeSimpleName?.let {
+            val packageName = javaccConfig.nodePackage
+
+            if (packageName.isEmpty()) nodeSimpleName
+            else "$packageName.$it"
+        }
 
     @JvmDefault
     val nodeSimpleName: String?

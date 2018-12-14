@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.lang.injection
 
+import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
+import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor.Companion.linearise
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.innerRange
@@ -38,4 +40,9 @@ object JavaccLanguageInjector : MultiHostInjector {
     private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
         context.linearInjectedStructure.register(this)
     }
+
+    fun getLinearStructureFor(grammarFileRoot: JccGrammarFileRoot): LinearInjectedStructure =
+            linearise(getInjectedSubtreeFor(grammarFileRoot))
+
+
 }

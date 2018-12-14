@@ -29,7 +29,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override fun getFileType(): FileType = JavaccFileType
 
-    private val grammarFileRoot
+    override val grammarFileRoot
         get() = findChildByClass(JccGrammarFileRoot::class.java)!!
 
     override val regexpProductions: Sequence<JccRegularExprProduction>

@@ -23,10 +23,11 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     /** Gets the last [HostLeaf] that will be visited when performing a prefix traversal on this subtree. */
     fun getLastHostInPrefixOrder(): HostLeaf? {
         return when (this) {
-            is EmptyLeaf      -> null
-            is HostLeaf       -> this
-            is SurroundNode   -> child.getLastHostInPrefixOrder()
-            is MultiChildNode -> children.asReversed().asSequence().map { it.getLastHostInPrefixOrder() }.firstOrNull { it != null }
+            is EmptyLeaf          -> null
+            is HostLeaf           -> this
+            is StructuralBoundary -> child.getLastHostInPrefixOrder()
+            is SurroundNode       -> child.getLastHostInPrefixOrder()
+            is MultiChildNode     -> children.asReversed().asSequence().map { it.getLastHostInPrefixOrder() }.firstOrNull { it != null }
         }
     }
 
@@ -37,6 +38,15 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
     object EmptyLeaf : InjectionStructureTree() {
         override fun accept(visitor: InjectionStructureTreeVisitor) = visitor.visit(this)
         override fun toString(): String = "EmptyLeaf"
+    }
+
+
+    /**
+     * Specify that the subtree must keep all its suffixes together and not append it
+     * to the next siblings. If the subtree doesn't contain any hosts, *the whole subtree is dropped*!
+     */
+    data class StructuralBoundary(val child: InjectionStructureTree) : InjectionStructureTree(listOf(child)) {
+        override fun accept(visitor: InjectionStructureTreeVisitor) = visitor.visit(this)
     }
 
     /**
@@ -126,6 +136,7 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
             open fun visit(hostLeaf: HostLeaf) = defaultVisit(hostLeaf)
             open fun visit(surroundNode: SurroundNode) = defaultVisit(surroundNode)
             open fun visit(multiChildNode: MultiChildNode) = defaultVisit(multiChildNode)
+            open fun visit(structuralBoundary: StructuralBoundary) = defaultVisit(structuralBoundary)
         }
 
         abstract class PrefixVisitor : InjectionStructureTreeVisitor() {

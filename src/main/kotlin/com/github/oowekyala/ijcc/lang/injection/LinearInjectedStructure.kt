@@ -21,7 +21,7 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LinearInjectedStructure(private val hostSpecs: List<HostSpec>) {
+class LinearInjectedStructure(val hostSpecs: List<HostSpec>) {
     private object LOG : EnclosedLogger()
 
     fun register(registrar: MultiHostRegistrar) {
@@ -75,6 +75,18 @@ class HostSpec(val prefix: String?, val suffix: String?,
                 curHost
             }
         }
+
+
+    fun appendSuffixAndDestroy(additionalSuffix: CharSequence): HostSpec =
+            HostSpec(
+                prefix = prefix,
+                suffix = (suffix ?: "") + additionalSuffix,
+                host = host,
+                rangeGetter = rangeGetter
+            ).also {
+                // this makes this spec unusable
+                HostIndex.remove(this)
+            }
 
     private fun remapHost(newHost: PsiLanguageInjectionHost) {
         HostIndex[this] = SmartPointerManager.createPointer(newHost)

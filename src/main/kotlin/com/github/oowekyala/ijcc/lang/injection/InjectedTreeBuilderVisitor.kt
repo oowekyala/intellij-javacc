@@ -216,6 +216,9 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
             suffix = "\n}"
         )
 
+        // prevent suffix leak
+        replaceTop { StructuralBoundary(it) }
+
     }
 
     // helper methods
@@ -247,7 +250,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         private fun freshName() = "i${i++}"
 
         /** Gets the injection subtree for the given node. */
-        fun getSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =
+        fun getInjectedSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =
                 InjectedTreeBuilderVisitor()
                     .also { node.accept(it) }
                     .nodeStack[0]
