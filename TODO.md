@@ -18,20 +18,20 @@
 
 - [ ] Weird behaviour of CTRL-hover of production names -> the void keyword looks like it's the ident
 - [ ] Add some doc about keywords, etc
-- [ ] Add gutter links from node classes to productions
+- [x] Add gutter links from node classes to productions
 - [ ] Group tokens by lexical state in structure view
 
 - [ ] Add moar tests
 
 
-- [ ] Make a good plugin description
-- [ ] Make a readme
-- [ ] Check with JB about Intellij copyright
-- [ ] Find a license
+- [x] Make a good plugin description
+- [x] Make a readme
+- [x] Check with JB about Intellij copyright
+- [x] Find a license
 
 
 
-- [ ] Java injection
+- [x] Java injection
   - [x] File-wide injection
   - [x] Avoid bug with the java expressions (&&)
   - [x] Avoid bugs with braces
@@ -40,7 +40,7 @@
   - [x] Adapt rich highlighting
   - [x] Adapt documentation provider
   - [x] Fix accessibility problems
-  - [ ] Allow to opt-out!!
+  - [x] Allow to opt-out!!
 
 ## JavaCC errors
 
