@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.filterMapAs
@@ -87,7 +87,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     }
 
     override fun visitOptionBinding(binding: JccOptionBinding) {
-        val opt = JavaccConfig.knownOptions[binding.name]
+        val opt = GrammarOptions.knownOptions[binding.name]
         if (opt == null) {
             myHolder += wrongReferenceInfo(
                 binding.nameIdentifier!!,

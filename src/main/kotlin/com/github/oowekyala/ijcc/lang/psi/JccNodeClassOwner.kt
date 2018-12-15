@@ -26,7 +26,7 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
     @JvmDefault
     val nodeQualifiedName: String?
         get() = nodeSimpleName?.let {
-            val packageName = javaccConfig.nodePackage
+            val packageName = grammarOptions.nodePackage
 
             if (packageName.isEmpty()) nodeSimpleName
             else "$packageName.$it"
@@ -36,7 +36,7 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
     val nodeSimpleName: String?
         get() {
             val nodeDesc = jjtreeNodeDescriptor
-            val isDefaultVoid = javaccConfig.isDefaultVoid
+            val isDefaultVoid = grammarOptions.isDefaultVoid
 
             val base: String? =
                     if (nodeDesc == null) {
@@ -44,7 +44,7 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
                     } else if (nodeDesc.isVoid) null
                     else nodeDesc.name
 
-            return base?.let { javaccConfig.nodePrefix + it }
+            return base?.let { grammarOptions.nodePrefix + it }
         }
 
 

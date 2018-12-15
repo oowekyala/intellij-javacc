@@ -1,9 +1,10 @@
-package com.github.oowekyala.ijcc.util
+package com.github.oowekyala.ijcc.util.settings
 
-import com.github.oowekyala.ijcc.util.settings.InjectionSupportLevel
-import com.intellij.openapi.Disposable
-import java.awt.event.ActionEvent
 import com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsService.JccSettingsState
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.options.Configurable
+import org.intellij.lang.annotations.Language
+import java.awt.event.ActionEvent
 import javax.swing.*
 
 /**
@@ -15,12 +16,15 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
     private val levelToButton = mutableMapOf<InjectionSupportLevel, AbstractButton>()
     var mainPanel : JPanel? = null
     private var fullInjectionRadioButton: JRadioButton? = null
+    private var injectionLevelDescriptionLabel: JLabel? = null
     private var conservativeInjectionRadioButton: JRadioButton? = null
     private var injectionDisabledRadioButton: JRadioButton? = null
     private var myInjectionLevel: InjectionSupportLevel = initialState.injectionSupportLevel
 
     init {
         val injectionLevelGroup = ButtonGroup()
+
+        injectionLevelDescriptionLabel!!.text = injectionLabelText
 
         injectionLevelGroup.add(conservativeInjectionRadioButton)
         injectionLevelGroup.add(fullInjectionRadioButton)
@@ -34,7 +38,6 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
         injectionLevelGroup.setSelected(levelToButton[myInjectionLevel]!!.model, true)
 
     }
-
 
     private fun bindButtonToLanguageLevel(button: AbstractButton, level: InjectionSupportLevel) {
 
@@ -56,6 +59,22 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
     }
 
     override fun dispose() {
+
+    }
+
+
+    companion object {
+
+        @Language("HTML")
+        private val injectionLabelText = """
+        <html>
+            Define the quality of the Java injection in Java code fragments throughout the grammar.<br/>
+            By default this is set to "${JavaccProjectSettingsService.defaultInjectionSupportLevel.displayName}",
+            which offers great code insight for a reasonable performance trade-off. The level ${InjectionSupportLevel.FULL.displayName}
+            works correctly but usually highlighting significantly lags behind code edits, which may
+            be annoying.
+        </html>
+    """.trimIndent()
 
     }
 }

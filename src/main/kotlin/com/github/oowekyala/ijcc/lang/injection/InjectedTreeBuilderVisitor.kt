@@ -257,7 +257,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
-            val parserName = file.javaccConfig.parserSimpleName
+            val parserName = file.grammarOptions.parserSimpleName
 
             return """
                         /** Only available in JJTree grammars. */

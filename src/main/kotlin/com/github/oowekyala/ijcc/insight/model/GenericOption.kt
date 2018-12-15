@@ -27,7 +27,7 @@ abstract class GenericOption<T : Any>(
     abstract val name: String
 
     /** Gets the value of this option from an binding. If it's null then the default value is used. */
-    open fun getValue(optionBinding: JccOptionBinding?, config: JavaccConfig): T =
+    open fun getValue(optionBinding: JccOptionBinding?, config: GrammarOptions): T =
             optionBinding
                 ?.takeIf { it.matchesType(expectedType) }
                 ?.let { expectedType.projection.parseStringValue(optionBinding.stringValue) }
@@ -40,13 +40,13 @@ abstract class GenericOption<T : Any>(
      * interprets as meaning something else, eg defaulting to another
      * option, or some other thing.
      */
-    open fun getActualValue(overriddenValue: T?, config: JavaccConfig): T = when (overriddenValue) {
+    open fun getActualValue(overriddenValue: T?, config: GrammarOptions): T = when (overriddenValue) {
         null, staticDefaultValue -> defaultValueFallback(config)
         else                     -> overriddenValue
     }
 
     /** Must be implemented if [staticDefaultValue] is null. */
-    protected open fun defaultValueFallback(config: JavaccConfig): T =
+    protected open fun defaultValueFallback(config: GrammarOptions): T =
             staticDefaultValue ?: TODO("Should have been implemented!")
 
 

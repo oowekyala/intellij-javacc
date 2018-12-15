@@ -2,9 +2,11 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
 import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor.Companion.linearise
+import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.innerRange
+import com.github.oowekyala.ijcc.util.settings.InjectionSupportLevel.DISABLED
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
@@ -21,6 +23,9 @@ object JavaccLanguageInjector : MultiHostInjector {
             mutableListOf(JccJavaCompilationUnit::class.java, JccGrammarFileRoot::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
+        if (context !is JavaccPsiElement) return
+        if (context.pluginSettings.injectionSupportLevel == DISABLED) return
+
         when (context) {
             // FIXME inject both into the same injection file
             is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)

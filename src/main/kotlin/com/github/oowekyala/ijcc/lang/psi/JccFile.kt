@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
@@ -41,7 +41,7 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
     /** Options section. */
     val options: JccOptionSection?
 
-    override val javaccConfig: JavaccConfig
+    override val grammarOptions: GrammarOptions
 
 
     companion object {

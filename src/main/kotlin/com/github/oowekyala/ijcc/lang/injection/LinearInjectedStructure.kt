@@ -18,7 +18,7 @@ import java.util.*
  * file trigger a reparse so the cache is naturally invalidated.
  * Mods in injected fragments just update the mapping between
  * [HostSpec]s and their actual host. The structure is not rebuilt
- * but the whole structure is reinjected...
+ * but the whole file has to be reinjected though.
  *
  * @author Clément Fournier
  * @since 1.0

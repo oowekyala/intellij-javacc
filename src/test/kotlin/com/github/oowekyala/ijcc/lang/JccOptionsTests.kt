@@ -23,7 +23,7 @@ class JccOptionsTests : LightCodeInsightFixtureTestCase() {
         val file = myFixture.file as JccFile
 
         // overridden
-        file.javaccConfig.lookahead shouldBe 4
+        file.grammarOptions.lookahead shouldBe 4
     }
 
 
@@ -31,22 +31,22 @@ class JccOptionsTests : LightCodeInsightFixtureTestCase() {
         myFixture.configureByFiles("$OptionsTestDataPath/LookaheadOverride.jjt")
         val file = myFixture.file as JccFile
 
-        file.javaccConfig.parserPackage shouldBe "org.javacc.jjtree"
-        file.javaccConfig.nodePackage shouldBe file.javaccConfig.parserPackage
+        file.grammarOptions.parserPackage shouldBe "org.javacc.jjtree"
+        file.grammarOptions.nodePackage shouldBe file.grammarOptions.parserPackage
     }
 
     fun testNodePackageOverride() {
         myFixture.configureByFiles("$OptionsTestDataPath/PackageOverride.jjt")
         val file = myFixture.file as JccFile
 
-        file.javaccConfig.parserPackage shouldBe "org.javacc.jjtree"
-        file.javaccConfig.nodePackage shouldBe "org.foo"
+        file.grammarOptions.parserPackage shouldBe "org.javacc.jjtree"
+        file.grammarOptions.nodePackage shouldBe "org.foo"
     }
 
     fun testInvalidOptionType() {
         myFixture.configureByFiles("$OptionsTestDataPath/InvalidOptionType.jjt")
         val file = myFixture.file as JccFile
-        val config = file.javaccConfig
+        val config = file.grammarOptions
 
         fun check(opt: GenericOption<*>) {
             val binding = file.options!!.getBindingFor(opt)!!

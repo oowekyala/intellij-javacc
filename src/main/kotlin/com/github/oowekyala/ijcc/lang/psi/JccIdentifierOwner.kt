@@ -9,7 +9,7 @@ import com.intellij.psi.PsiNameIdentifierOwner
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccIdentifierOwner : PsiNameIdentifierOwner, JavaccPsiElement {
+interface JccIdentifierOwner : JavaccPsiElement, PsiNameIdentifierOwner {
 
     override fun getNameIdentifier(): JccIdentifier?
 

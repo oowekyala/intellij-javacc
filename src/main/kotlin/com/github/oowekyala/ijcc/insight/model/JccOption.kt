@@ -293,7 +293,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
     object GRAMMAR_ENCODING
         : JccOption<String>(STRING, "") {
 
-        override fun defaultValueFallback(config: JavaccConfig): String =
+        override fun defaultValueFallback(config: GrammarOptions): String =
                 System.getProperties().getProperty("file.encoding")
     }
 
@@ -301,19 +301,19 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
 
 
     object PARSER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: JavaccConfig): String = JLangObject
+        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: JavaccConfig): String = JLangObject
+        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
     }
 
     object PARSER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: JavaccConfig): String = JLangObject
+        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: JavaccConfig): String = JLangObject
+        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
     }
 
     // undocumented options...

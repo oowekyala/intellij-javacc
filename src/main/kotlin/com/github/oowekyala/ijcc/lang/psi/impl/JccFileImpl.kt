@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
@@ -55,14 +55,14 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = grammarFileRoot.optionSection
 
-    override val javaccConfig: JavaccConfig by lazy { JavaccConfig(options, parserDeclaration) } // todo is lazy safe?
+    override val grammarOptions: GrammarOptions by lazy { GrammarOptions(options, parserDeclaration) } // todo is lazy safe?
 
     override val lexicalGrammar: LexicalGrammar
         get() = LexicalGrammar(grammarFileRoot.childrenSequence().filterMapAs())
 
     override fun getContainingFile(): JccFile = this
 
-    override fun getPackageName(): String = javaccConfig.parserPackage
+    override fun getPackageName(): String = grammarOptions.parserPackage
 
     override fun setPackageName(packageName: String?) {
         throw IncorrectOperationException("Cannot set the package of the parser that way")

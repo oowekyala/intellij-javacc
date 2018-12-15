@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.util.settings
 
-import com.github.oowekyala.ijcc.util.PluginSettingsPage
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -12,7 +11,7 @@ import javax.swing.JComponent
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccProjectSettingsConfigurable(project: Project) : Configurable {
+class JavaccProjectSettingsConfigurable(project: Project) : Configurable, Configurable.NoScroll {
 
 
     private val javaccSettings = project.javaccSettings

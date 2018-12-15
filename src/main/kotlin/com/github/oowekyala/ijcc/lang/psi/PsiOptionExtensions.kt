@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.insight.model.GenericOption
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.JccOptionType
 import com.intellij.psi.PsiElement
 
@@ -47,7 +47,7 @@ val JccOptionBinding.namingLeaf: PsiElement
 
 
 val JccOptionBinding.modelOption: GenericOption<*>?
-    get() = JavaccConfig.knownOptions[name]
+    get() = GrammarOptions.knownOptions[name]
 
 /** Returns true if types match. */
 fun <T : Any> JccOptionBinding.matchesType(expectedType: JccOptionType<T>): Boolean =

@@ -11,7 +11,7 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccConfig(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration) {
+class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration) {
 
 
     // TODO parse from the PARSER def

@@ -1,10 +1,12 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
+import com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsService
+import com.github.oowekyala.ijcc.util.settings.javaccSettings
 import com.intellij.psi.NavigatablePsiElement
 
 /**
- * Any javacc psi element.
+ * Top-level interface for all javacc psi element.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -12,6 +14,13 @@ import com.intellij.psi.NavigatablePsiElement
 interface JavaccPsiElement : NavigatablePsiElement {
 
     override fun getContainingFile(): JccFile
-    val javaccConfig: JavaccConfig
+
+    /** Gets the options bundle associated with the grammar this element is found in. */
+    val grammarOptions: GrammarOptions
+
+    /** Gets the project-specific settings of the plugin. */
+    @JvmDefault
+    val pluginSettings: JavaccProjectSettingsService
+        get() = project.javaccSettings
 
 }
