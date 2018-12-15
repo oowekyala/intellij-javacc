@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.innerRange
-import com.github.oowekyala.ijcc.util.settings.InjectionSupportLevel.DISABLED
+import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage

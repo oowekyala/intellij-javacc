@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
-import com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsService
-import com.github.oowekyala.ijcc.util.settings.javaccSettings
+import com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService
+import com.github.oowekyala.ijcc.settings.javaccSettings
 import com.intellij.psi.NavigatablePsiElement
 
 /**

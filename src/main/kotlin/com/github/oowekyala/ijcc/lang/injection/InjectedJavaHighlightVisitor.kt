@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
-import com.github.oowekyala.ijcc.util.settings.InjectionSupportLevel
+import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiFile

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.util.settings
+package com.github.oowekyala.ijcc.settings
 
 import com.intellij.openapi.components.ServiceManager.getService
 import com.intellij.openapi.project.Project

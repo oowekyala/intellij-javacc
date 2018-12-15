@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
 import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.util.settings.InjectionSupportLevel.DISABLED
+import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 

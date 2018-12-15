@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.util.settings
+package com.github.oowekyala.ijcc.settings
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor
 import com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector

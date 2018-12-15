@@ -1,8 +1,7 @@
-package com.github.oowekyala.ijcc.util.settings
+package com.github.oowekyala.ijcc.settings
 
-import com.github.oowekyala.ijcc.util.settings.JavaccProjectSettingsService.JccSettingsState
+import com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService.JccSettingsState
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.options.Configurable
 import org.intellij.lang.annotations.Language
 import java.awt.event.ActionEvent
 import javax.swing.*
