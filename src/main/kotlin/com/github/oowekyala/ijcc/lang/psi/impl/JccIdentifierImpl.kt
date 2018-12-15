@@ -1,4 +1,3 @@
-// This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
@@ -7,8 +6,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
 class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
-    // TODO is this needed?
-    //    override fun getReference(): PsiReference? = parent?.reference
 
     fun accept(visitor: JccVisitor) {
         visitor.visitIdentifier(this)

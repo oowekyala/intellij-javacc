@@ -12,17 +12,14 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner, JccNodeClassOwner {
+interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
 
     /**
-     * Returns the expression if one was specified
+     * Returns the expression if one was specified.
      */
     @JvmDefault
     val descriptorExpr: JccJjtreeNodeDescriptorExpr?
-        get() = when (lastChild) {
-            is JccJjtreeNodeDescriptorExpr -> lastChild as JccJjtreeNodeDescriptorExpr
-            else                           -> null
-        }
+        get() = lastChildNoWhitespace as JccJjtreeNodeDescriptorExpr?
 
     /** Is null if this is void. */
     override fun getNameIdentifier(): JccIdentifier?

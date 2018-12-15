@@ -21,7 +21,10 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
     /** For [JccJjtreeNodeDescriptor]. */
     JJTREE_DECORATION(DefaultLanguageHighlighterColors.INTERFACE_NAME),
-    /** For [JccJjtreeNodeDescriptor.expansionUnit]. */
+    /**
+     * For [JccJjtreeNodeDescriptor.expansionUnit]. Keys are provided by some of
+     * the resource files.
+     */
     JJTREE_NODE_SCOPE(null) {
         override val highlightType: HighlightInfoType = createSymbolTypeInfo(HighlightSeverity.INFORMATION)
     },

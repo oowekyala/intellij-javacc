@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.util
 
 import org.jetbrains.annotations.Contract
+import java.util.*
 
 /** Select only those elements that are of type R. */
 inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> =
@@ -14,6 +15,7 @@ fun runCatchAll(block: () -> Unit) {
     }
 }
 
+/** Like [run], but doesn't use a lambda with receiver. */
 inline fun <T> T.runIt(block: (T) -> Unit) = block(this)
 
 /** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
@@ -23,6 +25,26 @@ fun String.insert(offset: Int, sub: String): String = when {
     this.isEmpty()   -> sub
     sub.isEmpty()    -> this
     else             -> substring(0, offset) + sub + substring(offset, length)
+}
+
+
+operator fun StringBuilder.plusAssign(any: Any) {
+    this.append(any)
+}
+
+/** Pops the [n] first elements of the stack. */
+fun <T> Deque<T>.pop(n: Int): List<T> {
+    if (n < 0 || n > size) throw IndexOutOfBoundsException()
+    if (n == 0) return emptyList()
+    if (n == 1) return listOf(pop())
+
+    var i = n
+    val result = mutableListOf<T>()
+    while (i-- > 0) {
+        result += pop()
+    }
+
+    return result.asReversed()
 }
 
 
@@ -54,3 +76,6 @@ fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
     }
 }
 
+fun String.indent(level: Int) = prependIndent("    ".repeat(level))
+
+fun <T> MutableList<T>.removeLast(): T = removeAt(lastIndex)

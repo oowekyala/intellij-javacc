@@ -1,5 +1,8 @@
 package com.github.oowekyala.ijcc.insight.model
 
+/**
+ * Expected type of a [GenericOption].
+ */
 sealed class JccOptionType<T : Any> {
 
     /** Base type corresponding to syntactically allowed option values. */
@@ -21,9 +24,10 @@ sealed class JccOptionType<T : Any> {
 
     override fun toString(): String = javaClass.name.toLowerCase()
 
+    /** Projects this option type on the corresponding base type. */
     abstract val projection: BaseOptionType<T>
 
-    /** Refinement over another type to allow for e.g. reference injection. */
+    /** Refinement over another type to allow for e.g. reference injection, and finer validation. */
     sealed class RefinedOptionType<T : Any>(override val projection: BaseOptionType<T>) : JccOptionType<T>() {
 
         override fun toString(): String = super.toString() + " name"

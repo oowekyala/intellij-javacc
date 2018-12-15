@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.NavigatablePsiElement
@@ -15,36 +14,45 @@ import com.intellij.psi.search.GlobalSearchScope
  */
 interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 
+
+    val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
+
     @JvmDefault
-    fun getNodeClass(javaccConfig: JavaccConfig): NavigatablePsiElement? = when (this) {
-        is JccNonTerminalProduction -> getNodeClassImpl(javaccConfig)
-        is JccJjtreeNodeDescriptor  -> getNodeClassImpl(javaccConfig)
-        else                        -> throw IllegalStateException("JccNodeClassOwner unimplemented for ${this.javaClass}")
-    }
+    val nodeClass: NavigatablePsiElement?
+        get() = nodeQualifiedName?.let {
+            getJavaClassFromQname(containingFile, it)
+        }
+
+    @JvmDefault
+    val nodeQualifiedName: String?
+        get() = nodeSimpleName?.let {
+            val packageName = grammarOptions.nodePackage
+
+            if (packageName.isEmpty()) nodeSimpleName
+            else "$packageName.$it"
+        }
+
+    @JvmDefault
+    val nodeSimpleName: String?
+        get() {
+            val nodeDesc = jjtreeNodeDescriptor
+            val isDefaultVoid = grammarOptions.isDefaultVoid
+
+            val base: String? =
+                    if (nodeDesc == null) {
+                        if (isDefaultVoid) null else this.name
+                    } else if (nodeDesc.isVoid) null
+                    else nodeDesc.name
+
+            return base?.let { grammarOptions.nodePrefix + it }
+        }
+
 
     companion object {
 
-        private fun JccNonTerminalProduction.getNodeClassImpl(javaccConfig: JavaccConfig): NavigatablePsiElement? {
-            val nodeDescriptor = jjtreeNodeDescriptor
-            if (nodeDescriptor == null && javaccConfig.isDefaultVoid || nodeDescriptor?.isVoid == true) return null
-
-            val nodePackage = javaccConfig.nodePackage
-            val nodeName = javaccConfig.nodePrefix + if (nodeDescriptor != null) nodeDescriptor.name else this.name
-
-            return getJavaClassFromQname(containingFile, "$nodePackage.$nodeName")
-        }
-
-        private fun JccJjtreeNodeDescriptor.getNodeClassImpl(javaccConfig: JavaccConfig): NavigatablePsiElement? {
-            if (this.isVoid) return null
-
-            val nodePackage = javaccConfig.nodePackage
-            val nodeName = javaccConfig.nodePrefix + this.name
-
-            return getJavaClassFromQname(containingFile, "$nodePackage.$nodeName")
-        }
-
         private fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? {
 
+            // this is mostly a hack...
             val scope = ModuleUtil.findModuleForFile(context)
                 ?.let { GlobalSearchScope.moduleScope(it) }
                 ?: GlobalSearchScope.allScope(context.project)

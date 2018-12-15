@@ -2,18 +2,21 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.lang.refs.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
+import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.util.IncorrectOperationException
 
 
 /**
@@ -23,37 +26,59 @@ import com.intellij.psi.scope.PsiScopeProcessor
  * @since 1.0
  */
 class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
-    override val regexpProductions: List<JccRegularExprProduction>
-        get() = findChildrenByClass(JccRegularExprProduction::class.java).asList()
 
     override fun getFileType(): FileType = JavaccFileType
 
+    override val grammarFileRoot
+        get() = findChildByClass(JccGrammarFileRoot::class.java)!!
+
+    override val regexpProductions: Sequence<JccRegularExprProduction>
+        get() = grammarFileRoot.childrenSequence().filterMapAs()
+
     override val parserDeclaration: JccParserDeclaration
-        get() = findChildByClass(JccParserDeclaration::class.java)!!
+        get() = grammarFileRoot.parserDeclaration
 
     override val nonTerminalProductions: Sequence<JccNonTerminalProduction>
-        get() = findChildrenByClass(JccNonTerminalProduction::class.java).asSequence()
+        get() = grammarFileRoot.childrenSequence().filterMapAs()
 
     override val globalNamedTokens: Sequence<JccNamedRegularExpression>
         get() = globalTokenSpecs.map { it.regularExpression }.filterMapAs()
 
 
     override val globalTokenSpecs: Sequence<JccRegexprSpec>
-        get() = childrenSequence(reversed = false)
-            .filterMapAs<JccRegularExprProduction>()
-            .filter { it.regexprKind.text == "TOKEN" }
-            .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
+        get() =
+            grammarFileRoot.childrenSequence(reversed = false)
+                .filterMapAs<JccRegularExprProduction>()
+                .filter { it.regexprKind.text == "TOKEN" }
+                .flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
 
     override val options: JccOptionSection?
-        get() = findChildByClass(JccOptionSection::class.java)
+        get() = grammarFileRoot.optionSection
 
-    override val javaccConfig: JavaccConfig
-        get() = JavaccConfig(options, parserDeclaration)
+    override val grammarOptions: GrammarOptions by lazy { GrammarOptions(options, parserDeclaration) } // todo is lazy safe?
 
     override val lexicalGrammar: LexicalGrammar
-        get() = LexicalGrammar(childrenSequence().filterMapAs())
+        get() = LexicalGrammar(grammarFileRoot.childrenSequence().filterMapAs())
 
     override fun getContainingFile(): JccFile = this
+
+    override fun getPackageName(): String = grammarOptions.parserPackage
+
+    override fun setPackageName(packageName: String?) {
+        throw IncorrectOperationException("Cannot set the package of the parser that way")
+    }
+
+    override fun getClasses(): Array<PsiClass> {
+
+        val injected =
+                InjectedLanguageManager.getInstance(project).getInjectedPsiFiles(grammarFileRoot)
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: return emptyArray()
+
+        return injected.mapNotNull {
+            it.first.descendantSequence().map { it as? PsiClass }.firstOrNull { it != null }
+        }.toTypedArray()
+    }
 
     override fun processDeclarations(processor: PsiScopeProcessor,
                                      state: ResolveState,

@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.github.oowekyala.intellij-javacc</id>
+    <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
     <description>Support for JavaCC and JJTree grammar files</description>
     <version>1.0.5-dirty</version>
@@ -19,6 +19,18 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+
+
+        <projectConfigurable
+                instance="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsConfigurable"
+                displayName="JavaCC"
+                id="language.javacc"
+                groupId="language"
+        />
+
+        <projectService serviceInterface="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService"
+                        serviceImplementation="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsServiceImpl"/>
+
         <additionalTextAttributes scheme="Darcula" file="com/github/oowekyala/ijcc/colorSchemes/Darcula_Javacc.xml"/>
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
@@ -35,8 +47,7 @@
                 implementationClass="com.github.oowekyala.ijcc.insight.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
-        <!-- TODO v2.0 -->
-        <!--<multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>-->
+        <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.documentationProvider language="JavaCC"
                                     implementationClass="com.github.oowekyala.ijcc.insight.quickdoc.JccDocumentationProvider"/>
@@ -68,6 +79,7 @@
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
 
         <highlightVisitor implementation="com.github.oowekyala.ijcc.insight.highlight.JccHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>

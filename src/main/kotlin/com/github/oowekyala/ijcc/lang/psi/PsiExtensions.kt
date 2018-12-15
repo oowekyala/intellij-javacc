@@ -64,3 +64,5 @@ val PsiElement.textRangeInParent: TextRange
         val offset = startOffsetInParent
         return TextRange(offset, offset + textLength)
     }
+
+fun PsiElement.innerRange(from: Int = 0, endOffset: Int = 0): TextRange = TextRange(from, textLength - endOffset)

@@ -23,25 +23,6 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
 
     /**
-     * Parse a lookahead expression, right after the opening "(".
-     */
-    @JvmStatic
-    fun parseLookaheadExpr(builder: PsiBuilder, level: Int): Boolean {
-        //     INTEGER_LITERAL [ "," expansion_choices  "," braced_expression? ]
-        //      // java_expression takes precedence over expansion_choices
-        //      // but only if the construct starts with a "{"
-        //      // JavaCC effectively prohibits e.g. LOOKAHEAD({...}, {...}), so we do the same
-        //    | [ INTEGER_LITERAL "," ] braced_expression
-        //    | [ INTEGER_LITERAL "," ] expansion_choices [ "," braced_expression ]
-        //    | INTEGER_LITERAL
-        //
-
-
-        return true
-    }
-
-
-    /**
      * Parse a Java block. This implementation just eats up
      * to the matching closing brace. Java injection takes
      * the relay.
@@ -89,7 +70,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
     }
 
     /**
-     * Parse a Java expression. Uses a full-on Java parser to do so.
+     * Parse a Java expression.
      */
     @JvmStatic
     fun parseJExpression(builder: PsiBuilder, level: Int): Boolean {
@@ -109,14 +90,14 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
         return true
     }
 
-
-    //FIXME assignment lhs are for now restricted to IDENT ("." IDENT)*
+    // FIXME use this when start set of external rule can be specified
     @JvmStatic
-    fun parseJAssignmentLhs(builder: PsiBuilder, level: Int): Boolean =
-            builder.javaContext(JavaRemapperNoAssignment) {
-                JavaParser.INSTANCE.expressionParser.parse(it)
-                it.tokenType == JavaTokenType.EQ // Only say ok if the next token is an EQ
-            }
+    fun parseJAssignmentLhs(builder: PsiBuilder, level: Int): Boolean {
+        return builder.javaContext(BaseJavaRemapper) {
+            // conditional is the level just below assignments
+            JavaParser.INSTANCE.expressionParser.parseConditional(it) != null
+        }
+    }
 
     // TODO this worked quite well, should we use it?
     private class AcuPsiBuilderDelegate(val base: PsiBuilder) : PsiBuilder by base {
@@ -142,25 +123,6 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
 
         override fun getTokenType(): IElementType? = remapper.remap(psiBuilder.tokenType, this::getTokenText)
 
-    }
-
-    /**
-     * Remaps the "=" token to EOF, to parse assignment left-hand sides.
-     * This has shortcomings, e.g. a lhs like "foo(j = 1).bar" would be
-     * valid, albeit improbable.
-     *
-     * FIXME assignment lhs are for now restricted to simple field names or variable names.
-     * This is because of syntactic ambiguity that Java parser callouts don't seem to handle
-     * very well.
-     */
-    private object JavaRemapperNoAssignment : TokenTypeRemapper {
-        override fun remap(source: IElementType?, text: () -> String?): IElementType? {
-            val fstRemap = BaseJavaRemapper.remap(source, text)
-            return when (fstRemap) {
-                JavaTokenType.EQ -> null // EOF
-                else             -> fstRemap
-            }
-        }
     }
 
     /** Remaps all JavaCC token types to Java ones. Necessary to call out to a Java parser from this parser. */

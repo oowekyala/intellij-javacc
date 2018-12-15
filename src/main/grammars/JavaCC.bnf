@@ -101,7 +101,7 @@
   extends("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
-  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding")=identifier_owner
+  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
 
   methods(".*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
@@ -127,10 +127,13 @@
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
 
-  implements("jjtree_node_descriptor|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
+  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
 }
 
 javacc_input 	::=
+    grammar_file_root
+
+grammar_file_root ::=
     option_section?
 	parser_declaration
 	( production )*
@@ -245,6 +248,7 @@ expansion_unit 	            ::=
 
 left scoped_expansion_unit  ::=
     jjtree_node_descriptor
+    { methods=[nameIdentifier="jjtree_node_descriptor/identifier"] }
 
 priv_expansion_unit 	    ::=
     (   local_lookahead
@@ -386,14 +390,14 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 
 // Meta and fake rules
 
-meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
+private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
 
 fake identifier_owner           ::= identifier {
     methods=[nameIdentifier="identifier"]
     implements="com.intellij.psi.PsiNameIdentifierOwner"
 }
 
-fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block {
+fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block? {
     methods=[
         header="java_non_terminal_production_header"
         nameIdentifier="java_non_terminal_production_header/identifier"
@@ -409,7 +413,7 @@ identifier                      ::=    IDENT                {name="identifier"}
 private string_literal          ::=    STRING_LITERAL       {name="string literal"}
 
 
-boolean_literal                 ::=    "true" | "false"
+boolean_literal                 ::=    "true" | "false"     {name="boolean literal"}
 
 java_name                       ::=    identifier ("." identifier)* {pin=1}
 
@@ -432,7 +436,8 @@ java_block                          ::=     "{" ext_java_block
 external ext_java_block             ::=     parseJBlock
 
 java_assignment_lhs                 ::=     ext_java_assignment_lhs
-private ext_java_assignment_lhs     ::=     java_name   // FIXME only handles field accesses
+private ext_java_assignment_lhs     ::=     java_name  // FIXME
+//external ext_java_assignment_lhs    ::=     parseJAssignmentLhs
 
 java_expression                     ::=     ext_java_expression
 external ext_java_expression        ::=     parseJExpression

@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.JavaccConfig
+import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
+import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 
@@ -12,7 +13,7 @@ import com.intellij.psi.tree.IFileElementType
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccFile : PsiFile, JavaccPsiElement {
+interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
 
     /** The unique parser declaration of this file. */
     val parserDeclaration: JccParserDeclaration
@@ -21,7 +22,10 @@ interface JccFile : PsiFile, JavaccPsiElement {
     val nonTerminalProductions: Sequence<JccNonTerminalProduction>
 
     /** All terminal productions. */
-    val regexpProductions: List<JccRegularExprProduction>
+    val regexpProductions: Sequence<JccRegularExprProduction>
+
+    /** The injectable file root. */
+    val grammarFileRoot: JccGrammarFileRoot
 
     val lexicalGrammar: LexicalGrammar
 
@@ -37,7 +41,7 @@ interface JccFile : PsiFile, JavaccPsiElement {
     /** Options section. */
     val options: JccOptionSection?
 
-    val javaccConfig: JavaccConfig
+    override val grammarOptions: GrammarOptions
 
 
     companion object {
