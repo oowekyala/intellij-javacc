@@ -15,7 +15,7 @@ import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
 group 'com.github.oowekyala'
-version '1.0-SNAPSHOT'
+version '1.0-BETA'
 
 sourceCompatibility = 1.8
 
