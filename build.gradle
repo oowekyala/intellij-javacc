@@ -117,4 +117,5 @@ intellij {
 }
 patchPluginXml {
     changeNotes """Pre-release"""
+    version version
 }

@@ -1,9 +1,49 @@
 <idea-plugin>
     <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
-    <description>Support for JavaCC and JJTree grammar files</description>
-    <version>1.0.5-dirty</version>
-    <vendor>oowekyala</vendor>
+    <description><![CDATA[
+        <p>Support for JavaCC and JJTree grammar files.</p>
+
+
+        <h2>Features</h2>
+
+        <h5>JavaCC code insight</h5>
+        <ul>
+            <li> Jump to declaration of productions and tokens</li>
+            <li> Comprehensive structure view</li>
+            <li> Quick documentation for productions and tokens</li>
+            <li> Useful code folding to hide what gets in the way</li>
+        </ul>
+
+        <h5>JJTree code insight</h5>
+        <ul>
+            <li> Link productions and JJTree node descriptors to their corresponding node class</li>
+            <li> Highlighting of the node scope of a node annotation</li>
+        </ul>
+
+        <h5>Java language injection</h5>
+        <ul>
+            <li> Java is injected in the embedded code fragments across the language, like parser actions</li>
+            <li> Code completion, quick documentation, usage resolution, and many other Java code insight features are
+                available on the most basic level of injection
+            </li>
+            <li> Compilation error checking (including type checking) and rich syntax highlighting can optionally be
+                enabled in the plugin settings
+            </li>
+            <li> Control flow analysis of the embedded Java file respects the structure of the grammar, so that
+                control-flow related inspections work properly
+            </li>
+        </ul>
+
+        To change the injection level (or disable it), go to <strong>Settings</strong> | <strong>Languages &amp;
+            Frameworks</strong> | <strong>JavaCC</strong>.
+
+        <h5>Inspections</h5>
+
+        Including unnecessary parentheses detection, ambiguous JJTree node descriptor, etc.
+        ]]>
+    </description>
+    <vendor email="clement.fournier76@gmail.com" url="https://github.com/oowekyala">Clément Fournier</vendor>
     <idea-version since-build="182"/>
 
     <application-components>
