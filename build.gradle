@@ -116,7 +116,5 @@ intellij {
     version '2018.2.4'
 }
 patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+    changeNotes """Pre-release"""
 }
