@@ -6,7 +6,7 @@ import io.kotlintest.should as ktShould
 import io.kotlintest.shouldBe as ktShouldBe
 
 
-inline fun <T, C : Collection<T>> C?.eachShouldMatchInOrder(vararg assertions: (T) -> Unit) {
+fun <T, C : Collection<T>> C?.eachShouldMatchInOrder(vararg assertions: (T) -> Unit) {
 
     this shouldNotBe null
 

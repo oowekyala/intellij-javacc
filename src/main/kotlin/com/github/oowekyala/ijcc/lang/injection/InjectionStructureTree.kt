@@ -51,8 +51,10 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
 
     /**
      * Leaf wrapping a [PsiLanguageInjectionHost].
+     * The [host] is subject to replacement, which is handled only by [HostSpec],
+     * so it should only be used for tests.
      */
-    data class HostLeaf(internal val host: PsiLanguageInjectionHost,
+    data class HostLeaf(val host: PsiLanguageInjectionHost,
                         private val rangeGetter: (PsiLanguageInjectionHost) -> TextRange)
         : InjectionStructureTree() {
 
