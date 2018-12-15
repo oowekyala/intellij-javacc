@@ -13,25 +13,27 @@ import javax.swing.*
 class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
 
     private val levelToButton = mutableMapOf<InjectionSupportLevel, AbstractButton>()
-    var mainPanel : JPanel? = null
-    private var fullInjectionRadioButton: JRadioButton? = null
-    private var injectionLevelDescriptionLabel: JLabel? = null
-    private var conservativeInjectionRadioButton: JRadioButton? = null
-    private var injectionDisabledRadioButton: JRadioButton? = null
+
+    lateinit var mainPanel: JPanel
+    private lateinit var fullInjectionRadioButton: JRadioButton
+    private lateinit var injectionLevelDescriptionLabel: JLabel
+    private lateinit var conservativeInjectionRadioButton: JRadioButton
+    private lateinit var injectionDisabledRadioButton: JRadioButton
+
     private var myInjectionLevel: InjectionSupportLevel = initialState.injectionSupportLevel
 
     init {
         val injectionLevelGroup = ButtonGroup()
 
-        injectionLevelDescriptionLabel!!.text = injectionLabelText
+        injectionLevelDescriptionLabel.text = injectionLabelText
 
         injectionLevelGroup.add(conservativeInjectionRadioButton)
         injectionLevelGroup.add(fullInjectionRadioButton)
         injectionLevelGroup.add(injectionDisabledRadioButton)
 
-        bindButtonToLanguageLevel(fullInjectionRadioButton!!, InjectionSupportLevel.FULL)
-        bindButtonToLanguageLevel(conservativeInjectionRadioButton!!, InjectionSupportLevel.CONSERVATIVE)
-        bindButtonToLanguageLevel(injectionDisabledRadioButton!!, InjectionSupportLevel.DISABLED)
+        bindButtonToLanguageLevel(fullInjectionRadioButton, InjectionSupportLevel.FULL)
+        bindButtonToLanguageLevel(conservativeInjectionRadioButton, InjectionSupportLevel.CONSERVATIVE)
+        bindButtonToLanguageLevel(injectionDisabledRadioButton, InjectionSupportLevel.DISABLED)
 
 
         injectionLevelGroup.setSelected(levelToButton[myInjectionLevel]!!.model, true)
