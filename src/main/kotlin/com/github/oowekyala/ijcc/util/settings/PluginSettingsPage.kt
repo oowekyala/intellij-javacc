@@ -68,11 +68,11 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
         @Language("HTML")
         private val injectionLabelText = """
         <html>
-            Define the quality of the Java injection in Java code fragments throughout the grammar.<br/>
-            By default this is set to "${JavaccProjectSettingsService.defaultInjectionSupportLevel.displayName}",
-            which offers great code insight for a reasonable performance trade-off. The level ${InjectionSupportLevel.FULL.displayName}
-            works correctly but usually highlighting significantly lags behind code edits, which may
-            be annoying.
+            Tune the level of sophistication of the Java injection in Java code fragments embedded in a grammar.
+            By default this is set to <b>${JavaccProjectSettingsService.defaultInjectionSupportLevel.displayName}</b>,
+            which offers great code insight for a reasonable performance trade-off. The level <b>${InjectionSupportLevel.FULL.displayName}</b>
+            works correctly, but highlighting usually lags behind code edits, which may be annoying. For more info
+            about each level see the tooltips.
         </html>
     """.trimIndent()
 
