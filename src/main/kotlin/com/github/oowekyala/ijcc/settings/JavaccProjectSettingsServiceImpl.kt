@@ -9,7 +9,7 @@ import com.intellij.openapi.components.Storage
  * @author Clément Fournier
  * @since 1.0
  */
-@State(name = "JavaccProjectSettings", storages = [Storage("javacc.xml")])
+@State(name = "JavaccProjectSettings") // use misc.xml
 class JavaccProjectSettingsServiceImpl : JavaccProjectSettingsService,
     PersistentStateComponent<JavaccProjectSettingsService.PersistableSettingsState> {
 
