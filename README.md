@@ -2,6 +2,10 @@
 
 # JavaCC and JJTree plugin for IntelliJ IDEA
 
+
+Comprehensive support for the [JavaCC](https://github.com/javacc/javacc) parser generator. 
+
+
 ![Demo GIF](/demo.gif)
 
 
