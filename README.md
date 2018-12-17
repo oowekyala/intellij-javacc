@@ -3,7 +3,7 @@
 # JavaCC and JJTree plugin for IntelliJ IDEA
 
 
-Comprehensive support for the [JavaCC](https://github.com/javacc/javacc) parser generator. 
+Offers comprehensive language support for the [JavaCC](https://github.com/javacc/javacc) parser generator. Doesn't generate parsers itself yet though. Code insight works best when the token manager and other supporting files have already been generated.
 
 
 ![Demo GIF](/demo.gif)
