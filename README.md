@@ -1,6 +1,10 @@
-# JavaCC and JJTree plugin for Intellij
+[![Release version](https://img.shields.io/badge/release%20version-1.0--BETA-green.svg)](https://plugins.jetbrains.com/plugin/11431-javacc)
 
-(Unreleased yet)
+# JavaCC and JJTree plugin for IntelliJ IDEA
+
+![Demo GIF](/demo.gif)
+
+
 
 ## Features
 
