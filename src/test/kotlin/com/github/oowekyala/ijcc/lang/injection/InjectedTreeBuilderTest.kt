@@ -5,13 +5,8 @@ import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Compa
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.lang.util.NWrapper
-import com.github.oowekyala.ijcc.lang.util.eachShouldMatchInOrder
-import com.github.oowekyala.ijcc.lang.util.matchInjectionTree
-import com.github.oowekyala.ijcc.lang.util.stringMatchersIgnoreWhitespace
+import com.github.oowekyala.ijcc.lang.util.*
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import io.kotlintest.Matcher
-import io.kotlintest.Result
 import io.kotlintest.matchers.endWith
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -34,14 +29,13 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
     }
 
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
-                                                                             noinline nodeSpec: NWrapper<InjectionStructureTree, N>.() -> Unit): Matcher<String> =
-            object : Matcher<String> {
-                override fun test(value: String): Result =
-                        JccElementFactory.createBnfExpansion(project, value)
-                            .let { InjectedTreeBuilderVisitor.getInjectedSubtreeFor(it) }
-                            .let {
-                                matchInjectionTree(ignoreChildren, nodeSpec).test(it)
-                            }
+                                                                             noinline nodeSpec: InjectedNodeSpec<N>): AssertionMatcher<String> =
+            {
+                JccElementFactory.createBnfExpansion(project, it)
+                    .let { InjectedTreeBuilderVisitor.getInjectedSubtreeFor(it) }
+                    .let {
+                        it should matchInjectionTree(ignoreChildren, nodeSpec)
+                    }
             }
 
 
