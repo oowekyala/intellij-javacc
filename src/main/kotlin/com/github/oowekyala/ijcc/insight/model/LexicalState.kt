@@ -48,9 +48,12 @@ class LexicalState private constructor(val name: String, val tokens: List<JccReg
         val toMatch = literal.match
         val regexpContext = literal.specContext
 
-        return tokens.asSequence()
-            // remove private regexps if we're not in regex context
-            .filterNot { regexpContext == null && it.isPrivate }
+        // Literals inside a private regex are out of bounds
+        // Bc a private regex only matters where it is used, not defined
+        return if (regexpContext?.isPrivate == true) null
+        else tokens.asSequence()
+            // remove private regexps (they're not tokens)
+            .filterNot { it.isPrivate }
             .filter { consideredRegexKinds.contains(it.regexKind) }
             // Stop when below this regex context
             .takeWhile { regexpContext == null || regexpContext !== it.prevSibling }

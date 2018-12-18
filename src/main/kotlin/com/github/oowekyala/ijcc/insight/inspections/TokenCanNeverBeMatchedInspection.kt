@@ -38,6 +38,7 @@ class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
             object : JccVisitor() {
 
                 override fun visitRegexprSpec(spec: JccRegexprSpec) {
+                    if (spec.isPrivate) return
                     val expansion = spec.getRootRegexElement(followReferences = false)
                     if (expansion != null) {
                         when (expansion) {
