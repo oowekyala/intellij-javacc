@@ -135,7 +135,10 @@ class HostSpec(val prefix: String?, val suffix: String?,
             }
         }
 
-
+    /**
+     * Creates a new [HostSpec] based on this one but with the [additionalSuffix] appended to this suffix.
+     * This spec is thereafter unusable.
+     */
     fun appendSuffixAndDestroy(additionalSuffix: CharSequence): HostSpec =
             HostSpec(
                 prefix = prefix,

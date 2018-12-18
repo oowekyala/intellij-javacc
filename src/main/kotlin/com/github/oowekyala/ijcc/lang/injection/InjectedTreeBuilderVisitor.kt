@@ -22,6 +22,9 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     val nodeStack: List<InjectionStructureTree>
         get() = nodeStackImpl.toList()
 
+    private var i = 0
+    private fun freshName() = "i${i++}"
+
     // root
 
     override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
@@ -246,8 +249,6 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
 
     companion object {
-        private var i = 0
-        private fun freshName() = "i${i++}"
 
         /** Gets the injection subtree for the given node. */
         fun getInjectedSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =

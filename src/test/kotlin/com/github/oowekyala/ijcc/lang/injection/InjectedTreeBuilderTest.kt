@@ -1,9 +1,7 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.InjectionTestDataPath
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
-import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.*
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
@@ -18,15 +16,6 @@ import io.kotlintest.shouldBe
 class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
 
 
-    private var commonFileImpl: JccFile? = null
-    private val commonFile: JccFile
-        get() = commonFileImpl!!
-
-    override fun setUp() {
-        super.setUp()
-        myFixture.configureByFiles("$InjectionTestDataPath/CommonTreeBuilderTest.jjt")
-        commonFileImpl = myFixture.file as JccFile
-    }
 
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
                                                                              noinline nodeSpec: InjectedNodeSpec<N>): AssertionMatcher<String> =
@@ -102,7 +91,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
                     it.suffix shouldBe null
                 },
                 {
-                    it.prefix shouldBe "PathExpr()/*seq*/ while (/* +* */i6()) {/*seq*/ PathExpr()} jjtree.closeNodeScope(jjtThis, jjtree.arity() >"
+                    it.prefix shouldBe "PathExpr()/*seq*/ while (/* +* */i0()) {/*seq*/ PathExpr()} jjtree.closeNodeScope(jjtThis, jjtree.arity() >"
                     it.host!!.text shouldBe "1"
                     it.suffix shouldBe "); }"
                 },
