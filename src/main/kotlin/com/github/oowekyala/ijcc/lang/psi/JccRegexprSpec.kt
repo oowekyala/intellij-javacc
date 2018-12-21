@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.intellij.psi.PsiNamedElement
 
-interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
+interface JccRegexprSpec : JavaccPsiElement, JccIdentifierOwner {
 
     val javaBlock: JccJavaBlock?
 
@@ -46,9 +46,5 @@ interface JccRegexprSpec : JavaccPsiElement, PsiNamedElement {
     /** Returns the list of lexical states this regexp applies to. */
     @JvmDefault
     fun getLexicalStatesName(): List<String>? = production.lexicalStateList?.identifierList?.map { it.name }
-
-    @JvmDefault
-    val isPrivate: Boolean
-        get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
 
 }

@@ -12,9 +12,9 @@ import com.intellij.codeInspection.ex.BaseLocalInspectionTool
  */
 abstract class JavaccInspectionBase(private val myDisplayName: String)
     : BaseLocalInspectionTool() {
-    override fun getID(): String = InspectionProfileEntry.getShortName(this::class.java.simpleName)
+    override fun getID(): String = "JavaCC$shortName"
     override fun getDisplayName(): String = myDisplayName
-    override fun getShortName(): String = id
+    override fun getShortName(): String = InspectionProfileEntry.getShortName(this::class.java.simpleName)
     override fun getGroupDisplayName(): String = JavaccLanguage.displayName
 
 

@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.util
 
+import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.Contract
 import java.util.*
 
@@ -82,3 +83,6 @@ fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
 fun String.indent(level: Int) = prependIndent("    ".repeat(level))
 
 fun <T> MutableList<T>.removeLast(): T = removeAt(lastIndex)
+
+
+fun <T : Any> MutableCollection<T>.addIfNotNull(t: T?) = ContainerUtil.addIfNotNull(this, t)

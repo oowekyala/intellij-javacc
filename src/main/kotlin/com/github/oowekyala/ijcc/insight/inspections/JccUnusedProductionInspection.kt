@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.addIfNotNull
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInspection.*
 import com.intellij.openapi.util.Condition
@@ -62,7 +63,7 @@ class JccUnusedProductionInspection : JavaccInspectionBase(DisplayName) {
                             is JccNonTerminalProduction    ->
                                 inParsing.contains(element) || inSuppressed.contains(element)
                             is JccNonTerminalExpansionUnit -> {
-                                ContainerUtil.addIfNotNull(inParsing, element.typedReference.resolveProduction())
+                                inParsing.addIfNotNull(element.typedReference.resolveProduction())
                                 false
                             }
                             else                           -> true

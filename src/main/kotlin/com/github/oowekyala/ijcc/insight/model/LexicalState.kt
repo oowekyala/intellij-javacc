@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.match
-import com.github.oowekyala.ijcc.lang.psi.specContext
+import com.github.oowekyala.ijcc.lang.psi.*
 import java.util.*
 
 /**

@@ -67,6 +67,16 @@ val PsiElement.textRangeInParent: TextRange
 
 fun PsiElement.innerRange(from: Int = 0, endOffset: Int = 0): TextRange = TextRange(from, textLength - endOffset)
 
+fun PsiElement.rangeInParent(f: (PsiElement) -> TextRange) = f(this).relativize(parent.textRange)
+
+/** Returns this text range as seen from the [container] range. */
+fun TextRange.relativize(container: TextRange): TextRange? =
+        when {
+            startOffset < container.startOffset || endOffset > container.endOffset -> null
+            else                                                                   ->
+                (startOffset - container.startOffset).let { TextRange(it, it + length) }
+        }
+
 
 // constrain the hierarchies to be the same to avoid some confusions
 

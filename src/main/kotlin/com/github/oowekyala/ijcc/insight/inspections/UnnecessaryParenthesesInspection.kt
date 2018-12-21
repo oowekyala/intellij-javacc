@@ -38,8 +38,6 @@ class UnnecessaryParenthesesInspection : JavaccInspectionBase(InspectionName) {
 
     override fun isEnabledByDefault(): Boolean = true
 
-    // UnnecessaryParentheses as an ID is already taken
-    override fun getID(): String = "JavaCCUnnecessaryParentheses"
     // TODO parenthesized regex unit
 
     override fun createOptionsPanel(): JComponent {

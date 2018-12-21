@@ -3,12 +3,8 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 
-/**
- * TODO is this needed? maybe because of setName()
- */
 class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexprSpec {
 
     override val pattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = false) }
@@ -29,15 +25,12 @@ class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexpr
     override val lexicalState: JccIdentifier?
         get() = findChildByClass(JccIdentifier::class.java)
 
-    override fun getName(): String? = regularExpression.let { it as? JccNamedRegularExpression }?.name
+
+    override fun getNameIdentifier(): JccIdentifier? =
+            regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
 
     fun accept(visitor: JccVisitor) {
         visitor.visitRegexprSpec(this)
-    }
-
-    override fun setName(name: String): PsiElement {
-        regularExpression.let { it as? JccNamedRegularExpression }?.setName(name)
-        return this
     }
 
     override fun accept(visitor: PsiElementVisitor) {

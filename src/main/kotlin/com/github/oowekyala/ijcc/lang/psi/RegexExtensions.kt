@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.parents
@@ -163,6 +164,23 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
  */
 val JccNamedRegularExpression.isPrivate: Boolean
     get() = nameIdentifier.prevSiblingNoWhitespace?.node?.elementType == JavaccTypes.JCC_POUND
+
+val JccRegexprSpec.isPrivate: Boolean
+    get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
+
+/**
+ * Gets the text range inside this named regex that includes the name identifier and the
+ * pound (#) if it's private.
+ */
+val JccNamedRegularExpression.nameTextRange: TextRange
+    get() =
+        this.node.findChildByType(JavaccTypes.JCC_POUND)
+            ?.textRange
+            ?.let { it.union(nameIdentifier.textRange) }
+            ?: nameIdentifier.textRange
+
+val JccRegexprSpec.nameTextRange: TextRange?
+    get() = regularExpression.let { it as? JccNamedRegularExpression }?.nameTextRange
 
 
 /**

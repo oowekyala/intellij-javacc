@@ -221,16 +221,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         element.regularExpression
             .let { it as? JccNamedRegularExpression }
             ?.run {
-                val (range, type) = if (isPrivate) {
-                    val r = this.node.findChildByType(JavaccTypes.JCC_POUND)
-                        ?.textRange
-                        ?.let { it.union(nameIdentifier.textRange) }
-                        ?: nameIdentifier.textRange!!
-                    Pair(r, PRIVATE_REGEX_DECLARATION)
-                } else {
-                    Pair(nameIdentifier.textRange, TOKEN_DECLARATION)
-                }
-
+                val range = nameTextRange
+                val type = if (isPrivate) PRIVATE_REGEX_DECLARATION else TOKEN_DECLARATION
                 myHolder += highlightInfo(range, type.highlightType)
             }
         element.lexicalState?.let {
