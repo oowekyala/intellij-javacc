@@ -9,13 +9,14 @@ import com.intellij.psi.ResolveState
 
 /**
  * Reference to a [JccRegexprSpec].
+ *
  * @author Clément Fournier
  * @since 1.0
  */
 class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
     PsiReferenceBase<JccTokenReferenceUnit>(psiElement) {
 
-    private val isRegexContext = psiElement.isInRegexContext
+    private val canReferencePrivate = psiElement.canReferencePrivate
 
     override fun resolve(): JccIdentifier? =
             resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
@@ -23,7 +24,7 @@ class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
     fun resolveToken(): JccRegexprSpec? {
         val searchedName = element.name ?: return null
 
-        val processor = TerminalScopeProcessor(searchedName, isRegexContext)
+        val processor = TerminalScopeProcessor(searchedName, canReferencePrivate)
         val file = element.containingFile
         file.processDeclarations(processor, ResolveState.initial(), element, element)
         return processor.result
@@ -31,7 +32,7 @@ class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
 
     override fun getVariants(): Array<Any> =
             element.containingFile.globalNamedTokens
-                .filter { isRegexContext || !it.isPrivate }
+                .filter { canReferencePrivate || !it.isPrivate }
                 .map { it.name!! }
                 .toList()
                 .toTypedArray()

@@ -5,6 +5,8 @@ import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.LexicalSta
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExprProduction
 
 /**
+ * Represents the set of [LexicalState]s defined in a grammar file.
+ *
  * @author Clément Fournier
  * @since 1.0
  */

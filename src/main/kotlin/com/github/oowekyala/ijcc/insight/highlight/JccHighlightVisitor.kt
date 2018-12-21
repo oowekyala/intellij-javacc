@@ -134,7 +134,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
                 if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
-                else if (reffed.isPrivate && !o.isInRegexContext) {
+                else if (reffed.isPrivate && !o.canReferencePrivate) {
                     errorInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"
@@ -236,18 +236,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
 
     private fun checkValidity(spec: JccRegexprSpec) {
 
-        fun getAsLiteral(regex: JccRegexpLike): JccLiteralRegexpUnit? = when (regex) {
-            is JccLiteralRegexpUnit       -> regex
-            is JccInlineRegularExpression -> regex.regexpElement?.let { getAsLiteral(it) }
-            is JccNamedRegularExpression  -> regex.regexpElement?.let { getAsLiteral(it) }
-            else                          -> null
-        }
-
-        val regex = getAsLiteral(spec.regularExpression) ?: return
+        val regex = spec.asSingleLiteral() ?: return
 
         spec.containingFile.globalTokenSpecs
             .filter { it !== spec }
-            .any { getAsLiteral(it.regularExpression)?.textMatches(regex) == true }
+            .any { it.regularExpression.asSingleLiteral()?.textMatches(regex) == true }
             .ifTrue {
                 myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
             }

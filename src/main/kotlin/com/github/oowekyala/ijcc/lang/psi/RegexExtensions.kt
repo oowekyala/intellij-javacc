@@ -12,7 +12,7 @@ import java.util.regex.PatternSyntaxException
 
 /*
 
-    Extensions and utilities for the class hierarchy of JccRegularExpression.
+    Extensions and utilities for the class hierarchy of JccRegexpLike
 
  */
 
@@ -23,6 +23,12 @@ private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.ps
 val JccLiteralRegexpUnit.match: String
     get() = stringLiteral.text.removeSurrounding("\"")
 
+/**
+ * Converts a regular expression to a [Regex] that may be executed
+ * to match text. [PatternSyntaxException] are logged and cause the
+ * visit to return null. Any unresolved token reference also causes
+ * to return null.
+ */
 fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
     val root = this
     val visitor = RegexResolutionVisitor(prefixMatch)
@@ -184,11 +190,52 @@ val JccRegexprSpec.nameTextRange: TextRange?
 
 
 /**
- * Returns true if this regular expression occurs somewhere inside a RegexpSpec.
- * In that case it may reference private regexes.
+ * Return the regex if it's a single literal, unwrapping
+ * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * if needed.
  */
-val JccTokenReferenceUnit.isInRegexContext: Boolean
-    get() = parentSequence(includeSelf = false).any { it is JccRegexprSpec }
+fun JccRegexprSpec.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexpUnit? =
+        regularExpression.asSingleLiteral(followReferences)
+
+
+/**
+ * Return the regex if it's a single literal, unwrapping
+ * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * if needed.
+ */
+fun JccRegularExpression.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexpUnit? =
+        getRootRegexElement(followReferences) as? JccLiteralRegexpUnit
+
+/**
+ * Returns the root regex element, unwrapping
+ * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * if needed.
+ */
+fun JccRegexprSpec.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? =
+        regularExpression.getRootRegexElement(followReferences)
+
+/**
+ * Returns the root regex element, unwrapping
+ * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * if needed.
+ */
+fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
+    return when (this) {
+        is JccLiteralRegularExpression   -> this.unit
+        is JccNamedRegularExpression     -> this.regexpElement
+        is JccRegularExpressionReference -> if (followReferences) this.unit.typedReference.resolveToken()?.getRootRegexElement() else null
+        is JccInlineRegularExpression    -> this.regexpElement
+        else                             -> null
+    }
+}
+
+
+/**
+ * Returns true if this token reference may reference private regexes.
+ */
+val JccTokenReferenceUnit.canReferencePrivate: Boolean
+    get() = parentSequence(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRegularExpressionReference
+            || parentSequence(includeSelf = false).any { it is JccRegexprSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild

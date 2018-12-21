@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.util.addIfNotNull
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInspection.*
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
@@ -18,8 +19,9 @@ import com.intellij.util.containers.JBIterable
 class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
 
     override fun getStaticDescription() = """
-        Detects private regex specs that aren't used in any token definition.
-        Such regexes don't define a token and as such are unnecessary
+        Detects private regex specs that aren't used in any token definition
+        or regex expansion unit. Such regexes don't define a token and are
+        unnecessary.
     """.trimIndent()
 
 
@@ -33,11 +35,11 @@ class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
 
         val holder = ProblemsHolder(manager, file, isOnTheFly)
 
-        //noinspection LimitedScopeInnerClass,EmptyClass
-        abstract class Cond<T> : JBIterable.Stateful<Cond<*>>(), Condition<T>
 
+        // specs used in other specs or regular expressions
         val inExpr = ContainerUtil.newTroveSet<JccRegexprSpec>()
-        val inParsing = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        // specs used in other
+        val reachable = ContainerUtil.newTroveSet<JccRegexprSpec>()
         val inSuppressed = ContainerUtil.newTroveSet<JccRegexprSpec>()
 
         grammarTraverser(file)
@@ -50,24 +52,29 @@ class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
 
         tokens.filter { r -> SuppressionUtil.inspectionResultSuppressed(r, this) }.addAllTo(inSuppressed)
 
-        inParsing.add(tokens.first()) // add root rule
+        //noinspection LimitedScopeInnerClass,EmptyClass
+        abstract class Cond<T> : JBIterable.Stateful<Cond<*>>(), Condition<T>
+
+        reachable.addAll(tokens.filter { !it.isPrivate })
         var size = 0
         var prev = -1
         while (size != prev) {
-            grammarTraverser(file).expand(object : Cond<PsiElement>() {
-                override fun value(element: PsiElement?): Boolean =
-                        when (element) {
-                            is JccRegexprSpec        ->
-                                inParsing.contains(element) || inSuppressed.contains(element)
-                            is JccTokenReferenceUnit -> {
-                                inParsing.addIfNotNull(element.typedReference.resolveToken())
-                                false
+            grammarTraverser(file)
+                .filter(Conditions.instanceOf(JccRegularExpression::class.java))
+                .expand(object : Cond<PsiElement>() {
+                    override fun value(element: PsiElement?): Boolean =
+                            when (element) {
+                                is JccRegexprSpec        ->
+                                    reachable.contains(element) || inSuppressed.contains(element)
+                                is JccTokenReferenceUnit -> {
+                                    reachable.addIfNotNull(element.typedReference.resolveToken())
+                                    false
+                                }
+                                else                     -> true
                             }
-                            else                     -> true
-                        }
-            }).traverse().size()
+                }).traverse().size()
             prev = size
-            size = inParsing.size
+            size = reachable.size
         }
 
 
@@ -75,7 +82,7 @@ class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
         for (spec: JccRegexprSpec in tokens.filter { it.isPrivate }.filter { o -> !inSuppressed.contains(o) }) {
             when {
                 !inExpr.contains(spec)    -> "Unused private regex"
-                !inParsing.contains(spec) -> "Unreachable private regex"
+                !reachable.contains(spec) -> "Unreachable private regex"
                 else                      -> null
             }?.runIt { message ->
                 holder.registerProblem(

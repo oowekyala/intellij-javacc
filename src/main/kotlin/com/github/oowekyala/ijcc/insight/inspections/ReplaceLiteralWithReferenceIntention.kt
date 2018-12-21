@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
+import com.github.oowekyala.ijcc.lang.psi.asSingleLiteral
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.github.oowekyala.ijcc.lang.psi.typedReference
