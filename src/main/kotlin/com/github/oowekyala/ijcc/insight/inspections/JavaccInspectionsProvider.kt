@@ -12,6 +12,7 @@ object JavaccInspectionsProvider : InspectionToolProvider {
         UnnamedRegexInspection::class.java,
         UnnecessaryInlineRegexInspection::class.java,
         UnnecessaryParenthesesInspection::class.java,
-        SuspiciousNodeDescriptorExprInspection::class.java
+        SuspiciousNodeDescriptorExprInspection::class.java,
+        JccUnusedProductionInspection::class.java
     )
 }

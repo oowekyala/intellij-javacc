@@ -116,6 +116,7 @@ runIde {
 intellij {
     version '2018.2.4'
 }
+
 patchPluginXml {
     changeNotes """Pre-release"""
     version version

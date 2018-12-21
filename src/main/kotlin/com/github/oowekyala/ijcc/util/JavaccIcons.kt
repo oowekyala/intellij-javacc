@@ -28,6 +28,5 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");
 
-    // This is a FP!
     constructor(fname: String) : this(IconLoader.getIcon("../icons/$fname"))
 }
