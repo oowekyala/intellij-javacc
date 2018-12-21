@@ -25,17 +25,9 @@ class ReplaceLiteralWithReferenceIntention : PsiElementBaseIntentionAction() {
                 ?.let { it.name != null && it.asSingleLiteral() != null } ?: false
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
-        val ref = element.parent as? JccLiteralRegexpUnit
-            ?: run {
-                Log { error("Expected a token reference") }
-                return
-            }
+        val ref = element.parent as JccLiteralRegexpUnit
 
-        val name = ref.typedReference?.resolve()?.name
-            ?: run {
-                Log { error("Expected a named token") }
-                return
-            }
+        val name = ref.typedReference!!.resolve()!!.name!!
 
         ref.safeReplace(JccElementFactory.createRegexReferenceUnit(project, "<$name>"))
     }

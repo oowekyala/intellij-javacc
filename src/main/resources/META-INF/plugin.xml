@@ -132,5 +132,13 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceLiteralWithReferenceIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceParenthesizedOptionalWithBracedIntention</className>
+        </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>

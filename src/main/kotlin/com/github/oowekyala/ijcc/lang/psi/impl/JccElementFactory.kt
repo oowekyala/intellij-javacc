@@ -63,6 +63,14 @@ object JccElementFactory {
             .let { it.regularExpression as JccRegularExpressionReference }
     }
 
+
+    fun createBracedExpansionUnit(project: Project, name: String): JccOptionalExpansionUnit =
+            createBnfExpansion(project, name).let { it as JccOptionalExpansionUnit }
+
+    fun createParenthesizedExpansionUnit(project: Project, name: String): JccParenthesizedExpansionUnit =
+            createBnfExpansion(project, name).let { it as JccParenthesizedExpansionUnit }
+
+
     fun createLiteralRegexUnit(project: Project, name: String): JccLiteralRegexpUnit {
         return createBnfExpansion(project, name)
             .let { it as JccRegexpExpansionUnit }

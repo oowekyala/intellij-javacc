@@ -2,21 +2,11 @@ package com.github.oowekyala.ijcc.util
 
 import org.jetbrains.annotations.Contract
 import java.util.*
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 /** Select only those elements that are of type R. */
 inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> =
         this.filter { it is R }.map { it as R }
 
-fun runCatchAll(block: () -> Unit) {
-    try {
-        block()
-    } catch (t: Throwable) {
-
-    }
-}
 
 /** Like [run], but doesn't use a lambda with receiver. */
 inline fun <T> T.runIt(block: (T) -> Unit) {
@@ -26,10 +16,10 @@ inline fun <T> T.runIt(block: (T) -> Unit) {
 /** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
 @Contract(pure = true)
 fun String.insert(offset: Int, sub: String): String = when {
-    offset >= length -> throw IndexOutOfBoundsException()
-    this.isEmpty()   -> sub
-    sub.isEmpty()    -> this
-    else             -> substring(0, offset) + sub + substring(offset, length)
+    offset >= length || offset < 0 -> throw IndexOutOfBoundsException()
+    this.isEmpty()                 -> sub
+    sub.isEmpty()                  -> this
+    else                           -> substring(0, offset) + sub + substring(offset, length)
 }
 
 
@@ -53,8 +43,16 @@ fun <T> Deque<T>.pop(n: Int): List<T> {
 }
 
 
-// lulz
-operator fun Unit.invoke(): Unit = Unit()()()()()()()()
+private object O {
+    operator fun invoke(o: Any = O): O =
+            (((((O)))))(S)(E)(N)(D)(((((O)))))(N)(U)(D)(E)(S)(((((O)))))
+}
+private object N
+private object U
+private object D
+private object E
+private object S
+
 
 inline fun Boolean.ifTrue(block: () -> Unit): Boolean {
     if (this) {

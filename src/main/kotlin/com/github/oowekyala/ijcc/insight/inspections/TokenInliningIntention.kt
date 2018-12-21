@@ -26,17 +26,9 @@ class TokenInliningIntention : PsiElementBaseIntentionAction() {
                 ?.let { it.typedReference.resolveToken()?.asSingleLiteral() } != null
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
-        val ref = element.parent.parent as? JccTokenReferenceUnit
-            ?: run {
-                Log { error("Expected a token reference") }
-                return
-            }
+        val ref = element.parent.parent as JccTokenReferenceUnit
 
-        val literal = ref.typedReference.resolveToken()?.asSingleLiteral()
-            ?: run {
-                Log { error("Expected a single literal regex") }
-                return
-            }
+        val literal = ref.typedReference.resolveToken()!!.asSingleLiteral()!!
 
         ref.safeReplace(JccElementFactory.createLiteralRegexUnit(project, literal.text))
     }
