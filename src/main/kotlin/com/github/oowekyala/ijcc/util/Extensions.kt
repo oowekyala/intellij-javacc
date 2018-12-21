@@ -5,8 +5,9 @@ import org.jetbrains.annotations.Contract
 import java.util.*
 
 /** Select only those elements that are of type R. */
-inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> =
-        this.filter { it is R }.map { it as R }
+inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> = this.filter { it is R }.map { it as R }
+
+inline fun <reified R> Iterable<*>.filterMapAs(): Iterable<R> = this.filter { it is R }.map { it as R }
 
 
 /** Like [run], but doesn't use a lambda with receiver. */
@@ -85,4 +86,8 @@ fun String.indent(level: Int) = prependIndent("    ".repeat(level))
 fun <T> MutableList<T>.removeLast(): T = removeAt(lastIndex)
 
 
+fun String.deleteWhitespace(): String = replace(Regex("\\s"), "")
+
 fun <T : Any> MutableCollection<T>.addIfNotNull(t: T?) = ContainerUtil.addIfNotNull(this, t)
+
+fun <T> Sequence<T>.takeUntil(t: T) = takeWhile { it != t }.plus(t)

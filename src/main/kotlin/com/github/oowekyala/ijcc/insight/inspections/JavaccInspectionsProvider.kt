@@ -14,6 +14,8 @@ object JavaccInspectionsProvider : InspectionToolProvider {
         UnnecessaryParenthesesInspection::class.java,
         SuspiciousNodeDescriptorExprInspection::class.java,
         JccUnusedProductionInspection::class.java,
-        JccUnusedPrivateRegexInspection::class.java
+        JccUnusedPrivateRegexInspection::class.java,
+        EmptyParserActionsInspection::class.java,
+        ConsecutiveParserActionsInspection::class.java
     )
 }

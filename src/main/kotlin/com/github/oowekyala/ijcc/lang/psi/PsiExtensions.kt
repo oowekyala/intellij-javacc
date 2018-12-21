@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.util.takeUntil
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
@@ -75,6 +76,17 @@ fun TextRange.relativize(container: TextRange): TextRange? =
             startOffset < container.startOffset || endOffset > container.endOffset -> null
             else                                                                   ->
                 (startOffset - container.startOffset).let { TextRange(it, it + length) }
+        }
+
+fun PsiElement.siblingRangeTo(brother: PsiElement): Sequence<PsiElement> =
+        if (this.parent !== brother.parent) throw IllegalArgumentException()
+        else when {
+            this === brother                                       -> sequenceOf(this)
+            this.startOffsetInParent < brother.startOffsetInParent ->
+                sequenceOf(this).plus(this.siblingSequence(forward = true).takeUntil(brother))
+            else                                                   ->
+                sequenceOf(this).plus(this.siblingSequence(forward = false).takeUntil(brother))
+
         }
 
 
