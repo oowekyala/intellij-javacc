@@ -75,13 +75,13 @@ class JccUnusedProductionInspection : JavaccInspectionBase(DisplayName) {
 
 
 
-        for (r in prods.skip(1).filter { o -> !inSuppressed.contains(o) }) {
+        for (prod in prods.skip(1).filter { o -> !inSuppressed.contains(o) }) {
             when {
-                !inExpr.contains(r)    -> "Unused production"
-                !inParsing.contains(r) -> "Unreachable production"
+                !inExpr.contains(prod)    -> "Unused production"
+                !inParsing.contains(prod) -> "Unreachable production"
                 else                   -> null
             }?.runIt { message ->
-                holder.registerProblem(r.nameIdentifier, message, ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+                holder.registerProblem(prod.nameIdentifier, "$message \"${prod.name}\"", ProblemHighlightType.LIKE_UNUSED_SYMBOL)
             }
 
         }

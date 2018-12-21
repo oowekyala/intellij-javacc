@@ -87,7 +87,7 @@ class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
             }?.runIt { message ->
                 holder.registerProblem(
                     spec,
-                    message,
+                    "$message \"${spec.name}\"",
                     ProblemHighlightType.LIKE_UNUSED_SYMBOL,
                     spec.nameTextRange!!.relativize(spec.textRange)!!
                 )
