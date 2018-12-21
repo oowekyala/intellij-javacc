@@ -66,3 +66,10 @@ val PsiElement.textRangeInParent: TextRange
     }
 
 fun PsiElement.innerRange(from: Int = 0, endOffset: Int = 0): TextRange = TextRange(from, textLength - endOffset)
+
+
+// constrain the hierarchies to be the same to avoid some confusions
+
+fun JccRegularExpression.safeReplace(regex: JccRegularExpression) = replace(regex)
+fun JccExpansionUnit.safeReplace(regex: JccExpansionUnit) = replace(regex)
+fun JccRegexpElement.safeReplace(regex: JccRegexpElement) = replace(regex)

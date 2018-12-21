@@ -98,7 +98,7 @@ compileKotlin {
     dependsOn(generateLexer, overrideDefaultPsi)
 
     kotlinOptions {
-        freeCompilerArgs = ['-Xjvm-default=enable',]
+        freeCompilerArgs = ['-Xjvm-default=enable','-Xuse-experimental=kotlin.Experimental']
         jvmTarget = "1.8"
     }
 

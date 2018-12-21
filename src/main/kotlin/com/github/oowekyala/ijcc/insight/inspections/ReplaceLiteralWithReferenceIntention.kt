@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
@@ -24,16 +25,19 @@ class ReplaceLiteralWithReferenceIntention : PsiElementBaseIntentionAction() {
                 ?.let { it.name != null && it.asSingleLiteral() != null } ?: false
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
-        val ref = element.parent as? JccLiteralRegexpUnit ?: return
+        val ref = element.parent as? JccLiteralRegexpUnit
+            ?: run {
+                Log { error("Expected a token reference") }
+                return
+            }
 
         val name = ref.typedReference?.resolve()?.name
+            ?: run {
+                Log { error("Expected a named token") }
+                return
+            }
 
-        if (name == null) {
-            Log { debug("Weird input to the invoke method (name is null)") }
-            return
-        }
-
-        ref.replace(JccElementFactory.createRegexReference(project, "<$name>"))
+        ref.safeReplace(JccElementFactory.createRegexReferenceUnit(project, "<$name>"))
     }
 
     override fun getFamilyName(): String = text

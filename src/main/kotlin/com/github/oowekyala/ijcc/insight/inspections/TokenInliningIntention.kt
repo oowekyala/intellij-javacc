@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceUnit
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
@@ -25,15 +26,19 @@ class TokenInliningIntention : PsiElementBaseIntentionAction() {
                 ?.let { it.typedReference.resolveToken()?.asSingleLiteral() } != null
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
-        val ref = element.parent.parent as? JccTokenReferenceUnit ?: return
+        val ref = element.parent.parent as? JccTokenReferenceUnit
+            ?: run {
+                Log { error("Expected a token reference") }
+                return
+            }
 
         val literal = ref.typedReference.resolveToken()?.asSingleLiteral()
-        if (literal == null) {
-            Log { debug("Weird input to the invoke method (asSingleLiteral is null)") }
-            return
-        }
+            ?: run {
+                Log { error("Expected a single literal regex") }
+                return
+            }
 
-        ref.replace(JccElementFactory.createLiteralRegex(project, literal.text))
+        ref.safeReplace(JccElementFactory.createLiteralRegexUnit(project, literal.text))
     }
 
     override fun getFamilyName(): String = text

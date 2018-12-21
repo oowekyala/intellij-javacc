@@ -44,7 +44,10 @@ object JccElementFactory {
         return file.options!!.optionBindingList[0].optionValue!!
     }
 
-    fun createRegexReference(project: Project, name: String): JccTokenReferenceUnit {
+    fun createRegexReferenceUnit(project: Project, name: String): JccTokenReferenceUnit =
+            createRegularExpressionReference(project, name).unit
+
+    fun createRegularExpressionReference(project: Project, name: String): JccRegularExpressionReference {
         val fileText = """
             PARSER_BEGIN(dummy)
             PARSER_END(dummy)
@@ -56,14 +59,15 @@ object JccElementFactory {
         return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
             .expansion
-            .let { it as JccExpansionSequence }
-            .expansionUnitList[0] as JccTokenReferenceUnit
+            .let { it as JccRegexpExpansionUnit }
+            .let { it.regularExpression as JccRegularExpressionReference }
     }
 
-    fun createLiteralRegex(project: Project, name: String): JccLiteralRegexpUnit {
+    fun createLiteralRegexUnit(project: Project, name: String): JccLiteralRegexpUnit {
         return createBnfExpansion(project, name)
-            .let { it as JccExpansionSequence }
-            .expansionUnitList[0] as JccLiteralRegexpUnit
+            .let { it as JccRegexpExpansionUnit }
+            .let { it.regularExpression as JccLiteralRegularExpression }
+            .let { it.unit }
     }
 
     fun createBnfExpansion(project: Project, name: String): JccExpansion {
@@ -134,7 +138,7 @@ object JccElementFactory {
             .let { it as JccBnfProduction }
             .expansion
             .let { it as JccAssignedExpansionUnit }
-            .let { it as JccJavaAssignmentLhs }
+            .let { it.javaAssignmentLhs }
     }
 
 

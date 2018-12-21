@@ -2,6 +2,9 @@ package com.github.oowekyala.ijcc.util
 
 import org.jetbrains.annotations.Contract
 import java.util.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /** Select only those elements that are of type R. */
 inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> =
@@ -16,7 +19,9 @@ fun runCatchAll(block: () -> Unit) {
 }
 
 /** Like [run], but doesn't use a lambda with receiver. */
-inline fun <T> T.runIt(block: (T) -> Unit) = block(this)
+inline fun <T> T.runIt(block: (T) -> Unit) {
+    block(this)
+}
 
 /** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
 @Contract(pure = true)
