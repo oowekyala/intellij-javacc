@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
+import gnu.trove.THashSet
 
 /**
  * @author Clément Fournier
@@ -37,10 +38,10 @@ class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
 
 
         // specs used in other specs or regular expressions
-        val inExpr = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        val inExpr: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
         // specs used in other
-        val reachable = ContainerUtil.newTroveSet<JccRegexprSpec>()
-        val inSuppressed = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        val reachable: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        val inSuppressed: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
 
         grammarTraverser(file)
             .filterTypes { it == JavaccTypes.JCC_TOKEN_REFERENCE_UNIT }

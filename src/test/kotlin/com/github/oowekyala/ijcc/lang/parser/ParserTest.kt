@@ -28,7 +28,7 @@ class ParserTest : LightCodeInsightFixtureTestCase() {
 
         "\"foo\"" should matchExpansion<JccRegexpExpansionUnit> {
             it.regularExpression shouldBe child<JccLiteralRegularExpression> {
-                child<JccRegexpUnit>{}
+                child<JccLiteralRegexpUnit>{}
             }
         }
 

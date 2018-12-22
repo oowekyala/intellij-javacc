@@ -9,11 +9,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 
+// These two intentions are dual: switch between token reference vs token literal
 
-/**
- * @author Clément Fournier
- * @since 1.0
- */
 class TokenInliningIntention : PsiElementBaseIntentionAction() {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
@@ -34,6 +31,30 @@ class TokenInliningIntention : PsiElementBaseIntentionAction() {
 
     override fun getText(): String = "Inline literal reference"
 
+
+    private object Log : EnclosedLogger()
+}
+
+
+class ReplaceLiteralWithReferenceIntention : PsiElementBaseIntentionAction() {
+
+    override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
+            element.takeIf { it.node.elementType == JavaccTypes.JCC_STRING_LITERAL }
+                ?.let { it.parent as? JccLiteralRegexpUnit }
+                ?.let { it.typedReference?.resolve() }
+                ?.let { it.name != null && it.asSingleLiteral() != null } ?: false
+
+    override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
+        val ref = element.parent as JccLiteralRegexpUnit
+
+        val name = ref.typedReference!!.resolve()!!.name!!
+
+        ref.safeReplace(JccElementFactory.createRegexReferenceUnit(project, "<$name>"))
+    }
+
+    override fun getFamilyName(): String = text
+
+    override fun getText(): String = "Replace literal with reference"
 
     private object Log : EnclosedLogger()
 }

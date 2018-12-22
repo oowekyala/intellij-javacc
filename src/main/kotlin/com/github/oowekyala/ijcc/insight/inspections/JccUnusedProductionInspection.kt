@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
+import gnu.trove.THashSet
 
 /**
  * @author Clément Fournier
@@ -39,9 +40,9 @@ class JccUnusedProductionInspection : JavaccInspectionBase(DisplayName) {
         //noinspection LimitedScopeInnerClass,EmptyClass
         abstract class Cond<T> : JBIterable.Stateful<Cond<*>>(), Condition<T>
 
-        val inExpr = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
-        val inParsing = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
-        val inSuppressed = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
+        val inExpr: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
+        val inParsing: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
+        val inSuppressed: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
 
         grammarTraverserOnlyBnf(file)
             .filterTypes { it == JavaccTypes.JCC_NON_TERMINAL_EXPANSION_UNIT }

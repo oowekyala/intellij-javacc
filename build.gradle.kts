@@ -1,5 +1,6 @@
 @file:Suppress("PropertyName")
 
+import org.intellij.lang.annotations.Language
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -17,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0-BETA"
+version = "1.0-BETA-1"
 
 
 repositories {
@@ -146,8 +147,36 @@ tasks {
     }
 
     patchPluginXml {
+        //language=HTML
         changeNotes(
-            """Pre-release"""
+            """
+                Still a beta version. Changelog:
+                <ul>
+                <li>Added some inspections:
+                    <ul>
+                        <li>Unused production: detects productions unreachable from the root production</li>
+                        <li>Unused private regex: detects private regexes unreachable from any token definition</li>
+                        <li>Empty parser actions</li>
+                        <li>Consecutive parser actions</li>
+                    </ul>
+                </li>
+                <li>Added some intention actions:
+                    <ul>
+                        <li>Convert [] to ()?</li>
+                        <li>Convert ()? to []</li>
+                    </ul>
+                </li>
+                <li>Fixed some bugs:
+                    <ul>
+                        <li>Scope of private regexes: they can be used even in regexes defined in BNF expansions</li>
+                        <li>TokenCanNeverBeMatchedInspection shouldn't report private regexes: it only matters
+                        where they're used, not where they're defined</li>
+                        <li>Intentions "Inline token reference" and "Replace literal token with reference" were broken since 44a641f.</li>
+                        <li>Added some tests</li>
+                    </ul>
+                </li>
+                </ul>
+            """.trimIndent()
         )
 
         version(project.version)
