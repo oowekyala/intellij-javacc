@@ -1,10 +1,13 @@
 package com.github.oowekyala.ijcc.lang.util
 
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree
-import com.github.oowekyala.treematchers.TreeLikeAdapter
-import com.github.oowekyala.treematchers.TreeNodeWrapper
-import com.github.oowekyala.treematchers.baseShouldMatchSubtree
+import com.github.oowekyala.treeutils.TreeLikeAdapter
+import com.github.oowekyala.treeutils.matchers.MatchingConfig
+import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper
+import com.github.oowekyala.treeutils.matchers.baseShouldMatchSubtree
+import com.github.oowekyala.treeutils.printers.KotlintestBeanTreePrinter
 import com.intellij.psi.PsiElement
+import io.kotlintest.shouldBe
 
 
 /** An instance of [TreeLikeAdapter] for the [InjectionStructureTree] hierarchy. */
@@ -16,7 +19,16 @@ typealias InjectedNodeSpec<N> = TreeNodeWrapper<InjectionStructureTree, N>.() ->
 inline fun <reified N : InjectionStructureTree> matchInjectionTree(ignoreChildren: Boolean = false,
                                                                    noinline nodeSpec: InjectedNodeSpec<N>)
         : AssertionMatcher<InjectionStructureTree?> =
-        { it.baseShouldMatchSubtree(InjectionTreeHierarchyAdapter, ignoreChildren, nodeSpec) }
+        {
+            it.baseShouldMatchSubtree(
+                MatchingConfig(
+                    adapter = InjectionTreeHierarchyAdapter,
+                    errorPrinter = KotlintestBeanTreePrinter(InjectionTreeHierarchyAdapter)
+                ),
+                ignoreChildren,
+                nodeSpec
+            )
+        }
 
 
 /** An instance of [TreeLikeAdapter] for the [PsiElement] hierarchy. */
@@ -34,7 +46,14 @@ typealias AssertionMatcher<T> = (T) -> Unit
 
 inline fun <reified N : PsiElement> matchPsi(ignoreChildren: Boolean = false,
                                              noinline nodeSpec: PsiSpec<N>)
-        : AssertionMatcher<PsiElement?> = { it.baseShouldMatchSubtree(PsiHierarchyAdapter, ignoreChildren, nodeSpec) }
+        : AssertionMatcher<PsiElement?> =
+        { it.baseShouldMatchSubtree(MatchingConfig(adapter = PsiHierarchyAdapter), ignoreChildren, nodeSpec) }
 
+fun <T : InjectionStructureTree> TreeNodeWrapper<InjectionStructureTree, T>.textLeaf(text: String) =
+        child<InjectionStructureTree.SurroundNode> {
+            it.prefix shouldBe text
+            it.suffix shouldBe ""
 
+            it.child shouldBe child<InjectionStructureTree.EmptyLeaf> {}
+        }
 

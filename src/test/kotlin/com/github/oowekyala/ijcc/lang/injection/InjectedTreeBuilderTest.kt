@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.*
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.matchers.endWith
+import io.kotlintest.matchers.string.shouldStartWith
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 
@@ -62,7 +63,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
 
     fun testBnfs() {
 
-        val (_, linear) = """
+        val (tree, linear) = """
             PARSER_BEGIN(foo)
             PARSER_END(foo)
 
@@ -83,6 +84,70 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
             .let { Pair(getInjectedSubtreeFor(it.grammarFileRoot), it.grammarFileRoot.linearInjectedStructure) }
 
         stringMatchersIgnoreWhitespace {
+
+            tree should matchInjectionTree<SurroundNode> {
+                it.prefix.shouldStartWith("class MyParser {")
+
+                it.child shouldBe child<MultiChildNode> {
+                    child<StructuralBoundary> {
+
+                        it.child shouldBe child<SurroundNode> {
+                            it.prefix shouldBe "void MapExpr() { ASTMapExpr jjtThis = new ASTMapExpr();"
+
+                            it.child shouldBe child<MultiChildNode> {
+                                child<HostLeaf> {}
+                                child<MultiChildNode> {
+                                    textLeaf("PathExpr()")
+                                    child<SurroundNode> {
+                                        it.prefix shouldBe "while (/* +* */i0()) {"
+
+                                        it.child shouldBe child<MultiChildNode> {
+                                            child<EmptyLeaf> {}
+                                            textLeaf("PathExpr()")
+                                        }
+                                        it.suffix shouldBe "}"
+                                    }
+                                }
+                                child<SurroundNode> {
+                                    it.prefix shouldBe "jjtree.closeNodeScope(jjtThis, "
+
+                                    it.child shouldBe child<SurroundNode> {
+                                        it.prefix shouldBe "jjtree.arity() > "
+                                        it.suffix shouldBe ""
+
+                                        it.child shouldBe child<HostLeaf> {}
+                                    }
+                                    it.suffix shouldBe ");"
+                                }
+                            }
+                            it.suffix shouldBe "}"
+                        }
+
+                    }
+                    child<StructuralBoundary> {
+
+                        it.child shouldBe child<SurroundNode> {
+                            it.prefix shouldBe "void PathExpr() { ASTPathExpr jjtThis = new ASTPathExpr();"
+                            it.suffix shouldBe "}"
+
+                            it.child shouldBe child<MultiChildNode> {
+                                child<HostLeaf> {}
+                                child<MultiChildNode> {
+                                    textLeaf("RelativePathExpr()")
+                                    child<HostLeaf> {}
+                                }
+                                child<SurroundNode> {
+                                    it.prefix shouldBe "jjtree.closeNodeScope(jjtThis, "
+                                    it.suffix shouldBe ");"
+
+                                    it.child shouldBe child<HostLeaf> {}
+                                }
+                            }
+                        }
+                    }
+                }
+                it.suffix shouldBe "}"
+            }
 
             linear.hostSpecs.eachShouldMatchInOrder(
                 {
