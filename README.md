@@ -17,6 +17,7 @@ Offers comprehensive language support for the [JavaCC](https://github.com/javacc
   * Comprehensive structure view
   * Quick documentation for productions and tokens
   * Useful code folding to hide what gets in the way
+  * Detection of many JavaCC errors
 
 ##### JJTree code insight
   * Link productions and JJTree node descriptors to their corresponding node class
@@ -32,7 +33,7 @@ Offers comprehensive language support for the [JavaCC](https://github.com/javacc
 To change the injection level (or disable it), go to **Settings** | **Languages & Frameworks** | **JavaCC**.
 
 
-##### Inspections
+##### Inspections and intention actions
 
-Including unnecessary parentheses detection, ambiguous JJTree node descriptor, etc.
+Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.
 
