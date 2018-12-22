@@ -21,6 +21,15 @@ group = "com.github.oowekyala"
 version = "1.0-BETA-1"
 
 
+ext {
+    // creates secret properties
+    set("intellijPublishUsername", "")
+    set("intellijPublishPassword", "")
+    apply(from = "secrets.properties")
+}
+
+
+
 repositories {
     mavenCentral()
 }
@@ -55,6 +64,7 @@ sourceSets {
 
 intellij {
     version = "2018.2.4"
+    updateSinceUntilBuild = false
 }
 
 
@@ -144,6 +154,11 @@ tasks {
 
     runIde {
         jvmArgs = listOf("-Xmx2G")
+    }
+
+    publishPlugin {
+        username(project.property("intellijPublishUsername"))
+        password(project.property("intellijPublishPassword"))
     }
 
     patchPluginXml {
