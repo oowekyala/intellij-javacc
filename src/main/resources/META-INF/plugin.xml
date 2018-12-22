@@ -13,6 +13,7 @@
             <li> Comprehensive structure view</li>
             <li> Quick documentation for productions and tokens</li>
             <li> Useful code folding to hide what gets in the way</li>
+            <li> Detection of many JavaCC errors</li>
         </ul>
 
         <h5>JJTree code insight</h5>
@@ -38,9 +39,9 @@
         To change the injection level (or disable it), go to <strong>Settings</strong> | <strong>Languages &amp;
             Frameworks</strong> | <strong>JavaCC</strong>.
 
-        <h5>Inspections</h5>
+        <h5>Inspections and intentions</h5>
 
-        Including unnecessary parentheses detection, ambiguous JJTree node descriptor, etc.
+        Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.
         ]]>
     </description>
     <vendor email="clement.fournier76@gmail.com" url="https://github.com/oowekyala">Clément Fournier</vendor>

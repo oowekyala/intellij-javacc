@@ -18,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0-BETA-1"
+version = "1.0-BETA.1"
 
 
 ext {
@@ -133,6 +133,8 @@ tasks {
 
     compileJava {
         dependsOn(overrideDefaultPsi, generateLexer)
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
 
     compileKotlin {
