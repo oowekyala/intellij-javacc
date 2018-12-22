@@ -11,12 +11,19 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.util.IncorrectOperationException
+import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
 class ConsecutiveParserActionsInspection : JavaccInspectionBase(DisplayName) {
+
+    @Language("HTML")
+    override fun getStaticDescription() = """
+        Reports consecutive parser actions unit, e.g. <code>{foo();} {bar();}</code>,
+        which can be rewritten as <code>{foo(); bar();}</code>.
+    """.trimIndent()
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
