@@ -48,4 +48,5 @@ class MindfulProblemDescriptor(val descriptor: ProblemDescriptor) {
     }
 }
 
-inline class ProblemDataKey<T>(val name: String)
+// could be an inline class
+data class ProblemDataKey<T>(val name: String)

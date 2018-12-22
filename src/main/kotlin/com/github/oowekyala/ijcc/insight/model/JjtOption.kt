@@ -65,7 +65,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  SimpleNode.java. See the examples/Interpreter for an example
      *  usage.
      */
-    @Deprecated("jjtree deprecated")
+    // @Deprecated("Deprecated in JJTree")
     object NODE_EXTENDS : JjtOption<String>(RefinedOptionType.TYPE, "")
 
     /**

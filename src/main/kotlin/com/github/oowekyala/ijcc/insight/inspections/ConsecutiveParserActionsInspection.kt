@@ -42,6 +42,7 @@ class ConsecutiveParserActionsInspection : JavaccInspectionBase(DisplayName) {
                             myRange.relativize(o.parent.textRange),
                             ProblemDescription,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOnTheFly,
                             MyQuickFix
                         ).let {
                             MindfulProblemDescriptor(it)
