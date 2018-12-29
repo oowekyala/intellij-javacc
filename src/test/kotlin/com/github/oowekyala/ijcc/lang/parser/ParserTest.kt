@@ -1,12 +1,6 @@
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
-import com.github.oowekyala.ijcc.lang.util.PsiSpec
-import com.github.oowekyala.ijcc.lang.util.matchPsi
-import com.intellij.psi.PsiElement
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 
@@ -14,21 +8,95 @@ import io.kotlintest.shouldBe
  * @author Clément Fournier
  * @since 1.0
  */
-class ParserTest : LightCodeInsightFixtureTestCase() {
+class ParserTest : ParserTestDsl() {
 
 
-    private inline fun <reified N : PsiElement> matchExpansion(ignoreChildren: Boolean = false,
-                                                               noinline nodeSpec: PsiSpec<N>): AssertionMatcher<String> =
-            {
-                JccElementFactory.createBnfExpansion(project, it) should matchPsi(ignoreChildren, nodeSpec)
+    fun testAssignmentPos() {
+        "a=<REF>" should matchExpansion<JccAssignedExpansionUnit> {
+            it.javaAssignmentLhs shouldBe child {
+                it.javaName shouldBe child {
+                    child<JccIdentifier> {
+                        it.name shouldBe "a"
+                    }
+                }
             }
+
+            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
+                it.regularExpression shouldBe child<JccRegularExpressionReference> {
+                    it.unit shouldBe child {
+                        it.nameIdentifier shouldBe child {
+                            it.name shouldBe "REF"
+                        }
+                    }
+                }
+            }
+        }
+
+        "a=\"h\"" should matchExpansion<JccAssignedExpansionUnit> {
+
+            it.javaAssignmentLhs shouldBe child {
+                it.javaName shouldBe child {
+                    child<JccIdentifier> {
+                        it.name shouldBe "a"
+                    }
+                }
+            }
+
+            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
+                it.regularExpression shouldBe child<JccLiteralRegularExpression> {
+                    it.unit shouldBe child {}
+                }
+            }
+        }
+
+        "a=< f: \"olol\">" should matchExpansion<JccAssignedExpansionUnit> {
+
+            it.javaAssignmentLhs shouldBe child {
+                it.javaName shouldBe child {
+                    child<JccIdentifier> {
+                        it.name shouldBe "a"
+                    }
+                }
+            }
+
+            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
+
+                it.regularExpression shouldBe child<JccNamedRegularExpression> {
+                    it.nameIdentifier shouldBe child {
+                        it.name shouldBe "f"
+                    }
+
+                    it.regexpElement shouldBe child<JccLiteralRegexpUnit> {}
+                }
+            }
+        }
+
+        "c=foo()" should matchExpansion<JccAssignedExpansionUnit> {
+
+            it.javaAssignmentLhs shouldBe child {
+                it.javaName shouldBe child {
+                    child<JccIdentifier> {
+                        it.name shouldBe "c"
+                    }
+                }
+            }
+
+            it.assignableExpansionUnit shouldBe child<JccNonTerminalExpansionUnit> {
+
+                it.nameIdentifier shouldBe child {
+                    it.name shouldBe "foo"
+                }
+                it.javaExpressionList shouldBe child {}
+            }
+        }
+    }
 
 
     fun testExpansionPrecedence() {
 
         "\"foo\"" should matchExpansion<JccRegexpExpansionUnit> {
             it.regularExpression shouldBe child<JccLiteralRegularExpression> {
-                child<JccLiteralRegexpUnit>{}
+                it.unit shouldBe child {}
             }
         }
 

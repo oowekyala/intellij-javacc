@@ -47,7 +47,14 @@ typealias AssertionMatcher<T> = (T) -> Unit
 inline fun <reified N : PsiElement> matchPsi(ignoreChildren: Boolean = false,
                                              noinline nodeSpec: PsiSpec<N>)
         : AssertionMatcher<PsiElement?> =
-        { it.baseShouldMatchSubtree(MatchingConfig(adapter = PsiHierarchyAdapter), ignoreChildren, nodeSpec) }
+        {
+            it.baseShouldMatchSubtree(
+                MatchingConfig(
+                    adapter = PsiHierarchyAdapter,
+                    errorPrinter = KotlintestBeanTreePrinter(PsiHierarchyAdapter)
+                ), ignoreChildren, nodeSpec
+            )
+        }
 
 fun <T : InjectionStructureTree> TreeNodeWrapper<InjectionStructureTree, T>.textLeaf(text: String) =
         child<InjectionStructureTree.SurroundNode> {
