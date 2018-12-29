@@ -15,6 +15,9 @@ sealed class JccOptionType<T : Any> {
             INTEGER -> str.toIntOrNull() as T?
         }
 
+        override fun toString(): String = super.toString() + " value"
+
+        @Suppress("LeakingThis")
         override val projection = this
 
         object STRING : BaseOptionType<String>()
@@ -22,7 +25,7 @@ sealed class JccOptionType<T : Any> {
         object BOOLEAN : BaseOptionType<Boolean>()
     }
 
-    override fun toString(): String = javaClass.name.toLowerCase()
+    override fun toString(): String = javaClass.simpleName.toLowerCase()
 
     /** Projects this option type on the corresponding base type. */
     abstract val projection: BaseOptionType<T>
