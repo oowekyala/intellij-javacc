@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.util.prepend
 import com.github.oowekyala.ijcc.util.takeUntil
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDirectory
@@ -33,6 +34,17 @@ fun PsiElement.descendantSequence(reversed: Boolean = false, depthFirst: Boolean
         false -> children + children.flatMap { it.descendantSequence(reversed, depthFirst) }
     }
 }
+
+fun PsiElement.descendantSequence(includeSelf: Boolean,
+                                  reversed: Boolean = false,
+                                  depthFirst: Boolean = false): Sequence<PsiElement> =
+        descendantSequence(reversed, depthFirst).let {
+            when {
+                includeSelf -> it.prepend(this)
+                else        -> it
+            }
+        }
+
 
 /** Lazy sequence of siblings.
  *
@@ -81,11 +93,12 @@ fun TextRange.relativize(container: TextRange): TextRange? =
 fun PsiElement.siblingRangeTo(brother: PsiElement): Sequence<PsiElement> =
         if (this.parent !== brother.parent) throw IllegalArgumentException()
         else when {
-            this === brother                                       -> sequenceOf(this)
+            this === brother                                       ->
+                sequenceOf(this)
             this.startOffsetInParent < brother.startOffsetInParent ->
-                sequenceOf(this).plus(this.siblingSequence(forward = true).takeUntil(brother))
+                this.siblingSequence(forward = true).takeUntil(brother).prepend(this)
             else                                                   ->
-                sequenceOf(this).plus(this.siblingSequence(forward = false).takeUntil(brother))
+                this.siblingSequence(forward = false).takeUntil(brother).prepend(this)
 
         }
 

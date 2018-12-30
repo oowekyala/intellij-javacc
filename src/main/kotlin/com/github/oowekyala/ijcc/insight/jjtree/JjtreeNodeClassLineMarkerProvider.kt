@@ -18,7 +18,7 @@ import gnu.trove.THashSet
  * @author Clément Fournier
  * @since 1.0
  */
-class JjtreeLineMarkerProvider : RelatedItemLineMarkerProvider() {
+class JjtreeNodeClassLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(elements: List<PsiElement>,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,

@@ -14,17 +14,19 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     /** Terminal (for headers).  */
     TOKEN_HEADER("terminal.png"),
     /** Terminal regex.  */
-    TOKEN(PlatformIcons.FIELD_ICON),
+    TOKEN(AllIcons.Nodes.Variable),
     /** BNF production.  */
-    BNF_PRODUCTION(PlatformIcons.METHOD_ICON),
+    BNF_PRODUCTION(AllIcons.Nodes.Pointcut),
     /** Javacc option. */
     JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
     /** Javacode production.  */
-    JAVACODE_PRODUCTION(PlatformIcons.ABSTRACT_METHOD_ICON),
+    JAVACODE_PRODUCTION(AllIcons.Nodes.DisabledPointcut),
 
     // other
-    /** Node class for the gutter. */
+    /** For [com.github.oowekyala.ijcc.insight.jjtree.JjtreeNodeClassLineMarkerProvider]. */
     GUTTER_NODE_CLASS(AllIcons.Gutter.OverridenMethod),
+    /** For [com.github.oowekyala.ijcc.insight.jjtree.JjtreePartialDeclarationLineMarkerProvider]. */
+    GUTTER_PARTIAL_DECL(AllIcons.General.Locate),
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");
 

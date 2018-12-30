@@ -118,7 +118,10 @@
                                       implementationClass="com.github.oowekyala.ijcc.insight.structure.JavaccStructureViewBuilderFactory"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
-                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreeLineMarkerProvider"/>
+                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreeNodeClassLineMarkerProvider"/>
+
+        <codeInsight.lineMarkerProvider language="JavaCC"
+                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreePartialDeclarationLineMarkerProvider"/>
 
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
