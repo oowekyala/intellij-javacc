@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.insight.structure
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -66,20 +67,11 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         val regex = spec.regularExpression
         if (regex is JccNamedRegularExpression) {
             builder.append(regex.name).append(" : ")
-            val namedContents = regex.regexpElement
-            if (namedContents is JccLiteralRegexpUnit) {
-                builder.append(namedContents.stringLiteral.text)
-            } else {
-                builder.append("...")
-            }
-        } else {
-            val elt = spec.getRootRegexElement()
-            if (elt is JccLiteralRegexpUnit)
-                builder.append(regex.text)
-            else builder.append("...")
         }
 
-        builder.append(">")
+        builder += regex.asSingleLiteral()?.text ?: "..."
+
+        builder.append('>')
         return builder.toString()
     }
 
