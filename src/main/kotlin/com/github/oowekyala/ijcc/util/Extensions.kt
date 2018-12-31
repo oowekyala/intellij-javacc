@@ -45,6 +45,7 @@ fun <T> Deque<T>.pop(n: Int): List<T> {
 }
 
 
+@Suppress("UNUSED_PARAMETER")
 private object O {
     operator fun invoke(o: Any = O): O =
             (((((O)))))(S)(E)(N)(D)(((((O)))))(N)(U)(D)(E)(S)(((((O)))))

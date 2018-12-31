@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.refs
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
+import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 
@@ -18,7 +19,7 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
 
     override fun resolve(): JccRegexprSpec? = super.resolve() as JccRegexprSpec?
 
-    override fun multiResolve(incompleteCode: Boolean): Array<MyResolveResult> {
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val file = element.containingFile
 
         val grammar = file.lexicalGrammar
@@ -27,7 +28,7 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
             .asSequence()
             .map { it.matchLiteral(element) }
             .filterNotNull()
-            .map { MyResolveResult(it) }
+            .map { PsiElementResolveResult(it) }
             .distinct()
 
         return matchedTokens.toList().toTypedArray()
@@ -38,11 +39,4 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
                 .globalNamedTokens
                 .filter { !it.isPrivate }.toList().toTypedArray()
 
-    companion object {
-        class MyResolveResult(private val regexprSpec: JccRegexprSpec) : ResolveResult {
-            override fun getElement(): JccRegexprSpec = regexprSpec
-
-            override fun isValidResult(): Boolean = true
-        }
-    }
 }

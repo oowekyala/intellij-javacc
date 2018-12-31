@@ -1,12 +1,10 @@
 package com.github.oowekyala.ijcc.lang.parser
 
-import com.github.oowekyala.ijcc.lang.psi.JccExpansion
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.ijcc.lang.util.PsiSpec
 import com.github.oowekyala.ijcc.lang.util.matchPsi
 import com.intellij.psi.PsiElement
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.should
 
 /**
@@ -15,10 +13,9 @@ import io.kotlintest.should
  */
 
 
-open class ParserTestDsl : LightCodeInsightFixtureTestCase() {
+open class ParserTestDsl : JccTestBase() {
 
 
-    protected fun String.asExpansion(): JccExpansion = JccElementFactory.createBnfExpansion(project, this)
 
     protected inline fun <reified N : PsiElement> matchExpansion(ignoreChildren: Boolean = false,
                                                                  noinline nodeSpec: PsiSpec<N>): AssertionMatcher<String> =

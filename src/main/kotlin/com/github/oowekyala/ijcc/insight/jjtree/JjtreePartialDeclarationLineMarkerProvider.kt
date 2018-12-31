@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.insight.jjtree
 import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
+import com.github.oowekyala.ijcc.lang.psi.nodeSimpleName
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
@@ -33,7 +34,7 @@ class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider
                     NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_PARTIAL_DECL)
                         .setTargets(group)
                         .setTooltipText("Click to navigate to other declarations of $name")
-                        .setPopupTitle("Node $name has partial declarations")
+                        .setPopupTitle("Select partial declaration for $name")
 
             for (elt in group) {
 

@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
+import com.github.oowekyala.ijcc.lang.refs.JjtNodePolyReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
@@ -31,6 +32,7 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
         is JccTokenReferenceUnit       -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
         is JccLiteralRegexpUnit        -> JccStringTokenReference(this)
+        is JccNodeClassOwner           -> nodeIdentifier?.let { JjtNodePolyReference(this, it) }
         else                           -> null
     }
 }
