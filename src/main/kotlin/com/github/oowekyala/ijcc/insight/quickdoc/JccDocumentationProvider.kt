@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
+import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
@@ -17,18 +18,37 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
     private object Log : EnclosedLogger()
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
-        val relevantNode = element?.parentSequence(includeSelf = true)
-            ?.first { it is JccRegexprSpec || it is JccNonTerminalProduction }
 
-        return when (relevantNode) {
-            is JccRegexprSpec        -> JccTerminalDocMaker.makeDoc(relevantNode)
-            is JccBnfProduction      -> JccNonTerminalDocMaker.makeDoc(relevantNode)
-            is JccJavacodeProduction -> JccNonTerminalDocMaker.makeDoc(relevantNode)
-            else                     -> {
-                Log { debug("Unhandled documentable element of type ${relevantNode?.javaClass?.simpleName}") }
-                null
+        element ?: return null
+
+        val maybeJjtree =
+                element as? JccScopedExpansionUnit
+                    ?: element.let { it as? JccJjtreeNodeDescriptor }
+                        ?.let { it.parent as? JccScopedExpansionUnit }
+
+        maybeJjtree?.runIt { return JjtNodeDocMaker.makeDoc(it) }
+
+        val maybeProd =
+                element as? JccNonTerminalProduction
+                    ?: element.parent.parent as? JccNonTerminalProduction
+
+        if (maybeProd != null) {
+            return when (maybeProd) {
+                is JccBnfProduction      -> JccNonTerminalDocMaker.makeDoc(maybeProd)
+                is JccJavacodeProduction -> JccNonTerminalDocMaker.makeDoc(maybeProd)
+                else                     -> null
             }
         }
+
+
+        val maybeToken =
+                element as? JccRegexprSpec
+                    ?: element.let { it as? JccIdentifier }
+                        ?.let { it.parent as? JccNamedRegularExpression }
+                        ?.let { it.parent as? JccRegexprSpec }
+
+
+        return maybeToken?.let { JccTerminalDocMaker.makeDoc(it) }
     }
 
 

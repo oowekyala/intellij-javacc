@@ -55,7 +55,7 @@ object JccNonTerminalDocMaker {
         }
     }
 
-    private class ExpansionMinifierVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
+    class ExpansionMinifierVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
 
         // spread out the top level alternatives
         var spreadAlternatives: Boolean = false
