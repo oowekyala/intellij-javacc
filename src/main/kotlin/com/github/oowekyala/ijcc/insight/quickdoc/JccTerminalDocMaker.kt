@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.insight.model.LexicalState
-import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.angles
-import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.bold
+import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.angles
+import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
@@ -66,7 +66,7 @@ object JccTerminalDocMaker {
             val reffed: JccRegexprSpec? = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.asSingleLiteral()?.text ?: "&lt;${o.name}&gt;"
+            val linkText = reffed?.asSingleLiteral()?.text ?: angles(o.nameIdentifier.name)
 
             DocumentationManager.createHyperlink(
                 sb,

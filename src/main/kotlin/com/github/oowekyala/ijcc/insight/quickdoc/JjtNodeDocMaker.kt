@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.insight.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.nodeIdentifier
 
@@ -17,11 +18,13 @@ object JjtNodeDocMaker {
                         append("#${id.name}") // use the unprefixed name
                     }
                     sections {
-                        buildSection("BNF", sectionDelim = " ::=") {
+                        buildSection(BnfSectionName, sectionDelim = " ::=") {
                             scopedUnit.expansionUnit.let {
                                 JccNonTerminalDocMaker.ExpansionMinifierVisitor(this).startOn(it)
                             }
                         }
+                        jjtreeSection(scopedUnit)
+
                     }
                 }
             }

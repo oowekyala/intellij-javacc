@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.insight.inspections.docIsNecessary
+import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
@@ -17,6 +18,8 @@ import org.intellij.lang.annotations.Language
  */
 object JccNonTerminalDocMaker {
 
+    const val BnfSectionName = "BNF"
+    const val JJTreeSectionName = "JJTree node"
 
     fun makeDoc(prod: JccJavacodeProduction): String = buildQuickDoc {
         buildDefinition {
@@ -24,6 +27,7 @@ object JccNonTerminalDocMaker {
         }
         sections {
             emptySection("(JAVACODE)")
+            jjtreeSection(prod)
         }
     }
 
@@ -48,12 +52,14 @@ object JccNonTerminalDocMaker {
                 appendHeader(prod.header)
             }
             sections {
-                buildSection("BNF", sectionDelim = " ::=") {
+                buildSection(BnfSectionName, sectionDelim = " ::=") {
                     prod.expansion?.let { ExpansionMinifierVisitor(this).startOn(it) }
                 }
+                jjtreeSection(prod)
             }
         }
     }
+
 
     class ExpansionMinifierVisitor(private val sb: StringBuilder) : DepthFirstVisitor() {
 
@@ -179,4 +185,16 @@ object JccNonTerminalDocMaker {
         }
     }
 
+}
+
+
+internal fun SectionsBuilder.jjtreeSection(owner: JccNodeClassOwner) {
+    buildSection(JccNonTerminalDocMaker.JJTreeSectionName) {
+
+        owner.nodeQualifiedName?.let { qname ->
+            val simpleName = qname.split(".").last()
+            append(HtmlUtil.psiLink(qname, simpleName))
+        } ?: append("none")
+
+    }
 }

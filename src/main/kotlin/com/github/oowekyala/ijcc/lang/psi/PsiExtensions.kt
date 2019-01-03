@@ -6,6 +6,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import com.intellij.psi.util.PsiTreeUtil
 
 /** Lazy sequence of children. */
 fun PsiElement.childrenSequence(reversed: Boolean = false): Sequence<PsiElement> = when (reversed) {
@@ -101,6 +102,13 @@ fun PsiElement.siblingRangeTo(brother: PsiElement): Sequence<PsiElement> =
                 this.siblingSequence(forward = false).takeUntil(brother).prepend(this)
 
         }
+
+inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(): T? =
+        PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false)
+
+
+inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out PsiElement>): T? =
+        PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
 
 
 // constrain the hierarchies to be the same to avoid some confusions
