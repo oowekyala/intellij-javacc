@@ -33,6 +33,7 @@ class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider
             val builder =
                     NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_PARTIAL_DECL)
                         .setTargets(group)
+                        .setCellRenderer(PartialDeclCellRenderer())
                         .setTooltipText("Click to navigate to other declarations of $name")
                         .setPopupTitle("Select partial declaration for $name")
 
