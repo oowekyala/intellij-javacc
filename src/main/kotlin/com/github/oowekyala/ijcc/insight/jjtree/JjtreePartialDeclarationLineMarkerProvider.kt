@@ -9,6 +9,7 @@ import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 
 /**
@@ -17,7 +18,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider() {
+class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider(), DumbAware {
 
     override fun collectNavigationMarkers(elements: List<PsiElement>,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,

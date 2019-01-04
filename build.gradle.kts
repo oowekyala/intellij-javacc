@@ -168,7 +168,7 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                JJTree support improvements. Changelog:
+                Mostly JJTree support improvements. Changelog:
                 <ul>
                 <li>Improved JJTree support:
                     <ul>
@@ -182,6 +182,7 @@ tasks {
                 </li>
                 <li>Fixed some bugs:
                     <ul>
+                        <li>Duplicate productions are now highlighted</li>
                         <li>Display name of some tokens in the structure view</li>
                         <li>Display name of option types</li>
                     </ul>

@@ -9,8 +9,10 @@ import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.github.oowekyala.ijcc.util.ifTrue
+import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -18,13 +20,15 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.strictParents
+import com.intellij.util.containers.MostlySingularMultiMap
+import gnu.trove.THashMap
 import org.apache.commons.lang3.StringEscapeUtils
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
+open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun clone(): HighlightVisitor = JccHighlightVisitor()
 
@@ -40,6 +44,21 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
     private val myFile: JccFile // never null during analysis
         get() = myFileImpl!!.element!!
 
+
+    private val myDuplicateMethods = THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>()
+
+    private fun getDuplicateMethods(grammar: JccFile): MostlySingularMultiMap<String, JccNonTerminalProduction> {
+        return myDuplicateMethods.computeIfAbsent(grammar) {
+            val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
+
+            for (prod in grammar.nonTerminalProductions) {
+                signatures.add(prod.name!!, prod)
+            }
+
+            signatures
+        }
+    }
+
     override fun analyze(file: PsiFile,
                          updateWholeFile: Boolean,
                          holder: HighlightInfoHolder,
@@ -51,6 +70,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
             // cleanup
             myFileImpl = null
             myHolderImpl = null
+            myDuplicateMethods.clear()
         }
         return true
     }
@@ -101,6 +121,20 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor {
         if (!binding.matchesType(opt.expectedType)) {
             binding.optionValue?.run {
                 myHolder += errorInfo(this, "Expected ${opt.expectedType}")
+            }
+        }
+    }
+
+    override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
+        // check for duplicates
+        getDuplicateMethods(o.containingFile)[o.name!!].runIt { dups ->
+            if (dups.count() > 1) {
+                for (dup in dups) {
+                    myHolder += errorInfo(
+                        o.nameIdentifier,
+                        "Duplicate production ${o.name}"
+                    )
+                }
             }
         }
     }
