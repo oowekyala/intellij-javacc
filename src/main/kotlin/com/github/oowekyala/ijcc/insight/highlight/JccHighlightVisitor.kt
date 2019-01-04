@@ -45,19 +45,16 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         get() = myFileImpl!!.element!!
 
 
-    private val myDuplicateMethods = THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>()
+    private val myDuplicateMethods =
+            THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { grammar ->
+                val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
 
-    private fun getDuplicateMethods(grammar: JccFile): MostlySingularMultiMap<String, JccNonTerminalProduction> {
-        return myDuplicateMethods.computeIfAbsent(grammar) {
-            val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
+                for (prod in grammar.nonTerminalProductions) {
+                    signatures.add(prod.name!!, prod)
+                }
 
-            for (prod in grammar.nonTerminalProductions) {
-                signatures.add(prod.name!!, prod)
+                signatures
             }
-
-            signatures
-        }
-    }
 
     override fun analyze(file: PsiFile,
                          updateWholeFile: Boolean,
@@ -127,7 +124,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        getDuplicateMethods(o.containingFile)[o.name!!].runIt { dups ->
+        myDuplicateMethods[o.containingFile]!![o.name!!].runIt { dups ->
             if (dups.count() > 1) {
                 for (dup in dups) {
                     myHolder += errorInfo(

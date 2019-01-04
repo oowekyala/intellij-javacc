@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.jjtree
 
-import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
-import com.github.oowekyala.ijcc.lang.psi.nodeSimpleName
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
@@ -24,8 +21,10 @@ class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,
                                           forNavigation: Boolean) {
         val partialDeclarations = elements
-            .groupBy { (it as? JccNodeClassOwner)?.nodeSimpleName }
-            .filterValues { it.size > 1 }
+            .mapNotNull { (it as? JccNodeClassOwner)?.typedReference?.multiResolve(false) }
+            .filter { it.size > 1 }
+            .map { it.map { it.element }.toList() }
+            .associateBy { it[0].nodeSimpleName }
 
         for ((name, group) in partialDeclarations) {
 
