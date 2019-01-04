@@ -1,4 +1,4 @@
-[![Release version](https://img.shields.io/badge/release%20version-1.0--BETA-green.svg)](https://plugins.jetbrains.com/plugin/11431-javacc)
+[![](https://img.shields.io/jetbrains/plugin/v/11431-a8translate.svg)](https://plugins.jetbrains.com/plugin/11431-javacc)
 
 # JavaCC and JJTree plugin for IntelliJ IDEA
 
@@ -37,3 +37,10 @@ To change the injection level (or disable it), go to **Settings** | **Languages 
 
 Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.
 
+
+## Usage notes
+
+* I recommend to define an easy shortcut for fold/unfold region from the start if you don't have any
+* Code insight in Java fragments works best when the token manager and other supporting files have already been generated.
+* Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any.
+  The Java injection support in particular is still quite fragile. Contributions are most welcome as well!
