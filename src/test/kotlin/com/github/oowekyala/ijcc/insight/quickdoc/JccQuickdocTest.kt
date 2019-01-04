@@ -153,6 +153,12 @@ class JccQuickdocTest : JccDocumentationProviderTest() {
                       //^
         }
 
+        void Hey(): // here to test it's the doc of the annot and not the production
+        {}
+        {
+            "kk"
+        }
+
         }
     """,
         buildQuickDoc {
@@ -160,6 +166,34 @@ class JccQuickdocTest : JccDocumentationProviderTest() {
             sections {
                 section(header = "BNF", sectionDelim = " ::=") {
                     "\"hey\"" // test that the doc doesn't include the "foo"
+                }
+                section(JJTreeSectionName) {
+                    psiLink("$myDummyPackage.ASTHey", "ASTHey")
+                }
+            }
+        }
+    )
+
+
+    fun `test doc for jjtree scoped expansion with partial decls`() = doTest(
+        """
+        $myDummyHeader
+
+
+        void Foo():
+        {}
+        {
+           "foo" #Hey "hey" #Hey
+                           //^
+        }
+
+        }
+    """,
+        buildQuickDoc {
+            definition { "#Hey" }
+            sections {
+                section(header = "BNF", sectionDelim = " ::=") {
+                    "\"hey\""
                 }
                 section(JJTreeSectionName) {
                     psiLink("$myDummyPackage.ASTHey", "ASTHey")
@@ -177,7 +211,7 @@ class JccQuickdocTest : JccDocumentationProviderTest() {
             //^
         {}
         {
-            "hey" ( "i" | <foo> )
+            "hey" #Foo(true) ( "i" | <foo> )
         }
 
     """, simpleFooDoc(noJjtreeSection = true)

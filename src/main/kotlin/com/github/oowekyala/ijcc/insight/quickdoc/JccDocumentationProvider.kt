@@ -23,7 +23,9 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
 
         val maybeJjtree =
                 element as? JccScopedExpansionUnit
-                    ?: element.let { it as? JccJjtreeNodeDescriptor }
+                    ?: element
+                        .let { it as? JccIdentifier }
+                        ?.let { it.parent as? JccJjtreeNodeDescriptor }
                         ?.let { it.parent as? JccScopedExpansionUnit }
 
         maybeJjtree?.runIt { return JjtNodeDocMaker.makeDoc(it) }
