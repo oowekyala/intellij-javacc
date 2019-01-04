@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
 
@@ -13,17 +12,15 @@ import com.intellij.psi.ResolveResult
 /**
  * Poly reference to the multiple declarations of a JJTree node.
  *
- * @param myId  Mostly used to force the caller to ascertain that it's not null
- *
  * @author Clément Fournier
  * @since 1.0
  */
-class JjtNodePolyReference(psiElement: JccNodeClassOwner, private val myId: JccIdentifier)
+class JjtNodePolyReference(psiElement: JccNodeClassOwner)
     : PsiPolyVariantReferenceBase<JccNodeClassOwner>(psiElement) {
 
     override fun getVariants(): Array<Any> = emptyArray()
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
+    override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JccNodeClassOwner>> {
         val myName = element.nodeSimpleName ?: return emptyArray()
 
         return element.containingFile
@@ -31,13 +28,19 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner, private val myId: JccI
             .flatMap { it.descendantSequence(includeSelf = true) }
             .filterMapAs<JccNodeClassOwner>()
             .filter { it.nodeSimpleName == myName }
-            .map { PsiElementResolveResult(it) }
+            .map { PsiEltResolveResult(it) }
             .toList().toTypedArray()
     }
 
-    override fun getRangeInElement(): TextRange = myId.textRange.relativize(element.textRange)!!
+    override fun getRangeInElement(): TextRange = element.nodeIdentifier!!.textRange.relativize(element.textRange)!!
 
     override fun handleElementRename(newElementName: String): PsiElement =
-            JccIdentifierManipulator().handleContentChange(myId, newElementName)!!
+            JccIdentifierManipulator().handleContentChange(element.nodeIdentifier!!, newElementName)!!
 
+}
+
+data class PsiEltResolveResult<out T : PsiElement>(private val myElt: T) : ResolveResult {
+    override fun getElement(): T = myElt
+
+    override fun isValidResult(): Boolean = true
 }

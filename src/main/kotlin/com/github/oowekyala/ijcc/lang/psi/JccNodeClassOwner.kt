@@ -19,6 +19,12 @@ interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
 }
 
 
+val JccNodeClassOwner.isVoid: Boolean
+    get() = nodeIdentifier == null
+
+val JccNodeClassOwner.isNotVoid: Boolean
+    get() = !isVoid
+
 /** Gets the Psi class representing the node's class for navigation. */
 val JccNodeClassOwner.nodeClass: PsiClass?
     get() = nodeQualifiedName?.let {
@@ -52,7 +58,7 @@ val JccNodeClassOwner.nodeIdentifier: JccIdentifier?
         is JccNonTerminalProduction -> jjtreeNodeDescriptor.let {
             if (it == null)
                 if (grammarOptions.isDefaultVoid) null
-                else nameIdentifier
+                else this.nameIdentifier
             else it.nameIdentifier
         }
         else                        -> throw IllegalStateException()

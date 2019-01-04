@@ -172,7 +172,12 @@ tasks {
                 <ul>
                 <li>Improved JJTree support:
                     <ul>
-                        <li>Gutter links to partial declarations of the token</li>
+                        <li>Documentation of productions features a link to the doc of the node class if it's found</li>
+                        <li>Documentation for inline nodes (of the form "expansion #NodeName") is now resolved properly</li>
+                        <li>Added gutter links to partial declarations of the node if they exist</li>
+                        <li>
+                            Rename refactoring now supports renaming JJTree nodes, taking care of all productions that generate it.
+                        </li>
                     </ul>
                 </li>
                 <li>Fixed some bugs:

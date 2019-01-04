@@ -17,7 +17,7 @@ abstract class JccDocumentationProviderTest : JccTestBase() {
         @Language("Html") expected: String,
         block: JccDocumentationProvider.(PsiElement, PsiElement?) -> String?
     ) {
-        InlineFile(code)
+        configureByText(code)
 
         val (originalElement, _, offset) = findElementWithDataAndOffsetInEditor<PsiElement>()
         val element = DocumentationManager.getInstance(project)
@@ -26,28 +26,6 @@ abstract class JccDocumentationProviderTest : JccTestBase() {
         val actual = JccDocumentationProvider.block(element, originalElement)?.trim()
             ?: error("Expected not null result")
         assertSameLines(expected.trimIndent(), actual)
-    }
-
-
-    protected fun doUrlTestByText(@Language("JavaCC") text: String, expectedUrl: String?) =
-            doUrlTest(text, expectedUrl, this::configureByText)
-
-    private fun doUrlTest(
-        @Language("JavaCC") text: String,
-        expectedUrl: String?,
-        configure: (String) -> Unit
-    ) {
-        configure(text)
-
-        val (originalElement, _, offset) = findElementWithDataAndOffsetInEditor<PsiElement>()
-        val element = DocumentationManager.getInstance(project)
-            .findTargetElement(myFixture.editor, offset, myFixture.file, originalElement)!!
-
-        val action: () -> Unit = {
-            val actualUrls = JccDocumentationProvider.getUrlFor(element, originalElement)
-            assertEquals(listOfNotNull(expectedUrl), actualUrls)
-        }
-        action()
     }
 
 }

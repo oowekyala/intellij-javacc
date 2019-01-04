@@ -25,12 +25,29 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
 
     protected fun replaceCaretMarker(text: String) = text.replace("/*caret*/", "<caret>")
 
+    /**
+     * Selects the caret with the given [id] from [this] grammar.
+     * This allows reusing the same grammar for tests that depend
+     * on caret position. Just write several caret markers like `/*caret[someId]*/`
+     * in the grammar, then call this method to keep only the caret
+     * marker with the given id and replace it with `<caret>`.
+     */
+    protected fun String.selectCaretMarker(id: String): String =
+            replace("/*caret[$id]*/", "<caret>")
+                .also {
+                    check(this != it) {
+                        "No caret with id [$id] found"
+                    }
+                }
+                .replace(Regex("/\\*caret.*?\\*/"), "")
+
+
     protected fun checkByText(
         @Language("Rust") before: String,
         @Language("Rust") after: String,
         action: () -> Unit
     ) {
-        InlineFile(before)
+        configureByText(before)
         action()
         myFixture.checkResult(replaceCaretMarker(after))
     }
@@ -92,24 +109,11 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         myFixture.launchAction(action)
     }
 
-    protected open fun configureByText(text: String) {
-        InlineFile(text.trimIndent())
+    protected open fun configureByText(text: String, fileName: String = "dummy.jjt") {
+        myFixture.configureByText(fileName, text)
     }
 
 
-    inner class InlineFile(@Language("JavaCC") private val code: String, name: String = "dummy.jjt") {
-        private val hasCaretMarker = "/*caret*/" in code
-
-        init {
-            myFixture.configureByText(name, replaceCaretMarker(code))
-        }
-
-        fun withCaret() {
-            check(hasCaretMarker) {
-                "Please, add `/*caret*/` marker to\n$code"
-            }
-        }
-    }
 
 
     companion object {

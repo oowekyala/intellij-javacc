@@ -20,5 +20,6 @@ val JccTokenReferenceUnit.typedReference: JccTerminalReference
 val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
     get() = reference as JccNonTerminalReference
 
+/** Null if [JccNodeClassOwner.isVoid], not null otherwise. */
 val JccNodeClassOwner.typedReference: JjtNodePolyReference?
     get() = reference as JjtNodePolyReference?

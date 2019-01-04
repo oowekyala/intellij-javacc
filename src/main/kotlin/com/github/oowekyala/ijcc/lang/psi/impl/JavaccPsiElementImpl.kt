@@ -32,7 +32,7 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
         is JccTokenReferenceUnit       -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
         is JccLiteralRegexpUnit        -> JccStringTokenReference(this)
-        is JccNodeClassOwner           -> nodeIdentifier?.let { JjtNodePolyReference(this, it) }
+        is JccNodeClassOwner           -> JjtNodePolyReference(this).takeIf { isNotVoid }
         else                           -> null
     }
 }
