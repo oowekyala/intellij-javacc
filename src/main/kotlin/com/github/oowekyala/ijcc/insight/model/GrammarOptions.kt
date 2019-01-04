@@ -13,6 +13,12 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  */
 class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration) {
 
+    val parserQualifiedName: String
+        get() {
+            val pack = parserPackage
+            return if (pack.isEmpty()) parserSimpleName
+            else "$pack.$parserSimpleName"
+        }
 
     // TODO parse from the PARSER def
     val parserPackage: String  by lazy { packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }

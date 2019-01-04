@@ -64,7 +64,7 @@ val JccNodeClassOwner.nodeIdentifier: JccIdentifier?
         else                        -> throw IllegalStateException()
     }
 
-private fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? {
+fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? {
 
     // this is mostly a hack... Idk how to search in all places
     val scope = ModuleUtil.findModuleForFile(context)

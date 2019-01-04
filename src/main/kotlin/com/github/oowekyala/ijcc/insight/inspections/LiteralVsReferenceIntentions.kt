@@ -3,15 +3,13 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.util.EnclosedLogger
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 
 // These two intentions are dual: switch between token reference vs token literal
 
-class TokenInliningIntention : PsiElementBaseIntentionAction() {
+class TokenInliningIntention : JavaccIntentionBase("Inline literal reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf { it.node.elementType == JavaccTypes.JCC_IDENT }
@@ -26,17 +24,10 @@ class TokenInliningIntention : PsiElementBaseIntentionAction() {
 
         ref.safeReplace(JccElementFactory.createLiteralRegexUnit(project, literal.text))
     }
-
-    override fun getFamilyName(): String = text
-
-    override fun getText(): String = "Inline literal reference"
-
-
-    private object Log : EnclosedLogger()
 }
 
 
-class ReplaceLiteralWithReferenceIntention : PsiElementBaseIntentionAction() {
+class ReplaceLiteralWithReferenceIntention : JavaccIntentionBase("Replace literal with reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf { it.node.elementType == JavaccTypes.JCC_STRING_LITERAL }
@@ -51,10 +42,4 @@ class ReplaceLiteralWithReferenceIntention : PsiElementBaseIntentionAction() {
 
         ref.safeReplace(JccElementFactory.createRegexReferenceUnit(project, "<$name>"))
     }
-
-    override fun getFamilyName(): String = text
-
-    override fun getText(): String = "Replace literal with reference"
-
-    private object Log : EnclosedLogger()
 }

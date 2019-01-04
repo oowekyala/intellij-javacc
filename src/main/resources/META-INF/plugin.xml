@@ -132,6 +132,9 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceLiteralWithReferenceIntention</className>
         </intentionAction>
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.inspections.GrammarToParserJumpIntention</className>
+        </intentionAction>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceParenthesizedOptionalWithBracedIntention</className>
