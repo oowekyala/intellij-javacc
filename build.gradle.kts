@@ -18,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0-BETA.2"
+version = "1.0"
 
 
 ext {
@@ -168,7 +168,10 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Mostly JJTree support improvements. Changelog:
+                Seems stable enough to make the first full release. Visit <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a>
+                to download previous releases.
+
+                Changelog since last beta release:
                 <ul>
                 <li>Improved JJTree support:
                     <ul>
