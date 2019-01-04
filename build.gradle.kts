@@ -168,7 +168,6 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Mostly JJTree support improvements
                 Changelog since last release:
                 <ul>
                 <li>Improved JJTree support:
