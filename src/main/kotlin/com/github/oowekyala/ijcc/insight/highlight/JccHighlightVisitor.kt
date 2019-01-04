@@ -46,10 +46,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
 
     private val myDuplicateMethods =
-            THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { grammar ->
+            THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { file ->
+                // get the duplicate prods for the file
                 val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
 
-                for (prod in grammar.nonTerminalProductions) {
+                for (prod in file.nonTerminalProductions) {
                     signatures.add(prod.name!!, prod)
                 }
 
@@ -124,14 +125,12 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        myDuplicateMethods[o.containingFile]!![o.name!!].runIt { dups ->
+        myDuplicateMethods.getValue(o.containingFile)[o.name!!].runIt { dups ->
             if (dups.count() > 1) {
-                for (dup in dups) {
-                    myHolder += errorInfo(
-                        o.nameIdentifier,
-                        "Duplicate production ${o.name}"
-                    )
-                }
+                myHolder += errorInfo(
+                    o.nameIdentifier,
+                    "Duplicate production ${o.name}"
+                )
             }
         }
     }
