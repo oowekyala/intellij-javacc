@@ -6,8 +6,7 @@
 
         <p>
             Offers comprehensive language support for the JavaCC parser generator and its JJTree preprocessor.
-            Do you like it? Give it a star at <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a>.
-            Rate it at <a href="https://plugins.jetbrains.com/plugin/11431-javacc">plugins.jetbrains.com</a>. Thanks!
+            Do you like it? Give it a star on <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a>. Rate it at <a href="https://plugins.jetbrains.com/plugin/11431-javacc">plugins.jetbrains.com</a>. Thanks!
         </p>
 
         <h4>Main features</h4>
@@ -17,10 +16,7 @@
             </li>
             <li><b>JJTree support:</b> Jump to node class, some tooling to detect common errors, etc.</li>
             <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc.</li>
-            <li><b>Inspections and intentions:</b>
-                Including unnecessary parentheses detection, unreachable production
-                detection, ambiguous JJTree node descriptor, etc.
-            </li>
+            <li><b>Inspections and intentions:</b>Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
         </ul>
 
         Visit the <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a> README for more details.
@@ -29,15 +25,8 @@
 
         <ul>
             <li>I recommend to define an easy shortcut for fold/unfold region from the start if you don't have any</li>
-            <li>
-                Code insight in Java fragments works best when the token manager and other supporting files have already
-                been generated.
-            </li>
-            <li>
-                Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter
-                any.
-                The Java injection support in particular is still quite fragile. Contributions are most welcome as well!
-            </li>
+            <li>Code insight in Java fragments works best when the token manager and other supporting files have already been generated.</li>
+            <li>Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any. The Java injection support in particular is still quite fragile. Contributions are most welcome as well!</li>
         </ul>
         ]]>
     </description>
