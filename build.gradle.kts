@@ -18,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0-BETA.2"
+version = "1.0-BETA.3"
 
 
 ext {
@@ -168,31 +168,7 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Changelog since last release:
-                <ul>
-                <li>Improved JJTree support:
-                    <ul>
-                        <li>Documentation of productions features a link to the doc of the node class if it's found</li>
-                        <li>Added gutter links to partial declarations of the node if they exist</li>
-                        <li>
-                            Rename refactoring now supports renaming JJTree nodes, taking care of all productions that generate it.
-                        </li>
-                    </ul>
-                </li>
-                <li>Other improvements:
-                    <ul>
-                        <li>Duplicate productions are now reported as an error</li>
-                        <li>Added an intention to jump to the parser file if it's available</li>
-                    </ul>
-                </li>
-                <li>Fixed some bugs:
-                    <ul>
-                        <li>Documentation for inline nodes (of the form "expansion #NodeName") is now resolved properly</li>
-                        <li>Display name of some tokens in the structure view</li>
-                        <li>Display name of option types</li>
-                    </ul>
-                </li>
-                </ul>
+                Bugfix for #10 (Cannot find child of class JccGrammarFileRoot)
             """.trimIndent()
         )
 
