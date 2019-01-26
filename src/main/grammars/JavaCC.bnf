@@ -137,6 +137,7 @@ grammar_file_root ::=
     option_section?
 	parser_declaration
 	( production )*
+	{name="PARSER_BEGIN"}
 
 option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
@@ -154,7 +155,7 @@ parser_declaration  ::=
     "PARSER_BEGIN" "(" identifier ")"
     java_compilation_unit // TODO inject Java here
     "PARSER_END" "(" identifier ")"
-    {pin=1}
+    {pin=1 name="PARSER_BEGIN"}
 
 private production  ::=
         javacode_production
