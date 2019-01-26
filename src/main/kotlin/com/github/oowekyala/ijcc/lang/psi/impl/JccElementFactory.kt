@@ -170,7 +170,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.parserDeclaration.javaCompilationUnit!!
+        return file.parserDeclaration!!.javaCompilationUnit!!
     }
 
     fun createJavaMethodForNonterminal(project: Project, header: JccJavaNonTerminalProductionHeader): PsiMethod {

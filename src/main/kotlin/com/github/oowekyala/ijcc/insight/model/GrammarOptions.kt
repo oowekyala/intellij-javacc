@@ -11,7 +11,7 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  * @author Clément Fournier
  * @since 1.0
  */
-class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration) {
+class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration?) {
 
     val parserQualifiedName: String
         get() {
@@ -21,8 +21,8 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
         }
 
     // TODO parse from the PARSER def
-    val parserPackage: String  by lazy { packageRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }
-    val parserSimpleName: String  by lazy { classRegex.find(parserDeclaration.text)?.groups?.get(1)?.value ?: "" }
+    val parserPackage: String  by lazy { parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: "" }
+    val parserSimpleName: String  by lazy { parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: "" }
 
     val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 

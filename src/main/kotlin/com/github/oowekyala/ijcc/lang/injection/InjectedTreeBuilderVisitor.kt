@@ -348,7 +348,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                               node: InjectionStructureTree): InjectionStructureTree {
 
             val file = element.containingFile
-            val jcu = file.parserDeclaration.javaCompilationUnit
+            val jcu = file.parserDeclaration?.javaCompilationUnit
 
             // TODO stop ignoring contents of the ACU, in order to modify its structure!
             // TODO add declarations inserted by JJTree (and implements clauses)

@@ -16,7 +16,7 @@ import com.intellij.psi.tree.IFileElementType
 interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
 
     /** The unique parser declaration of this file. */
-    val parserDeclaration: JccParserDeclaration
+    val parserDeclaration: JccParserDeclaration?
 
     /** All non-terminal productions. */
     val nonTerminalProductions: Sequence<JccNonTerminalProduction>
@@ -25,7 +25,7 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
     val regexpProductions: Sequence<JccRegularExprProduction>
 
     /** The injectable file root. */
-    val grammarFileRoot: JccGrammarFileRoot
+    val grammarFileRoot: JccGrammarFileRoot?
 
     val lexicalGrammar: LexicalGrammar
 
