@@ -167,13 +167,13 @@ javacode_production ::=
         "JAVACODE"
 		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
-		{pin=2}
+		{pin=2 recoverWhile="#auto"}
 
 bnf_production 	    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
 		"{" expansion_choices "}"
-		{pin=1}
+		{pin=1 recoverWhile="#auto"}
 
 
 java_non_terminal_production_header  ::=  // TODO inject java here
@@ -182,7 +182,7 @@ java_non_terminal_production_header  ::=  // TODO inject java here
         identifier
         "(" java_parameter_list ")"
         [ java_throws_list ]
-        {pin=3}
+        {pin=3 recoverWhile="#auto"}
 
 
 java_throws_list ::=
@@ -192,7 +192,7 @@ java_throws_list ::=
 jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
     [ jjtree_node_descriptor_expr ]
-    {pin=2}
+    {pin=2 recoverWhile="#auto"}
 
 // The expr is integer valued for definite nodes, is boolean valued for conditional nodes
 jjtree_node_descriptor_expr ::=
@@ -200,15 +200,6 @@ jjtree_node_descriptor_expr ::=
 
 token_manager_decls ::=
         "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here
-
-regular_expr_production 	::=
-        [ lexical_state_list ]
-		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
-		"{" regexpr_spec_list "}"
-		{pin="regexpr_kind"}
-
-private regexpr_spec_list   ::=
-    regexpr_spec ( "|" regexpr_spec )*
 
 
 lexical_state_list 	::=
@@ -221,12 +212,32 @@ regexpr_kind 	    ::=
 	| 	"SKIP"
 	| 	"MORE"
 
+regular_expr_production 	::=
+        [ lexical_state_list ]
+		regexpr_kind [ "[" "IGNORE_CASE" "]" ] ":"
+		"{" regexpr_spec_list "}"
+		{pin="regexpr_kind" recoverWhile="#auto"}
+
+private regexpr_spec_list   ::=
+    regexpr_spec ( "|" regexpr_spec )*
+    {pin=1 recoverWhile="regexpr_spec_list_recover"}
+
+
+private regexpr_spec_list_recover   ::= // exclude ident, most important is the rbrace
+    !( 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '}')
+
+
 regexpr_spec 	    ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
         methods=[lexicalState="identifier"]
-        recoverWhile="#auto"
+        recoverWhile="regexpr_spec_recover"
     }
+
+
+private regexpr_spec_recover        ::= // exclude ident, most important is the pipe
+    !('<' | 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | 'private' | 'protected' | 'public' | 'void' | '|' | '}' | PRIMITIVE_TYPE)
+
 
 fake expansion                      ::=
 fake expansion_sequence_or_unit     ::=
@@ -426,7 +437,7 @@ java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
 private java_parameter_list     ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
-java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")*
+java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")* {pin=1 recoverWhile="#auto"}
 
 // externals
 
