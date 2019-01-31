@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.cfa
 
+import com.github.oowekyala.ijcc.insight.inspections.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 import io.kotlintest.shouldBe

@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
-import com.github.oowekyala.ijcc.insight.cfa.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.insight.inspections.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
