@@ -168,6 +168,9 @@ tasks {
         //language=HTML
         changeNotes(
             """
+                * Add "Lookahead is not at choicepoint" inspection. Lookahead specifications that
+                are not at choice points trigger a JavaCC warning, which is now reported directly
+                in the IDE.
                 * Fix inconsistencies in Find Usages (#11)
                 * Improve resilience of the parser in token specifications
             """.trimIndent()
