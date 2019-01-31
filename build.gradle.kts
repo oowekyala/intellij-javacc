@@ -168,7 +168,8 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Bugfix for #10 (Cannot find child of class JccGrammarFileRoot)
+                * Fix inconsistencies in Find Usages (#11)
+                * Improve resilience of the parser in token specifications
             """.trimIndent()
         )
 
