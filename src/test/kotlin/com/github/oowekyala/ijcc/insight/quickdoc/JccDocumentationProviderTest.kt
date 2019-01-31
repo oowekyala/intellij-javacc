@@ -1,8 +1,10 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiElement
+import com.intellij.testFramework.configureInspections
 import org.intellij.lang.annotations.Language
 
 /**

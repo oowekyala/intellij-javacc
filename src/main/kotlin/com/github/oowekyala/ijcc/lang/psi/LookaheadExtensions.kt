@@ -1,16 +1,6 @@
-PARSER_BEGIN(JJTreeParser)
+package com.github.oowekyala.ijcc.lang.psi
 
-    package org.javacc.jjtree;
-    /**
-     *  This is my parser declaration
-     */
-    public class JJTreeParser {
-
-    }
-
-PARSER_END(JJTreeParser)
-
-
+/*
 
 void lookaheads(): {}
 {
@@ -22,3 +12,15 @@ void lookaheads(): {}
 
     LOOKAHEAD({ doSth(); }, {getToken(1).kind != NATURAL})  // invalid parse
 }
+ */
+val JccLocalLookahead.isLexical
+    get() = integerLiteral != null
+
+val JccLocalLookahead.isSyntactic
+    get() = expansion != null
+
+val JccLocalLookahead.isSemantic
+    get() = javaExpression != null
+
+val JccLocalLookahead.lexicalAmount: Int?
+    get() = integerLiteral?.text?.toInt()

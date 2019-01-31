@@ -12,6 +12,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
 import gnu.trove.THashSet
+import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
@@ -19,6 +20,7 @@ import gnu.trove.THashSet
  */
 class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
 
+    @Language("HTML")
     override fun getStaticDescription() = """
         Detects private regex specs that aren't used in any token definition
         or regex expansion unit. Such regexes don't define a token and are

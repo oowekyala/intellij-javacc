@@ -16,6 +16,7 @@ object JavaccInspectionsProvider : InspectionToolProvider {
         JccUnusedProductionInspection::class.java,
         JccUnusedPrivateRegexInspection::class.java,
         EmptyParserActionsInspection::class.java,
-        ConsecutiveParserActionsInspection::class.java
+        ConsecutiveParserActionsInspection::class.java,
+        LookaheadIsNotAtChoicePointInspection::class.java
     )
 }

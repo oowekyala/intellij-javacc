@@ -19,6 +19,13 @@ import org.intellij.lang.annotations.Language
  */
 abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin {
 
+    protected val fileName: String
+        get() = "$testName.jjt"
+
+    private val testName: String
+        get() = camelOrWordsToSnake(getTestName(true))
+
+
     override fun getProject(): Project {
         return super.getProject()
     }
@@ -113,6 +120,10 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         myFixture.configureByText(fileName, text)
     }
 
+    protected open fun configureByText(text: String) {
+        myFixture.configureByText(fileName, text)
+    }
+
 
 
 
@@ -127,6 +138,12 @@ package dummy.grammar;
 PARSER_END(Dummy)
 """
 
+        @JvmStatic
+        fun camelOrWordsToSnake(name: String): String {
+            if (' ' in name) return name.trim().replace(" ", "_")
+
+            return name.split("(?=[A-Z])".toRegex()).joinToString("_", transform = String::toLowerCase)
+        }
     }
 
 }
