@@ -102,7 +102,7 @@
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
-                                      implementationClass="com.github.oowekyala.ijcc.insight.structure.JavaccStructureViewBuilderFactory"/>
+                                      implementationClass="com.github.oowekyala.ijcc.insight.structureview.JavaccStructureViewBuilderFactory"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreeNodeClassLineMarkerProvider"/>
