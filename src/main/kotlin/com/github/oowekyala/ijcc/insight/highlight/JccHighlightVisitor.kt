@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
+import com.github.oowekyala.ijcc.insight.cfa.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
@@ -264,6 +265,25 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         checkValidity(element)
     }
 
+    override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
+
+        val occ = o.occurrenceIndicator
+        if (occ != null && o.expansion?.isEmptyMatchPossible() == true) {
+            myHolder += errorInfo(
+                o, makeEmptyExpMessage(o)
+            )
+        }
+    }
+
+    override fun visitOptionalExpansionUnit(o: JccOptionalExpansionUnit) {
+
+        if (o.expansion?.isEmptyMatchPossible() == true) {
+            myHolder += errorInfo(
+                o, makeEmptyExpMessage(o)
+            )
+        }
+    }
+
     private fun checkValidity(spec: JccRegexprSpec) {
 
         val regex = spec.asSingleLiteral() ?: return
@@ -274,5 +294,10 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             .ifTrue {
                 myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
             }
+    }
+
+    companion object {
+        fun makeEmptyExpMessage(exp: JccExpansionUnit) =
+                "Expansion within \"${exp.prettyName()}\" can be matched by empty string."
     }
 }

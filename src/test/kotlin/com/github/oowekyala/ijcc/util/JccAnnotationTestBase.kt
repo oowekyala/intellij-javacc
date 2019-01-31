@@ -1,8 +1,7 @@
-package com.github.oowekyala.ijcc.insight.inspections
+package com.github.oowekyala.ijcc.util
 
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
-import com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService
 import com.github.oowekyala.ijcc.settings.javaccSettings
 import org.intellij.lang.annotations.Language
 
@@ -136,6 +135,10 @@ open class JccAnnotationTestBase : JccTestBase() {
     private fun checkByText(text: String) {
         myFixture.checkResult(replaceCaretMarker(text.trimIndent()))
     }
+
+    fun warningAnnot(s: String, desc: String) = "<warning descr=\"$desc\">$s</warning>"
+    fun errorAnnot(s: String, desc: String) = "<error descr=\"$desc\">$s</error>"
+    fun infoAnnot(s: String, desc: String) = "<info descr=\"$desc\">$s</info>"
 
 
 }

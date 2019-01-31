@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
+import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
+
 abstract class JccInspectionTestBase(
     val inspection: JavaccInspectionBase
 ) : JccAnnotationTestBase() {

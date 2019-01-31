@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.util
 
+import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
@@ -21,6 +22,18 @@ interface ParseUtilsMixin {
         it + "\n" + otherProdNames.joinToString(separator = "\n") { "void $it():{} { \"f\" }" }
     }
 
+    fun String.inExpansionCtx(vararg otherProdNamesAndExps: Pair<String, String>): String = inExpansionCtx().let {
+        it + "\n" + otherProdNamesAndExps.joinToString(separator = "\n") { "void ${it.first}():{} { ${it.second} }" }
+    }
+
+    fun String.asExpansion(vararg otherProdNamesAndExps: Pair<String, String>): JccExpansion = inExpansionCtx().let {
+        it + "\n" + otherProdNamesAndExps.joinToString(separator = "\n") { "void ${it.first}():{} { ${it.second} }" }
+    }.asJccFile()
+        .nonTerminalProductions
+        .first()
+        .let { it as JccBnfProduction }
+        .expansion!!
+
     @Language("JavaCC")
     fun String.inGrammarCtx(): String = asJccGrammar().containingFile.text
 
@@ -31,5 +44,5 @@ interface ParseUtilsMixin {
     fun String.asJccGrammar(): JccFile =
             JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
 
-
 }
+

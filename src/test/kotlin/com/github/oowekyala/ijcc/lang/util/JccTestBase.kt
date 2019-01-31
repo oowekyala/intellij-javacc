@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.util
 
+import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.intellij.lang.LanguageCommenters
 import com.intellij.openapi.editor.LogicalPosition
@@ -125,6 +126,8 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     }
 
 
+    inline fun <reified R : JccExpansion> String.asExpansionOfType(): R =
+            asExpansion().also { check(it is R) }.let { it as R }
 
 
     companion object {

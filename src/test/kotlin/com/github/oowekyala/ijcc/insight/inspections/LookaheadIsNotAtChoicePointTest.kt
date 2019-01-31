@@ -10,10 +10,9 @@ import com.github.oowekyala.ijcc.insight.inspections.LookaheadIsNotAtChoicePoint
  */
 class LookaheadIsNotAtChoicePointTest : JccInspectionTestBase(LookaheadIsNotAtChoicePointInspection()) {
 
-    private fun problem(s: String, desc: String) = "<warning descr=\"$desc\">$s</warning>"
-    private fun ignored(s: String) = problem(s, IgnoredProblemDesc)
-    private fun semantic(s: String) = problem(s, SemanticProblemDesc)
-    private fun nested(s: String) = problem(s, NestedProblemDesc)
+    private fun ignored(s: String) = warningAnnot(s, IgnoredProblemDesc)
+    private fun semantic(s: String) = warningAnnot(s, SemanticProblemDesc)
+    private fun nested(s: String) = warningAnnot(s, NestedProblemDesc)
 
     fun testLoneLookahead() = checkByText(
         """
