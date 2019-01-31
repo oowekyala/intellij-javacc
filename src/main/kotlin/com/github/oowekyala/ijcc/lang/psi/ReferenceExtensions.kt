@@ -20,6 +20,10 @@ val JccTokenReferenceUnit.typedReference: JccTerminalReference
 val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
     get() = reference as JccNonTerminalReference
 
-/** Null if [JccNodeClassOwner.isVoid], not null otherwise. */
+/**
+ * Null if [JccNodeClassOwner.isVoid], not null otherwise.
+ * This is not yielded by PsiElement.getReference because it breaks
+ * find usages.
+ */
 val JccNodeClassOwner.typedReference: JjtNodePolyReference?
-    get() = reference as JjtNodePolyReference?
+    get() = if (isNotVoid) JjtNodePolyReference(this) else null

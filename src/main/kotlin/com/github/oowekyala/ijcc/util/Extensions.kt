@@ -24,6 +24,10 @@ fun String.insert(offset: Int, sub: String): String = when {
     else                           -> substring(0, offset) + sub + substring(offset, length)
 }
 
+inline fun unless(condition: Boolean, block: () -> Unit) {
+    if (!condition) block()
+}
+
 
 operator fun StringBuilder.plusAssign(any: Any) {
     this.append(any)

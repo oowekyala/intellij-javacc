@@ -5,10 +5,12 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
-import com.github.oowekyala.ijcc.lang.refs.JjtNodePolyReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.SearchScope
 
 /**
  * Base impl for Jcc psi elements.
@@ -28,11 +30,23 @@ abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
         else                  -> null
     }
 
+    override fun getTextOffset(): Int = when {
+        this is PsiNameIdentifierOwner && this.nameIdentifier != null -> nameIdentifier!!.textOffset
+        else                                                          -> super.getTextOffset()
+    }
+
+    // TODO should also consider Jjtree class files
+    override fun getResolveScope() = GlobalSearchScope.fileScope(containingFile)
+
+    override fun getUseScope(): SearchScope = GlobalSearchScope.fileScope(containingFile)
+
     override fun getReference(): PsiReference? = when (this) {
         is JccTokenReferenceUnit       -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
         is JccLiteralRegexpUnit        -> JccStringTokenReference(this)
-        is JccNodeClassOwner           -> JjtNodePolyReference(this).takeIf { isNotVoid }
+        // Having it here breaks the Find Usages function
+        // see ReferenceExtensions.typedReference
+        // is JccNodeClassOwner        -> JjtNodePolyReference(this).takeIf { isNotVoid }
         else                           -> null
     }
 }

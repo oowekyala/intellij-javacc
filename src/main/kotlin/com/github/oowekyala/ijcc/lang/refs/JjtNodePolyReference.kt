@@ -20,6 +20,11 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
 
     override fun getVariants(): Array<Any> = emptyArray()
 
+    override fun isReferenceTo(otherElt: PsiElement?): Boolean =
+            otherElt is JccNodeClassOwner
+                    && otherElt.containingFile === element.containingFile
+                    && otherElt.nodeSimpleName == element.nodeSimpleName
+
     override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JccNodeClassOwner>> {
         val myName = element.nodeSimpleName ?: return emptyArray()
 

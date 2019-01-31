@@ -35,7 +35,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
     override fun getVariants(): Array<Any?> =
             element.containingFile.nonTerminalProductions.map { it.name }.toList().toTypedArray()
 
-    override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
+    override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 
     override fun handleElementRename(newElementName: String?): PsiElement = newElementName.toString().let {
         val id = element.nameIdentifier
