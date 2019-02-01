@@ -69,8 +69,77 @@
             <option name="JavaCC" value="true"/>
         </context>
     </template>
-    <template name="block" value="{ $CODE$ }${CARET}" description="Open a code block" toReformat="false"
+    <template name="block" value="{ $CODE$ }$END$" description="Open a code block" toReformat="false"
               toShortenFQNames="true">
         <variable name="CODE" expression="" defaultValue="" alwaysStopAt="true"/>
+    </template>
+    <template name="PARSER_BEGIN" value="PARSER_BEGIN($PARSER_NAME$)&#10;&#10;public class $PARSER_NAME$ {&#10;&#10;}&#10;PARSER_END($PARSER_NAME$)&#10;&#10;$END$"
+              description="Insert parser declaration" toReformat="false" toShortenFQNames="true">
+        <variable name="PARSER_NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="ACTION_SCRIPT" value="false"/>
+            <option name="Bash" value="false"/>
+            <option name="CSS" value="false"/>
+            <option name="CUCUMBER_FEATURE_FILE" value="false"/>
+            <option name="ECMAScript6" value="false"/>
+            <option name="GROOVY" value="false"/>
+            <option name="HAML" value="false"/>
+            <option name="HTML" value="false"/>
+            <option name="JAVA_CODE" value="false"/>
+            <option name="JAVA_SCRIPT" value="false"/>
+            <option name="JSON" value="false"/>
+            <option name="JSP" value="false"/>
+            <option name="KOTLIN" value="false"/>
+            <option name="MARKDOWN" value="false"/>
+            <option name="MAVEN" value="false"/>
+            <option name="MXML" value="false"/>
+            <option name="OGNL" value="false"/>
+            <option name="OTHER" value="true"/>
+            <option name="REQUEST" value="false"/>
+            <option name="RHTML" value="false"/>
+            <option name="RUBY" value="false"/>
+            <option name="SCALA" value="false"/>
+            <option name="SQL" value="false"/>
+            <option name="SSP" value="false"/>
+            <option name="TypeScript" value="false"/>
+            <option name="XML" value="false"/>
+            <option name="sbt" value="false"/>
+            <option name="JavaCC" value="true"/>
+        </context>
+    </template>
+
+    <template name="options"
+              value="options {&#10;    $END$&#10;}"
+              description="Insert option specifications" toReformat="false" toShortenFQNames="true">
+        <context>
+            <option name="ACTION_SCRIPT" value="false"/>
+            <option name="Bash" value="false"/>
+            <option name="CSS" value="false"/>
+            <option name="CUCUMBER_FEATURE_FILE" value="false"/>
+            <option name="ECMAScript6" value="false"/>
+            <option name="GROOVY" value="false"/>
+            <option name="HAML" value="false"/>
+            <option name="HTML" value="false"/>
+            <option name="JAVA_CODE" value="false"/>
+            <option name="JAVA_SCRIPT" value="false"/>
+            <option name="JSON" value="false"/>
+            <option name="JSP" value="false"/>
+            <option name="KOTLIN" value="false"/>
+            <option name="MARKDOWN" value="false"/>
+            <option name="MAVEN" value="false"/>
+            <option name="MXML" value="false"/>
+            <option name="OGNL" value="false"/>
+            <option name="OTHER" value="true"/>
+            <option name="REQUEST" value="false"/>
+            <option name="RHTML" value="false"/>
+            <option name="RUBY" value="false"/>
+            <option name="SCALA" value="false"/>
+            <option name="SQL" value="false"/>
+            <option name="SSP" value="false"/>
+            <option name="TypeScript" value="false"/>
+            <option name="XML" value="false"/>
+            <option name="sbt" value="false"/>
+            <option name="JavaCC" value="true"/>
+        </context>
     </template>
 </templateSet>
