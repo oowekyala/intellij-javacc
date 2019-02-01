@@ -93,7 +93,10 @@
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
 
         <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JavaccTemplateContext"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
 
         <lang.findUsagesProvider language="JavaCC"
                                  implementationClass="com.github.oowekyala.ijcc.lang.refs.JccFindUsagesProvider"/>
