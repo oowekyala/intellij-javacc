@@ -149,12 +149,9 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
                 JCC_CHARACTER_LITERAL       -> JavaTokenType.CHARACTER_LITERAL
                 JCC_COLON                   -> JavaTokenType.COLON
                 JCC_COMMA                   -> JavaTokenType.COMMA
-                JCC_C_STYLE_COMMENT         -> JavaTokenType.C_STYLE_COMMENT
-                JCC_DOC_COMMENT             -> JavaTokenType.C_STYLE_COMMENT
                 JCC_DOT                     -> JavaTokenType.DOT
                 JCC_DOUBLE_LITERAL          -> JavaTokenType.DOUBLE_LITERAL
                 JCC_ELLIPSIS                -> JavaTokenType.ELLIPSIS
-                JCC_END_OF_LINE_COMMENT     -> JavaTokenType.END_OF_LINE_COMMENT
                 JCC_FALSE_KEYWORD           -> JavaTokenType.FALSE_KEYWORD
                 JCC_FINALLY_KEYWORD         -> JavaTokenType.FINALLY_KEYWORD
                 JCC_FLOAT_LITERAL           -> JavaTokenType.FLOAT_LITERAL

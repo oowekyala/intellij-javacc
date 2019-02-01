@@ -110,6 +110,9 @@
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreePartialDeclarationLineMarkerProvider"/>
 
+        <lang.inspectionSuppressor language="JavaCC"
+                                   implementationClass="com.github.oowekyala.ijcc.insight.inspections.JccInspectionSuppressor"/>
+
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
 

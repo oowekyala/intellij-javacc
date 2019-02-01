@@ -8,6 +8,7 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.JavaTokenType
+import com.intellij.psi.impl.source.tree.JavaDocElementType
 import com.intellij.psi.tree.IElementType
 import java.util.*
 
@@ -89,8 +90,8 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
             // Each token type for javacc tokens and for java tokens must fall into one of those categories
 
-            LINE_COMMENT(JCC_END_OF_LINE_COMMENT)
-            C_COMMENT(JCC_C_STYLE_COMMENT, JCC_DOC_COMMENT)
+            LINE_COMMENT(JavaTokenType.END_OF_LINE_COMMENT)
+            C_COMMENT(JavaTokenType.C_STYLE_COMMENT, JavaDocElementType.DOC_COMMENT)
 
             JAVACC_KEYWORD(
                 JCC_LOOKAHEAD_KEYWORD,

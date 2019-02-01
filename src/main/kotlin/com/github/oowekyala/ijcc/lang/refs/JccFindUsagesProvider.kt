@@ -21,13 +21,9 @@ import com.intellij.psi.tree.TokenSet
 class JccFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? = DefaultWordsScanner(
         JavaccLexerAdapter(),
-        TokenSet.create(JavaccTypes.JCC_IDENT),
-        TokenSet.create(
-            JavaccTypes.JCC_END_OF_LINE_COMMENT,
-            JavaccTypes.JCC_C_STYLE_COMMENT,
-            JavaccTypes.JCC_DOC_COMMENT
-        ),
-        TokenSet.create(JavaccTypes.JCC_STRING_LITERAL)
+        JccTypesExt.IdentifierTypeSet,
+        JccTypesExt.CommentTypeSet,
+        JccTypesExt.StringLiteralTypeSet
     )
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as PsiNamedElement).name!!

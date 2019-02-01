@@ -1,9 +1,9 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.parser.JavaccParser
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.lang.ASTNode
@@ -14,7 +14,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 
@@ -31,18 +30,11 @@ object JavaccParserDefinition : ParserDefinition {
 
     override fun getFileNodeType(): IFileElementType = JccFile.TYPE
 
-    override fun getWhitespaceTokens(): TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
+    override fun getWhitespaceTokens(): TokenSet = JccTypesExt.WhitespaceTypeSet
 
+    override fun getCommentTokens(): TokenSet = JccTypesExt.CommentTypeSet
 
-    override fun getCommentTokens(): TokenSet =
-            TokenSet.create(
-                JavaccTypes.JCC_C_STYLE_COMMENT,
-                JavaccTypes.JCC_END_OF_LINE_COMMENT,
-                JavaccTypes.JCC_DOC_COMMENT
-            )
-
-    override fun getStringLiteralElements(): TokenSet =
-            TokenSet.create(JavaccTypes.JCC_STRING_LITERAL)
+    override fun getStringLiteralElements(): TokenSet = JccTypesExt.StringLiteralTypeSet
 
     override fun createElement(node: ASTNode): PsiElement = JccElementFactory.createElement(node)
 

@@ -91,10 +91,6 @@
         LONG_LITERAL        = 'regexp:(0[xb])?[\da-fA-F]+[lL]'
         CHARACTER_LITERAL   = "regexp:'([^\\\'\r\n]|\\[^\n\r])'"
 
-        C_STYLE_COMMENT     = "C_STYLE_COMMENT"
-        END_OF_LINE_COMMENT = "END_OF_LINE_COMMENT"
-        DOC_COMMENT         = "DOC_COMMENT"
-
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 

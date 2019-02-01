@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
+import com.github.oowekyala.ijcc.insight.inspections.isJccComment
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
@@ -29,6 +30,21 @@ object JccElementFactory {
     private val Project.psiFileFactory
         get() = PsiFileFactory.getInstance(this)
 
+    fun createEolComment(project: Project, name: String): PsiElement {
+        val fileText = """
+            // $name
+            options {
+             FOO = $name;
+            }
+            PARSER_BEGIN(dummy)
+            PARSER_END(dummy)
+
+        """.trimIndent()
+
+        val file = createFile(project, fileText)
+
+        return file.firstChild.also { assert(it.isJccComment) }
+    }
 
     fun createOptionValue(project: Project, name: String): JccOptionValue {
         val fileText = """
