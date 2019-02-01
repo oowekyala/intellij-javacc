@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.jjtree
 import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
-import com.github.oowekyala.ijcc.lang.psi.parentSequence
+import com.github.oowekyala.ijcc.lang.psi.ancestors
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.ide.util.DefaultPsiElementCellRenderer
 import com.intellij.psi.PsiElement
@@ -32,7 +32,7 @@ class PartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
     override fun getContainerText(element: PsiElement?, name: String?): String? {
         return when (element) {
             is JccScopedExpansionUnit   ->
-                element.parentSequence(includeSelf = false)
+                element.ancestors(includeSelf = false)
                     .filterMapAs<JccNonTerminalProduction>()
                     .firstOrNull()
                     ?.let { "in ${it.name}()" }

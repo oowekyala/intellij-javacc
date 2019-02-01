@@ -7,10 +7,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 
 
@@ -45,6 +42,17 @@ object JccElementFactory {
 
         return file.firstChild.also { assert(it.isJccComment) }
     }
+
+
+    fun insertEolCommentBefore(project: Project, anchor: PsiElement, name: String) {
+        val parserFacade = PsiParserFacade.SERVICE.getInstance(project)
+
+        val comment = parserFacade.createLineCommentFromText(JavaccFileType, name)
+        anchor.parent.addBefore(comment, anchor)
+        val eol = parserFacade.createWhiteSpaceFromText("\n")
+        anchor.parent.addBefore(eol, anchor)
+    }
+
 
     fun createOptionValue(project: Project, name: String): JccOptionValue {
         val fileText = """

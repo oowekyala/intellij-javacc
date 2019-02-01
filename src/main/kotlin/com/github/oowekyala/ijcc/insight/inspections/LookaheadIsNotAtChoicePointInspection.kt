@@ -71,7 +71,7 @@ class LookaheadIsNotAtChoicePointInspection : JavaccInspectionBase(DisplayName) 
                                 desc,
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING
                             )
-                        } else if (la.parentSequence(includeSelf = false).any { it is JccLocalLookahead } && la.isSyntactic) {
+                        } else if (la.ancestors(includeSelf = false).any { it is JccLocalLookahead } && la.isSyntactic) {
                             // don't report both
 
                             holder.registerProblem(

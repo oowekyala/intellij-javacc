@@ -70,7 +70,7 @@ val PsiElement.lastChildNoWhitespace: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isWhitespace }
 
 /** Parent sequence, stopping at the file node. */
-fun PsiElement.parentSequence(includeSelf: Boolean) =
+fun PsiElement.ancestors(includeSelf: Boolean) =
         generateSequence(if (includeSelf) this else parent) { it.parent }.takeWhile { it !is PsiDirectory }
 
 

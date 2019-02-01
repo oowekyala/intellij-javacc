@@ -234,8 +234,8 @@ fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false):
  * Returns true if this token reference may reference private regexes.
  */
 val JccTokenReferenceUnit.canReferencePrivate: Boolean
-    get() = parentSequence(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRegularExpressionReference
-            || parentSequence(includeSelf = false).any { it is JccRegexprSpec }
+    get() = ancestors(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRegularExpressionReference
+            || ancestors(includeSelf = false).any { it is JccRegexprSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild
