@@ -242,11 +242,17 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         myHolder +=
                 if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
                 else if (reffed.isPrivate && !o.canReferencePrivate) {
-                    errorInfo(
+                    wrongReferenceInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"
                     )
+                } else if (reffed.regexKind != RegexKind.TOKEN) {
+                    wrongReferenceInfo(
+                        o.nameIdentifier,
+                        "Token name ${o.name} refers to a non-token (SKIP, MORE, IGNORE_IN_BNF) regular expression"
+                    )
                 } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
+
 
     }
 
@@ -405,6 +411,18 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 myHolder += errorInfo(spec, "EOF action/state change can be specified only in a TOKEN specification")
             }
         }
+
+        spec.name?.runIt { name ->
+
+            if (myFile.lexicalGrammar.lexicalStates.map { it.name }.contains(name)) {
+                val id = spec.regularExpression.let { it as JccNamedRegularExpression }.nameIdentifier
+                myHolder += JccHighlightUtil.wrongReferenceInfo(
+                    id,
+                    "Lexical token name \"$name\" is the same as that of a lexical state"
+                )
+            }
+        }
+
     }
 
     companion object {
