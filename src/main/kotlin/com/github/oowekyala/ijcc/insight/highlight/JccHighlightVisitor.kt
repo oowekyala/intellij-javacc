@@ -188,6 +188,24 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         o.lexicalStateList?.identifierList?.forEach {
             myHolder += highlightInfo(it, LEXICAL_STATE.highlightType)
         }
+
+        o.lexicalStateList?.identifierList?.runIt { lexStates ->
+
+            val byName = lexStates.groupBy { it.name }
+
+
+            for ((name, idents) in byName) {
+
+                if (idents.size > 1) {
+                    for (ident in idents) {
+                        myHolder += JccHighlightUtil.errorInfo(ident, "Duplicate lexical state name $name.")
+                    }
+                }
+            }
+
+        }
+
+
     }
 
     override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
