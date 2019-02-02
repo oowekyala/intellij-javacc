@@ -1,6 +1,5 @@
 @file:Suppress("PropertyName")
 
-import org.intellij.lang.annotations.Language
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -168,13 +167,26 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                * Significantly improve coverage of JavaCC errors and warnings
-                  * Add "Lookahead is not at choice point" inspection. Lookahead specifications that
-                  are not at choice points trigger a JavaCC warning, which is now reported directly
-                  in the IDE.
-                * Add some live templates to enter PARSER_BEGIN section easily
-                * Fix inconsistencies in Find Usages (#11)
-                * Improve resilience of the parser in token specifications
+                <p>What's new:
+                <ul>
+                    <li>Significantly improve coverage of JavaCC errors and warnings
+                    <ul>
+                        <li>Add "Lookahead is not at choice point" inspection. Lookahead specifications that
+                        are not at choice points trigger a JavaCC warning, which is now reported directly
+                        in the IDE.</li>
+                    </ul>
+                    </li>
+
+                    <li>Add the TOKEN_MGR_DECLS and the parser class declaration to the structure view</li>
+
+                    <li>Add some live templates to enter PARSER_BEGIN section easily</li>
+                </ul>
+
+                <p>What's fixed:
+                <ul>
+                    <li>Fix inconsistencies in Find Usages (#11)</li>
+                    <li>Improve resilience of the parser in token specifications</li>
+                </ul>
             """.trimIndent()
         )
 
