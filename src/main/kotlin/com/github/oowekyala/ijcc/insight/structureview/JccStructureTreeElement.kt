@@ -28,7 +28,9 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         val element = element
         return when (element) {
             is JccOptionSection         -> "aaaaaaa"
-            is JccRegularExprProduction -> "aaaaabb"
+            is JccParserDeclaration     -> "aaaaaaZ"
+            is JccTokenManagerDecls     -> "aaaaaZZ"
+            is JccRegularExprProduction -> "aaaaZZZ"
             else                        -> presentableText
         }
     }
@@ -36,7 +38,13 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     override fun getChildrenBase(): Collection<StructureViewTreeElement> {
         val elt = element
         return when (elt) {
-            is JccFile                  -> listOfNotNull(elt.options).plus(elt.regexpProductions).plus(elt.nonTerminalProductions)
+            is JccFile                  ->
+                listOfNotNull(elt.options)
+                    .plus(listOfNotNull(elt.parserDeclaration))
+                    .plus(listOfNotNull(elt.tokenManagerDecls.firstOrNull()))
+                    .plus(elt.regexpProductions)
+                    .plus(elt.nonTerminalProductions)
+
             is JccRegularExprProduction -> elt.regexprSpecList
             is JccOptionSection         -> elt.optionBindingList
             else                        -> emptyList()
@@ -48,6 +56,9 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         return when (element) {
             is JccOptionSection         -> "Options" // TODO add parser class name
             is JccOptionBinding         -> "${element.name} = ${element.stringValue}"
+
+            is JccParserDeclaration     -> "class ${element.grammarOptions.parserSimpleName}"
+            is JccTokenManagerDecls     -> "TOKEN_MGR_DECLS"
 
             is JccRegularExprProduction -> getRegexpProductionDisplayName(element)
             is JccRegexprSpec           -> getRegexpSpecDisplayName(element)
@@ -122,6 +133,9 @@ class JccStructureTreeElement(element: JavaccPsiElement)
         return when (element) {
             is JccOptionSection         -> JavaccIcons.JAVACC_OPTION
             is JccOptionBinding         -> JavaccIcons.JAVACC_OPTION
+
+            is JccTokenManagerDecls     -> JavaccIcons.TOKEN_MGR_DECLS
+            is JccParserDeclaration     -> JavaccIcons.PARSER_DECLARATION
 
             is JccRegularExprProduction -> JavaccIcons.TOKEN
             is JccRegexprSpec           -> JavaccIcons.TOKEN.append(visibilityIcon(element))

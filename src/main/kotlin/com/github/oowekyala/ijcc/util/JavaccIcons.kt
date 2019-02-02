@@ -21,6 +21,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
     /** Javacode production.  */
     JAVACODE_PRODUCTION(AllIcons.Nodes.DisabledPointcut),
+    TOKEN_MGR_DECLS(PlatformIcons.CLASS_ICON),
+    PARSER_DECLARATION(PlatformIcons.CLASS_ICON),
 
     // other
     /** For [com.github.oowekyala.ijcc.insight.jjtree.JjtreeNodeClassLineMarkerProvider]. */

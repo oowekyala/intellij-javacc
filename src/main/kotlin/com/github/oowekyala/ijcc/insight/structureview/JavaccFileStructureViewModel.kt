@@ -25,7 +25,8 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
             JccOptionSection::class.java,
             JccOptionBinding::class.java,
 
-            // FUTURE JccParserDeclaration::class.java,
+            JccParserDeclaration::class.java,
+            JccTokenManagerDecls::class.java,
 
             JccRegularExprProduction::class.java,
             JccRegexprSpec::class.java,
@@ -43,6 +44,8 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
         val value = element.value
         return value is JccRegexprSpec || value is JccNonTerminalProduction
+                // TODO these should not be leaves, ideally their declarations would be shown as well
+                || value is JccTokenManagerDecls || value is JccParserDeclaration
     }
 
 
