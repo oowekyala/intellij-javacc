@@ -168,9 +168,11 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                * Add "Lookahead is not at choicepoint" inspection. Lookahead specifications that
-                are not at choice points trigger a JavaCC warning, which is now reported directly
-                in the IDE.
+                * Significantly improve coverage of JavaCC errors and warnings
+                  * Add "Lookahead is not at choice point" inspection. Lookahead specifications that
+                  are not at choice points trigger a JavaCC warning, which is now reported directly
+                  in the IDE.
+                * Add some live templates to enter PARSER_BEGIN section easily
                 * Fix inconsistencies in Find Usages (#11)
                 * Improve resilience of the parser in token specifications
             """.trimIndent()
