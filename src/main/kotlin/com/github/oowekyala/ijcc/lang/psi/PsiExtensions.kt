@@ -6,7 +6,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 
 /** Lazy sequence of children. */
@@ -117,3 +117,6 @@ inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out 
 fun JccRegularExpression.safeReplace(regex: JccRegularExpression) = replace(regex)
 fun JccExpansionUnit.safeReplace(regex: JccExpansionUnit) = replace(regex)
 fun JccRegexpElement.safeReplace(regex: JccRegexpElement) = replace(regex)
+
+
+fun PsiElement.isOfType(elementType: IElementType): Boolean = node.elementType == elementType

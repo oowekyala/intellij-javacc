@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.insight.inspections.isJccComment
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
@@ -9,6 +10,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import org.intellij.lang.annotations.Language
 
 
 /**
@@ -33,8 +35,7 @@ object JccElementFactory {
             options {
              FOO = $name;
             }
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
         """.trimIndent()
 
@@ -59,8 +60,7 @@ object JccElementFactory {
             options {
              FOO = $name;
             }
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
         """.trimIndent()
         val file = createFile(project, fileText)
@@ -73,8 +73,7 @@ object JccElementFactory {
 
     fun createRegularExpressionReference(project: Project, name: String): JccRegularExpressionReference {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             void foo(): {} { $name }
         """.trimIndent()
@@ -104,8 +103,7 @@ object JccElementFactory {
 
     fun createBnfExpansion(project: Project, name: String): JccExpansion {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             void foo(): {} { $name }
         """.trimIndent()
@@ -118,8 +116,7 @@ object JccElementFactory {
 
     fun createIdentifier(project: Project, name: String): JccIdentifier {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             void $name() {} { "dummy" }
         """.trimIndent()
@@ -129,10 +126,23 @@ object JccElementFactory {
     }
 
 
+    fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {
+        val fileText = """
+            $DummyHeader
+
+            $kind: {
+                $text
+            }
+
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.globalTokenSpecs.first()
+    }
+
     fun createJavaExpression(project: Project, text: String): JccJavaExpression {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             void foo() {} { LOOKAHEAD({$text}) "dummy" }
         """.trimIndent()
@@ -141,11 +151,12 @@ object JccElementFactory {
         return file.nonTerminalProductions.first().findChildOfType(JccLocalLookahead::class.java)!!.javaExpression!!
     }
 
+    
+    
 
     fun createJavaBlock(project: Project, text: String): JccJavaBlock {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             JAVACODE void foo() $text
         """.trimIndent()
@@ -157,8 +168,7 @@ object JccElementFactory {
 
     fun createAssignmentLhs(project: Project, text: String): JccJavaAssignmentLhs {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             void foo(): {} {
                 $text = hello()
@@ -176,8 +186,7 @@ object JccElementFactory {
 
     fun createJavaNonterminalHeader(project: Project, text: String): JccJavaNonTerminalProductionHeader {
         val fileText = """
-            PARSER_BEGIN(dummy)
-            PARSER_END(dummy)
+            $DummyHeader
 
             JAVACODE $text {}
         """.trimIndent()
@@ -217,6 +226,18 @@ object JccElementFactory {
      * Create from an AST node, used by the parser.
      */
     fun createElement(node: ASTNode): PsiElement = JavaccTypes.Factory.createElement(node)
+    
+    
+    @Language("JavaCC")
+    private const val DummyHeader = 
+"""
+PARSER_BEGIN(dummy)
+
+public class dummy {}
+
+PARSER_END(dummy)
+"""
+    
 }
 
 

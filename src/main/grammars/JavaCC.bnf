@@ -234,7 +234,7 @@ private regexpr_spec_list_recover   ::= // exclude ident, most important is the 
 regexpr_spec 	    ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
-        methods=[lexicalState="identifier"]
+        methods=[lexicalState="identifier" lexicalActions="java_block"]
         recoverWhile="regexpr_spec_recover"
     }
 

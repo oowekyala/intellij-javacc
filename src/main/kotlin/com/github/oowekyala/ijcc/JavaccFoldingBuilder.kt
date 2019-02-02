@@ -111,7 +111,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitRegexprSpec(o: JccRegexprSpec) {
-                o.javaBlock?.run {
+                o.lexicalActions?.run {
                     result += FoldingDescriptor(node, textRange, currentJBlockGroup)
                 }
             }

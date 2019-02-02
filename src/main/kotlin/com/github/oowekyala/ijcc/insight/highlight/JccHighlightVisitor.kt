@@ -315,14 +315,32 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     private fun checkValidity(spec: JccRegexprSpec) {
 
-        val regex = spec.asSingleLiteral() ?: return
+        spec.asSingleLiteral()?.runIt { regex ->
+            spec.containingFile.globalTokenSpecs
+                .filter { it !== spec }
+                .any { it.regularExpression.asSingleLiteral()?.textMatches(regex) == true }
+                .ifTrue {
+                    myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
+                }
+        }
 
-        spec.containingFile.globalTokenSpecs
-            .filter { it !== spec }
-            .any { it.regularExpression.asSingleLiteral()?.textMatches(regex) == true }
-            .ifTrue {
-                myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
+
+        if (spec.isPrivate) {
+
+            spec.lexicalState?.runIt {
+                myHolder += errorInfo(
+                    it,
+                    "Lexical state changes are not permitted after private (#) regular expressions."
+                )
             }
+
+            spec.lexicalActions?.runIt {
+                myHolder += errorInfo(
+                    it,
+                    "Actions are not permitted on private (#) regular expressions."
+                )
+            }
+        }
     }
 
     companion object {

@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.insight.model.RegexKind
 
 interface JccRegexprSpec : JavaccPsiElement, JccIdentifierOwner {
 
-    val javaBlock: JccJavaBlock?
+    val lexicalActions: JccJavaBlock?
 
     val regularExpression: JccRegularExpression
 
@@ -16,8 +16,9 @@ interface JccRegexprSpec : JavaccPsiElement, JccIdentifierOwner {
 
     val production: JccRegularExprProduction
 
-    /** Returns the list of lexical states this regexp applies to. */
-    @JvmDefault
-    fun getLexicalStatesName(): List<String>? = production.lexicalStateList?.identifierList?.map { it.name }
-
 }
+
+/** Returns the list of lexical states this regexp applies to. */
+fun JccRegexprSpec.getLexicalStatesName(): List<String>? =
+        production.lexicalStateList?.identifierList?.map { it.name }
+

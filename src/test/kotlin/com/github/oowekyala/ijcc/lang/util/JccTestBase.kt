@@ -138,6 +138,10 @@ PARSER_BEGIN(Dummy)
 
 package dummy.grammar;
 
+public class Dummy {
+
+}
+
 PARSER_END(Dummy)
 """
 

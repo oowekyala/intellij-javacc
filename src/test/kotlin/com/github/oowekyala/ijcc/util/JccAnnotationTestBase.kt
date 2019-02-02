@@ -16,6 +16,15 @@ open class JccAnnotationTestBase : JccTestBase() {
         myFixture.testHighlighting(fileName, *additionalFilenames)
     }
 
+    protected fun checkHighlighting(@Language("Rust") text: String) =
+            checkByText(
+                text,
+                checkWarn = false,
+                checkWeakWarn = false,
+                checkInfo = true,
+                ignoreExtraHighlighting = false
+            )
+
     protected fun checkInfo(@Language("JavaCC") text: String) =
             checkByText(text, checkWarn = false, checkWeakWarn = false, checkInfo = true)
 
@@ -29,15 +38,15 @@ open class JccAnnotationTestBase : JccTestBase() {
         @Language("JavaCC") text: String,
         checkWarn: Boolean = true,
         checkInfo: Boolean = false,
-        checkWeakWarn: Boolean = false
-
+        checkWeakWarn: Boolean = false,
+        ignoreExtraHighlighting: Boolean = false
     ) = check(
         text,
         checkWarn = checkWarn,
         checkInfo = checkInfo,
         checkWeakWarn = checkWeakWarn,
+        ignoreExtraHighlighting = ignoreExtraHighlighting,
         configure = this::configureByText
-
     )
 
     protected fun checkFixByText(
@@ -89,12 +98,13 @@ open class JccAnnotationTestBase : JccTestBase() {
         checkWarn: Boolean,
         checkInfo: Boolean,
         checkWeakWarn: Boolean,
+        ignoreExtraHighlighting: Boolean,
         configure: (String) -> Unit
 
     ) {
         disableInjection()
         configure(text)
-        myFixture.checkHighlighting(checkWarn, checkInfo, checkWeakWarn)
+        myFixture.checkHighlighting(checkWarn, checkInfo, checkWeakWarn, ignoreExtraHighlighting)
     }
 
     private fun disableInjection() {
@@ -123,10 +133,11 @@ open class JccAnnotationTestBase : JccTestBase() {
         checkWarn: Boolean,
         checkInfo: Boolean,
         checkWeakWarn: Boolean,
+        ignoreExtraHighlighting: Boolean = false,
         configure: (String) -> Unit
 
     ) {
-        check(text, checkWarn, checkInfo, checkWeakWarn, configure)
+        check(text, checkWarn, checkInfo, checkWeakWarn, ignoreExtraHighlighting, configure)
         check(myFixture.filterAvailableIntentions(fixName).isEmpty()) {
             "Fix $fixName should not be possible to apply."
         }

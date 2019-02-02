@@ -169,7 +169,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
  * of other more complex regular expressions.
  */
 val JccNamedRegularExpression.isPrivate: Boolean
-    get() = nameIdentifier.prevSiblingNoWhitespace?.node?.elementType == JavaccTypes.JCC_POUND
+    get() = nameIdentifier.prevSiblingNoWhitespace?.isOfType(JavaccTypes.JCC_POUND) == true
 
 val JccRegexprSpec.isPrivate: Boolean
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true

@@ -16,7 +16,7 @@ class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexpr
     override val regexKind: RegexKind
         get() = production.regexprKind.modelConstant
 
-    override val javaBlock: JccJavaBlock?
+    override val lexicalActions: JccJavaBlock?
         get() = findChildByClass(JccJavaBlock::class.java)
 
     override val regularExpression: JccRegularExpression
