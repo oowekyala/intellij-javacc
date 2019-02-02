@@ -18,7 +18,10 @@ interface JccRegexprSpec : JavaccPsiElement, JccIdentifierOwner {
 
 }
 
-/** Returns the list of lexical states this regexp applies to. */
+/**
+ * Returns the list of lexical states this regexp applies to.
+ * If null then this production applies to the DEFAULT state.
+ */
 fun JccRegexprSpec.getLexicalStatesName(): List<String>? =
         production.lexicalStateList?.identifierList?.map { it.name }
 

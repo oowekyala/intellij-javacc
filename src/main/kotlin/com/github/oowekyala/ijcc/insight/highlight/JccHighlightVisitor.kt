@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInf
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
 import com.github.oowekyala.ijcc.insight.inspections.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.filterMapAs
@@ -79,6 +80,22 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private fun prepare(holder: HighlightInfoHolder, file: PsiFile) {
         myHolderImpl = holder
         myFileImpl = SmartPointerManager.createPointer(file as JccFile)
+    }
+
+    override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
+
+        val eofRegexes = myFile.globalTokenSpecs.filter { it.regularExpression is JccEofRegularExpression }.toList()
+
+        if (eofRegexes.size > 1) {
+
+            for (eof in eofRegexes) {
+
+                myHolder += JccHighlightUtil.errorInfo(
+                    eof,
+                    "Duplicate action/state change specification for <EOF>."
+                )
+            }
+        }
     }
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
@@ -198,13 +215,26 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                 if (idents.size > 1) {
                     for (ident in idents) {
-                        myHolder += JccHighlightUtil.errorInfo(ident, "Duplicate lexical state name $name")
+                        myHolder += errorInfo(ident, "Duplicate lexical state name $name")
                     }
                 }
             }
         }
 
 
+    }
+
+
+    override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+
+        o.regularExpression.runIt {
+            if (it is JccNamedRegularExpression && it.isPrivate) {
+                myHolder += errorInfo(
+                    it,
+                    "Private (with a #) regular expression cannot be defined within grammar productions"
+                )
+            }
+        }
     }
 
     override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
@@ -362,6 +392,17 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     it,
                     "Actions are not permitted on private (#) regular expressions"
                 )
+            }
+        }
+
+        if (spec.regularExpression is JccEofRegularExpression) {
+
+            if (spec.getLexicalStatesName() == null) {
+                myHolder += errorInfo(spec, "EOF action/state change must be specified for all states, i.e., <*>TOKEN:")
+            }
+
+            if (spec.regexKind != RegexKind.TOKEN) {
+                myHolder += errorInfo(spec, "EOF action/state change can be specified only in a TOKEN specification")
             }
         }
     }
