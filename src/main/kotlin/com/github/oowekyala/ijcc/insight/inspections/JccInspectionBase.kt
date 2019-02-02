@@ -15,7 +15,7 @@ import com.intellij.psi.impl.source.tree.JavaDocElementType
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class JavaccInspectionBase(private val myDisplayName: String)
+abstract class JccInspectionBase(private val myDisplayName: String)
     : BaseLocalInspectionTool() {
     override fun getID(): String = "JavaCC$shortName"
     override fun getDisplayName(): String = myDisplayName

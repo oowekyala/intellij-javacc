@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
+import com.github.oowekyala.ijcc.lang.psi.JccLocalLookahead
 import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
-import com.github.oowekyala.ijcc.util.deleteWhitespace
+import com.github.oowekyala.ijcc.lang.psi.ancestors
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.intellij.lang.annotations.Language
@@ -11,12 +12,13 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
+class ActionWithinLookaheadInspection : JccInspectionBase(DisplayName) {
+
 
     @Language("HTML")
     override fun getStaticDescription() = """
-        Reports empty parser actions unit, which are unnecessary and
-        may cause some JavaCC errors.
+        Reports parser actions declared inside local lookahead specifications.
+        These are ignored during lookahead evaluation.
     """.trimIndent()
 
 
@@ -24,7 +26,7 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
             object : JccVisitor() {
                 override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-                    if (o.text.deleteWhitespace() == "{}") {
+                    if (o.ancestors(false).any { it is JccLocalLookahead }) {
                         holder.registerProblem(
                             o,
                             ProblemDescription
@@ -37,9 +39,7 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
 
 
     companion object {
-        const val DisplayName = "Empty parser actions unit"
-        const val ProblemDescription = "Empty parser actions unit"
-
-        // TODO quickfix
+        const val DisplayName = "Parser actions within lookahead specifications are ignored"
+        const val ProblemDescription = DisplayName
     }
 }

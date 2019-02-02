@@ -17,7 +17,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class ConsecutiveParserActionsInspection : JavaccInspectionBase(DisplayName) {
+class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
 
     @Language("HTML")
     override fun getStaticDescription() = """

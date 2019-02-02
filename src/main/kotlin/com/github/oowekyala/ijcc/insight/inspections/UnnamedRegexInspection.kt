@@ -13,7 +13,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class UnnamedRegexInspection : JavaccInspectionBase(DisplayName) {
+class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
 
     @Language("HTML")
     override fun getStaticDescription(): String = """

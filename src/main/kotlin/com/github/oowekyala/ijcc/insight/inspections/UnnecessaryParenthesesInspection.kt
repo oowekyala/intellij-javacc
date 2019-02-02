@@ -19,7 +19,7 @@ import javax.swing.JComponent
  * @author Clément Fournier
  * @since 1.0
  */
-class UnnecessaryParenthesesInspection : JavaccInspectionBase(InspectionName) {
+class UnnecessaryParenthesesInspection : JccInspectionBase(InspectionName) {
     var keepAroundAssignment: Boolean = true
     var keepAroundLookahead: Boolean = true
     var keepBeforeParserActions: Boolean = false

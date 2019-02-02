@@ -16,7 +16,7 @@ import gnu.trove.THashSet
  * @author Clément Fournier
  * @since 1.0
  */
-class JccUnusedProductionInspection : JavaccInspectionBase(DisplayName) {
+class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
 
     override fun getID(): String = "JavaCCUnusedProduction"
 

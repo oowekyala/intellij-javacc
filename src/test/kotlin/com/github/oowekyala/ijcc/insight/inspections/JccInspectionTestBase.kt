@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
 abstract class JccInspectionTestBase(
-    val inspection: JavaccInspectionBase
+    val inspection: JccInspectionBase
 ) : JccAnnotationTestBase() {
 
     private fun enableInspection() = myFixture.enableInspections(inspection)

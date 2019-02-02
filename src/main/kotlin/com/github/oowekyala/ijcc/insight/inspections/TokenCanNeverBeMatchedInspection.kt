@@ -11,7 +11,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class TokenCanNeverBeMatchedInspection : JavaccInspectionBase(DisplayName) {
+class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription(): String? = """
         Reports tokens or parts of tokens that can never be matched

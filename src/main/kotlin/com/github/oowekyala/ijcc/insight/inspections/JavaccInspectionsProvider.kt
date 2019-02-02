@@ -7,7 +7,7 @@ import com.intellij.codeInspection.InspectionToolProvider
  * @since 1.0
  */
 object JavaccInspectionsProvider : InspectionToolProvider {
-    override fun getInspectionClasses(): Array<Class<out JavaccInspectionBase>> = arrayOf(
+    override fun getInspectionClasses(): Array<Class<out JccInspectionBase>> = arrayOf(
         TokenCanNeverBeMatchedInspection::class.java,
         UnnamedRegexInspection::class.java,
         UnnecessaryInlineRegexInspection::class.java,
@@ -18,6 +18,7 @@ object JavaccInspectionsProvider : InspectionToolProvider {
         EmptyParserActionsInspection::class.java,
         ConsecutiveParserActionsInspection::class.java,
         LookaheadIsNotAtChoicePointInspection::class.java,
-        ProductionMatchesEmptyStringInspection::class.java
+        ProductionMatchesEmptyStringInspection::class.java,
+        ActionWithinLookaheadInspection::class.java
     )
 }

@@ -18,7 +18,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class JccUnusedPrivateRegexInspection : JavaccInspectionBase(DisplayName) {
+class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
     @Language("HTML")
     override fun getStaticDescription() = """

@@ -18,7 +18,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class SuspiciousNodeDescriptorExprInspection : JavaccInspectionBase(InspectionName) {
+class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName) {
 
     @Language("HTML")
     override fun getStaticDescription(): String? = """

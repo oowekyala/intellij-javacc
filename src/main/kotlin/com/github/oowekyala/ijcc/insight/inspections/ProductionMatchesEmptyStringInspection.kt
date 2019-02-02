@@ -12,7 +12,7 @@ import com.intellij.util.ThreeState.*
  * @author Clément Fournier
  * @since 1.0
  */
-class ProductionMatchesEmptyStringInspection : JavaccInspectionBase(DisplayName) {
+class ProductionMatchesEmptyStringInspection : JccInspectionBase(DisplayName) {
 
     override fun runForWholeFile(): Boolean = true
 
