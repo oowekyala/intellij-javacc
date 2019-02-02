@@ -96,6 +96,19 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 )
             }
         }
+
+
+        val tokenManagerDecls = myFile.tokenManagerDecls.toList()
+
+        if (tokenManagerDecls.size > 1) {
+
+            tokenManagerDecls.drop(1).forEach {
+                myHolder += errorInfo(
+                    it,
+                    "Duplicate token manager declarations, at most one occurrence expected."
+                )
+            }
+        }
     }
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {

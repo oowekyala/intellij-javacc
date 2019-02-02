@@ -44,6 +44,8 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
     override val grammarOptions: GrammarOptions
 
 
+    val tokenManagerDecls: Sequence<JccTokenManagerDecls>
+
     companion object {
         /** Element type. */
         val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)

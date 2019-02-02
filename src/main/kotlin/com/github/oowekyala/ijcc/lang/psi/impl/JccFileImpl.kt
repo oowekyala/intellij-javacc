@@ -32,6 +32,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val grammarFileRoot: JccGrammarFileRoot?
         get() = findChildByClass(JccGrammarFileRoot::class.java)
 
+    override val tokenManagerDecls: Sequence<JccTokenManagerDecls>
+        get() = grammarFileRoot?.childrenSequence()?.filterMapAs() ?: emptySequence()
+
     override val regexpProductions: Sequence<JccRegularExprProduction>
         get() = grammarFileRoot?.childrenSequence()?.filterMapAs() ?: emptySequence()
 
