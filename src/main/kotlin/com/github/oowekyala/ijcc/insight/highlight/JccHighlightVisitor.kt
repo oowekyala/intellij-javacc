@@ -188,6 +188,14 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitOptionSection(o: JccOptionSection) {
         myHolder += highlightInfo(o.firstChild, JAVACC_KEYWORD.highlightType)
+
+
+        val dupsByName = o.optionBindingList.groupBy { it.name }.filterValues { it.size > 1 }
+
+        for ((name, bindings) in dupsByName) {
+            bindings.forEach { myHolder += errorInfo(it, "Duplicate option binding for option $name") }
+        }
+
     }
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
