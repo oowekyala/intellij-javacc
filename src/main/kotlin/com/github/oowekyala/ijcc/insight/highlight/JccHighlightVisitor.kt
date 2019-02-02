@@ -108,7 +108,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
 
             if (parserClassName == null) {
-                myHolder += errorInfo(o, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.")
+                myHolder += errorInfo(o, "Parser class has not been defined between PARSER_BEGIN and PARSER_END")
             } else if (pBegin.name != parserClassName) {
                 myHolder += errorInfo(
                     pBegin,
@@ -198,11 +198,10 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                 if (idents.size > 1) {
                     for (ident in idents) {
-                        myHolder += JccHighlightUtil.errorInfo(ident, "Duplicate lexical state name $name.")
+                        myHolder += JccHighlightUtil.errorInfo(ident, "Duplicate lexical state name $name")
                     }
                 }
             }
-
         }
 
 
@@ -242,7 +241,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         fun checkCharLength(psiElement: PsiElement, unescaped: String): Boolean {
             if (unescaped.length != 1) {
-                myHolder += errorInfo(psiElement, "String in character list may contain only one character.")
+                myHolder += errorInfo(psiElement, "String in character list may contain only one character")
                 return false
             }
             return true
@@ -271,14 +270,14 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
             myHolder += errorInfo(
                 descriptor,
-                "Right end of character range \'$right\' has a lower ordinal value than the left end of character range \'$left\'."
+                "Right end of character range \'$right\' has a lower ordinal value than the left end of character range \'$left\'"
             )
         }
     }
 
     override fun visitTryCatchExpansionUnit(tryCatch: JccTryCatchExpansionUnit) {
         if (tryCatch.catchClauseList.isEmpty() && tryCatch.finallyClause == null) {
-            myHolder += errorInfo(tryCatch, "Try block must contain at least one catch or finally block.")
+            myHolder += errorInfo(tryCatch, "Try block must contain at least one catch or finally block")
         }
     }
 
@@ -343,19 +342,25 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
 
 
+        spec.lexicalState?.runIt {
+            if (myFile.lexicalGrammar.getLexicalState(it.name) == null) {
+                myHolder += JccHighlightUtil.wrongReferenceInfo(it, "Lexical state \"${it.name}\" has not been defined")
+            }
+        }
+
         if (spec.isPrivate) {
 
             spec.lexicalState?.runIt {
                 myHolder += errorInfo(
                     it,
-                    "Lexical state changes are not permitted after private (#) regular expressions."
+                    "Lexical state changes are not permitted after private (#) regular expressions"
                 )
             }
 
             spec.lexicalActions?.runIt {
                 myHolder += errorInfo(
                     it,
-                    "Actions are not permitted on private (#) regular expressions."
+                    "Actions are not permitted on private (#) regular expressions"
                 )
             }
         }
@@ -363,7 +368,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     companion object {
         fun makeEmptyExpMessage(exp: JccExpansionUnit) =
-                "Expansion within \"${exp.prettyName()}\" can be matched by empty string."
+                "Expansion within \"${exp.prettyName()}\" can be matched by empty string"
 
 
         private val classRegex = Regex("\\bclass\\s+(\\w+)")
