@@ -89,6 +89,35 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         )
     }
 
+    override fun visitParserDeclaration(o: JccParserDeclaration) {
+
+
+        val pEnd = o.parserEnd?.identifier
+        val pBegin = o.parserBegin.identifier
+
+
+        if (pEnd != null && pBegin != null) {
+            if (pEnd.name != pBegin.name) {
+                myHolder += errorInfo(
+                    pEnd,
+                    "Name ${pEnd.name} must be the same as that used at PARSER_BEGIN (${pBegin.name})"
+                )
+            }
+
+            val parserClassName = o.text.let { classRegex.find(it) }?.groups?.get(1)?.value
+
+
+            if (parserClassName == null) {
+                myHolder += errorInfo(o, "Parser class has not been defined between PARSER_BEGIN and PARSER_END.")
+            } else if (pBegin.name != parserClassName) {
+                myHolder += errorInfo(
+                    pBegin,
+                    "Name must be the same as the parser class ($parserClassName)"
+                )
+            }
+        }
+    }
+
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
         // extracts the range of the "#" + the range of the ident or "void" kword
         fun rangeOf(element: JccJjtreeNodeDescriptor): TextRange {
@@ -299,5 +328,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     companion object {
         fun makeEmptyExpMessage(exp: JccExpansionUnit) =
                 "Expansion within \"${exp.prettyName()}\" can be matched by empty string."
+
+
+        private val classRegex = Regex("\\bclass\\s+(\\w+)")
     }
 }

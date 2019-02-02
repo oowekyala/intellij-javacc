@@ -148,10 +148,18 @@ private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?
 
 parser_declaration  ::=
-    "PARSER_BEGIN" "(" identifier ")"
+    parser_begin
     java_compilation_unit // TODO inject Java here
-    "PARSER_END" "(" identifier ")"
+    parser_end
     {pin=1 name="PARSER_BEGIN"}
+
+parser_begin        ::=
+    "PARSER_BEGIN" "(" identifier ")"
+    {pin=1 name="PARSER_BEGIN"}
+
+parser_end        ::=
+    "PARSER_END" "(" identifier ")"
+
 
 private production  ::=
         javacode_production
