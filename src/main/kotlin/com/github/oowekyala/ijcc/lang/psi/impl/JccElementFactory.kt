@@ -125,6 +125,9 @@ object JccElementFactory {
         return file.nonTerminalProductions.first().nameIdentifier
     }
 
+    inline fun <reified T : JccRegularExpression>
+            createRegularExpression(project: Project, text: String): T =
+            createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
 
     fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {
         val fileText = """

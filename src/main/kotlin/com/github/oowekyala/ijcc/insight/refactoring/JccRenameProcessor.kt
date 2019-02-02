@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.lang.refs
+package com.github.oowekyala.ijcc.insight.refactoring
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
@@ -51,12 +51,22 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
             val file = key.containingFile as JccFileImpl
             if (isTerminal(key) == true) {
 
-                processCollisions(key, value, file.globalNamedTokens, result) {
+                processCollisions(
+                    key,
+                    value,
+                    file.globalNamedTokens,
+                    result
+                ) {
                     "A terminal named \'$it\' is already defined in this file"
                 }
 
             } else {
-                processCollisions(key, value, file.nonTerminalProductions, result) {
+                processCollisions(
+                    key,
+                    value,
+                    file.nonTerminalProductions,
+                    result
+                ) {
                     "A production named \'$it\' is already defined in this file"
                 }
             }

@@ -120,3 +120,6 @@ fun JccRegexpElement.safeReplace(regex: JccRegexpElement) = replace(regex)
 
 
 fun PsiElement.isOfType(elementType: IElementType): Boolean = node.elementType == elementType
+
+
+fun TextRange.containsInside(offset: Int): Boolean = offset in (startOffset + 1)..(endOffset - 1)

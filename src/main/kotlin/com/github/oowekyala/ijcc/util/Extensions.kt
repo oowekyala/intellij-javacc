@@ -98,3 +98,5 @@ fun <T : Any> MutableCollection<T>.addIfNotNull(t: T?) = ContainerUtil.addIfNotN
 fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
 
 fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
+
+

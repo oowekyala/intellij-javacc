@@ -69,9 +69,12 @@
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.insight.highlight.JavaccColorSettingsPage"/>
 
-        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.lang.refs.JccRenameProcessor"/>
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.insight.refactoring.JccRenameProcessor"/>
         <lang.namesValidator language="JavaCC"
-                             implementationClass="com.github.oowekyala.ijcc.lang.refs.JccNamesValidator"/>
+                             implementationClass="com.github.oowekyala.ijcc.insight.refactoring.JccNamesValidator"/>
+
+        <renameHandler implementation="com.github.oowekyala.ijcc.insight.refactoring.JccNamedRegexRenamer"/>
+
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
@@ -139,6 +142,10 @@
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
+        </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.refactoring.AddNameToRegexIntention</className>
         </intentionAction>
     </extensions>
 </idea-plugin>
