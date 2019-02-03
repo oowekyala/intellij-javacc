@@ -114,7 +114,9 @@ inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out 
 
 // constrain the hierarchies to be the same to avoid some confusions
 
-fun JccRegularExpression.safeReplace(regex: JccRegularExpression) = replace(regex)
+inline fun <reified T : JccRegularExpression>
+        JccRegularExpression.safeReplace(regex: T): T = replace(regex) as T
+
 fun JccExpansionUnit.safeReplace(regex: JccExpansionUnit) = replace(regex)
 fun JccRegexpElement.safeReplace(regex: JccRegexpElement) = replace(regex)
 

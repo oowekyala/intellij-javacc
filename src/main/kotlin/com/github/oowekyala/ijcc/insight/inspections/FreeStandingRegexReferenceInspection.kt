@@ -48,27 +48,5 @@ class FreeStandingRegexReferenceInspection : JccInspectionBase(DisplayName) {
 
 
         }
-
-        /*
-
-    private class AddExplicitParameterToOuterLambdaFix : LocalQuickFix {
-        override fun getName() = "Add explicit parameter name to outer lambda"
-
-        override fun getFamilyName() = name
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val implicitParameterReference = descriptor.psiElement as? KtNameReferenceExpression ?: return
-            val lambda = implicitParameterReference.getStrictParentOfType<KtLambdaExpression>() ?: return
-            val parentLambda = lambda.getParentImplicitParameterLambda() ?: return
-            val parameter = parentLambda.functionLiteral.getOrCreateParameterList().addParameterBefore(
-                KtPsiFactory(project).createLambdaParameterList("it").parameters.first(), null
-            )
-            val editor = parentLambda.findExistingEditor() ?: return
-            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
-            editor.caretModel.moveToOffset(parameter.startOffset)
-            KotlinVariableInplaceRenameHandler().doRename(parameter, editor, null)
-        }
-}
-         */
     }
 }

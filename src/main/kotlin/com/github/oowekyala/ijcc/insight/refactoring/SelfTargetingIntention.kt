@@ -37,7 +37,9 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
 
     abstract fun isApplicableTo(element: TElement, caretOffset: Int): Boolean
 
-    abstract fun applyTo(element: TElement, editor: Editor?)
+    abstract fun applyTo(project: Project,
+                         editor: Editor?,
+                         element: TElement)
 
     private fun getTarget(editor: Editor, file: PsiFile): TElement? {
         val offset = editor.caretModel.offset
@@ -47,13 +49,13 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
 
         var elementsToCheck: Sequence<PsiElement> = emptySequence()
         if (leaf1 != null) {
-            elementsToCheck += leaf1.ancestors(true).takeWhile { it != commonParent }
+            elementsToCheck += leaf1.ancestors(includeSelf = true).takeWhile { it != commonParent }
         }
         if (leaf2 != null) {
-            elementsToCheck += leaf2.ancestors(true).takeWhile { it != commonParent }
+            elementsToCheck += leaf2.ancestors(includeSelf = true).takeWhile { it != commonParent }
         }
         if (commonParent != null && commonParent !is PsiFile) {
-            elementsToCheck += commonParent.ancestors(true)
+            elementsToCheck += commonParent.ancestors(includeSelf = true)
         }
 
         for (element in elementsToCheck) {
@@ -68,16 +70,16 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
 
     protected open fun allowCaretInsideElement(element: PsiElement): Boolean = true
 
-    final override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean {
-        return getTarget(editor, file) != null
-    }
+    final override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
+            getTarget(editor, file) != null
+
 
     final override fun invoke(project: Project, editor: Editor?, file: PsiFile) {
         editor ?: return
         PsiDocumentManager.getInstance(project).commitAllDocuments()
         val target = getTarget(editor, file) ?: return
         if (!FileModificationService.getInstance().preparePsiElementForWrite(target)) return
-        applyTo(target, editor)
+        applyTo(project, editor, target)
     }
 
     override fun startInWriteAction() = true

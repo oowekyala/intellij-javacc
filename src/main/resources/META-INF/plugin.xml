@@ -73,8 +73,6 @@
         <lang.namesValidator language="JavaCC"
                              implementationClass="com.github.oowekyala.ijcc.insight.refactoring.JccNamesValidator"/>
 
-        <renameHandler implementation="com.github.oowekyala.ijcc.insight.refactoring.JccNamedRegexRenamer"/>
-
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory

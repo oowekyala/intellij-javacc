@@ -36,7 +36,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
                     PsiTreeUtil.findFirstParent(psiElement) { it is JccIdentifierOwner }
                 else psiElement as? JccIdentifierOwner
 
-        return elt is JccIdentifierOwner && elt is JccNamedRegularExpression
+        return elt is JccNamedRegularExpression
     }
 
 

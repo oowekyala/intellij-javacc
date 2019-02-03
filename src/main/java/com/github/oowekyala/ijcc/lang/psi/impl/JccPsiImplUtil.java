@@ -9,6 +9,10 @@ package com.github.oowekyala.ijcc.lang.psi.impl;
 public class JccPsiImplUtil {
 
 
+    private JccPsiImplUtil(int foo) {
+
+    }
+
     //    public static @Nullable
     //    NavigatablePsiElement getNodeClass(JccNonTerminalProduction production, JavaccConfig javaccConfig) {
     //        JccJjtreeNodeDescriptor nodeDescriptor = production.getJjtreeNodeDescriptor();
