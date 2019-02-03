@@ -145,5 +145,9 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.insight.refactoring.AddNameToRegexIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.refactoring.RemoveNameFromRegexIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>
