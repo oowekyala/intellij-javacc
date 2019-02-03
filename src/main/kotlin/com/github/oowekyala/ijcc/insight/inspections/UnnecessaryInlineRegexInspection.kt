@@ -18,8 +18,10 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
 
     @Language("HTML")
     override fun getStaticDescription(): String? = """
-        Reports unnecessary angled braces around a string literal.
+        Reports unnecessary angled braces around a string literal or a token reference.
         E.g. <b><code>&lt; "foo" &gt;</code></b> is equivalent to <b><code>"foo"</code></b>.
+        For token references, e.g. <code>&lt; &lt;FOO&gt; &gt;</code> is only equivalent
+        to <code>&lt;FOO&gt;</code> if the regular expression <code>FOO</code> is not private.
     """.trimIndent()
 
 

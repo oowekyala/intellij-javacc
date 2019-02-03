@@ -179,8 +179,10 @@ tasks {
 
                     <li>Intentions and inspections:
                     <ul>
-                        <li>"Lookahead is not at choice point" inspection</li>
-                        <li>"Add name to regular expression" intention</li>
+                        <li>All inspections can now be suppressed with a comment</li>
+                        <li>Add "Lookahead is not at choice point" inspection</li>
+                        <li>Improve "Unnecessary angled braces" inspection to handle token references as well</li>
+                        <li>Add "Add name to regular expression" intention</li>
                     </ul>
                     </li>
 
