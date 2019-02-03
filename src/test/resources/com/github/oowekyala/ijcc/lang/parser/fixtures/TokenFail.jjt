@@ -1,0 +1,32 @@
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+TOKEN :
+{
+  < LEFT_WILDCARD : "*:" <NCNAME> >
+| < RIGHT_WILDCARD : <NCNAME> ":*" >
+|
+  // The actual lexical grammar for NCName is: any name except <CHAR>* ":" <CHAR>*
+  < NCNAME: "foo" >
+|
+ fo
+
+}
+
+
+void lookaheads(): {}
+{
+  "fo"
+
+}
+
