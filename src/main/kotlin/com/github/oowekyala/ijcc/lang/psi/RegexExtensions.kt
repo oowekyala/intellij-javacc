@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -271,3 +272,14 @@ val JccRegexprKind.modelConstant: RegexKind
 /** True if this [JccCharacterList] is of the form `~[]`, which matches any character. */
 val JccCharacterList.isAnyMatch: Boolean
     get() = this.isNegated && this.characterDescriptorList.isEmpty()
+
+
+/**
+ * Promotes a regex element to a regular expression, wrapping it into angled
+ * brackets if needed.
+ */
+fun JccRegexpElement.promoteToRegex(): JccRegularExpression = when (this) {
+    is JccTokenReferenceUnit -> createRegex<JccRegularExpressionReference>(project, text)
+    is JccLiteralRegexpUnit  -> createRegex<JccLiteralRegularExpression>(project, text)
+    else                     -> createRegex<JccInlineRegularExpression>(project, "< $text >")
+}

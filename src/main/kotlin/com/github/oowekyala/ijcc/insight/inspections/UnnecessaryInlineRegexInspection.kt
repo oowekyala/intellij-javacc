@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -29,7 +27,7 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
             object : JccVisitor() {
                 override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
                     val regex = o.regexpElement
-                    if (regex is JccLiteralRegexpUnit) {
+                    if (regex is JccLiteralRegexpUnit || regex is JccTokenReferenceUnit && regex.typedReference.resolveToken()?.isPrivate == false) {
                         holder.registerProblem(o, ProblemDescription, MyQuickFix())
                     }
                 }
@@ -40,9 +38,10 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
 
         private object Log : EnclosedLogger()
 
-        const val InspectionName = "Unnecessary angled braces around literal regex"
+        const val InspectionName = "Unnecessary angled braces around regex"
         const val ProblemDescription = "Unnecessary angled braces"
-        const val QuickFixName = "Unwrap string literal"
+        const val QuickFixName = "Unwrap angled braces"
+
 
         private class MyQuickFix : LocalQuickFix {
             override fun getFamilyName(): String = name
@@ -53,8 +52,8 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
 
                 try {
                     val inline = descriptor.psiElement as JccInlineRegularExpression
-                    val regex = inline.regexpElement!!
-                    inline.replace(regex)
+                    val regex = inline.regexpElement!!.promoteToRegex()
+                    inline.safeReplace(regex)
                 } catch (e: IncorrectOperationException) {
                     Log { error(e) }
                 }

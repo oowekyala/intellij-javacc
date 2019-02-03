@@ -169,17 +169,21 @@ tasks {
             """
                 <p>What's new:
                 <ul>
-                    <li>Significantly improve coverage of JavaCC errors and warnings
-                    <ul>
-                        <li>Add "Lookahead is not at choice point" inspection. Lookahead specifications that
-                        are not at choice points trigger a JavaCC warning, which is now reported directly
-                        in the IDE.</li>
-                    </ul>
-                    </li>
+                    <li>Significantly improve coverage of JavaCC errors and warnings</li>
 
+                    <li>Improve "Unnecessary angled braces" inspection to also consider regex references
+                    <li>Add a "Add name to
                     <li>Add the TOKEN_MGR_DECLS and the parser class declaration to the structure view</li>
 
                     <li>Add some live templates to enter PARSER_BEGIN section easily</li>
+
+                    <li>Intentions and inspections:
+                    <ul>
+                        <li>"Lookahead is not at choice point" inspection</li>
+                        <li>"Add name to regular expression" intention</li>
+                    </ul>
+                    </li>
+
                 </ul>
 
                 <p>What's fixed:

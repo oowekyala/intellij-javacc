@@ -126,7 +126,7 @@ object JccElementFactory {
     }
 
     inline fun <reified T : JccRegularExpression>
-            createRegularExpression(project: Project, text: String): T =
+            createRegex(project: Project, text: String): T =
             createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
 
     fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {
@@ -223,7 +223,7 @@ object JccElementFactory {
     }
 
     fun createFile(project: Project, text: String): JccFile =
-            project.psiFileFactory.createFileFromText("dummy.javacc", JavaccFileType, text) as JccFile
+            project.psiFileFactory.createFileFromText("dummy.jjt", JavaccFileType, text) as JccFile
 
     /**
      * Create from an AST node, used by the parser.

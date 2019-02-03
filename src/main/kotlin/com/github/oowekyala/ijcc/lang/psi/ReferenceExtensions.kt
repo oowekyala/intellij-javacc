@@ -14,8 +14,18 @@ import com.github.oowekyala.ijcc.lang.refs.JjtNodePolyReference
 val JccLiteralRegexpUnit.typedReference: JccStringTokenReference?
     get() = reference as JccStringTokenReference?
 
+
+val JccLiteralRegularExpression.typedReference: JccStringTokenReference?
+    get() = unit.typedReference
+
 val JccTokenReferenceUnit.typedReference: JccTerminalReference
     get() = reference as JccTerminalReference
+
+val JccRegularExpressionReference.typedReference: JccTerminalReference?
+    get() = unit.typedReference
+
+
+
 
 val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
     get() = reference as JccNonTerminalReference
