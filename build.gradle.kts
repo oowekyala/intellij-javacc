@@ -1,4 +1,4 @@
-@file:Suppress("PropertyName")
+@file:Suppress("PropertyName", "LocalVariableName")
 
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
@@ -17,7 +17,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0-BETA.3"
+version = "1.0"
 
 
 ext {
@@ -167,22 +167,18 @@ tasks {
         //language=HTML
         changeNotes(
             """
+                <p>I think we're good for release 1.0!</p>
                 <p>What's new:
                 <ul>
-                    <li>Significantly improve coverage of JavaCC errors and warnings</li>
-
-                    <li>Improve "Unnecessary angled braces" inspection to also consider regex references
-                    <li>Add a "Add name to
-                    <li>Add the TOKEN_MGR_DECLS and the parser class declaration to the structure view</li>
-
-                    <li>Add some live templates to enter PARSER_BEGIN section easily</li>
-
+                    <li>Significantly improved coverage of JavaCC errors and warnings</li>
+                    <li>The TOKEN_MGR_DECLS and the parser class declaration are now in the structure view</li>
+                    <li>Some new live templates allow to enter the PARSER_BEGIN section and options section easily</li>
                     <li>Intentions and inspections:
                     <ul>
                         <li>All inspections can now be suppressed with a comment</li>
                         <li>Add "Lookahead is not at choice point" inspection</li>
                         <li>Improve "Unnecessary angled braces" inspection to handle token references as well</li>
-                        <li>Add "Add name to regular expression" intention</li>
+                        <li>Add "Add name to regular expression" intention, and "Remove name from regular expression"</li>
                     </ul>
                     </li>
 
