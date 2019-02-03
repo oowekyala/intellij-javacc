@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.util
 
+import com.intellij.psi.PsiElement
+import com.intellij.psi.tree.TokenSet
 import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.Contract
 import java.util.*
@@ -100,3 +102,4 @@ fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
 fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
 
 
+fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true

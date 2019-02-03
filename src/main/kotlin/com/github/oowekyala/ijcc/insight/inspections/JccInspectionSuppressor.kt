@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.util.contains
 import com.github.oowekyala.ijcc.util.prepend
 import com.intellij.codeInsight.daemon.impl.actions.AbstractBatchSuppressByNoInspectionCommentFix
 import com.intellij.codeInspection.InspectionSuppressor
@@ -94,7 +95,8 @@ class JccInspectionSuppressor : InspectionSuppressor {
 
 
             return siblingSequence(forward = false)
-                .takeWhile { ignoredSet.contains(it.node.elementType) || it.isJccComment }
+                .filterNotNull()
+                .takeWhile { ignoredSet.contains(it) || it.isJccComment }
                 .filter { it.isJccComment }
                 .map { it.trimCommentMarkers.trim() }
         }
