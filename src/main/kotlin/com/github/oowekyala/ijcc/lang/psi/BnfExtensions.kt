@@ -31,7 +31,6 @@ fun JccExpansion.isEmptyMatchPossible(): Boolean = when (this) {
     is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible() }
     is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible() == true
     is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
-        // only do this greedy approach if nullable is null
         it is JccBnfProduction && it.computeNullability()
     } ?: false
     else                             -> false
@@ -47,7 +46,43 @@ private fun JccBnfProduction.computeNullability(): Boolean {
     return isNullable == ThreeState.YES
 }
 
+/**
+ * Gets the set of productions that this production can expand to without consuming any tokens.
+ * This is used to check for left-recursion. If null then either a production reference couldn't
+ * be resolved or this is a javacode production.
+ */
+fun JccNonTerminalProduction.leftMostSet(): Set<JccNonTerminalProduction>? = when (this) {
+    is JccJavacodeProduction -> null
+    is JccBnfProduction      ->
+        mutableSetOf<JccNonTerminalProduction>().takeIf { expansion?.computeLeftMost(it) == true }
+    else                     -> null
+}
 
-//fun JccExpansion.firstSet() : Set<>
-
-
+/** Populates the leftmost set of this expansion. */
+private fun JccExpansion.computeLeftMost(acc: MutableSet<JccNonTerminalProduction>): Boolean =
+        when (this) {
+            is JccRegexpExpansionUnit        -> true
+            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost(acc)
+            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost(acc) == true
+            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost(acc) == true
+            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost(acc) == true
+            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost(acc) == true
+            is JccExpansionSequence          -> {
+                var isValid = true
+                for (unit in expansionUnitList) {
+                    val unitIsValid = unit.computeLeftMost(acc)
+                    if (!unitIsValid) {
+                        isValid = false
+                        break
+                    } else if (!unit.isEmptyMatchPossible()) {
+                        break // valid, don't process the rest
+                    }
+                }
+                isValid
+            }
+            // breaks early if one returns false
+            is JccExpansionAlternative       -> expansionList.all { it.computeLeftMost(acc) }
+            // no recursion here. Just local.
+            is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.also { acc += it } != null
+            else                             -> true // valid, but nothing to do
+        }

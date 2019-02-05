@@ -22,5 +22,4 @@ class JccJavacodeProductionImpl(node: ASTNode) : JccNonTerminalProductionImpl(no
         else
             super.accept(visitor)
     }
-
 }
