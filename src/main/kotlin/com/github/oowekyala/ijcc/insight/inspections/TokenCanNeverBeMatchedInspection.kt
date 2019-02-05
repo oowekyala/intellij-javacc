@@ -2,9 +2,14 @@ package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import org.intellij.lang.annotations.Language
 
 /**
@@ -58,18 +63,35 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
     companion object {
         const val DisplayName = "Token can never be matched"
-        private fun problemDescription(realMatch: JccRegexprSpec) =
-                "This token can never be matched, ${realMatch.name} matches its input instead"
+        const val NavigateFixName = "Navigate to matching token"
 
-        fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
-                                             elt: JccLiteralRegexpUnit,
-                                             specOwnsProblem: Boolean) {
+        fun problemDescription(realMatchName: String?) =
+                "This token can never be matched, ${realMatchName ?: "another token"} matches its input instead"
+
+        private fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
+                                                     elt: JccLiteralRegexpUnit,
+                                                     specOwnsProblem: Boolean
+        ) {
             val matchedBy: JccRegexprSpec? = JccStringTokenReference(elt).resolve()
             if (matchedBy != null && matchedBy !== spec) {
                 // so it's matched by something different
 
                 val owner = if (specOwnsProblem) spec else elt
-                registerProblem(owner, problemDescription(matchedBy), ProblemHighlightType.ERROR)
+                registerProblem(
+                    owner,
+                    problemDescription(matchedBy.name),
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    NavigateToOtherTokenFix(SmartPointerManager.createPointer(matchedBy))
+                )
+            }
+        }
+
+
+        class NavigateToOtherTokenFix(private val realMatch: SmartPsiElementPointer<JccRegexprSpec>) : LocalQuickFix {
+            override fun getFamilyName(): String = NavigateFixName
+
+            override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+                realMatch.element?.navigate(true)
             }
         }
     }
