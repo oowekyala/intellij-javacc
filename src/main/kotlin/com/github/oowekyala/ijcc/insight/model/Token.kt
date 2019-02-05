@@ -24,8 +24,9 @@ sealed class Token(val regexKind: RegexKind) : Comparable<Token> {
 
     abstract val regularExpression: JccRegularExpression
 
-    val pattern: Regex? by lazy { regularExpression.pattern }
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
+
+    fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
 
     /**
      * This token is "lower" than another token if it appears before it in the document.

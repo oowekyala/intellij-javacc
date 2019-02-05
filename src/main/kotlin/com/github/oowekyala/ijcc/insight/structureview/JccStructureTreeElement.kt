@@ -89,7 +89,7 @@ class JccStructureTreeElement(element: JavaccPsiElement)
     override fun getLocationString(): String? {
         val element = element
         if (element is JccRegexprSpec) {
-            val outboundState = element.lexicalState
+            val outboundState = element.lexicalStateTransition
             if (outboundState != null) {
                 return "${UIUtil.rightArrow()} ${outboundState.name}"
             }

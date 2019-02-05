@@ -358,7 +358,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 val type = if (isPrivate) PRIVATE_REGEX_DECLARATION else TOKEN_DECLARATION
                 myHolder += highlightInfo(range, type.highlightType)
             }
-        element.lexicalState?.let {
+        element.lexicalStateTransition?.let {
             myHolder += highlightInfo(
                 it,
                 LEXICAL_STATE.highlightType
@@ -398,7 +398,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
 
 
-        spec.lexicalState?.runIt {
+        spec.lexicalStateTransition?.runIt {
             if (myFile.lexicalGrammar.getLexicalState(it.name) == null) {
                 myHolder += JccHighlightUtil.wrongReferenceInfo(it, "Lexical state \"${it.name}\" has not been defined")
             }
@@ -406,7 +406,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         if (spec.isPrivate) {
 
-            spec.lexicalState?.runIt {
+            spec.lexicalStateTransition?.runIt {
                 myHolder += errorInfo(
                     it,
                     "Lexical state changes are not permitted after private (#) regular expressions"

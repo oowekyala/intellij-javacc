@@ -97,7 +97,7 @@
   extends("(bnf|javacode)_production") = non_terminal_production
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
-  implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
+  implements("(bnf|javacode)_production|.*production_header|regexpr_spec|jjtree_node_descriptor|named_regular_expression|token_reference_unit|regular_expression_reference|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
 
   methods(".*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_unit|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
@@ -234,7 +234,10 @@ private regexpr_spec_list_recover   ::= // exclude ident, most important is the 
 regexpr_spec 	    ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
-        methods=[lexicalState="identifier" lexicalActions="java_block"]
+        methods=[
+            lexicalStateTransition="identifier"
+            lexicalActions="java_block"
+        ]
         recoverWhile="regexpr_spec_recover"
     }
 

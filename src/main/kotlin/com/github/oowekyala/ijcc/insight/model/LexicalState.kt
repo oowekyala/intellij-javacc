@@ -84,14 +84,17 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
         class LexicalStateBuilder(val name: String) {
 
-            private val specs = mutableListOf<Token>()
+            private val mySpecs = mutableListOf<Token>()
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                specs.add(token)
+                mySpecs.add(token)
             }
 
-            fun build() = LexicalState(name, specs)
+            val currentSpecs: List<Token>
+                get() = mySpecs
+
+            fun build() = LexicalState(name, mySpecs)
         }
     }
 

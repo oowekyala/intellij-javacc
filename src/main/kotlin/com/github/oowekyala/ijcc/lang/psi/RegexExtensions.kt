@@ -27,6 +27,10 @@ private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.ps
 val JccLiteralRegexpUnit.match: String
     get() = stringLiteral.text.removeSurrounding("\"")
 
+/** The text matched by this literal regex. */
+val JccLiteralRegularExpression.match: String
+    get() = unit.match
+
 /**
  * Converts a regular expression to a [Regex] that may be executed
  * to match text. [PatternSyntaxException] are logged and cause the

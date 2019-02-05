@@ -18,7 +18,8 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> =
-            buildStatesMap(grammarFileRoot?.childrenSequence() ?: emptySequence())
+            buildStatesMap(grammarFileRoot?.childrenSequence()?.filter { it is JccBnfProduction || it is JccRegularExprProduction }
+                ?: emptySequence())
 
     val lexicalStates: Collection<LexicalState> = lexicalStatesMap.values
 
@@ -28,58 +29,76 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
 
         private fun buildStatesMap(allProductions: Sequence<PsiElement>): Map<String, LexicalState> {
+
+            val (regexpProductions, nonterminalProductions) = allProductions.partition { it is JccRegularExprProduction }
+
+            val defaultBuilder = LexicalStateBuilder(DefaultStateName)
+
             // state name to builder
-            val builders = mutableMapOf<String, LexicalStateBuilder>()
+            val builders = mutableMapOf(
+                // always add the default builder
+                DefaultStateName to defaultBuilder
+            )
 
             // productions applying to all states, processed when all states are known
             val applyToAll = mutableListOf<JccRegularExprProduction>()
 
-            for (production in allProductions) {
-                if (production is JccRegularExprProduction) {
-                    val rstates = production.lexicalStateList
+            for (production in regexpProductions.map { it as JccRegularExprProduction }) {
+                val rstates = production.lexicalStateList
 
+                val relevantBuilders: List<LexicalStateBuilder> = if (rstates == null) {
+                    // DEFAULT
+                    listOf(defaultBuilder)
+                } else if (rstates.identifierList.isEmpty()) {
+                    // <*>
+                    applyToAll += production
+                    continue // processed at the end, when all lexical states are known
+                } else {
+                    val names = rstates.identifierList.map { it.name }
+                    names.map { builders.getOrPut(it) { LexicalStateBuilder(it) } }
+                }
 
-                    val relevantBuilders: List<LexicalStateBuilder> = if (rstates == null) {
-                        // DEFAULT
-                        listOf(builders.getOrPut(DefaultStateName) { LexicalStateBuilder(DefaultStateName) })
-                    } else if (rstates.identifierList.isEmpty()) {
-                        // <*>
-                        applyToAll += production
-                        continue // processed at the end, when all lexical states are known
-                    } else {
-                        val names = rstates.identifierList.map { it.name }
-                        names.map { builders.getOrPut(it) { LexicalStateBuilder(it) } }
-                    }
-
-                    for (spec in production.regexprSpecList) {
-                        relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
-                    }
-
-                } else if (production is JccBnfProduction) {
-
-                    val defaultBuilder = builders.getOrPut(DefaultStateName) { LexicalStateBuilder(DefaultStateName) }
-
-                    val regexpExpansions =
-                            production.expansion
-                                ?.descendantSequence(includeSelf = true)
-                                ?.filterMapAs<JccRegexpExpansionUnit>()
-                                ?: emptySequence()
-                    for (regex in regexpExpansions) {
-
-                        val synthetic = regex.referencedToken as? SyntheticToken
-
-                        synthetic?.runIt {
-                            defaultBuilder.addToken(it)
-                        }
-                    }
+                for (spec in production.regexprSpecList) {
+                    relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
                 }
 
             }
+
 
             for (regexpProduction in applyToAll) {
 
                 for (spec in regexpProduction.regexprSpecList) {
                     builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec)) }
+                }
+            }
+
+            val currentSpecs = builders.values.flatMap { it.currentSpecs }
+
+            for (bnfProduction in nonterminalProductions.mapNotNull { it as? JccBnfProduction }) {
+
+                val regexpExpansions =
+                        bnfProduction.expansion
+                            ?.descendantSequence(includeSelf = true)
+                            ?.filterMapAs<JccRegexpExpansionUnit>()
+                            ?: emptySequence()
+
+                for (regexExpansion in regexpExpansions) {
+
+                    val token = when (val r = regexExpansion.regularExpression) {
+                        is JccLiteralRegularExpression   ->
+                            currentSpecs
+                                .firstOrNull { it.matches(r.match) }
+                            // if the string isn't covered by an explicit token, it's synthesized
+                                ?: SyntheticToken(regexExpansion)
+                        // necessarily references an explicit token
+                        is JccRegularExpressionReference -> null
+                        // everything else is synthesized
+                        else                             -> SyntheticToken(regexExpansion)
+                    } as? SyntheticToken
+
+                    token?.runIt {
+                        defaultBuilder.addToken(it)
+                    }
                 }
             }
 
