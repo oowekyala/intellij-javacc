@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.model
 import com.github.oowekyala.ijcc.lang.psi.JccRegexpExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.toPattern
+import com.github.oowekyala.ijcc.lang.psi.regexKind
 
 /**
  *
@@ -24,8 +24,8 @@ sealed class Token(val regexKind: RegexKind) : Comparable<Token> {
 
     abstract val regularExpression: JccRegularExpression
 
-    val pattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = false) }
-    val prefixPattern: Regex? by lazy { regularExpression.toPattern(prefixMatch = true) }
+    val pattern: Regex? by lazy { regularExpression.pattern }
+    val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
     /**
      * This token is "lower" than another token if it appears before it in the document.

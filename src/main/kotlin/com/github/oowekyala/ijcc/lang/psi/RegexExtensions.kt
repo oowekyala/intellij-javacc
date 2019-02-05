@@ -59,6 +59,21 @@ val JccRegexpLike.enclosingToken: Token?
     }
 
 
+/**
+ * Returns the list of lexical states this regexp applies to.
+ * If null then this production applies to the DEFAULT state.
+ */
+fun JccRegexprSpec.getLexicalStatesName(): List<String>? =
+        production.lexicalStateList?.identifierList?.map { it.name }
+
+
+val JccRegexprSpec.production
+    get() = parent as JccRegularExprProduction
+
+val JccRegexprSpec.regexKind: RegexKind
+    get() = production.regexprKind.modelConstant
+
+
 private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {
 
     val builder = StringBuilder()
@@ -87,7 +102,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
-        else ref.pattern?.toString().let { builder.append(it) }
+        else ref.regularExpression.pattern?.toString().let { builder.append(it) }
     }
 
     override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
