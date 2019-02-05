@@ -22,4 +22,7 @@ class JccJavacodeProductionImpl(node: ASTNode) : JccNonTerminalProductionImpl(no
         else
             super.accept(visitor)
     }
+
+    override fun toString(): String = "JccJavacodeProduction($name)"
+
 }

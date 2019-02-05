@@ -13,6 +13,8 @@ interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner {
 
     override fun getNameIdentifier(): JccIdentifier
 
+    override fun getName(): String = nameIdentifier.name
+
     /**
      * Populated by the whole-file inspection, used by the highlight visitor
      */

@@ -32,4 +32,8 @@ abstract class JccNonTerminalProductionImpl(node: ASTNode) : JavaccPsiElementImp
         return p1.nameIdentifier
     }
 
+    override fun getName(): String {
+        return super<JccNonTerminalProduction>.getName()
+    }
+
 }

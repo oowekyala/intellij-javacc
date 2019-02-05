@@ -2,7 +2,7 @@
 
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
-
+import java.net.URI
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -32,12 +32,16 @@ ext {
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        url = URI("http://dl.bintray.com/kotlin/kotlinx")
+    }
 }
 
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
+    compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     // https://mvnrepository.com/artifact/net.java.dev.javacc/javacc
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.1")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")

@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.intellij.util.ThreeState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
 
 /**
  * Extensions to compute properties of BNF productions such as nullability,
@@ -16,29 +18,33 @@ import com.intellij.util.ThreeState
  * To determine nullability of a production, use [JccNonTerminalProduction.isNullable] instead,
  * which caches the result.
  */
-fun JccExpansion.isEmptyMatchPossible(): Boolean = when (this) {
+fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean = when (this) {
     is JccParserActionsUnit          -> true
     is JccLocalLookahead             -> true
     is JccOptionalExpansionUnit      -> true
     is JccRegexpExpansionUnit        -> false
-    is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible()
-    is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible() == true
+    is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible(alreadySeen)
+    is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
     is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
         it is JccZeroOrOne || it is JccZeroOrMore
-                || expansion?.isEmptyMatchPossible() == true // test it whether there is a + or nothing
+                || expansion?.isEmptyMatchPossible(alreadySeen) == true // test it whether there is a + or nothing
     }
-    is JccExpansionSequence          -> expansionUnitList.all { it.isEmptyMatchPossible() }
-    is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible() }
-    is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible() == true
+    is JccExpansionSequence          -> expansionUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
+    is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible(alreadySeen) }
+    is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
     is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
-        it is JccBnfProduction && it.computeNullability()
+        it is JccBnfProduction && it.computeNullability(alreadySeen)
     } ?: false
     else                             -> false
 }
 
-private fun JccBnfProduction.computeNullability(): Boolean {
+private fun JccBnfProduction.computeNullability(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean {
     if (isNullable == ThreeState.UNSURE) {
-        val computed = expansion?.isEmptyMatchPossible()
+        if (this in alreadySeen) {
+            // left recursion detected!!
+            return isNullable == ThreeState.YES
+        }
+        val computed = expansion?.isEmptyMatchPossible(alreadySeen.add(this))
         if (computed != null) {
             isNullable = if (computed) ThreeState.YES else ThreeState.NO
         } // else stays unsure
