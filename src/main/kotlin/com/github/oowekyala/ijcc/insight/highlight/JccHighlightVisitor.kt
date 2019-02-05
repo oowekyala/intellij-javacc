@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JavaccTypes
@@ -277,6 +278,9 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+        // don't do that shit inside explicit tokens or private specs
+        if (o.enclosingToken?.let { it is ExplicitToken } == true) return
+
         val ref: JccRegexprSpec? = o.typedReference.resolve()
 
         // if so, the literal declares itself

@@ -20,19 +20,13 @@ import com.github.oowekyala.ijcc.lang.psi.regexKind
  * That is, this usage of regular expression can be rewritten using the other kind of usage. Those are
  * represented by [SyntheticToken]
  */
-sealed class Token(val regexKind: RegexKind) : Comparable<Token> {
+sealed class Token(val regexKind: RegexKind) {
 
     abstract val regularExpression: JccRegularExpression
 
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
     fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
-
-    /**
-     * This token is "lower" than another token if it appears before it in the document.
-     */
-    override fun compareTo(other: Token): Int =
-            regularExpression.textOffset.compareTo(other.regularExpression.textOffset)
 
 }
 

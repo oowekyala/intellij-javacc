@@ -10,7 +10,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.parents
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -50,10 +49,10 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
     }
 }
 
-/** Returns the regex spec this regex is declared in, or null if this regex occurs inside a private regex. */
+/** Returns the token this regex is declared in, or null if this regex occurs inside a private regex. */
 val JccRegexpLike.enclosingToken: Token?
     get() {
-        val enclosingRegex = parents().first { it is JccRegularExpression }
+        val enclosingRegex = ancestors(includeSelf = true).first { it is JccRegularExpression }
 
         return when (val parent = enclosingRegex.parent) {
             is JccRegexprSpec         -> if (parent.isPrivate) null else ExplicitToken(parent)
