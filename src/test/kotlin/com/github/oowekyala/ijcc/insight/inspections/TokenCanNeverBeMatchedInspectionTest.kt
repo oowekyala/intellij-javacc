@@ -44,4 +44,35 @@ class TokenCanNeverBeMatchedInspectionTest : JccInspectionTestBase(TokenCanNever
     )
 
 
+    fun testUnnamed() = checkByText(
+        """
+
+           TOKEN: {
+               < "foo" | "bar" >
+             | <BAR: "qux" | ${warning("\"bar\"", null)} | "quux" >
+           }
+        """.trimIndent().inGrammarCtx()
+    )
+
+
+    fun testWithNonLiteralOverride() = checkByText(
+        """
+
+           TOKEN: {
+               < "foo" | "bar" > // has higher precedence
+             | <NCNAME: (["a"-"z"])+ >
+           }
+        """.trimIndent().inGrammarCtx()
+    )
+
+    fun testWithNonLiteral() = checkByText(
+        """
+
+           TOKEN: {
+               <NCNAME: (["a"-"z"])+ >
+             | < ${warning("\"foo\"", "NCNAME")} | ${warning("\"bar\"", "NCNAME")} >
+           }
+        """.trimIndent().inGrammarCtx()
+    )
+
 }

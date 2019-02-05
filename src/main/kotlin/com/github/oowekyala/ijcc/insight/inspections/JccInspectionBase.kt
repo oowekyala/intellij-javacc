@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
+import com.github.oowekyala.ijcc.util.contains
 import com.intellij.codeInspection.InspectionProfileEntry
 import com.intellij.codeInspection.ex.BaseLocalInspectionTool
 import com.intellij.psi.JavaTokenType.C_STYLE_COMMENT
@@ -25,7 +26,7 @@ abstract class JccInspectionBase(private val myDisplayName: String)
 }
 
 val PsiElement.isJccComment: Boolean
-    get() = JccTypesExt.CommentTypeSet.contains(node.elementType)
+    get() = JccTypesExt.CommentTypeSet.contains(this)
 
 val PsiElement.trimCommentMarkers: String
     get() = when (node.elementType) {
