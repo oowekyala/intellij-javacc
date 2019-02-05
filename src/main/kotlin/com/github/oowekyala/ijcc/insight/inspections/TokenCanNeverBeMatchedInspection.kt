@@ -72,16 +72,23 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                                                      elt: JccLiteralRegexpUnit,
                                                      specOwnsProblem: Boolean
         ) {
-            val matchedBy: JccRegexprSpec? = JccStringTokenReference(elt).resolve()
-            if (matchedBy != null && matchedBy !== spec) {
-                // so it's matched by something different
+            val matchedBy: List<JccRegexprSpec> = JccStringTokenReference(elt)
+                .multiResolve(false)
+                .toList()
+                .map { it.element as JccRegexprSpec }
+                // matching itself doesn't count
+                .filterNot { it === spec }
 
+            if (matchedBy.isNotEmpty()) {
+
+                // TODO support choosing from several elements when there is conflict
+                val first = matchedBy.first()
                 val owner = if (specOwnsProblem) spec else elt
                 registerProblem(
                     owner,
-                    problemDescription(matchedBy.name),
+                    problemDescription(first.name),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    NavigateToOtherTokenFix(SmartPointerManager.createPointer(matchedBy))
+                    NavigateToOtherTokenFix(SmartPointerManager.createPointer(first))
                 )
             }
         }

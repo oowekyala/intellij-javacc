@@ -42,7 +42,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * @return the matched token if it was found in this state
      */
     fun matchLiteral(toMatch: String,
-                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? =
+                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
             tokens.asSequence()
                 .filter { consideredRegexKinds.contains(it.regexKind) }
                 .mapNotNull {
@@ -70,7 +70,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * @return the matched token if it was found
      */
     fun matchLiteral(literal: JccLiteralRegexpUnit,
-                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? {
+                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? {
         return matchLiteral(literal.match, consideredRegexKinds)
     }
 
@@ -93,6 +93,8 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
     companion object {
 
+        private val defaultConsideredRegex = EnumSet.of(RegexKind.TOKEN)
+
         /**
          * Maximal munch. First take the longest match, then take
          * the highest token in the file.
@@ -102,6 +104,8 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                     .thenComparingInt { -it.first.regularExpression.textOffset }
 
         const val DefaultStateName = "DEFAULT"
+
+        val JustDefaultState = listOf(DefaultStateName)
 
         class LexicalStateBuilder(val name: String) {
 

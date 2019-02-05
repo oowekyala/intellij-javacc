@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.refs
 import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
+import com.github.oowekyala.ijcc.lang.psi.enclosingToken
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
 import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.psi.PsiElementResolveResult
@@ -26,8 +27,12 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
 
         val grammar = file.lexicalGrammar
 
+        val consideredState = element.enclosingToken?.lexicalStateNames
+
+
         val matchedTokens = grammar.lexicalStates
             .asSequence()
+            .filter { consideredState == null || consideredState.contains(it.name) }
             .mapNotNull { it.matchLiteral(element) }
             .filterMapAs<ExplicitToken>()
             .map { it.spec }

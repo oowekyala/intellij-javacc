@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.insight.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccRegexpExpansionUnit
-import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
-import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.regexKind
+import com.github.oowekyala.ijcc.lang.psi.*
 
 /**
  *
@@ -20,7 +17,7 @@ import com.github.oowekyala.ijcc.lang.psi.regexKind
  * That is, this usage of regular expression can be rewritten using the other kind of usage. Those are
  * represented by [SyntheticToken]
  */
-sealed class Token(val regexKind: RegexKind) {
+sealed class Token(val regexKind: RegexKind, val lexicalStateNames: List<String>) {
 
     abstract val regularExpression: JccRegularExpression
 
@@ -33,13 +30,20 @@ sealed class Token(val regexKind: RegexKind) {
 /**
  * Declared explicitly by the user. The spec is never private.
  */
-data class ExplicitToken(val spec: JccRegexprSpec) : Token(spec.regexKind) {
+data class ExplicitToken(val spec: JccRegexprSpec) :
+    Token(
+        spec.regexKind,
+        spec.getLexicalStatesName() ?: LexicalState.JustDefaultState
+    ) {
     override val regularExpression: JccRegularExpression = spec.regularExpression
 }
 
 /**
  * Synthesized by JavaCC.
  */
-data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(RegexKind.TOKEN) {
+data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(
+    RegexKind.TOKEN,
+    LexicalState.JustDefaultState
+) {
     override val regularExpression: JccRegularExpression = regex.regularExpression
 }
