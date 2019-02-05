@@ -277,7 +277,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
-        val ref: JccRegexprSpec? = o.typedReference?.resolve()
+        val ref: JccRegexprSpec? = o.typedReference.resolve()
 
         // if so, the literal declares itself
         val isSelfReferential = ref != null && o.strictParents().any { it === ref }
@@ -290,7 +290,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 TOKEN_LITERAL_REFERENCE.highlightType,
                 message = "Matched by $tokenName"
             )
-        } // else stay default}
+        } // else stay default
     }
 
     override fun visitCharacterDescriptor(descriptor: JccCharacterDescriptor) {

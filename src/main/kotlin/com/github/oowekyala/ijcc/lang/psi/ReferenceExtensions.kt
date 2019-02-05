@@ -1,5 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
+import com.github.oowekyala.ijcc.insight.model.SyntheticToken
+import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
@@ -11,24 +14,40 @@ import com.github.oowekyala.ijcc.lang.refs.JjtNodePolyReference
  */
 
 
-val JccLiteralRegexpUnit.typedReference: JccStringTokenReference?
-    get() = reference as JccStringTokenReference?
+val JccLiteralRegexpUnit.typedReference: JccStringTokenReference
+    get() = reference as JccStringTokenReference
 
 
-val JccLiteralRegularExpression.typedReference: JccStringTokenReference?
+val JccLiteralRegularExpression.typedReference: JccStringTokenReference
     get() = unit.typedReference
 
 val JccTokenReferenceUnit.typedReference: JccTerminalReference
     get() = reference as JccTerminalReference
 
-val JccRegularExpressionReference.typedReference: JccTerminalReference?
+val JccRegularExpressionReference.typedReference: JccTerminalReference
     get() = unit.typedReference
-
-
-
 
 val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
     get() = reference as JccNonTerminalReference
+
+
+/**
+ * Returns the token, synthetic or explicit, that is referenced by this expansion
+ * unit. Is null if the regex is a regex reference whose token couldn't be resolved.
+ */
+val JccRegexpExpansionUnit.referencedToken: Token?
+    get() {
+        val regex = regularExpression
+
+        return when (regex) {
+            is JccRegularExpressionReference -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
+            is JccLiteralRegularExpression   ->
+                // if the string isn't covered by an explicit token, it's synthesized
+                regex.typedReference.resolve()?.let { ExplicitToken(it) } ?: SyntheticToken(this)
+            // everything else is synthesized
+            else                             -> SyntheticToken(this)
+        }
+    }
 
 /**
  * Null if [JccNodeClassOwner.isVoid], not null otherwise.

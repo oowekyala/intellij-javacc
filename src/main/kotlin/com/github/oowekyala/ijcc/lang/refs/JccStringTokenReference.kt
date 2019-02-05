@@ -1,8 +1,10 @@
 package com.github.oowekyala.ijcc.lang.refs
 
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
+import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
@@ -26,8 +28,9 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
 
         val matchedTokens = grammar.lexicalStates
             .asSequence()
-            .map { it.matchLiteral(element) }
-            .filterNotNull()
+            .mapNotNull { it.matchLiteral(element) }
+            .filterMapAs<ExplicitToken>()
+            .map { it.spec }
             .map { PsiElementResolveResult(it) }
             .distinct()
 

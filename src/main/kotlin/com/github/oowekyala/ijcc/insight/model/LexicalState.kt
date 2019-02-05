@@ -1,7 +1,10 @@
 package com.github.oowekyala.ijcc.insight.model
 
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
+import com.github.oowekyala.ijcc.lang.psi.enclosingToken
+import com.github.oowekyala.ijcc.lang.psi.match
 import java.util.*
+import java.util.regex.Matcher
 
 /**
  * Represents a lexical state.
@@ -20,7 +23,7 @@ import java.util.*
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalState private constructor(val name: String, val tokens: List<JccRegexprSpec>) {
+class LexicalState private constructor(val name: String, val tokens: List<Token>) {
 
 
     /**
@@ -40,28 +43,21 @@ class LexicalState private constructor(val name: String, val tokens: List<JccReg
      * @return the matched token if it was found
      */
     fun matchLiteral(literal: JccLiteralRegexpUnit,
-                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): JccRegexprSpec? {
+                     consideredRegexKinds: Set<RegexKind> = EnumSet.of(RegexKind.TOKEN)): Token? {
 
         val toMatch = literal.match
-        val regexpContext = literal.specContext
+        val thisToken = literal.enclosingToken ?: return null
 
-        // Literals inside a private regex are out of bounds
-        // Bc a private regex only matters where it is used, not defined
-        return if (regexpContext?.isPrivate == true) null
-        else tokens.asSequence()
-            // remove private regexps (they're not tokens)
-            .filterNot { it.isPrivate }
+        return tokens.asSequence()
             .filter { consideredRegexKinds.contains(it.regexKind) }
-            // Stop when below this regex context
-            .takeWhile { regexpContext == null || regexpContext !== it.prevSibling }
-            .map {
-                val matcher = it.prefixPattern?.toPattern()?.matcher(toMatch)
+            // Stop right before this regex context
+            .takeWhile { it < thisToken }
+            .mapNotNull {
+                val matcher: Matcher? = it.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                if (matcher?.matches() == true) Pair(it, matcher.group(0))
-                else null
+                if (matcher?.matches() == true) Pair(it, matcher.group(0)) else null
             }
-            .filterNotNull()
-            .maxBy { it.second.length }
+            .maxBy { it.second.length } // maximal munch!
             ?.let { it.first }
     }
 
@@ -88,10 +84,10 @@ class LexicalState private constructor(val name: String, val tokens: List<JccReg
 
         class LexicalStateBuilder(val name: String) {
 
-            private val specs = mutableListOf<JccRegexprSpec>()
+            private val specs = mutableListOf<Token>()
 
             /** Must be called in document order. */
-            fun addToken(token: JccRegexprSpec) {
+            fun addToken(token: Token) {
                 specs.add(token)
             }
 

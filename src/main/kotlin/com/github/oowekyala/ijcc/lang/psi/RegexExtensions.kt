@@ -1,6 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.SyntheticToken
+import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.diagnostic.Logger
@@ -43,9 +46,17 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
     }
 }
 
-/** Returns the regex spec this regex is declared in, or null if this is a regex inside an expansion. */
-val JccRegexpLike.specContext: JccRegexprSpec?
-    get() = parents().firstOrNull { it is JccRegexprSpec } as? JccRegexprSpec
+/** Returns the regex spec this regex is declared in, or null if this regex occurs inside a private regex. */
+val JccRegexpLike.enclosingToken: Token?
+    get() {
+        val enclosingRegex = parents().first { it is JccRegularExpression }
+
+        return when (val parent = enclosingRegex.parent) {
+            is JccRegexprSpec         -> if (parent.isPrivate) null else ExplicitToken(parent)
+            is JccRegexpExpansionUnit -> SyntheticToken(parent)
+            else                      -> throw IllegalStateException("No enclosing context?")
+        }
+    }
 
 
 private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {

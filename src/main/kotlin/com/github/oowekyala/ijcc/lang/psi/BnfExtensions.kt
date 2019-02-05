@@ -48,4 +48,6 @@ private fun JccBnfProduction.computeNullability(): Boolean {
 }
 
 
+//fun JccExpansion.firstSet() : Set<>
+
 
