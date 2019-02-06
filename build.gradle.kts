@@ -160,6 +160,7 @@ tasks {
 
     runIde {
         jvmArgs = listOf("-Xmx2G")
+        setConfigDirectory(projectDir.resolve("sandbox").resolve("config"))
     }
 
     publishPlugin {
