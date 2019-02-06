@@ -33,6 +33,8 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
                 ( ... ) #N<b>(true)</b> ( a() )
             </code>
 
+            <!-- toolTipEnd -->
+
             This inspection uses a natural code style convention to guess whether this is
             intentional or not. A node descriptor expression is flagged iff its opening
             parenthesis does not immediately follow the identifier, with no whitespace in-between.

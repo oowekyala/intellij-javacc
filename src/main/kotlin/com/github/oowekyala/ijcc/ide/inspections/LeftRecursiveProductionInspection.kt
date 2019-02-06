@@ -22,10 +22,11 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription(): String = """
         Reports left-recursive productions. Left-recursion is not supported
-        by top-down parsers like JavaCC. This is implemented as an inspection for performance,
-        but it's not an "optional error" for JavaCC so I suggest never to turn it off.
+        by top-down parsers like JavaCC.
         <p>Possible solutions include right-factoring. That may significantly change
         the parse tree and so break your JJTree structure.</p>
+        <p>This is implemented as an inspection for performance, but it's not an
+        "optional error" for JavaCC so I suggest never to turn it off.</p>
     """.trimIndent()
 
     override fun runForWholeFile(): Boolean = true

@@ -19,7 +19,7 @@ class ActionWithinLookaheadInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription() = """
         Reports parser actions declared inside local lookahead specifications.
-        These are ignored during lookahead evaluation.
+        Those are ignored during lookahead evaluation.
     """.trimIndent()
 
 

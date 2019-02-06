@@ -20,7 +20,7 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription() = """
         Reports empty parser actions unit, which are unnecessary and
-        may cause some JavaCC errors.
+        may cause some JavaCC warnings.
     """.trimIndent()
 
 
