@@ -69,6 +69,10 @@
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.ide.highlight.JavaccColorSettingsPage"/>
 
+        <completion.contributor
+                language="JavaCC"
+                implementationClass="com.github.oowekyala.ijcc.ide.completion.JccCompletionContributor"/>
+
         <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.ide.rename.JccRenameProcessor"/>
         <lang.namesValidator language="JavaCC"
                              implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
