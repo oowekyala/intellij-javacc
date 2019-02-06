@@ -2,6 +2,8 @@ package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.JustDefaultState
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.deemsEqual
+import com.intellij.psi.PsiElement
 
 /**
  *
@@ -45,6 +47,12 @@ sealed class Token(val regexKind: RegexKind,
     val asStringToken: JccLiteralRegexpUnit?
         get() = regularExpression.asSingleLiteral(followReferences = false)
 
+    val psiElement: PsiElement
+        get () = when (this) {
+            is ExplicitToken  -> spec
+            is SyntheticToken -> declUnit
+        }
+
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
      * regex spec definitions like "Check regexp".
@@ -60,6 +68,7 @@ sealed class Token(val regexKind: RegexKind,
 
     companion object {
 
+        fun areEquivalent(t1: Token, t2: Token) = stringTokenComparator.deemsEqual(t1, t2)
 
         /**
          * Comparator that considers two string tokens with the same match equal (compare to 0).
@@ -98,13 +107,26 @@ data class ExplicitToken(val spec: JccRegexprSpec)
 
 /**
  * Synthesized by JavaCC.
+ *
+ * @property declUnit The highest (by doc offset) regex that implicitly declares this synthesized token
  */
-data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(
+data class SyntheticToken(val declUnit: JccRegexpExpansionUnit) : Token(
     RegexKind.TOKEN,
     isPrivate = false,
-    name = regex.regularExpression.name
+    name = declUnit.regularExpression.name
 ) {
     override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
-    override val regularExpression: JccRegularExpression = regex.regularExpression
+    override val regularExpression: JccRegularExpression = declUnit.regularExpression
     override val lexicalStateTransition: String? = null
+
+
+    internal val variantsImpl = mutableListOf(declUnit)
+
+    /**
+     * All implicit tokens declared in other non-terminals that are equivalent
+     * to this one according to [Token.Companion.stringTokenComparator]. This
+     * includes [declUnit].
+     */
+    val variants: List<JccRegexpExpansionUnit> = variantsImpl
+
 }

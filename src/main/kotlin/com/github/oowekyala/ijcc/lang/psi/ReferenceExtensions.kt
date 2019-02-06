@@ -33,7 +33,8 @@ val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
 
 /**
  * Returns the token, synthetic or explicit, that is referenced by this expansion
- * unit. Is null if the regex is a regex reference whose token couldn't be resolved.
+ * unit. Is null if the regex is a token reference (eg <foo>) whose token couldn't
+ * be resolved.
  */
 val JccRegexpExpansionUnit.referencedToken: Token?
     get() {
@@ -41,9 +42,7 @@ val JccRegexpExpansionUnit.referencedToken: Token?
 
         return when (regex) {
             is JccRegularExpressionReference -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
-            is JccLiteralRegularExpression   ->
-                // if the string isn't covered by an explicit token, it's synthesized
-                regex.typedReference.resolve()?.let { ExplicitToken(it) } ?: SyntheticToken(this)
+            is JccLiteralRegularExpression   -> regex.typedReference.resolveToken(exact = true)
             // everything else is synthesized
             else                             -> SyntheticToken(this)
         }

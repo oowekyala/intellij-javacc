@@ -30,7 +30,7 @@ object JccTerminalDocMaker {
 
 
     @TestOnly
-    internal fun makeDocImpl(name: String?,
+    fun makeDocImpl(name: String?,
                              kind: RegexKind,
                              isExplicit: Boolean,
                              states: List<String>,

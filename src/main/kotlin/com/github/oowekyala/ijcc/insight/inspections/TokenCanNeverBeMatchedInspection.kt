@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
 import com.intellij.codeInspection.LocalQuickFix
@@ -73,10 +74,10 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                                                      specOwnsProblem: Boolean
         ) {
             val matchedBy: List<JccRegexprSpec> = JccStringTokenReference(elt)
-                .multiResolve(false)
-                .toList()
-                .map { it.element as JccRegexprSpec }
+                .multiResolveToken(exact = false)
+                .filterIsInstance<ExplicitToken>()
                 // matching itself doesn't count
+                .map { it.spec }
                 .filterNot { it === spec }
 
             if (matchedBy.isNotEmpty()) {

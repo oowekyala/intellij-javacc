@@ -92,7 +92,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         private fun makeMessage(loopPath: List<JccNonTerminalProduction>) = makeMessageImpl(loopPath.map { it.name })
 
         @TestOnly
-        internal fun makeMessageImpl(loopPath: List<String>) =
+        fun makeMessageImpl(loopPath: List<String>) =
                 "Left-recursion detected: " + loopPath.joinToString(separator = " -> ")
 
     }

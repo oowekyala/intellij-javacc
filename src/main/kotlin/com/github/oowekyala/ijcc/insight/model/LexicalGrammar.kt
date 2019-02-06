@@ -31,6 +31,8 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
+    fun getDefaultState() : LexicalState = lexicalStatesMap[LexicalState.DefaultStateName]!!
+
     companion object {
 
         private fun buildStatesMap(allProductions: Sequence<PsiElement>): Map<String, LexicalState> {

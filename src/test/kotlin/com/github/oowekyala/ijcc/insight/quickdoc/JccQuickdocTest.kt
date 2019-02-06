@@ -256,7 +256,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        JccTerminalDocMaker.makeSyntheticDoc(null, "\"hey\"")
+        makeSyntheticDoc(null, "\"hey\"")
     )
 
 
@@ -276,7 +276,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        JccTerminalDocMaker.makeSyntheticDoc("ab", "\"a\" | \"b\"")
+        makeSyntheticDoc("ab", "\"a\" | \"b\"")
     )
 
     fun `test link from synthetic`() = doTest(

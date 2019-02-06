@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
-import com.github.oowekyala.ijcc.lang.psi.getRootRegexElement
 import com.github.oowekyala.ijcc.lang.psi.match
 import com.github.oowekyala.ijcc.util.deemsEqual
 import java.util.*
@@ -53,11 +52,9 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                 .filter { consideredRegexKinds.contains(it.regexKind) }
                 .mapNotNull { token ->
                     if (exact) {
-                        token.regularExpression
-                            .getRootRegexElement(followReferences = false)
-                            .takeIf {
-                                it is JccLiteralRegexpUnit && it.match == toMatch
-                            }?.let { Pair(token, toMatch) }
+                        token.asStringToken
+                            ?.takeIf { it.match == toMatch }
+                            ?.let { Pair(token, toMatch) }
                     } else {
                         val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
@@ -73,8 +70,9 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * @return the matched token if it was found
      */
     fun matchLiteral(literal: JccLiteralRegexpUnit,
+                     exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            matchLiteral(literal.match, true, consideredRegexKinds)
+            matchLiteral(literal.match, exact, consideredRegexKinds)
 
 
 
@@ -116,9 +114,13 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                if (mySpecs.none { Token.stringTokenComparator.deemsEqual(it, token) }) {
+                val equiv = mySpecs.firstOrNull { Token.stringTokenComparator.deemsEqual(it, token) }
+                if (equiv == null) {
                     // don't add duplicate synthetic tokens in the same state
                     mySpecs.add(token)
+                } else if (equiv is SyntheticToken && token is SyntheticToken) {
+                    // record duplicates in the token
+                    equiv.variantsImpl += token.declUnit
                 }
             }
 

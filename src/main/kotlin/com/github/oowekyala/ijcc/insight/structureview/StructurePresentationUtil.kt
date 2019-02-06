@@ -40,7 +40,7 @@ fun JccPsiElement.getPresentableText(): String {
         is JccNonTerminalProduction -> getPresentableText()
 
         is JccFile                  -> name
-        else                        -> "" + this!!
+        else                        -> "" + this
     }
 }
 
