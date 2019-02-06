@@ -424,7 +424,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         if (spec.regularExpression is JccEofRegularExpression) {
 
-            if (spec.getLexicalStatesName() == null) {
+            if (spec.lexicalStatesNameOrEmptyForAll.isEmpty()) {
                 myHolder += errorInfo(spec, "EOF action/state change must be specified for all states, i.e., <*>TOKEN:")
             }
 

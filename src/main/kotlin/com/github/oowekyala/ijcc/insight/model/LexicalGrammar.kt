@@ -17,16 +17,21 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
 
     /** All the defined lexical states. */
-    private val lexicalStatesMap: Map<String, LexicalState> =
-            buildStatesMap(grammarFileRoot?.childrenSequence()?.filter { it is JccBnfProduction || it is JccRegularExprProduction }
-                ?: emptySequence())
+    private val lexicalStatesMap: Map<String, LexicalState> by lazy {
+        buildStatesMap(grammarFileRoot?.childrenSequence()?.filter { it is JccBnfProduction || it is JccRegularExprProduction }
+            ?: emptySequence())
+    }
+
+    /** All the tokens. TODO optimise s.t. it's not necessary to partition them by state. */
+    val allTokens: Sequence<Token> by lazy {
+        lexicalStates.flatMap { it.tokens }.asSequence()
+    }
 
     val lexicalStates: Collection<LexicalState> = lexicalStatesMap.values
 
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
     companion object {
-
 
         private fun buildStatesMap(allProductions: Sequence<PsiElement>): Map<String, LexicalState> {
 
@@ -67,11 +72,12 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
             }
 
+            val allStateNames = builders.keys.toList()
 
             for (regexpProduction in applyToAll) {
 
                 for (spec in regexpProduction.regexprSpecList) {
-                    builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec)) }
+                    builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec, allStateNames)) }
                 }
             }
 

@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.model
 
+import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.JustDefaultState
 import com.github.oowekyala.ijcc.lang.psi.*
 
 /**
@@ -23,17 +24,22 @@ import com.github.oowekyala.ijcc.lang.psi.*
  * then no token is synthesized. This is because JavaCC compacts string tokens s.t. there exists only
  * distinct string tokens. Doing so, it considers IGNORE_CASE expressions as more general. TODO check that
  */
+@Suppress("LeakingThis")
 sealed class Token(val regexKind: RegexKind,
-                   val lexicalStateNames: List<String>,
                    val isPrivate: Boolean,
                    val name: String?) {
 
+    abstract val lexicalStateNames: List<String>
+    abstract val lexicalStateTransition: String?
     abstract val regularExpression: JccRegularExpression
 
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
-    @Suppress("LeakingThis")
     val isExplicit: Boolean = this is ExplicitToken
+
+    /** Returns true if this is a single literal token. */
+    val asStringToken: JccLiteralRegexpUnit?
+        get() = regularExpression.asSingleLiteral(followReferences = false)
 
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
@@ -45,21 +51,23 @@ sealed class Token(val regexKind: RegexKind,
      * Returns true if this token is the same literal unit as this one.
      */
     fun matchesLiteral(unit: JccLiteralRegexpUnit): Boolean =
-            regularExpression.asSingleLiteral()?.let { unit.match == it.match } == true
+            regularExpression.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
+
 
 }
 
 /**
  * Declared explicitly by the user. The spec is never private.
  */
-data class ExplicitToken(val spec: JccRegexprSpec) :
+data class ExplicitToken(val spec: JccRegexprSpec,
+                         override val lexicalStateNames: List<String> = spec.lexicalStatesNameOrEmptyForAll) :
     Token(
         spec.regexKind,
-        spec.getLexicalStatesName() ?: LexicalState.JustDefaultState,
         isPrivate = spec.isPrivate,
         name = spec.name
     ) {
     override val regularExpression: JccRegularExpression = spec.regularExpression
+    override val lexicalStateTransition: String? = spec.lexicalStateTransition?.name
 }
 
 /**
@@ -67,9 +75,12 @@ data class ExplicitToken(val spec: JccRegexprSpec) :
  */
 data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(
     RegexKind.TOKEN,
-    LexicalState.JustDefaultState,
     isPrivate = false,
     name = regex.regularExpression.name
 ) {
+    override val lexicalStateNames: List<String> = JustDefaultState
+
     override val regularExpression: JccRegularExpression = regex.regularExpression
+
+    override val lexicalStateTransition: String? = null
 }

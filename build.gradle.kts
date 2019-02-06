@@ -173,16 +173,14 @@ tasks {
             """
                 <p>What's new:
                 <ul>
+                    <li>Completion of string literals with available string tokens!</li>
                     <li>Left-recursive production detection.</li>
-                    <li>Tokens implicitly declared in BNF expansions are now in the structure view</li>
+                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones)</li>
                 </ul>
 
                 <p>What's fixed:
                 <ul>
-                    <li>
-                    Match JavaCC's errors more closely, in particular with string token definitions,
-                    which it treats very specially.
-                    </li>
+                    <li>Match JavaCC's errors more closely, in particular with string token definitions, which it treats very specially.</li>
                 </ul>
             """.trimIndent()
         )

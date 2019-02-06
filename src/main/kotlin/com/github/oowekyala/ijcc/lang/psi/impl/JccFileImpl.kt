@@ -61,7 +61,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val grammarOptions: GrammarOptions by lazy { GrammarOptions(options, parserDeclaration) } // todo is lazy safe?
 
-    override val lexicalGrammar: LexicalGrammar get() = LexicalGrammar(grammarFileRoot)
+    override val lexicalGrammar: LexicalGrammar by lazy { LexicalGrammar(grammarFileRoot) }
 
     override fun getContainingFile(): JccFile = this
 

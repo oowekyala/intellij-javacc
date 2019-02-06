@@ -1,11 +1,13 @@
 package com.github.oowekyala.ijcc.lang.refs
 
 import com.github.oowekyala.ijcc.insight.model.ExplicitToken
+import com.github.oowekyala.ijcc.insight.model.LexicalState
 import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexprSpec
 import com.github.oowekyala.ijcc.lang.psi.enclosingToken
-import com.github.oowekyala.ijcc.lang.psi.isPrivate
+import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReferenceBase
 import com.intellij.psi.ResolveResult
@@ -43,9 +45,36 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
         return matchedTokens.toList().toTypedArray()
     }
 
-    override fun getVariants(): Array<Any> =
-            element.containingFile
-                .globalNamedTokens
-                .filter { !it.isPrivate }.toList().toTypedArray()
+    private val variants = element.containingFile
+        .lexicalGrammar
+        .allTokens
+        .filter { !it.isPrivate }
+        .mapNotNull { token ->
+            val asString = token.asStringToken ?: return@mapNotNull null
+
+            LookupElementBuilder
+                .create(asString.text)
+                .withIcon(JavaccIcons.TOKEN)
+                .withTypeText(token.let {
+                    buildString {
+                        if (it.lexicalStateNames != LexicalState.JustDefaultState) {
+                            // <A, B>
+                            it.lexicalStateNames.joinTo(
+                                this,
+                                separator = ", ",
+                                prefix = "<",
+                                postfix = ">"
+                            )
+                        }
+                        it.lexicalStateTransition?.let {
+                            append(" -> ")
+                            append(it)
+                        }
+                    }
+                }, true)
+        }
+        .toList().toTypedArray<Any>()
+
+    override fun getVariants(): Array<Any> = variants
 
 }

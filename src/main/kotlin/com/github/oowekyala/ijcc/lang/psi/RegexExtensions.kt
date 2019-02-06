@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.insight.model.ExplicitToken
-import com.github.oowekyala.ijcc.insight.model.RegexKind
-import com.github.oowekyala.ijcc.insight.model.SyntheticToken
-import com.github.oowekyala.ijcc.insight.model.Token
+import com.github.oowekyala.ijcc.insight.model.*
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.diagnostic.Logger
@@ -64,10 +61,11 @@ val JccRegexpLike.enclosingToken: Token
 
 /**
  * Returns the list of lexical states this regexp applies to.
- * If null then this production applies to the DEFAULT state.
+ * If empty then this regex applies to all states (<*>).
+ *
  */
-fun JccRegexprSpec.getLexicalStatesName(): List<String>? =
-        production.lexicalStateList?.identifierList?.map { it.name }
+val JccRegexprSpec.lexicalStatesNameOrEmptyForAll: List<String>
+    get() = production.lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
 
 
 val JccRegexprSpec.production
