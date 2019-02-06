@@ -336,6 +336,21 @@ class JccQuickdocTest : JccTestBase() {
         }
     """)
 
+    fun `test caret on unresolved`() = expectNothing(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
+        $myDummyHeader
+
+        void Foo(int foo): // no #void
+        {}
+        {
+            "hey" ( "i" | <foo> )
+                          //^
+        }
+    """)
+
     private fun expectNothing(@Language("JavaCC") code: String) = doTest(code, null)
 
 
