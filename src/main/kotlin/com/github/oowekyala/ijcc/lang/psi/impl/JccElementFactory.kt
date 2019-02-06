@@ -86,7 +86,7 @@ object JccElementFactory {
 
     inline fun <reified T : JccRegexpElement>
             createRegexpElement(project: Project, text: String): T =
-            createRegex<JccInlineRegularExpression>(project, "< $text >") as T
+            createRegex<JccInlineRegularExpression>(project, "< $text >").regexpElement as T
 
 
     fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {

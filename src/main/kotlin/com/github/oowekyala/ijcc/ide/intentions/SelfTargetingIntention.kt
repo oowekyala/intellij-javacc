@@ -109,7 +109,7 @@ abstract class SelfTargetingRangeIntention<TElement : PsiElement>(
     }
 }
 
-abstract class SelfTargetingOffsetIndependentIntention<TElement : JccPsiElement>(
+abstract class SelfTargetingOffsetIndependentIntention<TElement : PsiElement>(
     elementType: Class<TElement>,
     text: String,
     familyName: String = text

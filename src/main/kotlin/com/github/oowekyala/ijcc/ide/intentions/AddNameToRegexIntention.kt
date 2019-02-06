@@ -9,23 +9,18 @@ import com.intellij.codeInsight.daemon.impl.quickfix.CreateFromUsageBaseFix
 import com.intellij.codeInsight.intention.LowPriorityAction
 import com.intellij.codeInsight.template.TemplateBuilderImpl
 import com.intellij.codeInsight.template.impl.TextExpression
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 
 /** Wraps a regex into a named regex context. */
 class AddNameToRegexIntention :
-    SelfTargetingOffsetIndependentIntention<JccRegularExpression>(
+    JccSelfTargetingEditorIntentionBase<JccRegularExpression>(
         JccRegularExpression::class.java,
         "Add name to regular expression"
     ), LowPriorityAction {
 
-
-    override fun applyTo(project: Project, editor: Editor?, element: JccRegularExpression) {
-
-        if (editor == null) throw IllegalArgumentException("This intention requires an editor")
-
+    override fun run(project: Project, editor: Editor, element: JccRegularExpression): () -> Unit {
         val regexText = when (element) {
             is JccInlineRegularExpression -> element.regexpElement?.text
             else                          -> element.text
@@ -33,19 +28,13 @@ class AddNameToRegexIntention :
 
 
         val newExpr = createRegex<JccNamedRegularExpression>(element.project, "< FOO: $regexText >")
-        val runnable = Runnable {
+        return {
             val replaced = element.safeReplace(newExpr)
             startTemplate(
                 project,
                 editor,
                 replaced
             )
-        }
-
-        if (startInWriteAction()) {
-            runnable.run()
-        } else {
-            ApplicationManager.getApplication().runWriteAction(runnable)
         }
     }
 
