@@ -93,7 +93,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     ): List<Triple<T, String, Int>> {
         val commentPrefix = LanguageCommenters.INSTANCE.forLanguage(myFixture.file.language).lineCommentPrefix ?: "//"
         val caretMarker = "$commentPrefix$marker"
-        val text = myFixture.file.text
+        val text = myFixture.file.text!!
         val result = mutableListOf<Triple<T, String, Int>>()
         var markerOffset = -caretMarker.length
         while (true) {

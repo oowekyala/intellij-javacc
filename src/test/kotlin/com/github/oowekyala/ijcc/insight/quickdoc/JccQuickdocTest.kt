@@ -6,13 +6,16 @@ import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.insight.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.insight.quickdoc.JccNonTerminalDocMaker.JJTreeSectionName
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
+import com.intellij.codeInsight.documentation.DocumentationManager
+import com.intellij.psi.PsiElement
 import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class JccQuickdocTest : JccDocumentationProviderTest() {
+class JccQuickdocTest : JccTestBase() {
 
     private val myDummyPackage = "dummy.grammar.doctest"
 
@@ -236,8 +239,56 @@ class JccQuickdocTest : JccDocumentationProviderTest() {
     """, simpleFooDoc(noJjtreeSection = true)
     )
 
+    fun `test caret in uninteresting place 1`() = expectNothing(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
 
-    private fun doTest(@Language("JavaCC") code: String, @Language("Html") expected: String) =
-            doTest(code, expected) { elt, original -> generateDoc(elt, original) }
+        $myDummyHeader
+
+        void Foo(): // no #void
+        {}
+        {
+            "hey" ( "i" | <foo> )
+                //^
+        }
+    """)
+
+    fun `test caret in uninteresting place 2`() = expectNothing(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
+
+        $myDummyHeader
+
+        void Foo(int foo): // no #void
+                //^
+        {}
+        {
+            "hey" ( "i" | <foo> )
+        }
+    """)
+
+    private fun expectNothing(@Language("JavaCC") code: String) = doTest(code, null)
+
+
+    private fun doTest(@Language("JavaCC") code: String, @Language("Html") expected: String?) {
+        configureByText(code)
+
+        val (originalElement, _, offset) = findElementWithDataAndOffsetInEditor<PsiElement>()
+        val element = DocumentationManager.getInstance(project)
+            .findTargetElement(myFixture.editor, offset, myFixture.file, originalElement)
+
+        val actual = JccDocumentationProvider.generateDoc(element, originalElement)?.trim()
+
+        when {
+            actual == null && expected == null -> return
+            expected == null                   -> error("Expected null result")
+            actual == null                     -> error("Expected non-null result")
+            else                               -> assertSameLines(expected.trimIndent(), actual)
+        }
+    }
 
 }
