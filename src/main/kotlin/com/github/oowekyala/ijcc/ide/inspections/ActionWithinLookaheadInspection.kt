@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention
-import com.github.oowekyala.ijcc.lang.psi.JccLocalLookahead
+import com.github.oowekyala.ijcc.lang.psi.JccLocalLookaheadUnit
 import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.lang.psi.ancestors
@@ -27,7 +27,7 @@ class ActionWithinLookaheadInspection : JccInspectionBase(DisplayName) {
             object : JccVisitor() {
                 override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-                    if (o.ancestors(false).any { it is JccLocalLookahead }) {
+                    if (o.ancestors(false).any { it is JccLocalLookaheadUnit }) {
                         holder.registerProblem(
                             o,
                             ProblemDescription,

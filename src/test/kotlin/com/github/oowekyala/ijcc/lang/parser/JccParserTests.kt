@@ -15,7 +15,7 @@ class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition, JavaPa
     fun testTokens() = doTest(true)
     fun testParentheses() = doTest(true)
     fun testLookaheads() = doTest(true)
-    fun testRegexpPrecedence() = doTest(true)
+    fun testRegexPrecedence() = doTest(true)
     fun testAssignments() = doTest(true)
     fun testTokenFail() = doTest(true)
 

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccRegexpExpansionUnit
+import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import io.kotlintest.matchers.collections.shouldContainExactly
@@ -37,7 +37,7 @@ class LexicalGrammarTest : JccTestBase() {
         val default = lexicalGrammar.getLexicalState(LexicalState.DefaultStateName)!!
 
         val explicitFoo = file.globalTokenSpecs.first().also { check(it.name == "FOO") }
-        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexpExpansionUnit }
+        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexExpansionUnit }
         default.tokens.shouldContainExactly(
             ExplicitToken(explicitFoo),
             SyntheticToken(implicitBar)
@@ -67,7 +67,7 @@ class LexicalGrammarTest : JccTestBase() {
         lexicalGrammar.lexicalStates should haveSize(2)
 
         val explicitFoo = file.globalTokenSpecs.first().also { check(it.name == "FOO") }
-        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexpExpansionUnit }
+        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexExpansionUnit }
 
         lexicalGrammar.getLexicalState(LexicalState.DefaultStateName)!!.tokens.shouldContainExactly(
             SyntheticToken(implicitBar)
@@ -106,7 +106,7 @@ class LexicalGrammarTest : JccTestBase() {
         lexicalGrammar.lexicalStates should haveSize(2)
 
         val explicitFoo = file.globalTokenSpecs.first().also { check(it.name == "FOO") }
-        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexpExpansionUnit }
+        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexExpansionUnit }
 
         lexicalGrammar.getLexicalState(LexicalState.DefaultStateName)!!.tokens.shouldContainExactly(
             SyntheticToken(implicitBar)

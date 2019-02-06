@@ -87,7 +87,7 @@
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
 
-        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit"
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>

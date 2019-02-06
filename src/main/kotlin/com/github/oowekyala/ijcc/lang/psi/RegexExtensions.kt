@@ -7,12 +7,13 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
+import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
 /*
 
-    Extensions and utilities for the class hierarchy of JccRegexpLike
+    Extensions and utilities for the class hierarchy of JccRegexLike
 
  */
 
@@ -20,7 +21,7 @@ private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.ps
 
 
 /** The text matched by this literal regex. */
-val JccLiteralRegexpUnit.match: String
+val JccLiteralRegexUnit.match: String
     get() = stringLiteral.text.removeSurrounding("\"")
 
 /** The text matched by this literal regex. */
@@ -47,32 +48,32 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
 }
 
 /** Returns the token this regex is declared in. Is synthetic if the regex occurs in a BNF expansion. */
-val JccRegexpLike.enclosingToken: Token
+val JccRegexLike.enclosingToken: Token
     get() {
         val enclosingRegex = ancestors(includeSelf = true).first { it is JccRegularExpression }
 
         return when (val parent = enclosingRegex.parent) {
-            is JccRegexprSpec         -> ExplicitToken(parent)
-            is JccRegexpExpansionUnit -> SyntheticToken(parent)
-            else                      -> throw IllegalStateException("No enclosing context?")
+            is JccRegexSpec -> ExplicitToken(parent)
+            is JccRegexExpansionUnit                          -> SyntheticToken(parent)
+            else                                               -> throw IllegalStateException("No enclosing context?")
         }
     }
 
 
 /**
- * Returns the list of lexical states this regexp applies to.
+ * Returns the list of lexical states this regex applies to.
  * If empty then this regex applies to all states (<*>).
  *
  */
-val JccRegexprSpec.lexicalStatesNameOrEmptyForAll: List<String>
+val JccRegexSpec.lexicalStatesNameOrEmptyForAll: List<String>
     get() = production.lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
 
 
-val JccRegexprSpec.production
-    get() = parent as JccRegularExprProduction
+val JccRegexSpec.production
+    get() = parent as JccRegexProduction
 
-val JccRegexprSpec.regexKind: RegexKind
-    get() = production.regexprKind.modelConstant
+val JccRegexSpec.regexKind: RegexKind
+    get() = production.regexKind.modelConstant
 
 
 private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {
@@ -85,7 +86,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
 
     var unresolved = false
 
-    override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+    override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
         builder.append(Pattern.quote(o.match))
     }
 
@@ -93,33 +94,33 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         o.unit.acceptChildren(this)
     }
 
-    override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-        val regex = o.regexpElement
+    override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
+        val regex = o.regexElement
         if (regex == null) unresolved = true
         else regex.accept(this)
     }
 
-    override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
+    override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
         else ref.regularExpression.pattern?.toString().let { builder.append(it) }
     }
 
-    override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+    override fun visitRefRegularExpression(o: JccRefRegularExpression) {
         o.unit.accept(this)
     }
 
     override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-        o.regexpElement?.accept(this)
+        o.regexElement?.accept(this)
     }
 
-    override fun visitRegexpSequence(o: JccRegexpSequence) {
-        o.regexpUnitList.forEach { it.accept(this) }
+    override fun visitRegexSequenceElt(o: JccRegexSequenceElt) {
+        o.regexUnitList.forEach { it.accept(this) }
     }
 
-    override fun visitRegexpAlternative(o: JccRegexpAlternative) {
-        val iterator = o.regexpElementList.iterator()
+    override fun visitRegexAlternativeElt(o: JccRegexAlternativeElt) {
+        val iterator = o.regexElementList.iterator()
         // we know there's at least two
 
         iterator.next().accept(this)
@@ -133,7 +134,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         builder.append("$")
     }
 
-    override fun visitCharacterList(o: JccCharacterList) {
+    override fun visitCharacterListRegexUnit(o: JccCharacterListRegexUnit) {
         if (o.isAnyMatch) {
             builder.append(".")
             return
@@ -144,9 +145,9 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         builder.append(']')
     }
 
-    override fun visitParenthesizedRegexpUnit(o: JccParenthesizedRegexpUnit) {
+    override fun visitParenthesizedRegexUnit(o: JccParenthesizedRegexUnit) {
         builder.append('(')
-        o.regexpElement.accept(this)
+        o.regexElement.accept(this)
         builder.append(')')
         val occurrenceIndicator = o.occurrenceIndicator
         if (occurrenceIndicator != null) {
@@ -199,7 +200,8 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
 val JccNamedRegularExpression.isPrivate: Boolean
     get() = nameIdentifier.prevSiblingNoWhitespace?.isOfType(JccTypes.JCC_POUND) == true
 
-val JccRegexprSpec.isPrivate: Boolean
+
+val JccRegexSpec.isPrivate: Boolean
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
 
 
@@ -218,67 +220,67 @@ val JccNamedRegularExpression.nameTextRange: TextRange
             ?.let { it.union(nameIdentifier.textRange) }
             ?: nameIdentifier.textRange
 
-val JccRegexprSpec.nameTextRange: TextRange?
+val JccRegexSpec.nameTextRange: TextRange?
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.nameTextRange
 
 
 /**
  * Return the regex if it's a single literal, unwrapping
- * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * a [JccNamedRegularExpression] or [JccContainerRegularExpression]
  * if needed.
  */
-fun JccRegexprSpec.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexpUnit? =
+fun JccRegexSpec.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexUnit? =
         regularExpression.asSingleLiteral(followReferences)
 
 
 /**
  * Return the regex if it's a single literal, unwrapping
- * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * a [JccNamedRegularExpression] or [JccContainerRegularExpression]
  * if needed.
  */
-fun JccRegularExpression.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexpUnit? =
-        getRootRegexElement(followReferences) as? JccLiteralRegexpUnit
+fun JccRegularExpression.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexUnit? =
+        getRootRegexElement(followReferences) as? JccLiteralRegexUnit
 
 /**
  * Returns the root regex element, unwrapping
- * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * a [JccNamedRegularExpression] or [JccContainerRegularExpression]
  * if needed.
  */
-fun JccRegexprSpec.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? =
+fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? =
         regularExpression.getRootRegexElement(followReferences)
 
 /**
- * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccInlineRegularExpression]
- * if needed. Also unwraps [JccParenthesizedRegexpUnit]s occurring at the top.
+ * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccContainerRegularExpression]
+ * if needed. Also unwraps [JccParenthesizedRegexUnit]s occurring at the top.
  */
-fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
+fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? {
     return when (this) {
-        is JccNamedRegularExpression     -> this.regexpElement
-        is JccRegularExpressionReference -> this.unit
-        is JccInlineRegularExpression    -> this.regexpElement
-        is JccEofRegularExpression       -> null
-        is JccLiteralRegularExpression   -> this.unit
-        else                             -> throw IllegalStateException(this.toString())
+        is JccNamedRegularExpression                                  -> this.regexElement
+        is JccRefRegularExpression -> this.unit
+        is JccContainerRegularExpression                              -> this.regexElement
+        is JccEofRegularExpression                                    -> null
+        is JccLiteralRegularExpression                                -> this.unit
+        else                                                          -> throw IllegalStateException(this.toString())
     }?.unwrapParens()?.let {
         when (it) {
-            is JccTokenReferenceUnit -> if (followReferences) it.typedReference.resolveToken()?.getRootRegexElement() else it
-            else                     -> it
+            is JccTokenReferenceRegexUnit -> if (followReferences) it.typedReference.resolveToken()?.getRootRegexElement() else it
+            else                                                             -> it
         }
     }
 }
 
-fun JccRegexpElement.unwrapParens(): JccRegexpElement = when (this) {
-    is JccParenthesizedRegexpUnit -> this.regexpElement.unwrapParens()
-    else                          -> this
+fun JccRegexElement.unwrapParens(): JccRegexElement = when (this) {
+    is JccParenthesizedRegexUnit -> this.regexElement.unwrapParens()
+    else                                                            -> this
 }
 
 
 /**
  * Returns true if this token reference may reference private regexes.
  */
-val JccTokenReferenceUnit.canReferencePrivate: Boolean
-    get() = ancestors(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRegularExpressionReference
-            || ancestors(includeSelf = false).any { it is JccRegexprSpec }
+val JccTokenReferenceRegexUnit.canReferencePrivate: Boolean
+    get() = ancestors(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRefRegularExpression
+            || ancestors(includeSelf = false).any { it is JccRegexSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild
@@ -297,12 +299,12 @@ val JccCharacterDescriptor.baseCharAsString: String
 val JccCharacterDescriptor.toCharAsString: String?
     get() = toCharElement?.text?.removeSurrounding("\"")
 
-val JccCharacterList.isNegated
+val JccCharacterListRegexUnit.isNegated
     get() = firstChild.node.elementType == JccTypes.JCC_TILDE
 
 
 /** Converts this node to the enum constant from [RegexKind]. */
-val JccRegexprKind.modelConstant: RegexKind
+val JccRegexKind.modelConstant: RegexKind
     get() = when (text.trim()) {
         "TOKEN"         -> RegexKind.TOKEN
         "SPECIAL_TOKEN" -> RegexKind.SPECIAL_TOKEN
@@ -311,8 +313,8 @@ val JccRegexprKind.modelConstant: RegexKind
         else            -> throw IllegalArgumentException("Unknown regex kind ${text.trim()}")
     }
 
-/** True if this [JccCharacterList] is of the form `~[]`, which matches any character. */
-val JccCharacterList.isAnyMatch: Boolean
+/** True if this [JccCharacterListRegexUnit] is of the form `~[]`, which matches any character. */
+val JccCharacterListRegexUnit.isAnyMatch: Boolean
     get() = this.isNegated && this.characterDescriptorList.isEmpty()
 
 
@@ -320,10 +322,10 @@ val JccCharacterList.isAnyMatch: Boolean
  * Promotes a regex element to a regular expression, wrapping it into angled
  * brackets if needed.
  */
-fun JccRegexpElement.promoteToRegex(): JccRegularExpression = when (this) {
-    is JccTokenReferenceUnit -> createRegex<JccRegularExpressionReference>(project, text)
-    is JccLiteralRegexpUnit  -> createRegex<JccLiteralRegularExpression>(project, text)
-    else                     -> createRegex<JccInlineRegularExpression>(project, "< $text >")
+fun JccRegexElement.promoteToRegex(): JccRegularExpression = when (this) {
+    is JccTokenReferenceRegexUnit -> createRegex<JccRefRegularExpression>(project, text)
+    is JccLiteralRegexUnit                                           -> createRegex<JccLiteralRegularExpression>(project, text)
+    else                                                             -> createRegex<JccContainerRegularExpression>(project, "< $text >")
 }
 
 // constrain the hierarchies to be the same to avoid some confusions
@@ -336,20 +338,20 @@ inline fun <reified T : JccRegularExpression> JccRegularExpression.safeReplace(r
  * Replaces this regex element with the given one, taking care of replacing
  * the parent if it's a [JccRegularExpression].
  */
-fun JccRegexpElement.safeReplace(regex: JccRegexpElement): PsiElement? {
+fun JccRegexElement.safeReplace(regex: JccRegexElement): PsiElement? {
     val parent = parent
     return when {
-        regex is JccTokenReferenceUnit
+        regex is JccTokenReferenceRegexUnit
                 && parent is JccRegularExpression
-                && parent !is JccRegularExpressionReference ->
+                && parent !is JccRefRegularExpression ->
             parent.safeReplace(regex.promoteToRegex())
 
-        regex is JccLiteralRegexpUnit
+        regex is JccLiteralRegexUnit
                 && parent is JccRegularExpression
-                && parent !is JccLiteralRegularExpression   ->
+                && parent !is JccLiteralRegularExpression                                ->
             parent.safeReplace(regex.promoteToRegex())
 
-        else                                                -> replace(regex)
+        else                                                                             -> replace(regex)
     }
 }
 

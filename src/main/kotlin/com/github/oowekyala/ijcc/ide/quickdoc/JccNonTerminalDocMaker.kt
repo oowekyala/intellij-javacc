@@ -88,11 +88,11 @@ object JccNonTerminalDocMaker {
         }
 
         private fun JccExpansion.isDocumented(): Boolean = when (this) {
-            is JccParserActionsUnit    -> false
-            is JccLocalLookahead       -> false
-            is JccExpansionSequence    -> expansionUnitList.any { it.isDocumented() }
-            is JccExpansionAlternative -> expansionList.any { it.isDocumented() }
-            else                       -> true
+            is JccParserActionsUnit                                     -> false
+            is JccLocalLookaheadUnit -> false
+            is JccExpansionSequence                                     -> expansionUnitList.any { it.isDocumented() }
+            is JccExpansionAlternative                                  -> expansionList.any { it.isDocumented() }
+            else                                                        -> true
         }
 
         override fun visitExpansionAlternative(o: JccExpansionAlternative) {
@@ -111,12 +111,12 @@ object JccNonTerminalDocMaker {
             o.expansionUnitList.filter { it.isDocumented() }.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
         }
 
-        override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+        override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
             o.regularExpression.accept(JccTerminalDocMaker.RegexDocVisitor(sb))
         }
 
-        override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
-            val reffed: JccRegexprSpec? = o.typedReference.resolveToken(exact = true).let { it as? ExplicitToken }?.spec
+        override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
+            val reffed: JccRegexSpec? = o.typedReference.resolveToken(exact = true).let { it as? ExplicitToken }?.spec
 
             if (reffed != null) {
                 DocumentationManager.createHyperlink(
@@ -144,7 +144,7 @@ object JccNonTerminalDocMaker {
             // nothing
         }
 
-        override fun visitLocalLookahead(o: JccLocalLookahead) {
+        override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
             // nothing
         }
 

@@ -27,5 +27,5 @@ class JccBnfProductionImpl(node: ASTNode) : JccNonTerminalProductionImpl(node), 
     override val expansion: JccExpansion?
         get() = findChildByClass(JccExpansion::class.java)
 
-    override fun toString(): String = "JccBnfProduction($name)"
+    override fun toString(): String = "JccBnfProductionImpl($name)"
 }

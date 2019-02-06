@@ -43,7 +43,7 @@ open class JccExpansionImpl(node: ASTNode) : JccPsiElementImpl(node), JccExpansi
                     numSiblings > 2  -> super.delete() // delete just this
                 }
             }
-            is JccExpansionAlternative -> {
+            is JccExpansionAlternative                                  -> {
                 require(this is JccExpansionSequenceOrUnit)
 
                 val expansions = parent.expansionList
@@ -76,7 +76,7 @@ open class JccExpansionImpl(node: ASTNode) : JccPsiElementImpl(node), JccExpansi
                     }
                 }
             }
-            is JccLocalLookahead       -> {
+            is JccLocalLookaheadUnit -> {
                 // this is a syntactic lookahead, we have to delete the commas too if any
 
                 when {

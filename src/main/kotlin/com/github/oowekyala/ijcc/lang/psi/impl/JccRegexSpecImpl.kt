@@ -5,10 +5,10 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-class JccRegexprSpecImpl(node: ASTNode) : JccPsiElementImpl(node), JccRegexprSpec {
+class JccRegexSpecImpl(node: ASTNode) : JccPsiElementImpl(node), JccRegexSpec {
 
     fun accept(visitor: JccVisitor) {
-        visitor.visitRegexprSpec(this)
+        visitor.visitRegexSpec(this)
     }
 
     override fun accept(visitor: PsiElementVisitor) {

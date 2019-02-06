@@ -62,7 +62,7 @@ object JccTerminalDocMaker {
 
     class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
 
-        override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
+        override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
             sb.append(o.text)
         }
 
@@ -71,18 +71,18 @@ object JccTerminalDocMaker {
         }
 
         override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
-            o.regexpElement?.accept(this)
+            o.regexElement?.accept(this)
         }
 
         override fun visitEofRegularExpression(o: JccEofRegularExpression) {
             sb.append("&lt;EOF&gt;")
         }
 
-        override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
-            val reffed: JccRegexprSpec? = o.typedReference.resolveToken()
+        override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
+            val reffed: JccRegexSpec? = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.asSingleLiteral()?.text ?: angles(o.nameIdentifier.name)
+            val linkText = reffed?.asSingleLiteral()?.text ?: angles(o.name!!)
 
             DocumentationManager.createHyperlink(
                 sb,
@@ -92,25 +92,25 @@ object JccTerminalDocMaker {
             )
         }
 
-        override fun visitRegularExpressionReference(o: JccRegularExpressionReference) {
+        override fun visitRefRegularExpression(o: JccRefRegularExpression) {
             o.unit.accept(this)
         }
 
-        override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-            o.regexpElement?.accept(this)
+        override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
+            o.regexElement?.accept(this)
         }
 
 
-        override fun visitRegexpSequence(o: JccRegexpSequence) {
-            o.regexpUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
+        override fun visitRegexSequenceElt(o: JccRegexSequenceElt) {
+            o.regexUnitList.foreachAndBetween({ sb.append(" ") }) { it.accept(this) }
         }
 
-        override fun visitRegexpAlternative(o: JccRegexpAlternative) {
-            o.regexpElementList.foreachAndBetween({ sb.append(" | ") }) { it.accept(this) }
+        override fun visitRegexAlternativeElt(o: JccRegexAlternativeElt) {
+            o.regexElementList.foreachAndBetween({ sb.append(" | ") }) { it.accept(this) }
         }
 
 
-        override fun visitCharacterList(o: JccCharacterList) {
+        override fun visitCharacterListRegexUnit(o: JccCharacterListRegexUnit) {
             if (o.isNegated) sb.append('~')
             sb.append('[')
             val chars = o.characterDescriptorList
@@ -122,9 +122,9 @@ object JccTerminalDocMaker {
             }
         }
 
-        override fun visitParenthesizedRegexpUnit(o: JccParenthesizedRegexpUnit) {
+        override fun visitParenthesizedRegexUnit(o: JccParenthesizedRegexUnit) {
             sb.append("( ")
-            o.regexpElement.accept(this)
+            o.regexElement.accept(this)
             sb.append(" )")
             o.occurrenceIndicator?.run { sb.append(text) }
         }

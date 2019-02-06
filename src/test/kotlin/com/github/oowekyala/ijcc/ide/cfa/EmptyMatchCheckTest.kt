@@ -27,7 +27,7 @@ class EmptyMatchCheckTest : JccAnnotationTestBase() {
     }
 
 
-    fun testLookahead() = "LOOKAHEAD(1, Foo())".pos<JccLocalLookahead>()
+    fun testLookahead() = "LOOKAHEAD(1, Foo())".pos<JccLocalLookaheadUnit>()
     fun testOptional() = "[\"f\"]".pos<JccOptionalExpansionUnit>()
     fun testAlternativePos() = "\"f\" | [\"f\"]".pos<JccExpansionAlternative>()
     fun testAlternativeNeg() = "\"f\" | \"s\"".neg<JccExpansionAlternative>()

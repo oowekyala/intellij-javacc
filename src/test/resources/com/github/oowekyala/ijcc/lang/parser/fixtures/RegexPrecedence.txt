@@ -31,7 +31,7 @@ JCC_FILE
         JccIdentifierImpl(JCC_IDENTIFIER)
           PsiElement(IDENT)('JJTreeParser')
         PsiElement())(')')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(named)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -46,16 +46,16 @@ JCC_FILE
         PsiElement({)('{')
         PsiElement(})('}')
       PsiElement({)('{')
-      JccRegexpExpansionUnitImpl(JCC_REGEXP_EXPANSION_UNIT)
+      JccRegexExpansionUnitImpl(JCC_REGEX_EXPANSION_UNIT)
         JccNamedRegularExpressionImpl(JCC_NAMED_REGULAR_EXPRESSION)
           PsiElement(<)('<')
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('foo')
           PsiElement(:)(':')
-          PsiErrorElement:<regexp unit> or '|' expected, got '}'
+          PsiErrorElement:'|' expected, got '}'
             <empty list>
       PsiElement(})('}')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(ref)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -70,16 +70,16 @@ JCC_FILE
         PsiElement({)('{')
         PsiElement(})('}')
       PsiElement({)('{')
-      JccRegexpExpansionUnitImpl(JCC_REGEXP_EXPANSION_UNIT)
-        JccRegularExpressionReferenceImpl(JCC_REGULAR_EXPRESSION_REFERENCE)
-          JccTokenReferenceUnitImpl(JCC_TOKEN_REFERENCE_UNIT)
+      JccRegexExpansionUnitImpl(JCC_REGEX_EXPANSION_UNIT)
+        JccRefRegularExpressionImpl(JCC_REF_REGULAR_EXPRESSION)
+          JccTokenReferenceRegexUnitImpl(JCC_TOKEN_REFERENCE_REGEX_UNIT)
             PsiElement(<)('<')
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
             PsiErrorElement:':', '>' or '|' expected, got '}'
               <empty list>
       PsiElement(})('}')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(inline)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -94,9 +94,9 @@ JCC_FILE
         PsiElement({)('{')
         PsiElement(})('}')
       PsiElement({)('{')
-      JccRegexpExpansionUnitImpl(JCC_REGEXP_EXPANSION_UNIT)
-        JccInlineRegularExpressionImpl(JCC_INLINE_REGULAR_EXPRESSION)
+      JccRegexExpansionUnitImpl(JCC_REGEX_EXPANSION_UNIT)
+        JccContainerRegularExpressionImpl(JCC_CONTAINER_REGULAR_EXPRESSION)
           PsiElement(<)('<')
-          PsiErrorElement:'#', <identifier>, <regexp unit>, EOF or '|' expected, got '}'
+          PsiErrorElement:'#', <identifier>, EOF or '|' expected, got '}'
             <empty list>
       PsiElement(})('}')

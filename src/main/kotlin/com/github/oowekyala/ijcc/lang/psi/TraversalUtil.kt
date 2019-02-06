@@ -30,4 +30,4 @@ fun grammarTraverserNoJava(root: PsiElement): SyntaxTraverser<PsiElement> =
 fun grammarTraverserOnlyBnf(root: PsiElement): SyntaxTraverser<PsiElement> =
         grammarTraverserNoJava(root)
             .forceIgnore(Conditions.instanceOf(JccOptionSection::class.java))
-            .forceIgnore(Conditions.instanceOf(JccRegularExprProduction::class.java))
+            .forceIgnore(Conditions.instanceOf(JccRegexProduction::class.java))

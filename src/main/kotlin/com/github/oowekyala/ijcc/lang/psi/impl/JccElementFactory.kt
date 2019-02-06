@@ -81,12 +81,12 @@ object JccElementFactory {
             createRegex(project: Project, text: String): T =
             createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
 
-    inline fun <reified T : JccRegexpElement>
-            createRegexpElement(project: Project, text: String): T =
-            createRegex<JccInlineRegularExpression>(project, "< $text >").regexpElement as T
+    inline fun <reified T : JccRegexElement>
+            createRegexElement(project: Project, text: String): T =
+            createRegex<JccContainerRegularExpression>(project, "< $text >").regexElement as T
 
 
-    fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {
+    fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexSpec {
         val fileText = """
             $DummyHeader
 
@@ -108,7 +108,7 @@ object JccElementFactory {
         """.trimIndent()
         val file = createFile(project, fileText)
 
-        return file.nonTerminalProductions.first().findChildOfType(JccLocalLookahead::class.java)!!.javaExpression!!
+        return file.nonTerminalProductions.first().findChildOfType(JccLocalLookaheadUnit::class.java)!!.javaExpression!!
     }
 
     

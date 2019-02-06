@@ -19,13 +19,13 @@ import kotlinx.collections.immutable.immutableListOf
  * which caches the result.
  */
 fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean = when (this) {
-    is JccParserActionsUnit          -> true
-    is JccLocalLookahead             -> true
-    is JccOptionalExpansionUnit      -> true
-    is JccRegexpExpansionUnit        -> false
-    is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible(alreadySeen)
-    is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
-    is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
+    is JccParserActionsUnit                                     -> true
+    is JccLocalLookaheadUnit -> true
+    is JccOptionalExpansionUnit                                 -> true
+    is JccRegexExpansionUnit                                   -> false
+    is JccScopedExpansionUnit                                   -> expansionUnit.isEmptyMatchPossible(alreadySeen)
+    is JccAssignedExpansionUnit                                 -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
+    is JccParenthesizedExpansionUnit                            -> occurrenceIndicator.let {
         it is JccZeroOrOne || it is JccZeroOrMore
                 || expansion?.isEmptyMatchPossible(alreadySeen) == true // test it whether there is a + or nothing
     }
@@ -67,7 +67,7 @@ fun JccNonTerminalProduction.leftMostSet(): Set<JccNonTerminalProduction>? = whe
 /** Populates the leftmost set of this expansion. */
 private fun JccExpansion.computeLeftMost(acc: MutableSet<JccNonTerminalProduction>): Boolean =
         when (this) {
-            is JccRegexpExpansionUnit        -> true
+            is JccRegexExpansionUnit        -> true
             is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost(acc)
             is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost(acc) == true
             is JccOptionalExpansionUnit      -> expansion?.computeLeftMost(acc) == true

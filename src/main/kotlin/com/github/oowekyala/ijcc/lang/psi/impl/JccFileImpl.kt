@@ -34,8 +34,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val tokenManagerDecls: Sequence<JccTokenManagerDecls>
         get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccTokenManagerDecls>() ?: emptySequence()
 
-    override val regexpProductions: Sequence<JccRegularExprProduction>
-        get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccRegularExprProduction>() ?: emptySequence()
+    override val regexProductions: Sequence<JccRegexProduction>
+        get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccRegexProduction>() ?: emptySequence()
 
     override val parserDeclaration: JccParserDeclaration?
         get() = grammarFileRoot?.parserDeclaration
@@ -47,13 +47,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         get() = globalTokenSpecs.map { it.regularExpression }.filterIsInstance<JccNamedRegularExpression>()
 
 
-    override val globalTokenSpecs: Sequence<JccRegexprSpec>
+    override val globalTokenSpecs: Sequence<JccRegexSpec>
         get() =
             grammarFileRoot
                 ?.childrenSequence(reversed = false)
-                ?.filterIsInstance<JccRegularExprProduction>()
-                ?.filter { it.regexprKind.text == "TOKEN" }
-                ?.flatMap { it.childrenSequence().filterIsInstance<JccRegexprSpec>() }
+                ?.filterIsInstance<JccRegexProduction>()
+                ?.filter { it.regexKind.text == "TOKEN" }
+                ?.flatMap { it.childrenSequence().filterIsInstance<JccRegexSpec>() }
                 ?: emptySequence()
 
     override val options: JccOptionSection?

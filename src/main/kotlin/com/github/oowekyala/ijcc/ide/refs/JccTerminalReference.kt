@@ -8,20 +8,20 @@ import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.ResolveState
 
 /**
- * Reference to a [JccRegexprSpec].
+ * Reference to a [JccRegexSpec].
  *
  * @author Clément Fournier
  * @since 1.0
  */
-class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
-    PsiReferenceBase<JccTokenReferenceUnit>(psiElement) {
+class JccTerminalReference(psiElement: JccTokenReferenceRegexUnit) :
+    PsiReferenceBase<JccTokenReferenceRegexUnit>(psiElement) {
 
     private val canReferencePrivate = psiElement.canReferencePrivate
 
     override fun resolve(): JccIdentifier? =
             resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
 
-    fun resolveToken(): JccRegexprSpec? {
+    fun resolveToken(): JccRegexSpec? {
         val searchedName = element.name ?: return null
 
         val processor = TerminalScopeProcessor(searchedName)

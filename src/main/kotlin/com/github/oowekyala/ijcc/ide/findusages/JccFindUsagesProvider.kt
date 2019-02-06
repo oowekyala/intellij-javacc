@@ -32,8 +32,8 @@ class JccFindUsagesProvider : FindUsagesProvider {
         return when (element) {
             is JccNonTerminalExpansionUnit        -> "non-terminal"
             is JccNamedRegularExpression,
-            is JccTokenReferenceUnit,
-            is JccRegexpExpansionUnit             -> "token"
+            is JccTokenReferenceRegexUnit,
+            is JccRegexExpansionUnit             -> "token"
             else                                  -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }
@@ -44,9 +44,9 @@ class JccFindUsagesProvider : FindUsagesProvider {
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
             psiElement is JccIdentifier
-                    || psiElement is JccRegexprSpec
+                    || psiElement is JccRegexSpec
                     || psiElement is JccNonTerminalProduction
-                    || psiElement is JccRegexpExpansionUnit
+                    || psiElement is JccRegexExpansionUnit
 
     private object Log : EnclosedLogger()
 }

@@ -48,7 +48,7 @@ sealed class Token {
     val isExplicit: Boolean = this is ExplicitToken
 
     /** Returns true if this is a single literal token. */
-    val asStringToken: JccLiteralRegexpUnit?
+    val asStringToken: JccLiteralRegexUnit?
         get() = regularExpression?.asSingleLiteral(followReferences = false)
 
     val psiElement: PsiElement?
@@ -59,14 +59,14 @@ sealed class Token {
 
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
-     * regex spec definitions like "Check regexp".
+     * regex spec definitions like "Check regex".
      */
     fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
 
     /**
      * Returns true if this token is the same literal unit as this one.
      */
-    fun matchesLiteral(unit: JccLiteralRegexpUnit): Boolean =
+    fun matchesLiteral(unit: JccLiteralRegexUnit): Boolean =
             regularExpression?.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
 
 
@@ -102,12 +102,12 @@ sealed class Token {
 /**
  * Declared explicitly by the user. The spec can be private.
  */
-data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexprSpec>) : Token() {
+data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexSpec>) : Token() {
 
 
-    constructor(unit: JccRegexprSpec) : this(SmartPointerManager.createPointer(unit))
+    constructor(unit: JccRegexSpec) : this(SmartPointerManager.createPointer(unit))
 
-    val spec: JccRegexprSpec?
+    val spec: JccRegexSpec?
         get() = specPointer.element
 
     override val lexicalStatesOrEmptyForAll: List<String>
@@ -127,10 +127,10 @@ data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexprSpec>
  *
  * @property declUnit The highest (by doc offset) regex that implicitly declares this synthesized token
  */
-data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexpExpansionUnit>) : Token() {
+data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexExpansionUnit>) : Token() {
 
 
-    constructor(unit: JccRegexpExpansionUnit) : this(SmartPointerManager.createPointer(unit))
+    constructor(unit: JccRegexExpansionUnit) : this(SmartPointerManager.createPointer(unit))
 
     // constants for all synthetic tokens
     override val regexKind: RegexKind = RegexKind.TOKEN
@@ -143,6 +143,6 @@ data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexpE
 
     override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
 
-    val declUnit: JccRegexpExpansionUnit? get() = declUnitPointer.element!!
+    val declUnit: JccRegexExpansionUnit? get() = declUnitPointer.element!!
 
 }
