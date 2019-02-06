@@ -82,6 +82,19 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             }
          """
     )
+// TODO
+//    fun `test implicit token usages from decl`() = doTest(
+//        """
+//            $DummyHeader
+//
+//            void Foo():
+//            {}
+//            {
+//                "hey" ( ${h("\"a~b\"")} ) ${h("\"ab\"")}
+//            }
+//         """
+//    )
+
 
     private fun h(content: String) = infoAnnot(content, "null")
 

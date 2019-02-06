@@ -249,17 +249,27 @@ fun JccRegexprSpec.getRootRegexElement(followReferences: Boolean = false): JccRe
 
 /**
  * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccInlineRegularExpression]
- * if needed.
+ * if needed. Also unwraps [JccParenthesizedRegexpUnit]s occurring at the top.
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
     return when (this) {
         is JccLiteralRegularExpression   -> this.unit
         is JccNamedRegularExpression     -> this.regexpElement
-        is JccRegularExpressionReference -> if (followReferences) this.unit.typedReference.resolveToken()?.getRootRegexElement() else this.unit
+        is JccRegularExpressionReference -> this.unit
         is JccInlineRegularExpression    -> this.regexpElement
         is JccEofRegularExpression       -> null
         else                             -> throw IllegalStateException(this.toString())
+    }?.unwrapParens()?.let {
+        when (it) {
+            is JccTokenReferenceUnit -> if (followReferences) it.typedReference.resolveToken()?.getRootRegexElement() else it
+            else                     -> it
+        }
     }
+}
+
+fun JccRegexpElement.unwrapParens(): JccRegexpElement = when (this) {
+    is JccParenthesizedRegexpUnit -> this.regexpElement.unwrapParens()
+    else                          -> this
 }
 
 

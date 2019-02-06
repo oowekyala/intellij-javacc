@@ -31,7 +31,7 @@ class JccFindUsagesTest : JccTestBase() {
             """
     )
 
-    fun `test jjtree node name`() = doTestByText(
+    fun `test implicit token`() = doTestByText(
         """
 
             $DummyHeader
@@ -39,23 +39,24 @@ class JccFindUsagesTest : JccTestBase() {
             void Four():{}
             {
                 "4"
+               //^
             }
 
             void Foo():{}
             {
-                Hello() "4" #Four
+                Hello() "4" #Four $Token
             }
 
             void Hello():{}
             {
-                "4" #Four
+                "4" #Four $Token
             }
 
 
 
             void MyFour() #Four:{}
             {
-                "4"
+                "4" $Token
             }
 
         """

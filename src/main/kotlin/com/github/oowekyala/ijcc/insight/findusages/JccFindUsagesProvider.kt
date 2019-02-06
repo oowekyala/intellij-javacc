@@ -24,7 +24,7 @@ class JccFindUsagesProvider : FindUsagesProvider {
         JccTypesExt.StringLiteralTypeSet
     )
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as PsiNamedElement).name!!
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as JccPsiElement).name ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
@@ -47,6 +47,7 @@ class JccFindUsagesProvider : FindUsagesProvider {
             psiElement is JccIdentifier
                     || psiElement is JccRegexprSpec
                     || psiElement is JccNonTerminalProduction
+                    || psiElement is JccRegexpExpansionUnit
 
     private object Log : EnclosedLogger()
 }
