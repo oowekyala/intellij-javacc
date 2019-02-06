@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -98,7 +98,7 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
                         toMerge.joinToString(separator = " ", prefix = "{", postfix = "}") {
                             it.javaBlock.text.removeSurrounding("{", "}")
                         }.let {
-                            JccElementFactory.createBnfExpansion(project, it) as JccParserActionsUnit
+                            createExpansion(project, it) as JccParserActionsUnit
                         }
 
                 try {

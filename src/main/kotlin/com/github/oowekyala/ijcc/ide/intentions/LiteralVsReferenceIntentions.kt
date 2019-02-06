@@ -3,8 +3,10 @@ package com.github.oowekyala.ijcc.ide.intentions
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexpElement
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 
 
@@ -21,29 +23,17 @@ class TokenInliningIntention : JccEditorIntentionBase("Inline literal reference"
 
 
     override fun run(project: Project, editor: Editor, element: PsiElement): () -> Unit {
-        val rElt = element.parent.parent as JccTokenReferenceUnit
-        val literal = rElt.typedReference.resolveToken()!!.asSingleLiteral()!!.text
-
-        val container = rElt.parent
+        val rElt: JccTokenReferenceUnit = element.parent.parent as JccTokenReferenceUnit
+        val newLiteral: JccLiteralRegexpUnit =
+                rElt.typedReference
+                    .resolveToken()!!
+                    .asSingleLiteral()!!
+                    .text
+                    .let { createRegexpElement(project, it) }
 
         return {
-            when (container) {
-                // replacing the whole regex is necessary!
-                // TODO abstract that away
-                is JccRegularExpressionReference -> container.safeReplace(
-                    JccElementFactory.createRegex<JccLiteralRegularExpression>(
-                        project,
-                        literal
-                    )
-                )
-
-                else                             -> rElt.safeReplace(
-                    JccElementFactory.createLiteralRegexUnit(
-                        project,
-                        literal
-                    )
-                )
-            }
+            rElt.safeReplace(newLiteral)
+            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
         }
     }
 }
@@ -59,7 +49,10 @@ class ReplaceLiteralWithReferenceIntention : JccEditorIntentionBase("Replace lit
 
     override fun run(project: Project, editor: Editor, element: PsiElement): () -> Unit {
         val rElt = element.parent as JccLiteralRegexpUnit
-        val name = rElt.typedReference.resolveToken(exact = true)!!.name!!
+        val name = rElt.typedReference
+            .resolveToken()!!
+            .name
+            .let { JccElementFactory.createRegexReferenceUnit(project, it) }
 
         val container = rElt.parent
 
@@ -74,12 +67,15 @@ class ReplaceLiteralWithReferenceIntention : JccEditorIntentionBase("Replace lit
                 )
 
                 else                           -> rElt.safeReplace(
-                    JccElementFactory.createRegexReferenceUnit(
+                    createRegexpElement<JccTokenReferenceUnit>(
                         project,
                         "<$name>"
                     )
                 )
             }
+
+            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
+
         }
     }
 }

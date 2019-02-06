@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexpElement
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 
 /**
@@ -18,11 +19,11 @@ class JccElementFactoryTest : LightCodeInsightFixtureTestCase() {
     }
 
     fun testCreateRegexReference() {
-        JccElementFactory.createRegexReferenceUnit(project, "<FOO>")
+        createRegexpElement<JccTokenReferenceUnit>(project, "<FOO>")
     }
 
     fun testCreateLiteralRegexUnit() {
-        JccElementFactory.createLiteralRegexUnit(project, "\"foo\"")
+        createRegexpElement<JccLiteralRegexpUnit>(project, "\"foo\"")
     }
 
     fun testCreateBnfExpansion() {

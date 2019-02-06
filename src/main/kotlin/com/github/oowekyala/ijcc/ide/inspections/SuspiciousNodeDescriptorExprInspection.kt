@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.insert
 import com.intellij.codeInspection.LocalQuickFix
@@ -95,7 +95,7 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
                     val newText = scopedUnit.text.insert(identEndOffset, "(true)")
 
                     val newExpansion =
-                            JccElementFactory.createBnfExpansion(parens.project, newText) as JccExpansionSequence
+                            createExpansion(parens.project, newText) as JccExpansionSequence
 
                     // insert into existing sequence
                     if (context is JccExpansionSequence) {

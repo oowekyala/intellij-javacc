@@ -14,7 +14,6 @@ abstract class JccEditorIntentionBase(name: String) : JccIntentionBase(name) {
 
         val runnable = Runnable {
             run(project, editor, element)
-            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
         }
 
         if (startInWriteAction()) {

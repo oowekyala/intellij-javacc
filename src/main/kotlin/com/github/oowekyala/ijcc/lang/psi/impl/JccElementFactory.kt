@@ -1,9 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
-import com.github.oowekyala.ijcc.ide.inspections.isJccComment
-import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JccTypes
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
@@ -29,21 +28,6 @@ object JccElementFactory {
     private val Project.psiFileFactory
         get() = PsiFileFactory.getInstance(this)
 
-    fun createEolComment(project: Project, name: String): PsiElement {
-        val fileText = """
-            // $name
-            options {
-             FOO = $name;
-            }
-            $DummyHeader
-
-        """.trimIndent()
-
-        val file = createFile(project, fileText)
-
-        return file.firstChild.also { assert(it.isJccComment) }
-    }
-
 
     fun insertEolCommentBefore(project: Project, anchor: PsiElement, name: String) {
         val parserFacade = PsiParserFacade.SERVICE.getInstance(project)
@@ -68,51 +52,6 @@ object JccElementFactory {
         return file.options!!.optionBindingList[0].optionValue!!
     }
 
-    fun createRegexReferenceUnit(project: Project, name: String): JccTokenReferenceUnit =
-            createRegularExpressionReference(project, name).unit
-
-    fun createRegularExpressionReference(project: Project, name: String): JccRegularExpressionReference {
-        val fileText = """
-            $DummyHeader
-
-            void foo(): {} { $name }
-        """.trimIndent()
-        val file = createFile(project, fileText)
-
-        return file.nonTerminalProductions.first()
-            .let { it as JccBnfProduction }
-            .expansion
-            .let { it as JccRegexpExpansionUnit }
-            .let { it.regularExpression as JccRegularExpressionReference }
-    }
-
-
-    fun createBracedExpansionUnit(project: Project, name: String): JccOptionalExpansionUnit =
-            createBnfExpansion(project, name).let { it as JccOptionalExpansionUnit }
-
-    fun createParenthesizedExpansionUnit(project: Project, name: String): JccParenthesizedExpansionUnit =
-            createBnfExpansion(project, name).let { it as JccParenthesizedExpansionUnit }
-
-
-    fun createLiteralRegexUnit(project: Project, name: String): JccLiteralRegexpUnit {
-        return createBnfExpansion(project, name)
-            .let { it as JccRegexpExpansionUnit }
-            .let { it.regularExpression as JccLiteralRegularExpression }
-            .let { it.unit }
-    }
-
-    fun createBnfExpansion(project: Project, name: String): JccExpansion {
-        val fileText = """
-            $DummyHeader
-
-            void foo(): {} { $name }
-        """.trimIndent()
-        val file = createFile(project, fileText)
-
-        return file.nonTerminalProductions.first()
-            .let { it as JccBnfProduction }
-            .expansion!!
-    }
 
     fun createIdentifier(project: Project, name: String): JccIdentifier {
         val fileText = """
@@ -125,9 +64,30 @@ object JccElementFactory {
         return file.nonTerminalProductions.first().nameIdentifier
     }
 
+    inline fun <reified T : JccExpansion>
+            createExpansion(project: Project, text: String): T {
+
+        val fileText = """
+            $DummyHeader
+
+            void foo(): {} { $text }
+        """.trimIndent()
+        val file = createFile(project, fileText)
+
+        return file.nonTerminalProductions.first()
+            .let { it as JccBnfProduction }
+            .expansion!! as T
+    }
+
+
     inline fun <reified T : JccRegularExpression>
             createRegex(project: Project, text: String): T =
             createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
+
+    inline fun <reified T : JccRegexpElement>
+            createRegexpElement(project: Project, text: String): T =
+            createRegex<JccInlineRegularExpression>(project, "< $text >") as T
+
 
     fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexprSpec {
         val fileText = """
@@ -232,14 +192,13 @@ object JccElementFactory {
     
     
     @Language("JavaCC")
-    private const val DummyHeader = 
-"""
-PARSER_BEGIN(dummy)
+    const val DummyHeader = """
+                PARSER_BEGIN(dummy)
 
-public class dummy {}
+                public class dummy {}
 
-PARSER_END(dummy)
-"""
+                PARSER_END(dummy)
+                """
     
 }
 

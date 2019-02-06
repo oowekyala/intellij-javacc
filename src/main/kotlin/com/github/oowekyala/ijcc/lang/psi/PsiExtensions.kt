@@ -112,14 +112,6 @@ inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out 
         PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
 
 
-// constrain the hierarchies to be the same to avoid some confusions
-
-inline fun <reified T : JccRegularExpression>
-        JccRegularExpression.safeReplace(regex: T): T = replace(regex) as T
-
-fun JccExpansionUnit.safeReplace(regex: JccExpansionUnit) = replace(regex)
-fun JccRegexpElement.safeReplace(regex: JccRegexpElement) = replace(regex)
-
 
 fun PsiElement.isOfType(elementType: IElementType): Boolean = node.elementType == elementType
 

@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.JccTypes
+import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
@@ -325,3 +325,45 @@ fun JccRegexpElement.promoteToRegex(): JccRegularExpression = when (this) {
     is JccLiteralRegexpUnit  -> createRegex<JccLiteralRegularExpression>(project, text)
     else                     -> createRegex<JccInlineRegularExpression>(project, "< $text >")
 }
+
+// constrain the hierarchies to be the same to avoid some confusions
+
+fun JccExpansionUnit.safeReplace(regex: JccExpansionUnit) = replace(regex)
+
+inline fun <reified T : JccRegularExpression> JccRegularExpression.safeReplace(regex: T): T = replace(regex) as T
+
+/**
+ * Replaces this regex element with the given one, taking care of replacing
+ * the parent if it's a [JccRegularExpression].
+ */
+fun JccRegexpElement.safeReplace(regex: JccRegexpElement): PsiElement? {
+    val parent = parent
+    return when {
+        regex is JccTokenReferenceUnit
+                && parent is JccRegularExpression
+                && parent !is JccRegularExpressionReference ->
+            parent.safeReplace(regex.promoteToRegex())
+
+        regex is JccLiteralRegexpUnit
+                && parent is JccRegularExpression
+                && parent !is JccLiteralRegularExpression   ->
+            parent.safeReplace(regex.promoteToRegex())
+
+        else                                                -> replace(regex)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
