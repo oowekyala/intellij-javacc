@@ -175,6 +175,7 @@ tasks {
                 <ul>
                     <li>Left-recursive production detection. That is implemented as an inspection for performance,
                     but it's not an "optional error" for JavaCC so I suggest never to turn it off.</li>
+                    <li>Tokens implicitly declared in BNF expansions are now in the structure view</li>
                 </ul>
 
                 <p>What's fixed:
