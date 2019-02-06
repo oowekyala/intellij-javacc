@@ -88,4 +88,31 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
         """.trimIndent().inGrammarCtx()
     )
 
+
+    fun testNestedLeftRecursionPos() = checkByText(
+        """
+
+            void Foo(): {} {
+                Foo2() "bar"
+            }
+
+            ${warning(
+            """
+            void Foo2(): {} {
+                Bar() "bar"
+            }""",
+            listOf("Foo2", "Bar", "Baz", "Foo2")
+            )}
+
+            void Bar(): {} {
+                ("foo")* Baz() "foo"
+            }
+
+
+            void Baz(): {} {
+               Foo2() "foo"
+            }
+        """.trimIndent().inGrammarCtx()
+    )
+
 }

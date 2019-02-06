@@ -39,7 +39,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean {
         val value = element.value
-        return value is JccRegularExprProduction || value is JccOptionSection
+        return value is JccRegularExprProduction || value is JccOptionSection || value is JccNonTerminalProduction
     }
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
