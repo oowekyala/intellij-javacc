@@ -67,23 +67,23 @@
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
-        <colorSettingsPage implementation="com.github.oowekyala.ijcc.insight.highlight.JavaccColorSettingsPage"/>
+        <colorSettingsPage implementation="com.github.oowekyala.ijcc.ide.highlight.JavaccColorSettingsPage"/>
 
-        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.insight.rename.JccRenameProcessor"/>
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.ide.rename.JccRenameProcessor"/>
         <lang.namesValidator language="JavaCC"
-                             implementationClass="com.github.oowekyala.ijcc.insight.rename.JccNamesValidator"/>
+                             implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
 
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="JavaCC"
-                implementationClass="com.github.oowekyala.ijcc.insight.highlight.JavaccSyntaxHighlighterFactory"/>
+                implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
         <lang.commenter language="JavaCC" implementationClass="com.intellij.lang.java.JavaCommenter"/>
 
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
         <lang.documentationProvider language="JavaCC"
-                                    implementationClass="com.github.oowekyala.ijcc.insight.quickdoc.JccDocumentationProvider"/>
+                                    implementationClass="com.github.oowekyala.ijcc.ide.quickdoc.JccDocumentationProvider"/>
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
 
@@ -100,54 +100,54 @@
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
 
         <lang.findUsagesProvider language="JavaCC"
-                                 implementationClass="com.github.oowekyala.ijcc.insight.findusages.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.insight.refs.JccDescriptionProvider"/>
+                                 implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
-                                      implementationClass="com.github.oowekyala.ijcc.insight.structureview.JavaccStructureViewBuilderFactory"/>
+                                      implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
-                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreeNodeClassLineMarkerProvider"/>
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
-                                        implementationClass="com.github.oowekyala.ijcc.insight.jjtree.JjtreePartialDeclarationLineMarkerProvider"/>
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider"/>
 
         <lang.inspectionSuppressor language="JavaCC"
-                                   implementationClass="com.github.oowekyala.ijcc.insight.inspections.JccInspectionSuppressor"/>
+                                   implementationClass="com.github.oowekyala.ijcc.ide.inspections.JccInspectionSuppressor"/>
 
         <inspectionToolProvider
-                implementation="com.github.oowekyala.ijcc.insight.inspections.JavaccInspectionsProvider"/>
+                implementation="com.github.oowekyala.ijcc.ide.inspections.JavaccInspectionsProvider"/>
 
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.insight.highlight.JccHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
         <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.TokenInliningIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.TokenInliningIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceLiteralWithReferenceIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.ReplaceLiteralWithReferenceIntention</className>
         </intentionAction>
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.GrammarToParserJumpIntention</className>
-        </intentionAction>
-
-        <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceParenthesizedOptionalWithBracedIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.GrammarToParserJumpIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.ReplaceParenthesizedOptionalWithBracedIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.AddNameToRegexIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.intentions.RemoveNameFromRegexIntention</className>
+            <className>com.github.oowekyala.ijcc.ide.intentions.AddNameToRegexIntention</className>
+        </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.ide.intentions.RemoveNameFromRegexIntention</className>
         </intentionAction>
     </extensions>
 </idea-plugin>

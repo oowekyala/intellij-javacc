@@ -1,12 +1,12 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.insight.model.ExplicitToken
-import com.github.oowekyala.ijcc.insight.model.SyntheticToken
-import com.github.oowekyala.ijcc.insight.model.Token
-import com.github.oowekyala.ijcc.insight.refs.JccNonTerminalReference
-import com.github.oowekyala.ijcc.insight.refs.JccStringTokenReference
-import com.github.oowekyala.ijcc.insight.refs.JccTerminalReference
-import com.github.oowekyala.ijcc.insight.refs.JjtNodePolyReference
+import com.github.oowekyala.ijcc.lang.model.ExplicitToken
+import com.github.oowekyala.ijcc.lang.model.SyntheticToken
+import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
+import com.github.oowekyala.ijcc.ide.refs.JccStringTokenReference
+import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
+import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 
 /**
  * @author Clément Fournier

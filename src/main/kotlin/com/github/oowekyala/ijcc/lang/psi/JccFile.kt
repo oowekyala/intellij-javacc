@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.GrammarOptions
-import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType

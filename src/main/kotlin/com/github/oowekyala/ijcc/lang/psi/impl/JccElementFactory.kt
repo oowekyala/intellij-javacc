@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
-import com.github.oowekyala.ijcc.insight.inspections.isJccComment
-import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.ide.inspections.isJccComment
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
