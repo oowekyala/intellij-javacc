@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccOptionalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccParenthesizedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccZeroOrOne
@@ -21,11 +21,11 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
 
     private fun getParenthesizedParent(psiElement: PsiElement): JccParenthesizedExpansionUnit? = psiElement.let {
         when (it.node.elementType) {
-            JavaccTypes.JCC_RPARENTH, JavaccTypes.JCC_LPARENTH ->
+            JccTypes.JCC_RPARENTH, JccTypes.JCC_LPARENTH ->
                 it.parent as? JccParenthesizedExpansionUnit
-            JavaccTypes.JCC_QUESTION                           ->
+            JccTypes.JCC_QUESTION                                                       ->
                 it.let { it.parent as? JccZeroOrOne }?.let { it.parent as? JccParenthesizedExpansionUnit }
-            else                                               -> null
+            else                                                                                                       -> null
         }
     }
 
@@ -51,8 +51,8 @@ class ReplaceBracedExpansionUnitWithParenthesizedIntention : PsiElementBaseInten
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf {
                 when (it.node.elementType) {
-                    JavaccTypes.JCC_RBRACKET, JavaccTypes.JCC_LBRACKET -> true
-                    else                                               -> false
+                    JccTypes.JCC_RBRACKET, JccTypes.JCC_LBRACKET -> true
+                    else                                                                                                       -> false
                 }
             }
                 ?.let { it.parent is JccOptionalExpansionUnit } == true

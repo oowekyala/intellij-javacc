@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.insight.inspections.isJccComment
 import com.github.oowekyala.ijcc.insight.model.RegexKind
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
@@ -228,7 +228,7 @@ object JccElementFactory {
     /**
      * Create from an AST node, used by the parser.
      */
-    fun createElement(node: ASTNode): PsiElement = JavaccTypes.Factory.createElement(node)
+    fun createElement(node: ASTNode): PsiElement = JccTypes.Factory.createElement(node)
     
     
     @Language("JavaCC")

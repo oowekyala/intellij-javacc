@@ -7,7 +7,7 @@ import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferen
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.insight.model.Token
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
@@ -152,7 +152,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             val ident = element.nameIdentifier
             val poundRange = element.firstChild.textRange // "#"
             return if (ident != null) poundRange.union(ident.textRange)
-            else element.node.getChildren(TokenSet.create(JavaccTypes.JCC_VOID_KEYWORD))
+            else element.node.getChildren(TokenSet.create(JccTypes.JCC_VOID_KEYWORD))
                 .firstOrNull()
                 ?.let { poundRange.union(it.textRange) }
                 ?: poundRange

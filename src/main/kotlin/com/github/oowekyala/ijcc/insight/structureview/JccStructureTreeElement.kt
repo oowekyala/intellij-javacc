@@ -21,8 +21,8 @@ import javax.swing.Icon
 /**
  * One element of the structure view. This class is used for all elements, regardless of their type.
  */
-class JccStructureTreeElement(element: JavaccPsiElement)
-    : PsiTreeElementBase<JavaccPsiElement>(element), SortableTreeElement {
+class JccStructureTreeElement(element: JccPsiElement)
+    : PsiTreeElementBase<JccPsiElement>(element), SortableTreeElement {
 
     override fun getAlphaSortKey(): String {
         val element = element

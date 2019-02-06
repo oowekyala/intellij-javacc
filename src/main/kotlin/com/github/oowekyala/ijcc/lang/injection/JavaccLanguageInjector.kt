@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
 import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor.Companion.linearise
-import com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement
+import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.innerRange
@@ -23,7 +23,7 @@ object JavaccLanguageInjector : MultiHostInjector {
             mutableListOf(JccJavaCompilationUnit::class.java, JccGrammarFileRoot::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (context !is JavaccPsiElement) return
+        if (context !is JccPsiElement) return
         if (context.pluginSettings.injectionSupportLevel == DISABLED) return
 
         when (context) {

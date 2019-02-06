@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.highlight
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes.*
+import com.github.oowekyala.ijcc.lang.JccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.ide.highlighter.JavaHighlightingColors

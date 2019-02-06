@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.contains
@@ -49,7 +49,7 @@ class JccInspectionSuppressor : InspectionSuppressor {
 
         private val SuppressRegex = Pattern.compile(SuppressionUtil.COMMON_SUPPRESS_REGEXP)
 
-        private val RegexpSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JavaccTypes.JCC_UNION /* | */)
+        private val RegexpSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
 
         class SuppressIntention(elt: PsiElement, toolId: String)
             : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {

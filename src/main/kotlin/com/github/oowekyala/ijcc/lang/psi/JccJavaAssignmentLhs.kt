@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 
-interface JccJavaAssignmentLhs : JavaccPsiElement, PsiLanguageInjectionHost {
+interface JccJavaAssignmentLhs : JccPsiElement, PsiLanguageInjectionHost {
 
     val javaName: JccJavaName
 

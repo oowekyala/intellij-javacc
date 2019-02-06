@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.addIfNotNull
 import com.github.oowekyala.ijcc.util.runIt
@@ -46,7 +46,7 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
         val inSuppressed: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
 
         grammarTraverser(file)
-            .filterTypes { it == JavaccTypes.JCC_TOKEN_REFERENCE_UNIT }
+            .filterTypes { it == JccTypes.JCC_TOKEN_REFERENCE_UNIT }
             .traverse()
             .map { resolveToken(it) }
             .filter(Condition.NOT_NULL)

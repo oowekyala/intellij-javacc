@@ -5,7 +5,6 @@ import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.SyntaxTraverser.psiTraverser
-import com.intellij.psi.impl.source.tree.CompositeElement
 import com.intellij.psi.tree.IElementType
 
 /**
@@ -17,7 +16,7 @@ import com.intellij.psi.tree.IElementType
 fun grammarTraverser(root: PsiElement): SyntaxTraverser<PsiElement> =
         psiTraverser().withRoot(root)
             .forceDisregardTypes(Conditions.equalTo<IElementType>(GeneratedParserUtilBase.DUMMY_BLOCK))
-            .filter(Conditions.instanceOf<PsiElement>(JavaccPsiElement::class.java))
+            .filter(Conditions.instanceOf<PsiElement>(JccPsiElement::class.java))
 
 fun grammarTraverserNoJava(root: PsiElement): SyntaxTraverser<PsiElement> =
         grammarTraverser(root)

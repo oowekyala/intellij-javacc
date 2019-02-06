@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.insight.model.SyntheticToken
 import com.github.oowekyala.ijcc.insight.model.Token
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
@@ -199,7 +199,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
  * of other more complex regular expressions.
  */
 val JccNamedRegularExpression.isPrivate: Boolean
-    get() = nameIdentifier.prevSiblingNoWhitespace?.isOfType(JavaccTypes.JCC_POUND) == true
+    get() = nameIdentifier.prevSiblingNoWhitespace?.isOfType(JccTypes.JCC_POUND) == true
 
 val JccRegexprSpec.isPrivate: Boolean
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
@@ -210,7 +210,7 @@ val JccRegexprSpec.isPrivate: Boolean
  */
 val JccNamedRegularExpression.nameTextRange: TextRange
     get() =
-        this.node.findChildByType(JavaccTypes.JCC_POUND)
+        this.node.findChildByType(JccTypes.JCC_POUND)
             ?.textRange
             ?.let { it.union(nameIdentifier.textRange) }
             ?: nameIdentifier.textRange
@@ -271,7 +271,7 @@ val JccCharacterDescriptor.baseCharElement: PsiElement
 
 val JccCharacterDescriptor.toCharElement: PsiElement?
     get() {
-        val strings = node.getChildren(TokenSet.create(JavaccTypes.JCC_STRING_LITERAL))
+        val strings = node.getChildren(TokenSet.create(JccTypes.JCC_STRING_LITERAL))
         return if (strings.size < 2) null
         else strings[1].psi
     }
@@ -284,7 +284,7 @@ val JccCharacterDescriptor.toCharAsString: String?
     get() = toCharElement?.text?.removeSurrounding("\"")
 
 val JccCharacterList.isNegated
-    get() = firstChild.node.elementType == JavaccTypes.JCC_TILDE
+    get() = firstChild.node.elementType == JccTypes.JCC_TILDE
 
 
 /** Converts this node to the enum constant from [RegexKind]. */

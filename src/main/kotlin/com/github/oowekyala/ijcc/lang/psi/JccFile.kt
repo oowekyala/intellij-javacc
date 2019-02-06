@@ -13,7 +13,7 @@ import com.intellij.psi.tree.IFileElementType
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
+interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 
     /** The unique parser declaration of this file. */
     val parserDeclaration: JccParserDeclaration?

@@ -18,7 +18,7 @@ import com.intellij.psi.search.SearchScope
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class JavaccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JavaccPsiElement {
+abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JccPsiElement {
 
     override val grammarOptions: GrammarOptions
         get() = containingFile.grammarOptions

@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-abstract class JccNonTerminalProductionImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccNonTerminalProduction {
+abstract class JccNonTerminalProductionImpl(node: ASTNode) : JccPsiElementImpl(node), JccNonTerminalProduction {
 
     override val javaBlock: JccJavaBlock?
         get() = findChildByClass(JccJavaBlock::class.java)

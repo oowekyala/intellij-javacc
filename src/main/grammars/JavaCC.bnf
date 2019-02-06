@@ -2,13 +2,13 @@
   parserClass="com.github.oowekyala.ijcc.lang.parser.JavaccParser"
   parserUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
 
-  implements="com.github.oowekyala.ijcc.lang.psi.JavaccPsiElement"
-  extends="com.github.oowekyala.ijcc.lang.psi.impl.JavaccPsiElementImpl"
+  implements="com.github.oowekyala.ijcc.lang.psi.JccPsiElement"
+  extends="com.github.oowekyala.ijcc.lang.psi.impl.JccPsiElementImpl"
 
-  elementTypeHolderClass="com.github.oowekyala.ijcc.lang.JavaccTypes"
+  elementTypeHolderClass="com.github.oowekyala.ijcc.lang.JccTypes"
   elementTypePrefix="JCC_"
-  elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJavaccElementType"
-  tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJavaccTokenType"
+  elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccElementType"
+  tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccTokenType"
 
   psiClassPrefix="Jcc"
   psiImplClassSuffix="Impl"

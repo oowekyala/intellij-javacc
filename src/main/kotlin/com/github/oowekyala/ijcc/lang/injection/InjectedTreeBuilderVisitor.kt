@@ -251,7 +251,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     companion object {
 
         /** Gets the injection subtree for the given node. */
-        fun getInjectedSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =
+        fun getInjectedSubtreeFor(node: JccPsiElement): InjectionStructureTree =
                 InjectedTreeBuilderVisitor()
                     .also { node.accept(it) }
                     .nodeStack[0]
@@ -344,7 +344,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                 """.trimIndent()
         }
 
-        fun wrapInFileContext(element: JavaccPsiElement,
+        fun wrapInFileContext(element: JccPsiElement,
                               node: InjectionStructureTree): InjectionStructureTree {
 
             val file = element.containingFile

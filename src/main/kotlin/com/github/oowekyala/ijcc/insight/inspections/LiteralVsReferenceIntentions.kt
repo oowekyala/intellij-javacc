@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.openapi.editor.Editor
@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
 class TokenInliningIntention : JavaccIntentionBase("Inline literal reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
-            element.takeIf { it.node.elementType == JavaccTypes.JCC_IDENT }
+            element.takeIf { it.node.elementType == JccTypes.JCC_IDENT }
                 ?.let { it.parent as? JccIdentifier }
                 ?.let { it.parent as? JccTokenReferenceUnit }
                 ?.let { it.typedReference.resolveToken()?.asSingleLiteral() } != null
@@ -30,7 +30,7 @@ class TokenInliningIntention : JavaccIntentionBase("Inline literal reference") {
 class ReplaceLiteralWithReferenceIntention : JavaccIntentionBase("Replace literal with reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
-            element.takeIf { it.node.elementType == JavaccTypes.JCC_STRING_LITERAL }
+            element.takeIf { it.node.elementType == JccTypes.JCC_STRING_LITERAL }
                 ?.let { it.parent as? JccLiteralRegexpUnit }
                 ?.let { it.typedReference?.resolve() }
                 ?.let { it.name != null && it.asSingleLiteral() != null } ?: false

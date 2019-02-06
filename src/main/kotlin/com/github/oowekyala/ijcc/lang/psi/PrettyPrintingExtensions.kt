@@ -5,7 +5,7 @@ package com.github.oowekyala.ijcc.lang.psi
  * @author Clément Fournier
  * @since 1.0
  */
-fun JavaccPsiElement.prettyName() = when (this) {
+fun JccPsiElement.prettyName() = when (this) {
     is JccOptionalExpansionUnit      -> "[...]"
     is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.prettyName()
     is JccOptionSection              -> "options {..}"

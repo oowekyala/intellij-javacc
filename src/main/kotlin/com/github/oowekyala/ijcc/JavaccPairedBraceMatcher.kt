@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes.*
+import com.github.oowekyala.ijcc.lang.JccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJavaBlock
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.intellij.lang.BracePair

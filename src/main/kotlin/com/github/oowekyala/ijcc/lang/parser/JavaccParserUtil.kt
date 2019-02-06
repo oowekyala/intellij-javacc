@@ -2,7 +2,7 @@
 
 package com.github.oowekyala.ijcc.lang.parser
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes.*
+import com.github.oowekyala.ijcc.lang.JccTypes.*
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lang.java.parser.JavaParserUtil

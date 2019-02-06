@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
-interface JccIdentifier : JavaccPsiElement, PsiNamedElement {
+interface JccIdentifier : JccPsiElement, PsiNamedElement {
 
     override fun getName(): String
 

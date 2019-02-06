@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-class JccRegexprSpecImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegexprSpec {
+class JccRegexprSpecImpl(node: ASTNode) : JccPsiElementImpl(node), JccRegexprSpec {
 
     fun accept(visitor: JccVisitor) {
         visitor.visitRegexprSpec(this)

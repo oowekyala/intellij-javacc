@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 
-interface JccJavaBlock : JavaccPsiElement, PsiLanguageInjectionHost {
+interface JccJavaBlock : JccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun isValidHost(): Boolean = true

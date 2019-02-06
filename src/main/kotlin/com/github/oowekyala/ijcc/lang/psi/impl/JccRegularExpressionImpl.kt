@@ -7,7 +7,7 @@ import com.github.oowekyala.ijcc.lang.psi.toPattern
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-abstract class JccRegularExpressionImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccRegularExpression {
+abstract class JccRegularExpressionImpl(node: ASTNode) : JccPsiElementImpl(node), JccRegularExpression {
 
     open fun accept(visitor: JccVisitor) {
         visitor.visitRegularExpression(this)

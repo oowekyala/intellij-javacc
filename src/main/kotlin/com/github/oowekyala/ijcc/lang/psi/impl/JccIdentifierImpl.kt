@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-class JccIdentifierImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccIdentifier {
+class JccIdentifierImpl(node: ASTNode) : JccPsiElementImpl(node), JccIdentifier {
 
     fun accept(visitor: JccVisitor) {
         visitor.visitIdentifier(this)

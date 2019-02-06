@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.EnclosedLogger
@@ -57,7 +57,7 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
 
                     val identifier = o.nameIdentifier ?: return
 
-                    if (identifier.nextSibling?.node?.elementType == JavaccTypes.JCC_JJTREE_NODE_DESCRIPTOR_EXPR) return
+                    if (identifier.nextSibling?.node?.elementType == JccTypes.JCC_JJTREE_NODE_DESCRIPTOR_EXPR) return
                     else {
                         holder.registerProblem(
                             o.descriptorExpr!!,

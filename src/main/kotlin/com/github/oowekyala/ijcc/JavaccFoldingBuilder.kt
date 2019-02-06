@@ -164,7 +164,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
             override fun visitJavaBlock(javaBlock: JccJavaBlock) = visitJavaBlockLike(javaBlock)
 
-            private fun visitJavaBlockLike(elt: JavaccPsiElement) {
+            private fun visitJavaBlockLike(elt: JccPsiElement) {
                 if (elt.textLength > 2) { // not just "{}"
                     result += if (currentJBlockGroup != null)
                         FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
