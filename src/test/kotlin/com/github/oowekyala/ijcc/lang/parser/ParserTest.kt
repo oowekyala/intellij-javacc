@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccParenthesizedExpansionUnitImpl
+import com.github.oowekyala.ijcc.lang.util.matchPsi
 import io.kotlintest.should
 import io.kotlintest.shouldBe
 
@@ -131,4 +133,132 @@ class ParserTest : ParserTestDsl() {
             }
         }
     }
+
+
+    fun testExpansionDeletionInAlternative() {
+
+
+        val paren = """(<baz> | <bar> | <boo>)""".asExpansion() as JccParenthesizedExpansionUnit
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            it.expansion shouldBe child<JccExpansionAlternative> {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            }
+        }
+
+
+        val alternative = paren.expansion as JccExpansionAlternative
+        alternative.expansionList[1].delete()
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            it.expansion shouldBe child<JccExpansionAlternative> {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            }
+        }
+
+        // whitespace errors will be handled by a (maybe) future formatter
+
+        paren.text shouldBe "(<baz>  | <boo>)"
+
+        alternative.expansionList[1].delete()
+
+        paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
+            // not an alternative anymore
+            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+        }
+
+        paren.text shouldBe "(<baz>)"
+
+    }
+
+
+    fun testExpansionDeletionInSequence() {
+
+
+        val paren = """(<baz> <bar> <boo>)""".asExpansion() as JccParenthesizedExpansionUnit
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            it.expansion shouldBe child<JccExpansionSequence> {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            }
+        }
+
+
+        val alternative = paren.expansion as JccExpansionSequence
+        alternative.expansionUnitList[1].delete()
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            it.expansion shouldBe child<JccExpansionSequence> {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            }
+        }
+
+        // whitespace errors will be handled by a (maybe) future formatter
+
+        paren.text shouldBe "(<baz>  <boo>)"
+
+        alternative.expansionUnitList[1].delete()
+
+        paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
+            // not a sequence anymore
+            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+        }
+
+        paren.text shouldBe "(<baz>)"
+
+    }
+
+    fun testExpansionDeletionInSequenceAndAlternative() {
+
+
+        val paren = """(<baz> | <bar> <boo>)""".asExpansion() as JccParenthesizedExpansionUnit
+
+
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            it.expansion shouldBe child<JccExpansionAlternative> {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccExpansionSequence> {
+                    child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                    child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                }
+            }
+        }
+
+
+        val alternative = paren.expansion as JccExpansionAlternative
+        alternative.expansionList[0].delete()
+
+
+        var sequence: JccExpansionSequence? = null
+
+        paren should matchPsi<JccParenthesizedExpansionUnit> {
+            // not an alternative anymore
+            sequence = child {
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            }
+        }
+
+        // whitespace errors will be handled by a (maybe) future formatter
+
+        paren.text shouldBe "(<bar> <boo>)"
+
+        sequence!!.expansionUnitList[0].delete()
+
+        paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
+            // not a sequence anymore
+            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+        }
+
+        paren.text shouldBe "(<boo>)"
+
+    }
+
 }

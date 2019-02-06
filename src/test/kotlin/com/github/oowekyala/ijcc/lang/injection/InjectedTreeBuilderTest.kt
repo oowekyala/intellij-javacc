@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
+import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.lang.util.*
@@ -22,7 +23,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
                                                                              noinline nodeSpec: InjectedNodeSpec<N>): AssertionMatcher<String> =
             {
-                createExpansion(project, it)
+                createExpansion<JccExpansion>(project, it)
                     .let { InjectedTreeBuilderVisitor.getInjectedSubtreeFor(it) }
                     .let {
                         it should matchInjectionTree(ignoreChildren, nodeSpec)
