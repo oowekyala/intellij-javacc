@@ -173,9 +173,9 @@ tasks {
             """
                 <p>What's new:
                 <ul>
-                    <li>Completion of string literals with available string tokens!</li>
+                    <li>Completion of string literals with available string tokens</li>
                     <li>Left-recursive production detection.</li>
-                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones)</li>
+                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
                 </ul>
 
                 <p>What's fixed:

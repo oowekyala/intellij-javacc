@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.firstOfAnyType
 import com.intellij.lang.documentation.AbstractDocumentationProvider
@@ -17,7 +18,7 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
     private val stopTypes = arrayOf(
         JccNonTerminalProduction::class.java,
         JccRegexprSpec::class.java,
-        // stop at the first expansion, the interesting ones are filtered in the when
+        // stop at the first expansion, the interesting ones are filtered in the "when" stmt
         JccExpansion::class.java
     )
 
@@ -27,7 +28,8 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
                 is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(it)
                 is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(it)
                 is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(it)
-                is JccRegexprSpec         -> JccTerminalDocMaker.makeDoc(it)
+                is JccRegexprSpec         -> JccTerminalDocMaker.makeDoc(ExplicitToken(it))
+                is JccRegexpExpansionUnit -> it.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
                 else                      -> null
             }
         }

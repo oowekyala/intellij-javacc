@@ -72,12 +72,10 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
             }
 
-            val allStateNames = builders.keys.toList()
-
             for (regexpProduction in applyToAll) {
 
                 for (spec in regexpProduction.regexprSpecList) {
-                    builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec, allStateNames)) }
+                    builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec)) }
                 }
             }
 

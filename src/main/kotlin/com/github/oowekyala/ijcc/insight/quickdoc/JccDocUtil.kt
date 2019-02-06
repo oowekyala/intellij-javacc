@@ -123,7 +123,7 @@ object HtmlUtil {
     fun link(target: String, text: String) = "<a href=\"$target\">$text</a>"
 
     @Language("HTML")
-    fun psiLink(target: String, text: String, codeLink: Boolean = true) =
+    fun psiLink(target: String, @Language("HTML") text: String, codeLink: Boolean = true) =
             (if (codeLink) code(text) else text).let {
                 "<a href=\"${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}$target\">$it</a>"
             }

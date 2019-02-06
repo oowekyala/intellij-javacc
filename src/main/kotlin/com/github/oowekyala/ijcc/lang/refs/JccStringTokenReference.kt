@@ -32,7 +32,7 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
         val file = element.containingFile
         val grammar = file.lexicalGrammar
 
-        val consideredStates = element.enclosingToken.lexicalStateNames
+        val consideredStates = element.enclosingToken.lexicalStatesOrEmptyForAll
 
         val matchedTokens = grammar.lexicalStates
             .asSequence()
@@ -57,9 +57,9 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
                 .withIcon(JavaccIcons.TOKEN)
                 .withTypeText(token.let {
                     buildString {
-                        if (it.lexicalStateNames != LexicalState.JustDefaultState) {
+                        if (it.lexicalStatesOrEmptyForAll != LexicalState.JustDefaultState) {
                             // <A, B>
-                            it.lexicalStateNames.joinTo(
+                            it.lexicalStatesOrEmptyForAll.joinTo(
                                 this,
                                 separator = ", ",
                                 prefix = "<",

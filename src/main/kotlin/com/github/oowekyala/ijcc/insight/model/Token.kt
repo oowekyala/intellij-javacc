@@ -29,7 +29,11 @@ sealed class Token(val regexKind: RegexKind,
                    val isPrivate: Boolean,
                    val name: String?) {
 
-    abstract val lexicalStateNames: List<String>
+    /**
+     * Returns the list of lexical states this token applies to.
+     * Returns empty if the token applies to all states.
+     */
+    abstract val lexicalStatesOrEmptyForAll: List<String>
     abstract val lexicalStateTransition: String?
     abstract val regularExpression: JccRegularExpression
 
@@ -84,11 +88,10 @@ sealed class Token(val regexKind: RegexKind,
 /**
  * Declared explicitly by the user. The spec can be private.
  */
-data class ExplicitToken(val spec: JccRegexprSpec, override val lexicalStateNames: List<String>)
+data class ExplicitToken(val spec: JccRegexprSpec)
     : Token(spec.regexKind, isPrivate = spec.isPrivate, name = spec.name) {
 
-    constructor(spec: JccRegexprSpec) : this(spec, spec.lexicalStatesNameOrEmptyForAll)
-
+    override val lexicalStatesOrEmptyForAll: List<String> = spec.lexicalStatesNameOrEmptyForAll
     override val regularExpression: JccRegularExpression = spec.regularExpression
     override val lexicalStateTransition: String? = spec.lexicalStateTransition?.name
 }
@@ -101,9 +104,7 @@ data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(
     isPrivate = false,
     name = regex.regularExpression.name
 ) {
-    override val lexicalStateNames: List<String> = JustDefaultState
-
+    override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
     override val regularExpression: JccRegularExpression = regex.regularExpression
-
     override val lexicalStateTransition: String? = null
 }

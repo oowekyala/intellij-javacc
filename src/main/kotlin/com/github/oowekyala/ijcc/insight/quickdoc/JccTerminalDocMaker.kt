@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
-import com.github.oowekyala.ijcc.insight.model.LexicalState
+import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
@@ -8,6 +9,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
 import org.intellij.lang.annotations.Language
+import org.jetbrains.annotations.TestOnly
 
 /**
  * @author Clément Fournier
@@ -15,26 +17,40 @@ import org.intellij.lang.annotations.Language
  */
 object JccTerminalDocMaker {
 
+
     @Language("HTML")
-    fun makeDoc(spec: JccRegexprSpec): String = buildQuickDoc {
-        val prod = spec.production
+    fun makeDoc(token: Token): String = makeDocImpl(
+        name = token.name,
+        kind = token.regexKind,
+        isExplicit = token.isExplicit,
+        states = token.lexicalStatesOrEmptyForAll
+    ) {
+        token.regularExpression.accept(RegexDocVisitor(it))
+    }
 
+
+    @TestOnly
+    internal fun makeDocImpl(name: String?,
+                             kind: RegexKind,
+                             isExplicit: Boolean,
+                             states: List<String>,
+                             expansion: (StringBuilder) -> Unit) = buildQuickDoc {
         definition {
-            val name =
-                    spec.regularExpression
-                        .let { it as? JccNamedRegularExpression }
-                        ?.name
-                        ?.let { bold(angles(it)) } ?: "(unnamed)"
+            val nameOrNot = name?.let { bold(angles(it)) } ?: "(unnamed)"
 
-            "${prod.regexprKind.text}\t$name"
+            val label = if (isExplicit) nameOrNot else "$nameOrNot " + bold("(implicit)")
+
+            "$kind\t$label"
         }
 
         sections {
             section("Lexical states") {
-                lexicalStatesOf(prod)
+                states.let {
+                    if (it.isEmpty()) "All" else it.joinToString(separator = ", ")
+                }
             }
             buildSection("Expansion") {
-                spec.regularExpression.accept(RegexDocVisitor(this))
+                expansion(this)
             }
         }
     }
@@ -117,13 +133,4 @@ object JccTerminalDocMaker {
             sb.append(o.text.replace("\\s*", ""))
         }
     }
-
-
-    private fun lexicalStatesOf(prod: JccRegularExprProduction): String = prod.lexicalStateList.let {
-        it?.identifierList?.let {
-            if (it.isEmpty()) "All"
-            else it.joinToString(separator = ", ") { it.name }
-        } ?: LexicalState.DefaultStateName
-    }
-
 }

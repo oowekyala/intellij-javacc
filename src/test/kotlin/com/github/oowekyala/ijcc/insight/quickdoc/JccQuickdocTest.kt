@@ -1,11 +1,14 @@
 package com.github.oowekyala.ijcc.insight.quickdoc
 
+import com.github.oowekyala.ijcc.insight.model.LexicalState
+import com.github.oowekyala.ijcc.insight.model.RegexKind
 import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.insight.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.insight.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.insight.quickdoc.JccNonTerminalDocMaker.JJTreeSectionName
+import com.github.oowekyala.ijcc.insight.quickdoc.JccTerminalDocMaker.makeDocImpl
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiElement
@@ -161,8 +164,6 @@ class JccQuickdocTest : JccTestBase() {
         {
             "kk"
         }
-
-        }
     """,
         buildQuickDoc {
             definition { "#Hey" }
@@ -190,7 +191,6 @@ class JccQuickdocTest : JccTestBase() {
                            //^
         }
 
-        }
     """,
         buildQuickDoc {
             definition { "#Hey" }
@@ -239,6 +239,72 @@ class JccQuickdocTest : JccTestBase() {
     """, simpleFooDoc(noJjtreeSection = true)
     )
 
+
+    fun `test implicit string token decl`() = doTest(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
+
+        $myDummyHeader
+
+        void Foo(): // no #void
+        {}
+        {
+            "hey" ( "i" | <foo> )
+            //^
+        }
+
+    """,
+        JccTerminalDocMaker.makeSyntheticDoc(null, "\"hey\"")
+    )
+
+
+    fun `test implicit named token decl`() = doTest(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
+
+        $myDummyHeader
+
+        void Foo(): // no #void
+        {}
+        {
+            <ab: "a"|"b"> ( "i" | <foo> )
+            //^
+        }
+
+    """,
+        JccTerminalDocMaker.makeSyntheticDoc("ab", "\"a\" | \"b\"")
+    )
+
+    fun `test link from synthetic`() = doTest(
+        """
+        options {
+          NODE_DEFAULT_VOID = true;
+        }
+
+        $myDummyHeader
+
+
+        TOKEN: {
+          <FOO : "foo" >
+        | <BAR : ("bar") | <FOO> >
+        }
+
+        void Foo(): // no #void
+        {}
+        {
+            <ab: "a"|<BAR>> ( "i" | <foo> )
+            //^
+        }
+
+    """,
+        makeSyntheticDoc("ab", "\"a\" | " + psiLink("token/BAR", "&lt;BAR&gt;"))
+    )
+
+
     fun `test caret in uninteresting place 1`() = expectNothing(
         """
         options {
@@ -260,7 +326,6 @@ class JccQuickdocTest : JccTestBase() {
         options {
           NODE_DEFAULT_VOID = true;
         }
-
         $myDummyHeader
 
         void Foo(int foo): // no #void
@@ -290,5 +355,13 @@ class JccQuickdocTest : JccTestBase() {
             else                               -> assertSameLines(expected.trimIndent(), actual)
         }
     }
+
+    private fun makeSyntheticDoc(name: String?, expansion: String) =
+            makeDocImpl(
+                name = name,
+                kind = RegexKind.TOKEN,
+                isExplicit = false,
+                states = LexicalState.JustDefaultState
+            ) { it.append(expansion) }
 
 }
