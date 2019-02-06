@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
 
 // These two intentions are dual: switch between token reference vs token literal
 
-class TokenInliningIntention : JavaccIntentionBase("Inline literal reference") {
+class TokenInliningIntention : JccIntentionBase("Inline literal reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf { it.node.elementType == JccTypes.JCC_IDENT }
@@ -27,7 +27,7 @@ class TokenInliningIntention : JavaccIntentionBase("Inline literal reference") {
 }
 
 
-class ReplaceLiteralWithReferenceIntention : JavaccIntentionBase("Replace literal with reference") {
+class ReplaceLiteralWithReferenceIntention : JccIntentionBase("Replace literal with reference") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf { it.node.elementType == JccTypes.JCC_STRING_LITERAL }

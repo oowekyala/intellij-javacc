@@ -13,7 +13,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-class GrammarToParserJumpIntention : JavaccIntentionBase("Jump to parser file") {
+class GrammarToParserJumpIntention : JccIntentionBase("Jump to parser file") {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
 

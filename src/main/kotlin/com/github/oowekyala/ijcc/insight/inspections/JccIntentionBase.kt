@@ -6,7 +6,7 @@ import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class JavaccIntentionBase(val name: String) : PsiElementBaseIntentionAction() {
+abstract class JccIntentionBase(val name: String) : PsiElementBaseIntentionAction() {
 
     override fun getFamilyName(): String = name
 
