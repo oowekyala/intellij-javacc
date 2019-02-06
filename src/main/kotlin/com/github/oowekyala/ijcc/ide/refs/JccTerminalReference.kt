@@ -24,7 +24,7 @@ class JccTerminalReference(psiElement: JccTokenReferenceUnit) :
     fun resolveToken(): JccRegexprSpec? {
         val searchedName = element.name ?: return null
 
-        val processor = TerminalScopeProcessor(searchedName, canReferencePrivate)
+        val processor = TerminalScopeProcessor(searchedName)
         val file = element.containingFile
         file.processDeclarations(processor, ResolveState.initial(), element, element)
         return processor.result

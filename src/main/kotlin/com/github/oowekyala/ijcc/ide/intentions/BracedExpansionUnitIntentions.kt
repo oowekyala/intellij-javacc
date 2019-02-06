@@ -42,7 +42,6 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
 
     override fun getText(): String = "Replace parentheses with braces"
 
-    private object Log : EnclosedLogger()
 }
 
 
@@ -67,5 +66,4 @@ class ReplaceBracedExpansionUnitWithParenthesizedIntention : PsiElementBaseInten
 
     override fun getText(): String = "Replace braces with parentheses"
 
-    private object Log : EnclosedLogger()
 }

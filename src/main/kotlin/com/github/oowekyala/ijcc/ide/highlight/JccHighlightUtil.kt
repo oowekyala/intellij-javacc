@@ -31,19 +31,6 @@ object JccHighlightUtil {
                 .also { if (message != null) it.descriptionAndTooltip(message) }
                 .createUnconditionally()
 
-    fun trimWhitespace(psiElement: PsiElement): TextRange {
-        var range = psiElement.textRange
-        if (psiElement.firstChild.node.elementType == TokenType.WHITE_SPACE) {
-            range = range.cutOut(psiElement.firstChild.textRange)
-        }
-
-        if (psiElement.lastChild.node.elementType == TokenType.WHITE_SPACE) {
-            range = range.cutOut(psiElement.lastChild.textRange)
-        }
-
-        return range
-    }
-
     fun wrongReferenceInfo(element: PsiElement, message: String): HighlightInfo =
             wrongReferenceInfo(element.textRange, message)
 

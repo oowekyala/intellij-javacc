@@ -68,12 +68,6 @@ inline fun Boolean.ifTrue(block: () -> Unit): Boolean {
     return this
 }
 
-inline fun Boolean.ifNot(block: () -> Unit) {
-    if (!this) {
-        block()
-    }
-}
-
 
 fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
     val iterator = iterator()

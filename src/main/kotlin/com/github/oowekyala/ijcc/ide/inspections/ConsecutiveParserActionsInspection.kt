@@ -1,7 +1,10 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
+import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
+import com.github.oowekyala.ijcc.lang.psi.nextSiblingNoWhitespace
+import com.github.oowekyala.ijcc.lang.psi.siblingRangeTo
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -9,6 +12,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.util.IncorrectOperationException
 import org.intellij.lang.annotations.Language
 
@@ -43,20 +48,12 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
                             rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
                         }
 
-                        holder.manager.createProblemDescriptor(
+                        holder.registerProblem(
                             o.parent,
-                            myRange.relativize(o.parent.textRange),
                             ProblemDescription,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOnTheFly,
-                            MyQuickFix
-                        ).let {
-                            MindfulProblemDescriptor(it)
-                        }.also {
-                            it.putData(fstActionKey, o)
-                            it.putData(lstActionKey, last)
-                            holder.registerProblem(it.descriptor)
-                        }
+                            MyQuickFix(SmartPointerManager.createPointer(o), SmartPointerManager.createPointer(last))
+                        )
                     }
                 }
             }
@@ -64,28 +61,23 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
 
     companion object {
 
-        private val fstActionKey = ProblemDataKey<JccParserActionsUnit>("fst")
-        private val lstActionKey = ProblemDataKey<JccParserActionsUnit>("lst")
-
         const val DisplayName = "Consecutive parser actions unit"
         const val ProblemDescription = "These parser actions units can be merged"
         const val QuickFixName = "Merge parser actions"
 
         private object LOG : EnclosedLogger()
 
-        private object MyQuickFix : LocalQuickFix {
+        private class MyQuickFix(val firstPointer: SmartPsiElementPointer<JccParserActionsUnit>,
+                                 val lastPointer: SmartPsiElementPointer<JccParserActionsUnit>) : LocalQuickFix {
             override fun getFamilyName(): String = name
 
             override fun getName(): String = QuickFixName
 
             override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
 
-                val (first, last) = with(MindfulProblemDescriptor(descriptor)) {
-                    Pair(
-                        getData(fstActionKey)!!,
-                        getData(lstActionKey)!!
-                    )
-                }
+
+                val first = firstPointer.element ?: return
+                val last = lastPointer.element ?: return
 
                 val toMerge = first.siblingRangeTo(last)
                     .filterIsInstance<JccParserActionsUnit>()

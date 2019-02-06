@@ -6,7 +6,7 @@ import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
 
 
-class TerminalScopeProcessor(val searchedName: String, val isRegexContext: Boolean) : PsiScopeProcessor {
+class TerminalScopeProcessor(val searchedName: String) : PsiScopeProcessor {
 
     var result: JccRegexprSpec? = null
         private set(value) {

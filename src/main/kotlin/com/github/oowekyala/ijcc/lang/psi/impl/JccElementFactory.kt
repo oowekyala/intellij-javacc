@@ -21,9 +21,6 @@ object JccElementFactory {
     private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
             PsiTreeUtil.findChildOfType(this, clazz)
 
-    private val Project.psiManager
-        get() = PsiManager.getInstance(this)
-
 
     private val Project.psiFileFactory
         get() = PsiFileFactory.getInstance(this)
