@@ -100,8 +100,8 @@
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
 
         <lang.findUsagesProvider language="JavaCC"
-                                 implementationClass="com.github.oowekyala.ijcc.lang.refs.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.lang.refs.JccDescriptionProvider"/>
+                                 implementationClass="com.github.oowekyala.ijcc.insight.findusages.JccFindUsagesProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.insight.refs.JccDescriptionProvider"/>
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 

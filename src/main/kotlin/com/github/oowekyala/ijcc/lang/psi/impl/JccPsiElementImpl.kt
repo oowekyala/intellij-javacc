@@ -2,9 +2,9 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.refs.JccNonTerminalReference
-import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
-import com.github.oowekyala.ijcc.lang.refs.JccTerminalReference
+import com.github.oowekyala.ijcc.insight.refs.JccNonTerminalReference
+import com.github.oowekyala.ijcc.insight.refs.JccStringTokenReference
+import com.github.oowekyala.ijcc.insight.refs.JccTerminalReference
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiNameIdentifierOwner

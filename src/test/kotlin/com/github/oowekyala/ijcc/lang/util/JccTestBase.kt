@@ -3,10 +3,13 @@ package com.github.oowekyala.ijcc.lang.util
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.intellij.lang.LanguageCommenters
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
@@ -111,6 +114,34 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         return result
     }
 
+    // got from intellij-kotlin,
+    fun Document.extractMarkerOffset(project: Project, caretMarker: String = "<caret>"): Int {
+        return extractMultipleMarkerOffsets(project, caretMarker).singleOrNull() ?: -1
+    }
+
+    private fun Document.extractMultipleMarkerOffsets(project: Project, caretMarker: String = "<caret>"): List<Int> {
+        val offsets = ArrayList<Int>()
+
+        runWriteAction {
+            val text = StringBuilder(text)
+            while (true) {
+                val offset = text.indexOf(caretMarker)
+                if (offset >= 0) {
+                    text.delete(offset, offset + caretMarker.length)
+                    setText(text.toString())
+
+                    offsets += offset
+                } else {
+                    break
+                }
+            }
+        }
+
+        PsiDocumentManager.getInstance(project).commitAllDocuments()
+        PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(this)
+
+        return offsets
+    }
 
     protected fun applyQuickFix(name: String) {
         val action = myFixture.findSingleIntention(name)

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.lang.refs
+package com.github.oowekyala.ijcc.insight.refs
 
 import com.github.oowekyala.ijcc.insight.inspections.TokenCanNeverBeMatchedInspection
 import com.github.oowekyala.ijcc.insight.model.ExplicitToken

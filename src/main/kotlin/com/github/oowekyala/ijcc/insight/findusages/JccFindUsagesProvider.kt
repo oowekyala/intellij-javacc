@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.lang.refs
+package com.github.oowekyala.ijcc.insight.findusages
 
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -30,15 +30,11 @@ class JccFindUsagesProvider : FindUsagesProvider {
 
     override fun getType(element: PsiElement): String {
 
-        val parent = element.parent
-
-        return when (parent) {
-            is JccNamedRegularExpression          -> "token"
-            is JccJavaNonTerminalProductionHeader -> when {
-                parent.parent is JccBnfProduction      -> "BNF production"
-                parent.parent is JccJavacodeProduction -> "Javacode production"
-                else                                   -> null
-            }
+        return when (element) {
+            is JccNonTerminalExpansionUnit        -> "non-terminal"
+            is JccNamedRegularExpression,
+            is JccTokenReferenceUnit,
+            is JccRegexpExpansionUnit             -> "token"
             else                                  -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }
@@ -48,7 +44,9 @@ class JccFindUsagesProvider : FindUsagesProvider {
     override fun getHelpId(psiElement: PsiElement): String? = HelpID.FIND_OTHER_USAGES
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
-            psiElement is JccIdentifier || psiElement is JccRegexprSpec || psiElement is JccNonTerminalProduction
+            psiElement is JccIdentifier
+                    || psiElement is JccRegexprSpec
+                    || psiElement is JccNonTerminalProduction
 
     private object Log : EnclosedLogger()
 }

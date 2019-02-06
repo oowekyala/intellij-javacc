@@ -5,8 +5,8 @@ import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
-import com.github.oowekyala.ijcc.lang.refs.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.insight.refs.NonTerminalScopeProcessor
+import com.github.oowekyala.ijcc.insight.refs.TerminalScopeProcessor
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType

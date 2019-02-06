@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.refs.JccStringTokenReference
+import com.github.oowekyala.ijcc.insight.refs.JccStringTokenReference
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
