@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention
 import com.github.oowekyala.ijcc.lang.psi.JccLocalLookahead
 import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
@@ -29,17 +30,19 @@ class ActionWithinLookaheadInspection : JccInspectionBase(DisplayName) {
                     if (o.ancestors(false).any { it is JccLocalLookahead }) {
                         holder.registerProblem(
                             o,
-                            ProblemDescription
+                            ProblemDescription,
+                            DeleteExpansionIntention.quickFix(
+                                FixDescription, o.containingFile
+                            )
                         )
                     }
-
                 }
-
             }
 
 
     companion object {
         const val DisplayName = "Parser actions within lookahead specifications are ignored"
         const val ProblemDescription = DisplayName
+        const val FixDescription = "Delete expansion unit"
     }
 }

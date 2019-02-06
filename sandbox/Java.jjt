@@ -430,7 +430,7 @@ TOKEN_MGR_DECLS :
 
 SPECIAL_TOKEN :
 {
-  lefef" " | "\t" | "\n" | "\r" | "\f"
+  " " | "\t" | "\n" | "\r" | "\f"
 }
 
 SPECIAL_TOKEN :
@@ -2234,7 +2234,7 @@ void LambdaParameter() #FormalParameter :
 void LambdaParameterType() #void :
 {}
 {
-    LOOKAHEAD( { jdkVersion >= 11 && isKeyword("var") } ) <IDENTIFIER>
+    LOOKAHEAD( 5, <IDENTIFIER>, { jdkVersion >= 11 && isKeyword("var") } ) <IDENTIFIER>
     | Type()
 }
 

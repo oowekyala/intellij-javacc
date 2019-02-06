@@ -1,9 +1,14 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 import org.intellij.lang.annotations.Language
 
 /**
@@ -69,7 +74,10 @@ class LookaheadIsNotAtChoicePointInspection : JccInspectionBase(DisplayName) {
                             holder.registerProblem(
                                 la,
                                 desc,
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                DeleteExpansionIntention.quickFix(
+                                    EmptyParserActionsInspection.FixDescription, la.containingFile
+                                )
                             )
                         } else if (la.ancestors(includeSelf = false).any { it is JccLocalLookahead } && la.isSyntactic) {
                             // don't report both
@@ -77,7 +85,11 @@ class LookaheadIsNotAtChoicePointInspection : JccInspectionBase(DisplayName) {
                             holder.registerProblem(
                                 la,
                                 NestedProblemDesc,
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                DeleteExpansionIntention.quickFix(
+                                    EmptyParserActionsInspection.FixDescription, la.containingFile
+                                )
+
                             )
                         }
                     }
@@ -93,6 +105,9 @@ class LookaheadIsNotAtChoicePointInspection : JccInspectionBase(DisplayName) {
                 "Only semantic lookahead is considered when it is nested.  Syntactic lookahead is ignored."
         const val SemanticProblemDesc =
                 "LOOKAHEAD is not at a choice point, only semantic lookahead will be performed"
+
+        const val FixDescription = "Delete lookahead specification"
+
 
     }
 }
