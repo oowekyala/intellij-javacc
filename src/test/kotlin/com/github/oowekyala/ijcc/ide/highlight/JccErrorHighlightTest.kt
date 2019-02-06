@@ -94,5 +94,20 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """.inGrammarCtx()
     )
 
+    fun `test empty character list POS`() = checkByText(
+        """
+            TOKEN: {
+                < <error descr="Empty character set is not allowed as it will not match any character">[]</error> >
+            }
+        """.inGrammarCtx()
+    )
+
+    fun `test empty character list NEG`() = checkByText(
+        """
+             TOKEN: {
+                < ~[] >
+            }
+        """.inGrammarCtx()
+    )
 
 }

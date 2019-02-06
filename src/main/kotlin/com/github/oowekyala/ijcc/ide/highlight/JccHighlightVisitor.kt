@@ -4,10 +4,10 @@ import com.github.oowekyala.ijcc.ide.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
@@ -291,6 +291,17 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     )
                 } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
 
+
+    }
+
+    override fun visitCharacterList(o: JccCharacterList) {
+
+        if (o.characterDescriptorList.isEmpty() && !o.isNegated) {
+            myHolder += errorInfo(
+                o,
+                "Empty character set is not allowed as it will not match any character"
+            )
+        }
 
     }
 
