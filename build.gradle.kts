@@ -171,27 +171,18 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                <p>I think we're good for release 1.0!</p>
                 <p>What's new:
                 <ul>
-                    <li>Significantly improved coverage of JavaCC errors and warnings</li>
-                    <li>The TOKEN_MGR_DECLS and the parser class declaration are now in the structure view</li>
-                    <li>Some new live templates allow to enter the PARSER_BEGIN section and options section easily</li>
-                    <li>Intentions and inspections:
-                    <ul>
-                        <li>All inspections can now be suppressed with a comment</li>
-                        <li>Add "Lookahead is not at choice point" inspection</li>
-                        <li>Improve "Unnecessary angled braces" inspection to handle token references as well</li>
-                        <li>Add "Add name to regular expression" intention, and "Remove name from regular expression"</li>
-                    </ul>
-                    </li>
-
+                    <li>Left-recursive production detection. That is implemented as an inspection for performance,
+                    but it's not an "optional error" for JavaCC so I suggest never to turn it off.</li>
                 </ul>
 
                 <p>What's fixed:
                 <ul>
-                    <li>Fix inconsistencies in Find Usages (#11)</li>
-                    <li>Improve resilience of the parser in token specifications</li>
+                    <li>
+                    Match JavaCC's errors more closely, in particular with string token definitions,
+                    which it treats very specially.
+                    </li>
                 </ul>
             """.trimIndent()
         )
