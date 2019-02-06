@@ -67,7 +67,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
             if (visitStatuses[prod] == VisitStatus.BEING_VISITED) {
                 val myIdx = myLoopPath.indexOf(prod)
-                assert(myIdx in myLoopPath.indices)
+                if (myIdx !in myLoopPath.indices) continue // ??
 
                 // report left recursion
                 holder.registerProblem(

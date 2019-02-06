@@ -1,10 +1,12 @@
 package com.github.oowekyala.ijcc.ide.refs
 
+import com.github.oowekyala.ijcc.ide.structureview.getIcon
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
 import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -33,7 +35,9 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
 
 
     override fun getVariants(): Array<Any?> =
-            element.containingFile.nonTerminalProductions.map { it.name }.toList().toTypedArray()
+            element.containingFile.nonTerminalProductions.map {
+                LookupElementBuilder.create(it, it.name).withIcon(it.getIcon())
+            }.toList().toTypedArray()
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 
