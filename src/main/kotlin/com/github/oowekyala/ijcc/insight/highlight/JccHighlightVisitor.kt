@@ -249,29 +249,29 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         o.regularExpression.runIt {
             if (it is JccNamedRegularExpression && it.isPrivate) {
                 myHolder += errorInfo(
-                    it,
+                    it.nameTextRange,
                     "Private (with a #) regular expression cannot be defined within grammar productions"
                 )
             }
 
-            val root = it.getRootRegexElement(followReferences = false)
-            if (root is JccLiteralRegexpUnit) {
+            it.asSingleLiteral()?.let { literalUnit ->
+
                 val ref: Token = o.referencedToken!!
 
-                if (ref.isPrivate) {
-                    myHolder += JccHighlightUtil.wrongReferenceInfo(
-                        root,
-                        "String token \"${root.match}\" has been defined as a private (#) regular expression"
+                myHolder += if (ref.isPrivate) {
+                    JccHighlightUtil.wrongReferenceInfo(
+                        literalUnit,
+                        "String token \"${literalUnit.match}\" has been defined as a private (#) regular expression"
                     )
 
                 } else {
+                    // all is well
                     val message = ref.name?.let { "Matched by <$it>" } ?: "Implicitly declared token"
-                    myHolder += highlightInfo(
-                        root,
+                    highlightInfo(
+                        literalUnit,
                         TOKEN_LITERAL_REFERENCE.highlightType,
                         message = message
                     )
-                    // else stay default
                 }
             }
         }

@@ -32,13 +32,17 @@ sealed class Token(val regexKind: RegexKind,
 
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
-
+    /**
+     * Does a regex match on the string. This is not very useful except if we allow to test
+     * regex spec definitions like "Check regexp".
+     */
     fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
 
+    /**
+     * Returns true if this token is the same literal unit as this one.
+     */
     fun matchesLiteral(unit: JccLiteralRegexpUnit): Boolean =
-            regularExpression.getRootRegexElement(followReferences = false).let {
-                it is JccLiteralRegexpUnit && unit.match == it.match
-            }
+            regularExpression.asSingleLiteral()?.let { unit.match == it.match } == true
 
 }
 
