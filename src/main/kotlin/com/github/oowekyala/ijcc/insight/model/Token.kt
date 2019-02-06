@@ -54,18 +54,41 @@ sealed class Token(val regexKind: RegexKind,
             regularExpression.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
 
 
+    companion object {
+
+
+        /**
+         * Comparator that considers two string tokens with the same match equal (compare to 0).
+         * Otherwise just compares document offset.
+         */
+        val stringTokenComparator: Comparator<Token> = Comparator { t1, t2 ->
+
+            val t1Str = t1.asStringToken
+            val t2Str = t2.asStringToken
+
+            return@Comparator when {
+                t1Str != null && t2Str != null && t1Str.match == t2Str.match -> 0
+                else                                                         -> offsetComparator.compare(t1, t2)
+            }
+        }
+
+        /**
+         * Compares document offset of two tokens. Tokens defined higher in the file are considered greater.
+         */
+        val offsetComparator: Comparator<Token> = Comparator.comparingInt { -it.regularExpression.textOffset }
+
+    }
+
 }
 
 /**
- * Declared explicitly by the user. The spec is never private.
+ * Declared explicitly by the user. The spec can be private.
  */
-data class ExplicitToken(val spec: JccRegexprSpec,
-                         override val lexicalStateNames: List<String> = spec.lexicalStatesNameOrEmptyForAll) :
-    Token(
-        spec.regexKind,
-        isPrivate = spec.isPrivate,
-        name = spec.name
-    ) {
+data class ExplicitToken(val spec: JccRegexprSpec, override val lexicalStateNames: List<String>)
+    : Token(spec.regexKind, isPrivate = spec.isPrivate, name = spec.name) {
+
+    constructor(spec: JccRegexprSpec) : this(spec, spec.lexicalStatesNameOrEmptyForAll)
+
     override val regularExpression: JccRegularExpression = spec.regularExpression
     override val lexicalStateTransition: String? = spec.lexicalStateTransition?.name
 }

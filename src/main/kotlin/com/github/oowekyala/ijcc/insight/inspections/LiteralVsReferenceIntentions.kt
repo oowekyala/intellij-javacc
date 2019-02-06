@@ -32,13 +32,13 @@ class ReplaceLiteralWithReferenceIntention : JccIntentionBase("Replace literal w
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
             element.takeIf { it.node.elementType == JccTypes.JCC_STRING_LITERAL }
                 ?.let { it.parent as? JccLiteralRegexpUnit }
-                ?.let { it.typedReference?.resolve() }
+                ?.let { it.typedReference.resolve() }
                 ?.let { it.name != null && it.asSingleLiteral() != null } ?: false
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         val ref = element.parent as JccLiteralRegexpUnit
 
-        val name = ref.typedReference!!.resolve()!!.name!!
+        val name = ref.typedReference.resolve()!!.name!!
 
         ref.safeReplace(JccElementFactory.createRegexReferenceUnit(project, "<$name>"))
     }

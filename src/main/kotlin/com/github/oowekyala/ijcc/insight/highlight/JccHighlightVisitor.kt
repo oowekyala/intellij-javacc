@@ -51,7 +51,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
 
                 for (prod in file.nonTerminalProductions) {
-                    signatures.add(prod.name!!, prod)
+                    signatures.add(prod.name, prod)
                 }
 
                 signatures
@@ -183,7 +183,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        myDuplicateMethods.getValue(o.containingFile)[o.name!!].runIt { dups ->
+        myDuplicateMethods.getValue(o.containingFile)[o.name].runIt { dups ->
             if (dups.count() > 1) {
                 myHolder += errorInfo(
                     o.nameIdentifier,

@@ -32,7 +32,7 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
 
         val maybeProd =
                 element as? JccNonTerminalProduction
-                    ?: element.parent.parent as? JccNonTerminalProduction
+                    ?: element.parent.parent as? JccNonTerminalProduction // the identifier
 
         if (maybeProd != null) {
             return when (maybeProd) {

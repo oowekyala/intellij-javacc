@@ -3,7 +3,9 @@ package com.github.oowekyala.ijcc.insight.model
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
 import com.github.oowekyala.ijcc.lang.psi.getRootRegexElement
 import com.github.oowekyala.ijcc.lang.psi.match
+import com.github.oowekyala.ijcc.util.deemsEqual
 import java.util.*
+import java.util.function.Function
 import java.util.regex.Matcher
 import kotlin.Comparator
 
@@ -102,7 +104,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
          */
         private val matchComparator =
                 Comparator.comparingInt<Pair<Token, String>> { it.second.length }
-                    .thenComparingInt { -it.first.regularExpression.textOffset }
+                    .thenComparing<Token>(Function { it.first }, Token.offsetComparator)
 
         const val DefaultStateName = "DEFAULT"
 
@@ -114,7 +116,10 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                mySpecs.add(token)
+                if (mySpecs.none { Token.stringTokenComparator.deemsEqual(it, token) }) {
+                    // don't add duplicate synthetic tokens in the same state
+                    mySpecs.add(token)
+                }
             }
 
             val currentSpecs: List<Token>

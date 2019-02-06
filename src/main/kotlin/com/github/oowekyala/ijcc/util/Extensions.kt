@@ -99,3 +99,6 @@ fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
 fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D) : Pair<C,D> = Pair(f(first), g(second))
 
 fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true
+
+
+fun <T> Comparator<T>.deemsEqual(t1: T, t2: T) = compare(t1, t2) == 0

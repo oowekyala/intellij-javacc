@@ -80,6 +80,46 @@ class LexicalGrammarTest : JccTestBase() {
     }
 
 
+    fun testSyntheticDuplicatesAreReduced() {
+
+        val file = """
+
+            <ASTATE> TOKEN: {
+              <FOO: "foo">
+            }
+
+
+            void Bar(): {}
+            {
+              "bar" <FOO>
+            }
+
+            void Bouse(): {}
+            {
+              "bar" <FOO>
+            }
+
+        """.trimIndent().asJccGrammar()
+
+        val lexicalGrammar = file.lexicalGrammar
+
+        lexicalGrammar.lexicalStates should haveSize(2)
+
+        val explicitFoo = file.globalTokenSpecs.first().also { check(it.name == "FOO") }
+        val implicitBar = file.descendantSequence().first { it.text == "\"bar\"" }.let { it as JccRegexpExpansionUnit }
+
+        lexicalGrammar.getLexicalState(LexicalState.DefaultStateName)!!.tokens.shouldContainExactly(
+            SyntheticToken(implicitBar)
+            // not the second one!
+        )
+
+        lexicalGrammar.getLexicalState("ASTATE")!!.tokens.shouldContainExactly(
+            ExplicitToken(explicitFoo)
+        )
+
+    }
+
+
     fun testMultipleStates() {
 
         val file = """

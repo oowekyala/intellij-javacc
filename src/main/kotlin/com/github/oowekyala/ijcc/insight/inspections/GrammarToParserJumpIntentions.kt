@@ -35,7 +35,7 @@ class GrammarToParserJumpIntention : JccIntentionBase("Jump to parser file") {
 
 
         val jumpOffset: Int = element.ancestorOrSelf<JccNonTerminalProduction>()?.let {
-            val methods = targetPsiClass.findMethodsByName(it.name!!, /*checkBases*/false)
+            val methods = targetPsiClass.findMethodsByName(it.name, /*checkBases*/false)
             if (methods.size == 1) methods.first()
             else null
         }?.textOffset ?: -1
