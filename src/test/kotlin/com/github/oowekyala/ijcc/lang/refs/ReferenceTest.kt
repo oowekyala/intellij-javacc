@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
-import com.github.oowekyala.ijcc.util.filterMapAs
 import io.kotlintest.matchers.haveSize
 import io.kotlintest.should
 
@@ -45,7 +44,7 @@ class ReferenceTest : JccTestBase() {
         """.trimIndent().asJccFile()
 
 
-        val owner = file.descendantSequence().filterMapAs<JccNodeClassOwner>().first()
+        val owner = file.descendantSequence().filterIsInstance<JccNodeClassOwner>().first()
 
         owner.typedReference!!.multiResolve(false).toList() should haveSize(4)
     }

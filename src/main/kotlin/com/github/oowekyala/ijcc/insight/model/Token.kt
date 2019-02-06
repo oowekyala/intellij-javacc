@@ -6,24 +6,39 @@ import com.github.oowekyala.ijcc.lang.psi.*
  *
  * There are two places in a grammar files where regular expressions may be written:
  * * Within a regular expression specification (part of a regular expression production).
- *   This is represented by [ExplicitToken].
- * * As an expansion unit with an expansion. When a regular expression is used in this manner, it is as if the regular expression were defined in the following manner at this location and then referred to by its label from the expansion unit:
+ *   Those are represented by [ExplicitToken].
+ * * As an expansion unit with an expansion. When a regular expression is used in this manner,
+ * it is as if the regular expression were defined in the following manner at this location and
+ * then referred to by its label from the expansion unit:
  *
  *      <DEFAULT> TOKEN :
  *      {
- *          regular expression
+ *          <genLabel: regex>
  *      }
  *
- * That is, this usage of regular expression can be rewritten using the other kind of usage. Those are
- * represented by [SyntheticToken]
+ * Those are represented by [SyntheticToken].
+ *
+ * For string tokens, (i.e. literal strings appearing in a BNF expansion as a standalone expansion
+ * unit), if an explicit string token exists with the exact same literal, in the same lexical state,
+ * then no token is synthesized. This is because JavaCC compacts string tokens s.t. there exists only
+ * distinct string tokens. Doing so, it considers IGNORE_CASE expressions as more general. TODO check that
  */
-sealed class Token(val regexKind: RegexKind, val lexicalStateNames: List<String>) {
+sealed class Token(val regexKind: RegexKind,
+                   val lexicalStateNames: List<String>,
+                   val isPrivate: Boolean,
+                   val name: String?) {
 
     abstract val regularExpression: JccRegularExpression
 
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
+
     fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
+
+    fun matchesLiteral(unit: JccLiteralRegexpUnit): Boolean =
+            regularExpression.getRootRegexElement(followReferences = false).let {
+                it is JccLiteralRegexpUnit && unit.match == it.match
+            }
 
 }
 
@@ -33,7 +48,9 @@ sealed class Token(val regexKind: RegexKind, val lexicalStateNames: List<String>
 data class ExplicitToken(val spec: JccRegexprSpec) :
     Token(
         spec.regexKind,
-        spec.getLexicalStatesName() ?: LexicalState.JustDefaultState
+        spec.getLexicalStatesName() ?: LexicalState.JustDefaultState,
+        isPrivate = spec.isPrivate,
+        name = spec.name
     ) {
     override val regularExpression: JccRegularExpression = spec.regularExpression
 }
@@ -43,7 +60,9 @@ data class ExplicitToken(val spec: JccRegexprSpec) :
  */
 data class SyntheticToken(val regex: JccRegexpExpansionUnit) : Token(
     RegexKind.TOKEN,
-    LexicalState.JustDefaultState
+    LexicalState.JustDefaultState,
+    isPrivate = false,
+    name = regex.regularExpression.name
 ) {
     override val regularExpression: JccRegularExpression = regex.regularExpression
 }

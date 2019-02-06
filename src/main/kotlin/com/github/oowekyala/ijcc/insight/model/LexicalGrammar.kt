@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.insight.model
 import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.DefaultStateName
 import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.LexicalStateBuilder
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.filterMapAs
+import com.github.oowekyala.ijcc.util.map
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.psi.PsiElement
 
@@ -30,7 +30,10 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
         private fun buildStatesMap(allProductions: Sequence<PsiElement>): Map<String, LexicalState> {
 
-            val (regexpProductions, nonterminalProductions) = allProductions.partition { it is JccRegularExprProduction }
+            val (regexpProductions, bnfProductions) =
+                    allProductions.partition { it is JccRegularExprProduction }
+                        .map({ it.filterIsInstance<JccRegularExprProduction>() },
+                            { it.filterIsInstance<JccBnfProduction>() })
 
             val defaultBuilder = LexicalStateBuilder(DefaultStateName)
 
@@ -43,7 +46,7 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             // productions applying to all states, processed when all states are known
             val applyToAll = mutableListOf<JccRegularExprProduction>()
 
-            for (production in regexpProductions.map { it as JccRegularExprProduction }) {
+            for (production in regexpProductions) {
                 val rstates = production.lexicalStateList
 
                 val relevantBuilders: List<LexicalStateBuilder> = if (rstates == null) {
@@ -74,26 +77,28 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
             val currentSpecs = builders.values.flatMap { it.currentSpecs }
 
-            for (bnfProduction in nonterminalProductions.mapNotNull { it as? JccBnfProduction }) {
+            // deal with synthetic tokens
+            for (bnfProduction in bnfProductions) {
 
                 val regexpExpansions =
                         bnfProduction.expansion
                             ?.descendantSequence(includeSelf = true)
-                            ?.filterMapAs<JccRegexpExpansionUnit>()
+                            ?.filterIsInstance<JccRegexpExpansionUnit>()
                             ?: emptySequence()
 
                 for (regexExpansion in regexpExpansions) {
 
-                    val token = when (val r = regexExpansion.regularExpression) {
-                        is JccLiteralRegularExpression   ->
-                            currentSpecs
-                                .firstOrNull { it.matches(r.match) }
-                            // if the string isn't covered by an explicit token, it's synthesized
-                                ?: SyntheticToken(regexExpansion)
+
+                    val token = when (val r = regexExpansion.regularExpression.getRootRegexElement(false)) {
+
+                        is JccLiteralRegexpUnit ->  // if the string isn't covered by an explicit token, it's synthesized
+                            currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
+
                         // necessarily references an explicit token
-                        is JccRegularExpressionReference -> null
+                        is JccTokenReferenceUnit -> null
+
                         // everything else is synthesized
-                        else                             -> SyntheticToken(regexExpansion)
+                        else -> SyntheticToken(regexExpansion)
                     } as? SyntheticToken
 
                     token?.runIt {

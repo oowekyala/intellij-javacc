@@ -10,5 +10,4 @@ abstract class JccInspectionTestBase(
         super.configureByText(text)
         myFixture.enableInspections(inspection)
     }
-
 }

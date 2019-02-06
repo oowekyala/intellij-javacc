@@ -49,13 +49,13 @@ fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
     }
 }
 
-/** Returns the token this regex is declared in, or null if this regex occurs inside a private regex. */
-val JccRegexpLike.enclosingToken: Token?
+/** Returns the token this regex is declared in. Is synthetic if the regex occurs in a BNF expansion. */
+val JccRegexpLike.enclosingToken: Token
     get() {
         val enclosingRegex = ancestors(includeSelf = true).first { it is JccRegularExpression }
 
         return when (val parent = enclosingRegex.parent) {
-            is JccRegexprSpec         -> if (parent.isPrivate) null else ExplicitToken(parent)
+            is JccRegexprSpec         -> ExplicitToken(parent)
             is JccRegexpExpansionUnit -> SyntheticToken(parent)
             else                      -> throw IllegalStateException("No enclosing context?")
         }
@@ -245,17 +245,16 @@ fun JccRegexprSpec.getRootRegexElement(followReferences: Boolean = false): JccRe
         regularExpression.getRootRegexElement(followReferences)
 
 /**
- * Returns the root regex element, unwrapping
- * a [JccNamedRegularExpression] or [JccInlineRegularExpression]
+ * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccInlineRegularExpression]
  * if needed.
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
     return when (this) {
         is JccLiteralRegularExpression   -> this.unit
         is JccNamedRegularExpression     -> this.regexpElement
-        is JccRegularExpressionReference -> if (followReferences) this.unit.typedReference.resolveToken()?.getRootRegexElement() else null
+        is JccRegularExpressionReference -> if (followReferences) this.unit.typedReference.resolveToken()?.getRootRegexElement() else this.unit
         is JccInlineRegularExpression    -> this.regexpElement
-        else                             -> null
+        else                             -> throw IllegalStateException()
     }
 }
 

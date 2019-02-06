@@ -13,7 +13,7 @@ import org.intellij.lang.annotations.Language
 
 /**
  * Base class offering utilities to parse and create tests.
- * Mostly copied from intellij-rust.
+ * Mostly copied from intellij-JavaCC.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -51,8 +51,8 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
 
 
     protected fun checkByText(
-        @Language("Rust") before: String,
-        @Language("Rust") after: String,
+        @Language("JavaCC") before: String,
+        @Language("JavaCC") after: String,
         action: () -> Unit
     ) {
         configureByText(before)

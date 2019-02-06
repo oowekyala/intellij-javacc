@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.insight.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
+import com.github.oowekyala.ijcc.lang.psi.getRootRegexElement
 import com.github.oowekyala.ijcc.lang.psi.match
 import java.util.*
 import java.util.regex.Matcher
@@ -37,42 +38,42 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      * the one with the earliest order of occurrence in the grammar file.
      *
      * @param toMatch              String to match
+     * @param exact                Consider only definitions of string tokens that match exactly this match
      * @param consideredRegexKinds Regex kinds to consider for the match. The default is just [RegexKind.TOKEN]
      *
      * @return the matched token if it was found in this state
      */
     fun matchLiteral(toMatch: String,
+                     exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
+
             tokens.asSequence()
                 .filter { consideredRegexKinds.contains(it.regexKind) }
-                .mapNotNull {
-                    val matcher: Matcher? = it.prefixPattern?.toPattern()?.matcher(toMatch)
+                .mapNotNull { token ->
+                    if (exact) {
+                        token.regularExpression
+                            .getRootRegexElement(followReferences = false)
+                            .takeIf {
+                                it is JccLiteralRegexpUnit && it.match == toMatch
+                            }?.let { Pair(token, toMatch) }
+                    } else {
+                        val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                    if (matcher?.matches() == true) Pair(it, matcher.group(0)) else null
+                        if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
+                    }
                 }
                 .maxWith(matchComparator)
                 ?.let { it.first }
 
     /**
-     * Returns the token that matches the given string literal in this lexical state.
-     *
-     * A token is matched as follows: All regular expressions in the current
-     * lexical state are considered as potential match candidates. The token
-     * manager consumes the maximum number of characters from the input stream
-     * possible that match one of these regular expressions. That is, the token
-     * manager prefers the longest possible match. If there are multiple longest
-     * matches (of the same length), the regular expression that is matched is
-     * the one with the earliest order of occurrence in the grammar file.
-     *
-     * @param literal              String literal to match
-     * @param consideredRegexKinds Regex kinds to consider for the match. The default is just [RegexKind.TOKEN]
+     * Returns the string token that matches exactly this regexp unit.
      *
      * @return the matched token if it was found
      */
     fun matchLiteral(literal: JccLiteralRegexpUnit,
-                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? {
-        return matchLiteral(literal.match, consideredRegexKinds)
-    }
+                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
+            matchLiteral(literal.match, true, consideredRegexKinds)
+
 
 
     override fun equals(other: Any?): Boolean {

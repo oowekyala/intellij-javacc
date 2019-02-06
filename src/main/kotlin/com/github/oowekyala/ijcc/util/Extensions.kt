@@ -6,11 +6,6 @@ import com.intellij.util.containers.ContainerUtil
 import org.jetbrains.annotations.Contract
 import java.util.*
 
-/** Select only those elements that are of type R. */
-inline fun <reified R> Sequence<*>.filterMapAs(): Sequence<R> = this.filter { it is R }.map { it as R }
-
-inline fun <reified R> Iterable<*>.filterMapAs(): Iterable<R> = this.filter { it is R }.map { it as R }
-
 
 /** Like [run], but doesn't use a lambda with receiver. */
 inline fun <T> T.runIt(block: (T) -> Unit) {
@@ -101,5 +96,6 @@ fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
 
 fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
 
+fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D) : Pair<C,D> = Pair(f(first), g(second))
 
 fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true

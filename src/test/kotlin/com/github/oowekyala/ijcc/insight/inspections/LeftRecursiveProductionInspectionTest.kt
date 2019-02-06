@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.insight.inspections.LeftRecursiveProductionInsp
 
 /**
  * @author Clément Fournier
- * @since 1.0
+ * @since 1.1
  */
 class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiveProductionInspection()) {
 

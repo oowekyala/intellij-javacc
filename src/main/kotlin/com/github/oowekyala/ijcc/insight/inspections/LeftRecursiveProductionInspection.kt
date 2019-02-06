@@ -14,7 +14,7 @@ import org.jetbrains.annotations.TestOnly
 
 /**
  * @author Clément Fournier
- * @since 1.0
+ * @since 1.1
  */
 class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 

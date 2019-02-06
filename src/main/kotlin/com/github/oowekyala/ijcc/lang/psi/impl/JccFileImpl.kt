@@ -7,7 +7,6 @@ import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.lang.refs.TerminalScopeProcessor
-import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
@@ -33,28 +32,28 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         get() = findChildByClass(JccGrammarFileRoot::class.java)
 
     override val tokenManagerDecls: Sequence<JccTokenManagerDecls>
-        get() = grammarFileRoot?.childrenSequence()?.filterMapAs() ?: emptySequence()
+        get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccTokenManagerDecls>() ?: emptySequence()
 
     override val regexpProductions: Sequence<JccRegularExprProduction>
-        get() = grammarFileRoot?.childrenSequence()?.filterMapAs() ?: emptySequence()
+        get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccRegularExprProduction>() ?: emptySequence()
 
     override val parserDeclaration: JccParserDeclaration?
         get() = grammarFileRoot?.parserDeclaration
 
     override val nonTerminalProductions: Sequence<JccNonTerminalProduction>
-        get() = grammarFileRoot?.childrenSequence()?.filterMapAs() ?: emptySequence()
+        get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccNonTerminalProduction>() ?: emptySequence()
 
     override val globalNamedTokens: Sequence<JccNamedRegularExpression>
-        get() = globalTokenSpecs.map { it.regularExpression }.filterMapAs()
+        get() = globalTokenSpecs.map { it.regularExpression }.filterIsInstance<JccNamedRegularExpression>()
 
 
     override val globalTokenSpecs: Sequence<JccRegexprSpec>
         get() =
             grammarFileRoot
                 ?.childrenSequence(reversed = false)
-                ?.filterMapAs<JccRegularExprProduction>()
+                ?.filterIsInstance<JccRegularExprProduction>()
                 ?.filter { it.regexprKind.text == "TOKEN" }
-                ?.flatMap { it.childrenSequence().filterMapAs<JccRegexprSpec>() }
+                ?.flatMap { it.childrenSequence().filterIsInstance<JccRegexprSpec>() }
                 ?: emptySequence()
 
     override val options: JccOptionSection?

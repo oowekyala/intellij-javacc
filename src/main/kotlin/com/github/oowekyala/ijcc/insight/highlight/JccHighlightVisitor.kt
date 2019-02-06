@@ -4,12 +4,11 @@ import com.github.oowekyala.ijcc.insight.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.insight.highlight.JccHighlightUtil.wrongReferenceInfo
-import com.github.oowekyala.ijcc.insight.model.ExplicitToken
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.RegexKind
+import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.lang.JavaccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.filterMapAs
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
@@ -21,7 +20,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.strictParents
 import com.intellij.util.containers.MostlySingularMultiMap
 import gnu.trove.THashMap
 import org.apache.commons.lang3.StringEscapeUtils
@@ -255,9 +253,29 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     "Private (with a #) regular expression cannot be defined within grammar productions"
                 )
             }
+
+            val root = it.getRootRegexElement(followReferences = false)
+            if (root is JccLiteralRegexpUnit) {
+                val ref: Token = o.referencedToken!!
+
+                if (ref.isPrivate) {
+                    myHolder += JccHighlightUtil.wrongReferenceInfo(
+                        root,
+                        "String token \"${root.match}\" has been defined as a private (#) regular expression"
+                    )
+
+                } else {
+                    val message = ref.name?.let { "Matched by <$it>" } ?: "Implicitly declared token"
+                    myHolder += highlightInfo(
+                        root,
+                        TOKEN_LITERAL_REFERENCE.highlightType,
+                        message = message
+                    )
+                    // else stay default
+                }
+            }
         }
     }
-
     override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
@@ -275,26 +293,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
 
 
-    }
-
-    override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
-        // don't do that shit inside explicit tokens or private specs
-        if (o.enclosingToken?.let { it is ExplicitToken } == true) return
-
-        val ref: JccRegexprSpec? = o.typedReference.resolve()
-
-        // if so, the literal declares itself
-        val isSelfReferential = ref != null && o.strictParents().any { it === ref }
-
-        if (ref != null && !isSelfReferential) {
-
-            val tokenName = ref.name?.let { "token <$it>" } ?: "a token"
-            myHolder += highlightInfo(
-                o,
-                TOKEN_LITERAL_REFERENCE.highlightType,
-                message = "Matched by $tokenName"
-            )
-        } // else stay default
     }
 
     override fun visitCharacterDescriptor(descriptor: JccCharacterDescriptor) {
@@ -344,7 +342,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     override fun visitNamedRegularExpression(element: JccNamedRegularExpression) {
         myFile
             .descendantSequence()
-            .filterMapAs<JccNamedRegularExpression>()
+            .filterIsInstance<JccNamedRegularExpression>()
             .filter { element !== it && it.name == element.name }
             .any()
             .ifTrue {

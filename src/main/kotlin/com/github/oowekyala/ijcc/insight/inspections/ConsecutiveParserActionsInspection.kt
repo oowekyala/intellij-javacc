@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.EnclosedLogger
-import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -89,7 +88,7 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
                 }
 
                 val toMerge = first.siblingRangeTo(last)
-                    .filterMapAs<JccParserActionsUnit>()
+                    .filterIsInstance<JccParserActionsUnit>()
                     .toList()
                     .takeIf { it.size > 1 }
                     ?: return

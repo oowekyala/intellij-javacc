@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.refs
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.util.filterMapAs
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReferenceBase
@@ -31,7 +30,7 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
         return element.containingFile
             .nonTerminalProductions
             .flatMap { it.descendantSequence(includeSelf = true) }
-            .filterMapAs<JccNodeClassOwner>()
+            .filterIsInstance<JccNodeClassOwner>()
             .filter { it.nodeSimpleName == myName }
             .map { PsiEltResolveResult(it) }
             .toList().toTypedArray()
