@@ -263,7 +263,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                         literalUnit,
                         "String token \"${literalUnit.match}\" has been defined as a private (#) regular expression"
                     )
-
                 } else {
                     // all is well
                     val message = ref.name?.let { "Matched by <$it>" } ?: "Implicitly declared token"

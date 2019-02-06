@@ -44,7 +44,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
         val value = element.value
-        return value is JccRegexprSpec || value is JccNonTerminalProduction
+        return value is JccRegexprSpec || value is JccRegexpExpansionUnit
                 // TODO these should not be leaves, ideally their declarations would be shown as well
                 || value is JccTokenManagerDecls || value is JccParserDeclaration
     }
@@ -54,9 +54,6 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
     override fun getFilters(): Array<Filter> = arrayOf(terminalFilter(), optionFilter())
 
     companion object {
-
-        // optionally sort alphabetically like Kotlin structure does
-
 
         private fun optionFilter(): Filter = object : FileStructureFilter {
             override fun getCheckBoxText(): String = "Show Options"
@@ -91,6 +88,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
                     when (treeElement.let { it as JccStructureTreeElement }.element) {
                         is JccRegexprSpec           -> false
                         is JccRegularExprProduction -> false
+                        is JccRegexpExpansionUnit   -> false
                         else                        -> true
                     }
 

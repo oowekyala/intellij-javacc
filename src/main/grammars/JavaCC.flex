@@ -15,6 +15,7 @@
  */
 package com.github.oowekyala.ijcc.lang.lexer;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.JavaTokenType;

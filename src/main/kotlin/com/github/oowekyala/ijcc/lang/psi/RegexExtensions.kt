@@ -259,7 +259,8 @@ fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false):
         is JccNamedRegularExpression     -> this.regexpElement
         is JccRegularExpressionReference -> if (followReferences) this.unit.typedReference.resolveToken()?.getRootRegexElement() else this.unit
         is JccInlineRegularExpression    -> this.regexpElement
-        else                             -> throw IllegalStateException()
+        is JccEofRegularExpression       -> null
+        else                             -> throw IllegalStateException(this.toString())
     }
 }
 

@@ -30,11 +30,11 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
         val file = element.containingFile
         val grammar = file.lexicalGrammar
 
-        val consideredState = element.enclosingToken.lexicalStateNames
+        val consideredStates = element.enclosingToken.lexicalStateNames
 
         val matchedTokens = grammar.lexicalStates
             .asSequence()
-            .filter { consideredState.contains(it.name) }
+            .filter { consideredStates.contains(it.name) }
             .mapNotNull { it.matchLiteral(element) } // this finds only string tokens
             .filterIsInstance<ExplicitToken>()
             .map { PsiElementResolveResult(it.spec) }

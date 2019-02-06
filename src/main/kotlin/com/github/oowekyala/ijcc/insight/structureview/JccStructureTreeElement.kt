@@ -40,7 +40,7 @@ class JccStructureTreeElement(val element: JccPsiElement)
         is JccOptionSection         -> element.optionBindingList
         is JccBnfProduction         ->
             element.expansion
-                ?.descendantSequence()
+                ?.descendantSequence(includeSelf = true)
                 ?.filterIsInstance<JccRegexpExpansionUnit>()
                 // consider only synthetic tokens
                 ?.filter { it.referencedToken?.isExplicit == false }

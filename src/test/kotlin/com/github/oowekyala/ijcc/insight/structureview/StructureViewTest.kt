@@ -13,7 +13,61 @@ import org.intellij.lang.annotations.Language
  * @since 1.1
  */
 class StructureViewTest : JccTestBase() {
+    fun `test tokens`() = doTest(
+        """
+        $DummyHeader
 
+        <Astate> TOKEN: {
+              <FOO: "hello">
+            | <BAR: "hye"> { foo(); }
+        }
+
+
+        <Bstate> SPECIAL_TOKEN: {
+              <SPECIAL: "SPECIAL"> : Astate
+        }
+
+
+
+    """, """
+        -dummy.jjt
+         class Dummy
+         -TOKEN
+          <FOO : "hello">
+          <BAR : "hye">
+         -SPECIAL_TOKEN
+          <SPECIAL : "SPECIAL">
+    """
+    )
+
+    fun `test synthetic tokens`() = doTest(
+        """
+        $DummyHeader
+
+        <Astate> TOKEN: {
+              <FOO: "hello">
+            | <BAR: "hye"> { foo(); }
+        }
+
+        void Foo():
+        {}
+        {
+            "flabberGasted" // synthetic
+        }
+
+
+
+    """,
+        """
+        -dummy.jjt
+         class Dummy
+         -TOKEN
+          <FOO : "hello">
+          <BAR : "hye">
+         -Foo()
+          <"flabberGasted">
+         """
+    )
 
     private fun doPresentationDataTest(@Language("JavaCC") code: String, expectedPresentableText: String,
                                        isPublic: Boolean) {
