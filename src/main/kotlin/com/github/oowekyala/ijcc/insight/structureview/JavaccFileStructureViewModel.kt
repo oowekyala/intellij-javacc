@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.insight.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
@@ -16,12 +15,13 @@ import com.intellij.openapi.actionSystem.Shortcut
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccFileStructureViewModel(psiFile: JccFileImpl)
-    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile)), StructureViewModel.ElementInfoProvider {
+class JavaccFileStructureViewModel(psiFile: JccFile)
+    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile)),
+    StructureViewModel.ElementInfoProvider {
 
     init {
         withSuitableClasses(
-            JccFileImpl::class.java,
+            JccFile::class.java,
             JccOptionSection::class.java,
             JccOptionBinding::class.java,
 

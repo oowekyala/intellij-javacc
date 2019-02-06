@@ -63,7 +63,7 @@ class JccStringTokenReference(element: JccLiteralRegexpUnit) :
      */
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> =
             multiResolveToken(exact = true)
-                .map { it.psiElement }
+                .mapNotNull { it.psiElement }
                 .map { PsiElementResolveResult(it, true) }
                 .toList()
                 .toTypedArray()

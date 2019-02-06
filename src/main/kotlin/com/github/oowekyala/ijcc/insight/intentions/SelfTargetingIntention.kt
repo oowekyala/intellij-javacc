@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.refactoring
+package com.github.oowekyala.ijcc.insight.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.ancestors

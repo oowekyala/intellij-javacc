@@ -47,7 +47,7 @@ class JccStructureTreeElement(val element: JccPsiElement)
                 ?.toList().orEmpty()
         else                        -> emptyList()
     }
-        .map(::JccStructureTreeElement)
+        .map { JccStructureTreeElement(it) }
         .toTypedArray()
 
 

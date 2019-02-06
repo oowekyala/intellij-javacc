@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.refactoring
+package com.github.oowekyala.ijcc.insight.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
@@ -35,7 +35,11 @@ class AddNameToRegexIntention :
         val newExpr = createRegex<JccNamedRegularExpression>(element.project, "< FOO: $regexText >")
         val runnable = Runnable {
             val replaced = element.safeReplace(newExpr)
-            startTemplate(project, editor, replaced)
+            startTemplate(
+                project,
+                editor,
+                replaced
+            )
         }
 
         if (startInWriteAction()) {

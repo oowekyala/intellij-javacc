@@ -25,7 +25,7 @@ object JccTerminalDocMaker {
         isExplicit = token.isExplicit,
         states = token.lexicalStatesOrEmptyForAll
     ) {
-        token.regularExpression.accept(RegexDocVisitor(it))
+        token.regularExpression?.accept(RegexDocVisitor(it))
     }
 
 

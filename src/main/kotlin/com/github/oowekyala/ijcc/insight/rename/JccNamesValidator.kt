@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.refactoring
+package com.github.oowekyala.ijcc.insight.rename
 
 import com.intellij.lang.refactoring.JavaNamesValidator
 import com.intellij.openapi.project.Project

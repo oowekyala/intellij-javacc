@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.refactoring
+package com.github.oowekyala.ijcc.insight.rename
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl

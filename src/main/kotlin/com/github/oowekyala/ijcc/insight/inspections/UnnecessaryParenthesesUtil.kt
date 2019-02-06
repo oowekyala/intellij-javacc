@@ -3,6 +3,8 @@ package com.github.oowekyala.ijcc.insight.inspections
 import com.github.oowekyala.ijcc.lang.psi.*
 
 
+// TODO check unnecessary parentheses in regular expressions
+
 data class ParenthesesConfig(val keepAroundAssignment: Boolean = false,
                              val keepAroundLookahead: Boolean = false,
                              val keepBeforeParserActions: Boolean = false)

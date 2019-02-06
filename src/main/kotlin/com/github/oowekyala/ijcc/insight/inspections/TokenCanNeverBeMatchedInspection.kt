@@ -77,7 +77,7 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                 .multiResolveToken(exact = false)
                 .filterIsInstance<ExplicitToken>()
                 // matching itself doesn't count
-                .map { it.spec }
+                .mapNotNull { it.spec }
                 .filterNot { it === spec }
 
             if (matchedBy.isNotEmpty()) {

@@ -69,9 +69,9 @@
         <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.insight.highlight.JavaccColorSettingsPage"/>
 
-        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.insight.refactoring.JccRenameProcessor"/>
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.insight.rename.JccRenameProcessor"/>
         <lang.namesValidator language="JavaCC"
-                             implementationClass="com.github.oowekyala.ijcc.insight.refactoring.JccNamesValidator"/>
+                             implementationClass="com.github.oowekyala.ijcc.insight.rename.JccNamesValidator"/>
 
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
@@ -124,30 +124,30 @@
         <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.inspections.TokenInliningIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.TokenInliningIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceLiteralWithReferenceIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceLiteralWithReferenceIntention</className>
         </intentionAction>
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.inspections.GrammarToParserJumpIntention</className>
-        </intentionAction>
-
-        <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceParenthesizedOptionalWithBracedIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.GrammarToParserJumpIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.inspections.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceParenthesizedOptionalWithBracedIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.refactoring.AddNameToRegexIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.ReplaceBracedExpansionUnitWithParenthesizedIntention</className>
         </intentionAction>
 
         <intentionAction>
-            <className>com.github.oowekyala.ijcc.insight.refactoring.RemoveNameFromRegexIntention</className>
+            <className>com.github.oowekyala.ijcc.insight.intentions.AddNameToRegexIntention</className>
+        </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.insight.intentions.RemoveNameFromRegexIntention</className>
         </intentionAction>
     </extensions>
 </idea-plugin>

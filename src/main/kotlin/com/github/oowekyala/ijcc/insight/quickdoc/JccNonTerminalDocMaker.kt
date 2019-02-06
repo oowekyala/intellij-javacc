@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.insight.quickdoc
 
 import com.github.oowekyala.ijcc.insight.inspections.docIsNecessary
 import com.github.oowekyala.ijcc.insight.model.ExplicitToken
-import com.github.oowekyala.ijcc.insight.model.Token
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.insight.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -117,12 +116,12 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitLiteralRegexpUnit(o: JccLiteralRegexpUnit) {
-            val reffed: Token? = o.typedReference.resolveToken(exact = true)
+            val reffed: JccRegexprSpec? = o.typedReference.resolveToken(exact = true).let { it as? ExplicitToken }?.spec
 
-            if (reffed is ExplicitToken) {
+            if (reffed != null) {
                 DocumentationManager.createHyperlink(
                     sb,
-                    JccDocUtil.getLinkRefTo(reffed.spec),
+                    JccDocUtil.getLinkRefTo(reffed),
                     o.text,
                     false
                 )

@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.inspections
+package com.github.oowekyala.ijcc.insight.intentions
 
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
 

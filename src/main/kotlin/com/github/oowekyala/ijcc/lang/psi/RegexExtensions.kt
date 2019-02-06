@@ -253,11 +253,11 @@ fun JccRegexprSpec.getRootRegexElement(followReferences: Boolean = false): JccRe
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexpElement? {
     return when (this) {
-        is JccLiteralRegularExpression   -> this.unit
         is JccNamedRegularExpression     -> this.regexpElement
         is JccRegularExpressionReference -> this.unit
         is JccInlineRegularExpression    -> this.regexpElement
         is JccEofRegularExpression       -> null
+        is JccLiteralRegularExpression   -> this.unit
         else                             -> throw IllegalStateException(this.toString())
     }?.unwrapParens()?.let {
         when (it) {

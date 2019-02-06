@@ -4,9 +4,9 @@ import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.insight.model.GrammarOptions
 import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
-import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.insight.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.insight.refs.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
@@ -59,9 +59,16 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = grammarFileRoot?.optionSection
 
-    override val grammarOptions: GrammarOptions by lazy { GrammarOptions(options, parserDeclaration) } // todo is lazy safe?
+    override val grammarOptions: GrammarOptions by lazy {
+        GrammarOptions(
+            options,
+            parserDeclaration
+        )
+    } // todo is lazy safe?
 
-    override val lexicalGrammar: LexicalGrammar by lazy { LexicalGrammar(grammarFileRoot) }
+    override val lexicalGrammar: LexicalGrammar by lazy {
+        LexicalGrammar(grammarFileRoot)
+    }
 
     override fun getContainingFile(): JccFile = this
 
@@ -100,6 +107,4 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         }
         return true
     }
-
-
 }

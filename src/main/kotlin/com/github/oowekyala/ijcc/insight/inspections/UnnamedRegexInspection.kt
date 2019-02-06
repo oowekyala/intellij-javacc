@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
 import com.github.oowekyala.ijcc.insight.model.RegexKind
-import com.github.oowekyala.ijcc.insight.refactoring.AddNameToRegexIntention
+import com.github.oowekyala.ijcc.insight.intentions.AddNameToRegexIntention
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInspection.IntentionWrapper
 import com.intellij.codeInspection.ProblemsHolder

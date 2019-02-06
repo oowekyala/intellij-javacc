@@ -265,7 +265,7 @@ ASTSqlPlusCommand SqlPlusCommand() :
   | <QUIT> 
   | <REMARK> 
   | <SET> 
-  | <SHOW> 
+  | "SHOW"
   | <SPOOL> 
   | <START> 
   | <UNDEFINE> 

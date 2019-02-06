@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.insight.inspections
+package com.github.oowekyala.ijcc.insight.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.ApplicationManager

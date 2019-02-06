@@ -4,6 +4,8 @@ import com.github.oowekyala.ijcc.insight.model.LexicalState.Companion.JustDefaul
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.deemsEqual
 import com.intellij.psi.PsiElement
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 
 /**
  *
@@ -27,9 +29,7 @@ import com.intellij.psi.PsiElement
  * distinct string tokens. Doing so, it considers IGNORE_CASE expressions as more general. TODO check that
  */
 @Suppress("LeakingThis")
-sealed class Token(val regexKind: RegexKind,
-                   val isPrivate: Boolean,
-                   val name: String?) {
+sealed class Token {
 
     /**
      * Returns the list of lexical states this token applies to.
@@ -37,17 +37,21 @@ sealed class Token(val regexKind: RegexKind,
      */
     abstract val lexicalStatesOrEmptyForAll: List<String>
     abstract val lexicalStateTransition: String?
-    abstract val regularExpression: JccRegularExpression
+    abstract val regularExpression: JccRegularExpression?
+    abstract val name: String?
+    abstract val regexKind: RegexKind
+    abstract val isPrivate: Boolean
 
-    val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
+
+    val prefixPattern: Regex? by lazy { regularExpression?.prefixPattern }
 
     val isExplicit: Boolean = this is ExplicitToken
 
     /** Returns true if this is a single literal token. */
     val asStringToken: JccLiteralRegexpUnit?
-        get() = regularExpression.asSingleLiteral(followReferences = false)
+        get() = regularExpression?.asSingleLiteral(followReferences = false)
 
-    val psiElement: PsiElement
+    val psiElement: PsiElement?
         get () = when (this) {
             is ExplicitToken  -> spec
             is SyntheticToken -> declUnit
@@ -63,7 +67,7 @@ sealed class Token(val regexKind: RegexKind,
      * Returns true if this token is the same literal unit as this one.
      */
     fun matchesLiteral(unit: JccLiteralRegexpUnit): Boolean =
-            regularExpression.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
+            regularExpression?.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
 
 
     companion object {
@@ -74,7 +78,7 @@ sealed class Token(val regexKind: RegexKind,
          * Comparator that considers two string tokens with the same match equal (compare to 0).
          * Otherwise just compares document offset.
          */
-        val stringTokenComparator: Comparator<Token> = Comparator { t1, t2 ->
+        private val stringTokenComparator: Comparator<Token> = Comparator { t1, t2 ->
 
             val t1Str = t1.asStringToken
             val t2Str = t2.asStringToken
@@ -88,7 +92,8 @@ sealed class Token(val regexKind: RegexKind,
         /**
          * Compares document offset of two tokens. Tokens defined higher in the file are considered greater.
          */
-        val offsetComparator: Comparator<Token> = Comparator.comparingInt { -it.regularExpression.textOffset }
+        val offsetComparator: Comparator<Token> =
+                Comparator.comparingInt { -(it.regularExpression?.textOffset ?: 0) }
 
     }
 
@@ -97,12 +102,24 @@ sealed class Token(val regexKind: RegexKind,
 /**
  * Declared explicitly by the user. The spec can be private.
  */
-data class ExplicitToken(val spec: JccRegexprSpec)
-    : Token(spec.regexKind, isPrivate = spec.isPrivate, name = spec.name) {
+data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexprSpec>) : Token() {
 
-    override val lexicalStatesOrEmptyForAll: List<String> = spec.lexicalStatesNameOrEmptyForAll
-    override val regularExpression: JccRegularExpression = spec.regularExpression
-    override val lexicalStateTransition: String? = spec.lexicalStateTransition?.name
+
+    constructor(unit: JccRegexprSpec) : this(SmartPointerManager.createPointer(unit))
+
+    val spec: JccRegexprSpec?
+        get() = specPointer.element
+
+    override val lexicalStatesOrEmptyForAll: List<String>
+        get() = spec?.lexicalStatesNameOrEmptyForAll ?: JustDefaultState // default?
+
+    override val regularExpression: JccRegularExpression? get() = spec?.regularExpression
+    override val lexicalStateTransition: String? get() = spec?.lexicalStateTransition?.name
+
+    override val regexKind: RegexKind get() = spec?.regexKind ?: RegexKind.TOKEN
+    override val isPrivate: Boolean get() = spec?.isPrivate == true
+    override val name: String? get() = spec?.name
+
 }
 
 /**
@@ -110,23 +127,22 @@ data class ExplicitToken(val spec: JccRegexprSpec)
  *
  * @property declUnit The highest (by doc offset) regex that implicitly declares this synthesized token
  */
-data class SyntheticToken(val declUnit: JccRegexpExpansionUnit) : Token(
-    RegexKind.TOKEN,
-    isPrivate = false,
-    name = declUnit.regularExpression.name
-) {
+data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexpExpansionUnit>) : Token() {
+
+
+    constructor(unit: JccRegexpExpansionUnit) : this(SmartPointerManager.createPointer(unit))
+
+    // constants for all synthetic tokens
+    override val regexKind: RegexKind = RegexKind.TOKEN
+    override val isPrivate: Boolean = false
     override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
-    override val regularExpression: JccRegularExpression = declUnit.regularExpression
     override val lexicalStateTransition: String? = null
 
 
-    internal val variantsImpl = mutableListOf(declUnit)
+    override val name: String? get() = declUnit?.name
 
-    /**
-     * All implicit tokens declared in other non-terminals that are equivalent
-     * to this one according to [Token.Companion.stringTokenComparator]. This
-     * includes [declUnit].
-     */
-    val variants: List<JccRegexpExpansionUnit> = variantsImpl
+    override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
+
+    val declUnit: JccRegexpExpansionUnit? get() = declUnitPointer.element!!
 
 }

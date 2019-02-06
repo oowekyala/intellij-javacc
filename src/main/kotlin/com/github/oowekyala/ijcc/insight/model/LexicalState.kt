@@ -114,13 +114,9 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                val equiv = mySpecs.firstOrNull { Token.stringTokenComparator.deemsEqual(it, token) }
-                if (equiv == null) {
+                if (mySpecs.none { Token.areEquivalent(it, token) } ) {
                     // don't add duplicate synthetic tokens in the same state
                     mySpecs.add(token)
-                } else if (equiv is SyntheticToken && token is SyntheticToken) {
-                    // record duplicates in the token
-                    equiv.variantsImpl += token.declUnit
                 }
             }
 
