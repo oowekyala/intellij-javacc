@@ -1,13 +1,21 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.util.plusAssign
+import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiSubstitutor
+import com.intellij.psi.util.PsiFormatUtil
+import com.intellij.psi.util.PsiFormatUtilBase
+
 /**
  * TODO
  * @author Clément Fournier
  * @since 1.0
  */
-fun JccPsiElement.prettyName() = when (this) {
+fun JccPsiElement.foldingName() = when (this) {
     is JccOptionalExpansionUnit      -> "[...]"
-    is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.prettyName()
+    is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.foldingName()
     is JccOptionSection              -> "options {..}"
     is JccParserDeclaration          -> "/PARSER DECLARATION/"
     is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
@@ -24,4 +32,6 @@ fun JccPsiElement.prettyName() = when (this) {
     else                             -> text
 }
 
-fun JccOccurrenceIndicator?.prettyName() = this?.text ?: ""
+
+fun JccOccurrenceIndicator?.foldingName() = this?.text ?: ""
+

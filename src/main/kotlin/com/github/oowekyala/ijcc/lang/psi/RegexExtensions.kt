@@ -204,6 +204,11 @@ val JccNamedRegularExpression.isPrivate: Boolean
 val JccRegexprSpec.isPrivate: Boolean
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.isPrivate == true
 
+
+val JccRegularExpression.isPrivate: Boolean
+    get() = this is JccNamedRegularExpression && isPrivate
+
+
 /**
  * Gets the text range inside this named regex that includes the name identifier and the
  * pound (#) if it's private.

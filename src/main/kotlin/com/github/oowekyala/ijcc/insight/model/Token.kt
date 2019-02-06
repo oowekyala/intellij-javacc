@@ -32,6 +32,9 @@ sealed class Token(val regexKind: RegexKind,
 
     val prefixPattern: Regex? by lazy { regularExpression.prefixPattern }
 
+    @Suppress("LeakingThis")
+    val isExplicit: Boolean = this is ExplicitToken
+
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
      * regex spec definitions like "Check regexp".

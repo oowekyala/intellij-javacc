@@ -30,6 +30,7 @@ class JavaccFileStructureViewModel(psiFile: JccFileImpl)
 
             JccRegularExprProduction::class.java,
             JccRegexprSpec::class.java,
+            JccRegexpExpansionUnit::class.java,
 
             JccNonTerminalProduction::class.java
         )

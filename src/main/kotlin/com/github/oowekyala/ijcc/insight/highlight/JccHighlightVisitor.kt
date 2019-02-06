@@ -449,7 +449,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     companion object {
         fun makeEmptyExpMessage(exp: JccExpansionUnit) =
-                "Expansion within \"${exp.prettyName()}\" can be matched by empty string"
+                "Expansion within \"${exp.foldingName()}\" can be matched by empty string"
 
 
         private val classRegex = Regex("\\bclass\\s+(\\w+)")
