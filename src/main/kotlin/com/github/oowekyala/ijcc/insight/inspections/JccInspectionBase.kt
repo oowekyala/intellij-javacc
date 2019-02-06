@@ -18,6 +18,7 @@ import com.intellij.psi.impl.source.tree.JavaDocElementType
  */
 abstract class JccInspectionBase(private val myDisplayName: String)
     : BaseLocalInspectionTool() {
+    // since inspections can be suppressed inspection names and this scheme are published API
     override fun getID(): String = "JavaCC$shortName"
     override fun getDisplayName(): String = myDisplayName
     override fun getShortName(): String = InspectionProfileEntry.getShortName(this::class.java.simpleName)

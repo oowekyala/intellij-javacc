@@ -147,9 +147,14 @@ open class JccAnnotationTestBase : JccTestBase() {
         myFixture.checkResult(replaceCaretMarker(text.trimIndent()))
     }
 
-    fun warningAnnot(s: String, desc: String) = "<warning descr=\"$desc\">$s</warning>"
-    fun errorAnnot(s: String, desc: String) = "<error descr=\"$desc\">$s</error>"
-    fun infoAnnot(s: String, desc: String) = "<info descr=\"$desc\">$s</info>"
 
+    private fun annot(content: String, desc: String, tagName: String) =
+            desc.replace("\"", "\\\"").let { escapedDesc ->
+                "<$tagName descr=\"$escapedDesc\">$content</$tagName>"
+            }
+
+    fun warningAnnot(s: String, desc: String) = annot(s, desc, "warning")
+    fun errorAnnot(s: String, desc: String) = annot(s, desc, "error")
+    fun infoAnnot(s: String, desc: String) = annot(s, desc, "info")
 
 }

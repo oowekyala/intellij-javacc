@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.insight.inspections
 
+import com.github.oowekyala.ijcc.insight.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNREACHABLE
+import com.github.oowekyala.ijcc.insight.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNUSED
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.addIfNotNull
@@ -11,6 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
 import gnu.trove.THashSet
+import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
@@ -20,10 +23,13 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
 
     override fun getID(): String = "JavaCCUnusedProduction"
 
-    // TODO technically a rule may be unused from the grammar but folks
-    // may use the Java method directly from the parser...
+    @Language("HTML")
     override fun getStaticDescription() = """
         Detects productions that can't be reached from the root production.
+        The root production is assumed to be the first non-terminal appearing
+        in the grammar. Any production suppressed with <code>//noinspection $id</code>
+        will <i>de facto</i> count as a root, which can be useful if you use the parser's
+        Java method directly.
     """.trimIndent()
 
 
@@ -78,11 +84,15 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
 
         for (prod in prods.skip(1).filter { o -> !inSuppressed.contains(o) }) {
             when {
-                !inExpr.contains(prod)    -> "Unused production"
-                !inParsing.contains(prod) -> "Unreachable production"
-                else                   -> null
-            }?.runIt { message ->
-                holder.registerProblem(prod.nameIdentifier, "$message \"${prod.name}\"", ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+                !inExpr.contains(prod)    -> UNUSED
+                !inParsing.contains(prod) -> UNREACHABLE
+                else                      -> null
+            }?.runIt { type ->
+                holder.registerProblem(
+                    prod.nameIdentifier,
+                    type.makeMessage(prod.name),
+                    ProblemHighlightType.LIKE_UNUSED_SYMBOL
+                )
             }
 
         }
@@ -96,5 +106,11 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
 
     companion object {
         const val DisplayName = "Unused production"
+
+        enum class ErrorType {
+            UNUSED, UNREACHABLE;
+
+            fun makeMessage(prodName: String) = name.toLowerCase().capitalize() + "production \"$prodName\""
+        }
     }
 }

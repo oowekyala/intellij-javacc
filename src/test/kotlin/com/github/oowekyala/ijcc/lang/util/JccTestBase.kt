@@ -132,6 +132,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
 
     companion object {
 
+        @Language("JavaCC")
         const val DummyHeader =
                 """
 PARSER_BEGIN(Dummy)

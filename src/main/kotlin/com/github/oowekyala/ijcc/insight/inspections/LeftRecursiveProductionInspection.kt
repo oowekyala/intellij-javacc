@@ -10,6 +10,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiFile
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
+import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
 
 /**
@@ -18,6 +19,14 @@ import org.jetbrains.annotations.TestOnly
  */
 class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
+    @Language("HTML")
+    override fun getStaticDescription(): String = """
+        Reports left-recursive productions. Left-recursion is not supported
+        by top-down parsers like JavaCC. This is implemented as an inspection for performance,
+        but it's not an "optional error" for JavaCC so I suggest never to turn it off.
+        <p>Possible solutions include right-factoring. That may significantly change
+        the parse tree and so break your JJTree structure.</p>
+    """.trimIndent()
 
     override fun runForWholeFile(): Boolean = true
 

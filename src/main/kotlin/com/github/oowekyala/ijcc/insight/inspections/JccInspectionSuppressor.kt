@@ -19,10 +19,15 @@ import com.intellij.util.ThreeState
 import java.util.regex.Pattern
 
 
-class JccInspectionSuppressor : InspectionSuppressor {
+object JccInspectionSuppressor : InspectionSuppressor {
     override fun getSuppressActions(element: PsiElement?, toolId: String): Array<SuppressQuickFix> {
         val seq: Sequence<SuppressQuickFix> = element?.let {
-            val containers: Sequence<SuppressQuickFix> = it.getAllContainers().map { SuppressIntention(it, toolId) }
+            val containers: Sequence<SuppressQuickFix> = it.getAllContainers().map {
+                SuppressIntention(
+                    it,
+                    toolId
+                )
+            }
             val nearest = it.getNearestContainer()
 
             if (nearest != null) containers.prepend(SuppressIntention(nearest, ALL))
@@ -45,60 +50,57 @@ class JccInspectionSuppressor : InspectionSuppressor {
     }
 
 
-    companion object {
+    private val SuppressRegex = Pattern.compile(SuppressionUtil.COMMON_SUPPRESS_REGEXP)
 
-        private val SuppressRegex = Pattern.compile(SuppressionUtil.COMMON_SUPPRESS_REGEXP)
+    private val RegexpSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
 
-        private val RegexpSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
+    class SuppressIntention(elt: PsiElement, toolId: String)
+        : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {
 
-        class SuppressIntention(elt: PsiElement, toolId: String)
-            : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {
-
-            init {
-                text = when (toolId) {
-                    ALL  -> "Suppress all inspections for ${containerName(elt)}"
-                    else -> "Suppress for ${containerName(elt)}"
-                }
-                isShouldBeAppliedToInjectionHost = ThreeState.NO
+        init {
+            text = when (toolId) {
+                ALL  -> "Suppress all inspections for ${containerName(elt)}"
+                else -> "Suppress for ${containerName(elt)}"
             }
-
-            override fun getContainer(context: PsiElement?): PsiElement? = context?.getNearestContainer()
-
-            override fun createSuppression(project: Project, element: PsiElement, container: PsiElement) {
-                val text = SuppressionUtilCore.SUPPRESS_INSPECTIONS_TAG_NAME + " " + myID
-                JccElementFactory.insertEolCommentBefore(project, container, text)
-            }
+            isShouldBeAppliedToInjectionHost = ThreeState.NO
         }
 
-        private fun containerName(element: PsiElement) =
-                when (element.getNearestContainer()) {
-                    is JccFile                                               -> "file"
-                    is JccRegexprSpec                                        -> "token specification"
-                    is JccNonTerminalProduction, is JccRegularExprProduction -> "production"
-                    else                                                     -> "element"
-                }
+        override fun getContainer(context: PsiElement?): PsiElement? = context?.getNearestContainer()
 
-        private fun PsiElement.isContainer(): Boolean =
-                this is JccFile || this is JccNonTerminalProduction || this is JccRegexprSpec || this is JccRegularExprProduction
+        override fun createSuppression(project: Project, element: PsiElement, container: PsiElement) {
+            val text = SuppressionUtilCore.SUPPRESS_INSPECTIONS_TAG_NAME + " " + myID
+            JccElementFactory.insertEolCommentBefore(project, container, text)
+        }
+    }
 
-        private fun PsiElement.getNearestContainer(): PsiElement? = getAllContainers().firstOrNull()
-
-        private fun PsiElement.getAllContainers(): Sequence<PsiElement> =
-                ancestors(includeSelf = true).filter { it.isContainer() }
-
-        private fun PsiElement.leadingComments(): Sequence<String> {
-
-            val ignoredSet = when (this) {
-                is JccRegexprSpec -> RegexpSpecIgnoreSet
-                else              -> JccTypesExt.WhitespaceTypeSet
+    private fun containerName(element: PsiElement) =
+            when (element.getNearestContainer()) {
+                is JccFile                                               -> "file"
+                is JccRegexprSpec                                        -> "token specification"
+                is JccNonTerminalProduction, is JccRegularExprProduction -> "production"
+                else                                                     -> "element"
             }
 
+    private fun PsiElement.isContainer(): Boolean =
+            this is JccFile || this is JccNonTerminalProduction || this is JccRegexprSpec || this is JccRegularExprProduction
 
-            return siblingSequence(forward = false)
-                .filterNotNull()
-                .takeWhile { ignoredSet.contains(it) || it.isJccComment }
-                .filter { it.isJccComment }
-                .map { it.trimCommentMarkers.trim() }
+    private fun PsiElement.getNearestContainer(): PsiElement? = getAllContainers().firstOrNull()
+
+    private fun PsiElement.getAllContainers(): Sequence<PsiElement> =
+            ancestors(includeSelf = true).filter { it.isContainer() }
+
+    private fun PsiElement.leadingComments(): Sequence<String> {
+
+        val ignoredSet = when (this) {
+            is JccRegexprSpec -> RegexpSpecIgnoreSet
+            else              -> JccTypesExt.WhitespaceTypeSet
         }
+
+
+        return siblingSequence(forward = false)
+            .filterNotNull()
+            .takeWhile { ignoredSet.contains(it) || it.isJccComment }
+            .filter { it.isJccComment }
+            .map { it.trimCommentMarkers.trim() }
     }
 }
