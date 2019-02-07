@@ -23,6 +23,9 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         Reports usage of literal regular expressions in BNF that cannot
         be matched as their corresponding string token, because another
         token takes precedence.
+
+        <!-- tooltip end -->
+
         For example, if the following two specs are in the same lexical state:
         <code>
           &lt; BRACKETS: "[" | "]" >

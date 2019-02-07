@@ -27,8 +27,8 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
     override fun getStaticDescription() = """
         Detects productions that can't be reached from the root production.
         The root production is assumed to be the first non-terminal appearing
-        in the grammar. Any production suppressed with <code>//noinspection $id</code>
-        will <i>de facto</i> count as a root, which can be useful if you use the parser's
+        in the grammar. Any production suppressed with <code>//noinspection $id</code>will
+        <i>de facto</i> count as a root, which can be useful if you use the parser's
         Java method directly.
     """.trimIndent()
 

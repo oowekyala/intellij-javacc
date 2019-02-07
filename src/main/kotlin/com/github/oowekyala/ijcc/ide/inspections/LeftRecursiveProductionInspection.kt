@@ -24,6 +24,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         by top-down parsers like JavaCC.
         <p>Possible solutions include right-factoring. That may significantly change
         the parse tree and so break your JJTree structure.</p>
+        <!-- tooltip end -->
         <p>This is implemented as an inspection for performance, but it's not an
         "optional error" for JavaCC so I suggest never to turn it off.</p>
     """.trimIndent()

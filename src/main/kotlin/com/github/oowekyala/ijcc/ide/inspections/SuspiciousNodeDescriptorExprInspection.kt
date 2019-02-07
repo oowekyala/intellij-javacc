@@ -33,7 +33,7 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
                 ( ... ) #N<b>(true)</b> ( a() )
             </code>
 
-            <!-- toolTipEnd -->
+            <!-- tooltip end -->
 
             This inspection uses a natural code style convention to guess whether this is
             intentional or not. A node descriptor expression is flagged iff its opening

@@ -23,6 +23,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription(): String = """
         Reports loops in regular expressions.
+        <!-- tooltip end -->
         <p>This is implemented as an inspection for performance, but it's not an
         "optional error" for JavaCC so I suggest never to turn it off.</p>
     """.trimIndent()
