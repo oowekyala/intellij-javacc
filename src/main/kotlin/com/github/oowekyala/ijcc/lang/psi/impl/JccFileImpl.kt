@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.ide.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.ide.refs.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
@@ -59,22 +60,29 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = grammarFileRoot?.optionSection
 
-    override val grammarOptions: GrammarOptions by lazy {
-        GrammarOptions(
-            options,
-            parserDeclaration
-        )
-    } // todo is lazy safe?
-
-    internal fun rebuildLexGrammar(): LexicalGrammar {
+    /**
+     * Some structures are lazily cached to reduce the number of times
+     * they must be constructed. These include the [LexicalGrammar], the
+     * [GrammarOptions] and stuff. They're rebuilt when text changes, a
+     * heuristic for that is the highlight passes (it's done in the init
+     * routine of [JccHighlightVisitor]).
+     */
+    internal fun invalidateCachedStructures() {
         myLexGrammarImpl = LexicalGrammar(grammarFileRoot)
-        return myLexGrammarImpl!!
+        myGrammarOptionsImpl = GrammarOptions(options, parserDeclaration)
     }
 
     private var myLexGrammarImpl: LexicalGrammar? = null
 
     override val lexicalGrammar: LexicalGrammar
-        get() = myLexGrammarImpl ?: rebuildLexGrammar()
+        get() = myLexGrammarImpl ?: let { invalidateCachedStructures(); myLexGrammarImpl!! }
+
+
+    private var myGrammarOptionsImpl: GrammarOptions? = null
+
+    override val grammarOptions: GrammarOptions
+        get() = myGrammarOptionsImpl ?: let { invalidateCachedStructures(); myGrammarOptionsImpl!! }
+
 
     override fun getContainingFile(): JccFile = this
 

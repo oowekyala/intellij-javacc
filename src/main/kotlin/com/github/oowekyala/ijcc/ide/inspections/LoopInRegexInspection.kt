@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
@@ -36,7 +35,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return emptyArray()
 
-        (file as JccFileImpl).rebuildLexGrammar()
+        (file as JccFileImpl).invalidateCachedStructures()
         val grammar = file.lexicalGrammar
 
         val allTokens = grammar.allTokens.toList()
