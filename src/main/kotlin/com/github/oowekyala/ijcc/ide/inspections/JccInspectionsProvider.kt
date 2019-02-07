@@ -6,9 +6,10 @@ import com.intellij.codeInspection.InspectionToolProvider
  * @author Clément Fournier
  * @since 1.0
  */
-object JavaccInspectionsProvider : InspectionToolProvider {
+object JccInspectionsProvider : InspectionToolProvider {
     override fun getInspectionClasses(): Array<Class<out JccInspectionBase>> = arrayOf(
         TokenCanNeverBeMatchedInspection::class.java,
+        BnfStringCanNeverBeMatchedInspection::class.java,
         UnnamedRegexInspection::class.java,
         UnnecessaryInlineRegexInspection::class.java,
         UnnecessaryParenthesesInspection::class.java,

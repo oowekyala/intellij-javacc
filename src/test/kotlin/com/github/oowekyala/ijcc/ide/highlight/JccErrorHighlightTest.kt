@@ -67,10 +67,19 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     )
 
 
-    fun `test duplicate string token definition POS`() = checkByText(
+    fun `test duplicate string token private definition POS`() = checkByText(
         """
             TOKEN: {
                <#FOO: "foo">
+             | <error descr="Duplicate definition of string token \"foo\" (see <FOO>)"><BAR: "foo" ></error>
+            }
+        """.inGrammarCtx()
+    )
+
+    fun `test duplicate string token definition POS`() = checkByText(
+        """
+            TOKEN: {
+               <FOO: "foo">
              | <error descr="Duplicate definition of string token \"foo\" (see <FOO>)"><BAR: "foo" ></error>
             }
         """.inGrammarCtx()
@@ -140,7 +149,7 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """
             TOKEN [IGNORE_CASE]: {
                   <Foo: "FOO" >
-                | <error descr="Duplicate definition of string token \"foo\" (see <Foo>)"><FO: "foo" ></error>
+                | <error descr="Duplicate definition of string token \"foo\" (see <Foo>, which is case-insensitive)"><FO: "foo" ></error>
             }
         """.inGrammarCtx()
     )

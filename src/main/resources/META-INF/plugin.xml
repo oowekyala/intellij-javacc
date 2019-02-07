@@ -118,7 +118,7 @@
                                    implementationClass="com.github.oowekyala.ijcc.ide.inspections.JccInspectionSuppressor"/>
 
         <inspectionToolProvider
-                implementation="com.github.oowekyala.ijcc.ide.inspections.JavaccInspectionsProvider"/>
+                implementation="com.github.oowekyala.ijcc.ide.inspections.JccInspectionsProvider"/>
 
         <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
         <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>

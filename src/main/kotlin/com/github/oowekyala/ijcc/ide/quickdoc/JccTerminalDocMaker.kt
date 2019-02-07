@@ -46,14 +46,14 @@ object JccTerminalDocMaker {
         }
 
         sections {
-            section("Case-sensitive") { if (isIgnoreCase) "true" else "false" }
+            buildSection("Expansion") {
+                expansion(this)
+            }
+            section("Case-sensitive") { if (isIgnoreCase) "false" else "true" }
             section("Lexical states") {
                 states.let {
                     if (it.isEmpty()) "All" else it.joinToString(separator = ", ")
                 }
-            }
-            buildSection("Expansion") {
-                expansion(this)
             }
         }
     }

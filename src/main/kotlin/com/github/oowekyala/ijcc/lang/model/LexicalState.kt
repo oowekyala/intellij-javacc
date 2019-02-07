@@ -46,7 +46,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
     fun matchLiteral(toMatch: String,
                      exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            if (exact) filterWith(consideredRegexKinds).first { it.matchesLiteral(toMatch) }
+            if (exact) filterWith(consideredRegexKinds).firstOrNull { it.matchesLiteral(toMatch) }
             else
                 filterWith(consideredRegexKinds)
                 .mapNotNull { token ->

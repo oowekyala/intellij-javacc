@@ -29,7 +29,7 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
           &lt; LBRACKET: "[" >
         </code>
         Then using "[" in the BNF will never match LBRACKET (its corresponding
-        string literal), because BRACKETS <b>matches the same input and it's
+        string token), because BRACKETS <b>matches the same input and it's
         placed above it</b>. This also happens if LBRACKET was never defined
         explicitly but instead is implicitly defined by JavaCC when <code>"["</code>
         is first used as an expansion unit. If the two are reversed:

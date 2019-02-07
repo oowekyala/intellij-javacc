@@ -29,7 +29,7 @@ import com.intellij.psi.SmartPsiElementPointer
  * distinct string tokens. Doing so, it considers IGNORE_CASE expressions as more general. TODO check that
  */
 @Suppress("LeakingThis")
-sealed class Token {
+sealed class Token {    // we could have a type parameter here, but I'm too lazy to write Token<*> everywhere
 
     /**
      * Returns the list of lexical states this token applies to.
@@ -153,6 +153,9 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
 
     constructor(unit: JccRegexExpansionUnit) : this(SmartPointerManager.createPointer(unit))
 
+    val declUnit: JccRegexExpansionUnit? get() = psiPointer.element
+
+
     // constants for all synthetic tokens
     override val regexKind: RegexKind = RegexKind.TOKEN
     override val isPrivate: Boolean = false
@@ -162,6 +165,5 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
 
     override val name: String? get() = declUnit?.name
     override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
-    val declUnit: JccRegexExpansionUnit? get() = psiPointer.element!!
 
 }
