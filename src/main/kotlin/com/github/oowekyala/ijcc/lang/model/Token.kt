@@ -51,8 +51,9 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val line: Int? get() = psiElement?.lineNumber
 
     /** Returns true if this is a single literal token. */
-    fun getAsStringToken(followReferences: Boolean = false): JccLiteralRegexUnit? =
-            regularExpression?.asSingleLiteral(followReferences)
+    fun getAsStringToken(): JccLiteralRegexUnit? =
+            // this relies on the fact that the reference doesn't use the lexical grammar
+            regularExpression?.asSingleLiteral(followReferences = true)
 
     val psiElement: JccPsiElement? get () = psiPointer.element
 
@@ -69,14 +70,14 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * Returns true if this token is the same literal unit as this one,
      * modulo [isIgnoreCase].
      */
-    fun matchesLiteral(unit: JccLiteralRegexUnit, followReferences: Boolean = false): Boolean = matchesLiteral(unit.match, followReferences)
+    fun matchesLiteral(unit: JccLiteralRegexUnit): Boolean = matchesLiteral(unit.match)
 
     /**
      * Returns true if this token is the same literal unit as this one,
      * modulo [isIgnoreCase].
      */
-    fun matchesLiteral(literalMatch: String, followReferences: Boolean = false): Boolean =
-            getAsStringToken(followReferences)?.let {
+    fun matchesLiteral(literalMatch: String): Boolean =
+            getAsStringToken()?.let {
                 literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
             } == true
 
