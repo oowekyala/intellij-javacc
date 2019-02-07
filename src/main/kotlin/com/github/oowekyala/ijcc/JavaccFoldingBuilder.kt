@@ -75,7 +75,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
 
         private fun literalRegexForRef(regexRef: JccTokenReferenceRegexUnit): JccLiteralRegexUnit? =
-                regexRef.typedReference.resolveToken()?.asStringToken
+                regexRef.typedReference.resolveToken()?.getAsStringToken()
 
         private val newLines = CharArray(2)
 

@@ -17,13 +17,13 @@ class TokenInliningIntention
 ) {
 
     override fun isApplicableTo(element: JccTokenReferenceRegexUnit): Boolean =
-            element.typedReference.resolveToken()?.asStringToken != null
+            element.typedReference.resolveToken()?.getAsStringToken() != null
 
     override fun run(project: Project, editor: Editor, element: JccTokenReferenceRegexUnit): () -> Unit {
         val newLiteral: JccLiteralRegexUnit =
                 element.typedReference
                     .resolveToken()!!
-                    .asStringToken!!
+                    .getAsStringToken()!!
                     .text
                     .let { createRegexElement(project, it) }
 

@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
+import com.github.oowekyala.ijcc.lang.model.ExplicitToken
+import com.github.oowekyala.ijcc.lang.model.SyntheticToken
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
@@ -27,7 +29,33 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
 
     fun resolveToken(): Token? {
         val searchedName = element.name ?: return null
-        return element.containingFile.lexicalGrammar.allTokens.firstOrNull { it.name == searchedName }
+
+        // This can't use the lexical grammar directly,
+        // because the lexical grammar uses references of this type
+        // to resolve string tokens
+
+        return element.containingFile
+            .grammarFileRoot.allProductions()
+            .flatMap { it.tokensUnfiltered() }
+            .firstOrNull { it.name == searchedName }
+    }
+
+    private fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
+            this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+
+    private fun JccProduction.tokensUnfiltered(): Sequence<Token> {
+        return when (this) {
+            is JccRegexProduction -> regexSpecList.asSequence().map(::ExplicitToken)
+
+            is JccBnfProduction   ->
+                expansion
+                    ?.descendantSequence(includeSelf = true)
+                    ?.filterIsInstance<JccRegexExpansionUnit>()
+                    .orEmpty()
+                    .map(::SyntheticToken)
+
+            else                  -> emptySequence()
+        }
     }
 
     override fun getVariants(): Array<Any> =

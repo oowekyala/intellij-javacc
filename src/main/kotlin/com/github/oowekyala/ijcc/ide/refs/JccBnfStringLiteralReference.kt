@@ -51,7 +51,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         .tokens
         .filter { !it.isPrivate }
         .mapNotNull { token ->
-            val asString = token.asStringToken ?: return@mapNotNull null
+            val asString = token.getAsStringToken() ?: return@mapNotNull null
 
             LookupElementBuilder
                 .create(asString.text)

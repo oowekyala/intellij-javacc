@@ -51,8 +51,8 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val line: Int? get() = psiElement?.lineNumber
 
     /** Returns true if this is a single literal token. */
-    val asStringToken: JccLiteralRegexUnit?
-        get() = regularExpression?.asSingleLiteral(followReferences = false)
+    fun getAsStringToken(followReferences: Boolean = false): JccLiteralRegexUnit? =
+            regularExpression?.asSingleLiteral(followReferences)
 
     val psiElement: JccPsiElement? get () = psiPointer.element
 
@@ -69,17 +69,14 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * Returns true if this token is the same literal unit as this one,
      * modulo [isIgnoreCase].
      */
-    fun matchesLiteral(unit: JccLiteralRegexUnit): Boolean =
-            asStringToken?.let {
-                unit.match.equals(it.match, ignoreCase = isIgnoreCase)
-            } == true
+    fun matchesLiteral(unit: JccLiteralRegexUnit, followReferences: Boolean = false): Boolean = matchesLiteral(unit.match, followReferences)
 
     /**
      * Returns true if this token is the same literal unit as this one,
      * modulo [isIgnoreCase].
      */
-    fun matchesLiteral(literalMatch: String): Boolean =
-            asStringToken?.let {
+    fun matchesLiteral(literalMatch: String, followReferences: Boolean = false): Boolean =
+            getAsStringToken(followReferences)?.let {
                 literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
             } == true
 
@@ -94,10 +91,12 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
 
             if (t1.name != null && t2.name != null && t2.name != t1.name) return false
 
-            val t1Str = t1.asStringToken
-            val t2Str = t2.asStringToken
+            val t1Str = t1.getAsStringToken()
+            val t2Str = t2.getAsStringToken()
 
-            return t1Str != null && t2Str != null && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str))
+            return t1Str != null
+                    && t2Str != null
+                    && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str))
         }
 
         /**

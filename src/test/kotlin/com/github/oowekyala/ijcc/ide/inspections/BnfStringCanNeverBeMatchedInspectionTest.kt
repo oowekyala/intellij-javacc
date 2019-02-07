@@ -9,8 +9,8 @@ import com.github.oowekyala.ijcc.ide.inspections.BnfStringCanNeverBeMatchedInspe
 class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfStringCanNeverBeMatchedInspection()) {
 
 
-    private fun warning(content: String, missedMatchName:String?, realMatchName: String?) =
-            warningAnnot(content, problemDescription(content, missedMatchName, realMatchName))
+    private fun String.warning(missedMatchName: String?, realMatchName: String?) =
+            warningAnnot(this, problemDescription(this, missedMatchName, realMatchName))
 
     fun `test neg`() = checkByText(
         """
@@ -43,7 +43,7 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
            void Foo():
            {}
            {
-               ${warning("\"foo\"", "FOO", "BAR")}
+               ${"\"foo\"".warning("FOO", "BAR")}
            }
         """
     )
@@ -77,7 +77,7 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
            void Foo():
            {}
            {
-               ${warning("\"foo\"", null, "NCNAME")}
+               ${"\"foo\"".warning(null, "NCNAME")}
            }
         """
     )
@@ -111,7 +111,7 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
            void Foo():
            {}
            {
-               ${warning("\"foo\"", null, "NCNAME")}
+               ${"\"foo\"".warning(null, "NCNAME")}
            }
         """
     )
@@ -133,5 +133,21 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
         """
     )
 
+    fun `test reference count as string tokens pos`() = checkByText(
+        """
+            $DummyHeader
+
+             TOKEN: {
+                <foo:<boo>>
+             }
+
+             void Foo():
+             {}
+             {
+                 <boo : ${"\"foo\"".warning("boo", "foo")}>
+                 <foo> "foo"
+             }
+        """
+    )
 
 }

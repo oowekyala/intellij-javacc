@@ -27,7 +27,7 @@ class DuplicateImplicitStringTokenDefinitionInspection : JccInspectionBase(Displ
         file.lexicalGrammar
             .allTokens
             .filterIsInstance<SyntheticToken>()
-            .filter { it.asStringToken != null }
+            .filter { it.getAsStringToken() != null }
             .forEach {
 
             }
