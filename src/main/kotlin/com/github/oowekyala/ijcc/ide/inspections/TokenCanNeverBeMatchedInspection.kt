@@ -23,14 +23,15 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         because another token takes precedence. For example, if the
         following two specs are in the same lexical state:
         <code>
-          &lt;BRACKETS: "[" | "]" >
-          &lt;LBRACKET: "[" >
+          &lt; "[" | "]" > // BRACKETS
+          &lt; "[" >       // LBRACKET
         </code>
         Then LBRACKET can never be matched because BRACKETS <b>matches the
-        same input and it's placed above it</b>.If the two are reversed:
+        same input and it's placed above it</b>. Note that that only happens
+        for unnamed tokens. If the two are reversed:
         <code>
-            &lt;LBRACKET: "[" >
-            &lt;BRACKETS: "[" | "]" >
+            &lt; "[" >        // LBRACKET
+            &lt; "[" | "]" >  // BRACKETS
         </code>
         Then BRACKETS can never match the input "[", but will match "]".
     """.trimIndent()
@@ -40,7 +41,7 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
             object : JccVisitor() {
 
                 override fun visitRegexSpec(spec: JccRegexSpec) {
-                    if (spec.isPrivate) return
+                    if (spec.isPrivate || spec.name != null) return
                     val expansion = spec.getRootRegexElement(followReferences = false)
                     if (expansion != null) {
                         when (expansion) {
@@ -77,7 +78,7 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
 
             val matchedBy: List<JccRegexSpec> =
-                    spec.containingFile.lexicalGrammar
+                    spec.containingFile.lexicalGrammar // TODO optimise
                         .lexicalStates
                         .asSequence()
                         .filter { consideredStates.isEmpty() || consideredStates.contains(it.name) }

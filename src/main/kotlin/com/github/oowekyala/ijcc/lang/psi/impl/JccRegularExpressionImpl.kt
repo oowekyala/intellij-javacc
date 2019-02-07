@@ -22,6 +22,8 @@ abstract class JccRegularExpressionImpl(node: ASTNode) : JccPsiElementImpl(node)
 
 
     override val pattern: Regex? by lazy { toPattern(prefixMatch = false) }
-    override val prefixPattern: Regex? by lazy { toPattern(prefixMatch = true) }
+    override val prefixPattern: Regex? by lazy {
+        toPattern(prefixMatch = true)
+    }
 
 }

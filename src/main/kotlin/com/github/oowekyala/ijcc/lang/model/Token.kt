@@ -42,6 +42,7 @@ sealed class Token {
     abstract val regexKind: RegexKind
     abstract val isPrivate: Boolean
     abstract val isIgnoreCase: Boolean
+    abstract val psiPointer: SmartPsiElementPointer<out JccPsiElement>
 
     val prefixPattern: Regex? by lazy { regularExpression?.prefixPattern }
 
@@ -55,11 +56,8 @@ sealed class Token {
     val asStringToken: JccLiteralRegexUnit?
         get() = regularExpression?.asSingleLiteral(followReferences = false)
 
-    val psiElement: PsiElement?
-        get () = when (this) {
-            is ExplicitToken  -> spec
-            is SyntheticToken -> declUnit
-        }
+    val psiElement: PsiElement? get () = psiPointer.element
+
 
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
@@ -124,13 +122,13 @@ sealed class Token {
 /**
  * Declared explicitly by the user.
  */
-data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexSpec>) : Token() {
+data class ExplicitToken(override val psiPointer: SmartPsiElementPointer<JccRegexSpec>) : Token() {
 
 
     constructor(unit: JccRegexSpec) : this(SmartPointerManager.createPointer(unit))
 
     val spec: JccRegexSpec?
-        get() = specPointer.element
+        get() = psiPointer.element
 
     override val regularExpression: JccRegularExpression? get() = spec?.regularExpression
 
@@ -150,7 +148,7 @@ data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexSpec>) 
  *
  * @property declUnit The highest (by doc offset) regex that implicitly declares this synthesized token
  */
-data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexExpansionUnit>) : Token() {
+data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccRegexExpansionUnit>) : Token() {
 
 
     constructor(unit: JccRegexExpansionUnit) : this(SmartPointerManager.createPointer(unit))
@@ -164,6 +162,6 @@ data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexEx
 
     override val name: String? get() = declUnit?.name
     override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
-    val declUnit: JccRegexExpansionUnit? get() = declUnitPointer.element!!
+    val declUnit: JccRegexExpansionUnit? get() = psiPointer.element!!
 
 }

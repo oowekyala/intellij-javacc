@@ -101,7 +101,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     }
 
     override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-        o.unit.acceptChildren(this)
+        o.unit.accept(this)
     }
 
     override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {

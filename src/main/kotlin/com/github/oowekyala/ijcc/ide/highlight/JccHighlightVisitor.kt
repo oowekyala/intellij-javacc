@@ -425,7 +425,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 ?.runIt { token ->
                     val message = "Duplicate definition of string token ${regex.text} (" + when {
                         !token.isExplicit -> "implicitly defined" + token.line?.let { " at line $it" }.orEmpty() + ""
-                        else              -> token.name?.let { "see <$it>" } ?: "unnamed"
+                        else              -> token.name?.let { "<$it>" } ?: "unnamed"
                     } + ")"
                     myHolder += errorInfo(spec, message)
                 }

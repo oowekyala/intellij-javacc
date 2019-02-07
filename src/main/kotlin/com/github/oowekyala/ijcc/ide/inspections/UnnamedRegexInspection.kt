@@ -17,8 +17,9 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
     @Language("HTML")
     override fun getStaticDescription(): String = """
         Reports unnamed tokens and regex specs. Naming tokens <b>improves
-        error messages</b>. Additionally, JavaCC ignores regex specs that
-        just reference another token.
+        error messages</b>, and unnamed tokens may cause JavaCC warnings
+        and unexpected behaviour. Additionally, JavaCC ignores regex specs
+        that just reference another token.
     """.trimIndent()
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : JccVisitor() {
@@ -50,7 +51,6 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
     companion object {
         const val DisplayName = "Unnamed regular expression"
         const val GenericProblemDesc = "Unnamed token"
-        const val FreeStandingReferenceProblemDesc =
-                "JavaCC ignores free-standing regular expression references unless they have a different name"
+        const val FreeStandingReferenceProblemDesc = "JavaCC ignores free-standing regular expression references unless they have a different name"
     }
 }

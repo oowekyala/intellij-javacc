@@ -46,17 +46,13 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
     fun matchLiteral(toMatch: String,
                      exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-
-            tokens.asSequence()
-                .filter { consideredRegexKinds.contains(it.regexKind) }
+            if (exact) filterWith(consideredRegexKinds).first { it.matchesLiteral(toMatch) }
+            else
+                filterWith(consideredRegexKinds)
                 .mapNotNull { token ->
-                    if (exact) {
-                        if (token.matchesLiteral(toMatch)) Pair(token, toMatch) else null
-                    } else {
-                        val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
+                    val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                        if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
-                    }
+                    if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
                 }
                 .maxWith(matchComparator)
                 ?.let { it.first }
@@ -70,7 +66,6 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                      exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
             matchLiteral(literal.match, exact, consideredRegexKinds)
-
 
 
     override fun equals(other: Any?): Boolean {
@@ -88,8 +83,11 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
         return name.hashCode()
     }
 
+    private fun filterWith(consideredRegexKinds: Set<RegexKind>): Sequence<Token> =
+            tokens.asSequence().filter { consideredRegexKinds.contains(it.regexKind) }
 
     companion object {
+
 
         private val defaultConsideredRegex = EnumSet.of(RegexKind.TOKEN)
 
@@ -111,7 +109,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                if (mySpecs.none { Token.areEquivalent(it, token) } ) {
+                if (mySpecs.none { Token.areEquivalent(it, token) }) {
                     // don't add duplicate synthetic tokens in the same state
                     mySpecs.add(token)
                 }
