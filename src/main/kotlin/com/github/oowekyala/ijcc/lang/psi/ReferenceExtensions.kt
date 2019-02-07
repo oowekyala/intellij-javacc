@@ -41,7 +41,7 @@ val JccRegexExpansionUnit.referencedToken: Token?
         val regex = regularExpression
 
         return when (regex) {
-            is JccRefRegularExpression -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
+            is JccRefRegularExpression -> regex.typedReference.resolveToken()
             else                       -> when (val unit = regex.asSingleLiteral(followReferences = false)) {
                 null -> SyntheticToken(this) // everything else is synthesized
                 else -> unit.typedReference.resolveToken(exact = true)

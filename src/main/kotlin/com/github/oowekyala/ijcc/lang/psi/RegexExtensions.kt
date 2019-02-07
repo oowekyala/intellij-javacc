@@ -114,7 +114,7 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
-        else ref.regularExpression.pattern?.toString().let { builder.append(it) }
+        else ref.regularExpression?.pattern?.toString().let { builder.append(it) }
     }
 
     override fun visitRefRegularExpression(o: JccRefRegularExpression) {
@@ -273,8 +273,14 @@ fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false):
         else                                                          -> throw IllegalStateException(this.toString())
     }?.unwrapParens()?.let {
         when (it) {
-            is JccTokenReferenceRegexUnit -> if (followReferences) it.typedReference.resolveToken()?.getRootRegexElement() else it
-            else                                                             -> it
+            is JccTokenReferenceRegexUnit ->
+                if (followReferences)
+                    it.typedReference
+                        .resolveToken()
+                        ?.regularExpression
+                        ?.getRootRegexElement(followReferences)
+                else it
+            else                          -> it
         }
     }
 }

@@ -70,7 +70,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
 
         for (refUnit in myRefs) {
 
-            val reffed = refUnit.typedReference.resolveToken()?.let { ExplicitToken(it) } ?: continue
+            val reffed = refUnit.typedReference.resolveToken() ?: continue
 
             if (visitStatuses[reffed] == VisitStatus.BEING_VISITED) {
                 val myIdx = loopPath.indexOf(reffed)

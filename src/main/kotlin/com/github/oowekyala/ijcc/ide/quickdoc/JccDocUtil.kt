@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
@@ -49,7 +50,7 @@ object JccDocUtil {
     }
 
     /** Gets a hyperlink suitable for use with [DocumentationManager.createHyperlink]. */
-    fun getLinkRefTo(spec: JccRegexSpec): String = "$TerminalRef/${spec.name}"
+    fun getLinkRefTo(spec: Token): String = "$TerminalRef/${spec.name}"
 
     /** Gets a hyperlink suitable for use with [DocumentationManager.createHyperlink]. */
     fun getLinkRefTo(production: JccNonTerminalProduction): String = "$NonterminalRef/${production.name}"

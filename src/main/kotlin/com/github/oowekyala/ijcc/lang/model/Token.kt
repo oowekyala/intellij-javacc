@@ -56,7 +56,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val asStringToken: JccLiteralRegexUnit?
         get() = regularExpression?.asSingleLiteral(followReferences = false)
 
-    val psiElement: PsiElement? get () = psiPointer.element
+    val psiElement: JccPsiElement? get () = psiPointer.element
 
 
     /**

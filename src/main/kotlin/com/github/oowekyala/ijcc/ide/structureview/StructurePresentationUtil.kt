@@ -19,7 +19,7 @@ import javax.swing.Icon
 
 
 fun JccPsiElement.getPresentationForStructure(): ItemPresentation =
-        PresentationData(getPresentableText(), getLocationString(), getIcon(), null)
+        PresentationData(getPresentableText(), getLocationString(), getPresentationIcon(), null)
 
 /**
  * For the structure view.
@@ -104,7 +104,7 @@ fun JccPsiElement.getLocationString(): String? {
     return null
 }
 
-fun JccPsiElement.getIcon(): Icon? = when (this) {
+fun JccPsiElement.getPresentationIcon(): Icon? = when (this) {
     is JccOptionSection                                      -> JavaccIcons.JAVACC_OPTION
     is JccOptionBinding                                      -> JavaccIcons.JAVACC_OPTION
 

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -82,10 +83,10 @@ object JccTerminalDocMaker {
         }
 
         override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
-            val reffed: JccRegexSpec? = o.typedReference.resolveToken()
+            val reffed = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.asSingleLiteral()?.text ?: angles(o.name!!)
+            val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
 
             DocumentationManager.createHyperlink(
                 sb,

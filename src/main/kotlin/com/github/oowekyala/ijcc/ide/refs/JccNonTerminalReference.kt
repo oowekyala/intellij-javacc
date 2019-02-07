@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.github.oowekyala.ijcc.ide.structureview.getIcon
+import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
@@ -36,7 +36,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
 
     override fun getVariants(): Array<Any?> =
             element.containingFile.nonTerminalProductions.map {
-                LookupElementBuilder.create(it, it.name).withIcon(it.getIcon())
+                LookupElementBuilder.create(it, it.name).withIcon(it.getPresentationIcon())
             }.toList().toTypedArray()
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent

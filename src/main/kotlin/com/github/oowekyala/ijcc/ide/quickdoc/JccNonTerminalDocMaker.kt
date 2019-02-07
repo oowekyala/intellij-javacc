@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.ide.inspections.docIsNecessary
 import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.foreachAndBetween
@@ -116,7 +117,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
-            val reffed: JccRegexSpec? = o.typedReference.resolveToken(exact = true).let { it as? ExplicitToken }?.spec
+            val reffed: Token? = o.typedReference.resolveToken(exact = true)
 
             if (reffed != null) {
                 DocumentationManager.createHyperlink(
