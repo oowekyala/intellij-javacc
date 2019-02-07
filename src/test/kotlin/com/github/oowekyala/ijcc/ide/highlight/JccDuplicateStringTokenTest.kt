@@ -177,6 +177,26 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
     )
 
+    fun `test nearly label redefinition NEG`() = checkByText(
+        """
+            $DummyHeader
+            TOKEN: {
+               <boo:"str">
+             | <foo:<boo>>
+            }
+        """
+    )
+
+    fun `test nearly label redefinition NEG 2`() = checkByText(
+        """
+            $DummyHeader
+            TOKEN: {
+               <boo:"str">
+             | <foo:<boo>>
+            }
+        """
+    )
+
 
     private fun String.warn(regexText: String = "\"foo\"",
                             stateName: String = LexicalState.DefaultStateName,

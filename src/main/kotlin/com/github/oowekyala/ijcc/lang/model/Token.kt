@@ -2,8 +2,6 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.JustDefaultState
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.deemsEqual
-import com.intellij.psi.PsiElement
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 
@@ -72,7 +70,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * modulo [isIgnoreCase].
      */
     fun matchesLiteral(unit: JccLiteralRegexUnit): Boolean =
-            regularExpression?.asSingleLiteral(followReferences = false)?.let {
+            asStringToken?.let {
                 unit.match.equals(it.match, ignoreCase = isIgnoreCase)
             } == true
 
@@ -81,39 +79,32 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * modulo [isIgnoreCase].
      */
     fun matchesLiteral(literalMatch: String): Boolean =
-            regularExpression?.asSingleLiteral(followReferences = false)?.let {
+            asStringToken?.let {
                 literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
             } == true
 
 
     companion object {
-
-        fun areEquivalent(t1: Token, t2: Token) = stringTokenComparator.deemsEqual(t1, t2)
-
         /**
-         * Comparator that considers two string tokens with the same match equal (compare to 0).
-         * Otherwise just compares document offset. This is used to avoid adding duplicate tokens
-         * to the [LexicalState], not to report errors.
+         * Returns whether the two tokens should be reduced. Tokens are different
+         * if their name is different (and defined) or they are two string tokens
+         * that refer to the same string.
          */
-        private val stringTokenComparator: Comparator<Token> = Comparator { t1, t2 ->
+        fun areEquivalent(t1: Token, t2: Token): Boolean {
+
+            if (t1.name != null && t2.name != null && t2.name != t1.name) return false
 
             val t1Str = t1.asStringToken
             val t2Str = t2.asStringToken
 
-            return@Comparator when {
-                t1Str != null && t2Str != null && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str)) -> 0
-                else                                                                                     -> offsetComparator.compare(
-                    t1,
-                    t2
-                )
-            }
+            return t1Str != null && t2Str != null && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str))
         }
 
         /**
          * Compares document offset of two tokens. Tokens defined higher in the file are considered greater.
          */
         val offsetComparator: Comparator<Token> =
-                Comparator.comparingInt { -(it.regularExpression?.textOffset ?: 0) }
+                Comparator.comparingInt { -(it.textOffset ?: 0) }
 
     }
 
@@ -163,7 +154,7 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
     override val lexicalStateTransition: String? = null
     override val isIgnoreCase: Boolean = false
 
-    override val name: String? get() = declUnit?.name
+    override val name: String? get() = regularExpression?.name
     override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
 
 }

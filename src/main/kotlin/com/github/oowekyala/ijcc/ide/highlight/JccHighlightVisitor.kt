@@ -297,7 +297,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
                 when {
-                    reffed == null                             -> wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
+                    reffed == null                             ->
+                        wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
                     reffed.isPrivate && !o.canReferencePrivate -> wrongReferenceInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"

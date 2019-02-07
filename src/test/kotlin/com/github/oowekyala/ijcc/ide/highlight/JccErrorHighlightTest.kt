@@ -110,6 +110,129 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """
     )
 
+    fun `test undefined token backward reference token to token NEG`() = checkByText(
+        """
+           $DummyHeader
+            TOKEN: {
+               <boo:"str">
+             | <foo:<boo>>
+            }
+
+        """
+    )
+
+    fun `test undefined token forward reference token to token NEG`() = checkByText(
+        """
+           $DummyHeader
+            TOKEN: {
+               <foo:<boo>>
+             | <boo:"str">
+            }
+
+        """
+    )
+
+
+
+    fun `test undefined token backward reference token to bnf NEG`() = checkByText(
+        """
+           $DummyHeader
+
+
+            void Foo():
+            {}
+            {
+                <boo : "foo">
+            }
+
+            TOKEN: {
+               <foo: <boo>>
+            }
+        """
+    )
+
+
+    fun `test undefined token forward reference token to bnf NEG`() = checkByText(
+        """
+           $DummyHeader
+            TOKEN: {
+               <foo:<boo>>
+            }
+
+            void Foo():
+            {}
+            {
+                <boo : "foo">
+            }
+
+        """
+    )
+
+    fun `test undefined token backward reference bnf to bnf NEG`() = checkByText(
+        """
+           $DummyHeader
+
+
+            void Foo():
+            {}
+            {
+                <boo : "foo">
+                <foo: <boo>>
+            }
+
+        """
+    )
+
+    fun `test undefined token forward reference bnf to bnf NEG`() = checkByText(
+        """
+           $DummyHeader
+
+
+            void Foo():
+            {}
+            {
+                <foo: <boo>>
+                <boo : "foo">
+            }
+
+        """
+    )
+
+    fun `test undefined token backward reference bnf to token NEG`() = checkByText(
+        """
+           $DummyHeader
+
+            void Foo():
+            {}
+            {
+                <boo : "foo">
+            }
+
+
+            TOKEN: {
+               <foo:<boo>>
+            }
+
+        """
+    )
+
+    fun `test undefined token forward reference bnf to token NEG`() = checkByText(
+        """
+           $DummyHeader
+            TOKEN: {
+               <foo:<boo>>
+            }
+
+            void Foo():
+            {}
+            {
+                <boo : "foo">
+            }
+
+        """
+    )
+
+
     private fun String.stringTokenHasWrongKind(literalText: String = this, actualKind: RegexKind) =
             errorAnnot(
                 this,
