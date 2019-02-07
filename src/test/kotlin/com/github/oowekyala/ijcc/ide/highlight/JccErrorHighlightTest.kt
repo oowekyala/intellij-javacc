@@ -166,4 +166,99 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """.inGrammarCtx()
     )
 
+    fun `test duplicate in other state`() = checkByText(
+        """
+            void Foo() :{}{
+              "Foo"
+            }
+
+            <A> TOKEN : {
+                 < Foo: "Foo" >
+            }
+        """.inGrammarCtx()
+    )
+
+    fun `test duplicate string synthetic precedence in explicit default POS`() = checkByText(
+        """
+            void Foo() :{}{
+              "Foo"
+            }
+
+            <DEFAULT> TOKEN : {
+                 <error descr="Duplicate definition of string token \"Foo\" (implicitly defined at line 12)">< Foo: "Foo" ></error>
+            }
+        """.inGrammarCtx()
+    )
+
+
+    fun `test duplicate with multiple state refs`() = checkByText(
+        """
+
+            <*> TOKEN: {
+               "abc"
+            }
+
+            <A> TOKEN: {
+              <error descr="Duplicate definition of string token \"abc\" (unnamed) in state A"><Foo: "abc"></error>
+            }
+
+            void Foo() :{}{
+              "abc" // DEFAULT
+            }
+
+            TOKEN: {
+              <error descr="Duplicate definition of string token \"abc\" (unnamed)">"abc"</error>
+            }
+
+        """.inGrammarCtx()
+    )
+
+
+    fun `test duplicate with multiple state refs and inline regex`() = checkByText(
+        """
+
+            <A> TOKEN: {
+              <Foo: "abc">
+            }
+
+            void Foo() :{}{
+              <"abc">
+            }
+
+            TOKEN: {
+              <error descr="Duplicate definition of string token \"abc\" (implicitly defined at line 17)">"abc"</error>
+            }
+
+        """.inGrammarCtx()
+    )
+
+    fun `test duplicate with different label NEG`() = checkByText(
+        """
+
+            TOKEN: {
+              <Foo: "abc">
+            }
+
+            void Foo() :{}{
+              <boo:"abc">
+            }
+
+        """.inGrammarCtx()
+    )
+
+    fun `test duplicate with different label POS`() = checkByText(
+        """
+            void Foo() :{}{
+              <boo:"abc">
+            }
+
+            TOKEN: {
+              <error descr="Duplicate definition of string token \"abc\" (implicitly defined at line 12)"><Foo: "abc"></error>
+            }
+
+
+        """.inGrammarCtx()
+    )
+
+
 }

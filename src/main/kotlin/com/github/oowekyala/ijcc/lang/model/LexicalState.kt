@@ -45,10 +45,12 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      */
     fun matchLiteral(toMatch: String,
                      exact: Boolean,
+                     stopAtOffset: Int = Int.MAX_VALUE,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            if (exact) filterWith(consideredRegexKinds).firstOrNull { it.matchesLiteral(toMatch) }
+            if (exact)
+                filterWith(consideredRegexKinds, stopAtOffset).firstOrNull { it.matchesLiteral(toMatch) }
             else
-                filterWith(consideredRegexKinds)
+                filterWith(consideredRegexKinds, stopAtOffset)
                 .mapNotNull { token ->
                     val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
@@ -64,8 +66,9 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      */
     fun matchLiteral(literal: JccLiteralRegexUnit,
                      exact: Boolean,
+                     stopAtOffset: Int = Int.MAX_VALUE,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            matchLiteral(literal.match, exact, consideredRegexKinds)
+            matchLiteral(literal.match, exact, stopAtOffset, consideredRegexKinds)
 
 
     override fun equals(other: Any?): Boolean {
@@ -83,8 +86,10 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
         return name.hashCode()
     }
 
-    private fun filterWith(consideredRegexKinds: Set<RegexKind>): Sequence<Token> =
-            tokens.asSequence().filter { consideredRegexKinds.contains(it.regexKind) }
+    private fun filterWith(consideredRegexKinds: Set<RegexKind>, maxOffset: Int): Sequence<Token> =
+            tokens.asSequence()
+                .filter { consideredRegexKinds.contains(it.regexKind) }
+                .takeWhile { (it.textOffset ?: Int.MAX_VALUE) <= maxOffset }
 
     companion object {
 
@@ -121,5 +126,4 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
             fun build() = LexicalState(name, mySpecs)
         }
     }
-
 }

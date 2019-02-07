@@ -9,6 +9,7 @@ import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
@@ -40,6 +41,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private val myHolder: HighlightInfoHolder // never null during analysis
         get() = myHolderImpl!!
 
+
     private var myFileImpl: SmartPsiElementPointer<JccFile>? = null
     private val myFile: JccFile // never null during analysis
         get() = myFileImpl!!.element!!
@@ -61,6 +63,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                          updateWholeFile: Boolean,
                          holder: HighlightInfoHolder,
                          highlight: Runnable): Boolean {
+        if (file !is JccFile) return false
+
         try {
             prepare(holder, file)
             highlight.run()
@@ -78,6 +82,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private fun prepare(holder: HighlightInfoHolder, file: PsiFile) {
         myHolderImpl = holder
         myFileImpl = SmartPointerManager.createPointer(file as JccFile)
+        (file as JccFileImpl).rebuildLexGrammar()
     }
 
     override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
@@ -416,20 +421,17 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private fun checkValidity(spec: JccRegexSpec) {
 
         spec.asSingleLiteral()?.runIt { regex ->
-            myFile.lexicalGrammar
 
-                .allTokens
-                // only consider those above
-                .filter { (it.textOffset ?: Int.MAX_VALUE ) < spec.textOffset }
-                .find { it.matchesLiteral(regex) }
-                ?.runIt { token ->
-                    val message = "Duplicate definition of string token ${regex.text} (" + when {
-                        !token.isExplicit -> "implicitly defined" + token.line?.let { " at line $it" }.orEmpty() + ""
-                        else              -> token.name?.let {
-                            "see <$it>" + (", which is case-insensitive".takeIf { token.isIgnoreCase } ?: "")
-                        } ?: "unnamed"
-                    } + ")"
-                    myHolder += errorInfo(spec, message)
+            val myStates = spec.lexicalStatesNameOrEmptyForAll.toSet()
+
+            myFile.lexicalGrammar
+                .getLexicalStates(myStates)
+                .asSequence()
+                .mapNotNull { st ->
+                    st.matchLiteral(regex, exact = true)?.takeUnless { it == regex.enclosingToken }?.let { Pair(st, it) }
+                }
+                .forEach { (state, token) ->
+                    myHolder += errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
                 }
         }
 

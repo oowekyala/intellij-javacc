@@ -2,10 +2,10 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
-import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.ide.refs.NonTerminalScopeProcessor
 import com.github.oowekyala.ijcc.ide.refs.TerminalScopeProcessor
+import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
@@ -66,9 +66,15 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         )
     } // todo is lazy safe?
 
-    override val lexicalGrammar: LexicalGrammar by lazy {
-        LexicalGrammar(grammarFileRoot)
+    internal fun rebuildLexGrammar(): LexicalGrammar {
+        myLexGrammarImpl = LexicalGrammar(grammarFileRoot)
+        return myLexGrammarImpl!!
     }
+
+    private var myLexGrammarImpl: LexicalGrammar? = null
+
+    override val lexicalGrammar: LexicalGrammar
+        get() = myLexGrammarImpl ?: rebuildLexGrammar()
 
     override fun getContainingFile(): JccFile = this
 

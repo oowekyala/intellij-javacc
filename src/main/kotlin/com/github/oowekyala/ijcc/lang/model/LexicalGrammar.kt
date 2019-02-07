@@ -30,6 +30,12 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
+    fun getLexicalStates(namesOrEmptyForAll: Set<String>): Collection<LexicalState> =
+            when {
+                namesOrEmptyForAll.isEmpty() -> lexicalStates
+                else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
+            }
+
     val defaultState: LexicalState
         get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
 
@@ -70,13 +76,17 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
                     is JccBnfProduction   -> {
 
-                        val currentSpecs = builders.values.flatMap { it.currentSpecs }
+                        // all of those are put in the default state
+
 
                         val regexExpansions =
                                 production.expansion
                                     ?.descendantSequence(includeSelf = true)
                                     ?.filterIsInstance<JccRegexExpansionUnit>()
                                     ?: emptySequence()
+
+                        val currentSpecs = defaultBuilder.currentSpecs
+
 
                         for (regexExpansion in regexExpansions) {
 
