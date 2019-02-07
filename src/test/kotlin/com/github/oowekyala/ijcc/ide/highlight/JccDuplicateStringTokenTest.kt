@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
@@ -15,11 +16,11 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
             $DummyHeader
             void Foo() :{}{
-              "Foo"
+              "foo"
             }
 
             <*> TOKEN : {
-                ${"< Foo: \"Foo\" >".warn(regexText = "\"Foo\"", tokenLine = 13)}
+                ${"< Foo: \"foo\" >".warn(tokenLine = 13)}
             }
         """
     )
@@ -41,11 +42,11 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
             $DummyHeader
 
             void Foo() :{}{
-              "Foo"
+              "foo"
             }
 
             <DEFAULT> TOKEN : {
-                   ${"<Foo: \"Foo\" >".warn(regexText = "\"Foo\"", tokenLine = 14)}
+                   ${"<Foo: \"foo\" >".warn(tokenLine = 14)}
             }
         """
     )
@@ -55,19 +56,19 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
 
             <*> TOKEN: {
-               "abc"
+               "foo"
             }
 
             <A> TOKEN: {
-             ${"<Foo: \"abc\" >".warn(regexText = "\"abc\"", stateName = "A", tokenName = null)}
+             ${"<Foo: \"foo\" >".warn( stateName = "A", tokenName = null)}
             }
 
             void Foo() :{}{
-              "abc" // DEFAULT
+              "foo" // DEFAULT
             }
 
             TOKEN: {
-              ${"\"abc\"".warn(tokenName = null)}
+              ${"\"foo\"".warn(tokenName = null)}
             }
 
         """.inGrammarCtx()
@@ -79,15 +80,15 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
             $DummyHeader
 
             <A> TOKEN: {
-              <FOO: "abc">
+              <FOO: "foo">
             }
 
             void Foo() :{}{
-              <"abc">
+              <"foo">
             }
 
             TOKEN: {
-              ${"\"abc\"".warn(tokenLine = 18)}
+              ${"\"foo\"".warn(tokenLine = 18)}
             }
         """
     )
@@ -96,11 +97,11 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
 
             TOKEN: {
-              <Foo: "abc">
+              <Foo: "foo">
             }
 
             void Foo() :{}{
-              <boo:"abc">
+              <boo:"foo">
             }
 
         """.inGrammarCtx()
@@ -115,7 +116,7 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
             }
 
             TOKEN: {
-               ${"<abc: \"foo\" >".warn(regexText = "\"foo\"", tokenLine = 14)}
+               ${"<abc: \"foo\" >".warn(tokenLine = 14)}
             }
         """
     )
@@ -155,13 +156,29 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
 
         TOKEN [IGNORE_CASE]: {
               <FOO: "FOO" >
-            | ${"<FO: \"foo\" >".warn(regexText = "\"foo\"", tokenIsIgnoreCase = true)}
+            | ${"<FO: \"foo\" >".warn(tokenIsIgnoreCase = true)}
         }
         """
     )
 
 
-    private fun String.warn(regexText: String = this,
+    fun `test duplicate of SKIP kind`() = checkByText(
+        """
+        $DummyHeader
+
+        void Foo() :{}{
+          <boo:"foo">
+        }
+
+
+        SKIP : {
+          ${"<Foo: \"foo\">".warn(tokenLine = 14)}
+        }
+        """
+    )
+
+
+    private fun String.warn(regexText: String = "\"foo\"",
                             stateName: String = LexicalState.DefaultStateName,
                             tokenLine: Int? = null,
                             tokenName: String? = "FOO",

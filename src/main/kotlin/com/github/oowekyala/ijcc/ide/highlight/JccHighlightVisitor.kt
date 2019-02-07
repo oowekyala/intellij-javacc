@@ -264,16 +264,20 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 val ref: Token = o.referencedToken!!
 
                 myHolder += when {
-                    ref.isPrivate    -> JccHighlightUtil.errorInfo(
+                    ref.isPrivate                    -> JccHighlightUtil.errorInfo(
                         literalUnit,
-                        "String token \"${literalUnit.match}\" has been defined as a private (#) regular expression"
+                        JccErrorMessages.stringLiteralIsPrivate(literalUnit.text)
                     )
-
-                    ref.isIgnoreCase -> JccHighlightUtil.errorInfo(
+                    ref.regexKind != RegexKind.TOKEN -> JccHighlightUtil.errorInfo(
+                        literalUnit,
+                        JccErrorMessages.stringLiteralIsNotToken(literalUnit.text, ref.regexKind)
+                    )
+                    ref.isIgnoreCase                 -> JccHighlightUtil.errorInfo(
                         literalUnit,
                         JccErrorMessages.stringLiteralMatchedbyIgnoreCaseCannotBeUsedInBnf(ref.name)
                     )
-                    else             -> {
+
+                    else                             -> {
                         // all is well
                         val message =
                                 if (ref.isExplicit) "Matched by " + (ref.name?.let { "<$it>" } ?: "a token")

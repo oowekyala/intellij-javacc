@@ -1,8 +1,10 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
+import com.github.oowekyala.ijcc.lang.psi.match
 import org.jetbrains.annotations.TestOnly
 
 /**
@@ -50,5 +52,10 @@ object JccErrorMessages {
             "String is matched by an IGNORE_CASE regular expression and should refer to the token by name " +
                     (supersedingName?.let { "(<$it>)" } ?: "(unnamed!)")
 
+    fun stringLiteralIsNotToken(regexText:String, actualRegexKind: RegexKind) =
+            "String token $regexText has been defined as a $actualRegexKind token"
+
+    fun stringLiteralIsPrivate(regexText: String)=
+            "String token $regexText has been defined as a private (#) regular expression"
 
 }

@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
+import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
 /**

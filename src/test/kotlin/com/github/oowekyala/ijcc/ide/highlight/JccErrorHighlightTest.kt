@@ -1,8 +1,11 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
 /**
+ * Miscellaneous highlight tests.
+ *
  * @author Clément Fournier
  * @since 1.0
  */
@@ -91,6 +94,27 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
             }
         """.inGrammarCtx()
     )
+
+
+    fun `test usage of SKIP kind`() = checkByText(
+        """
+        $DummyHeader
+
+        SKIP : {
+          <Foo: "foo">
+        }
+
+        void Foo() :{}{
+          <boo:${"\"foo\"".stringTokenHasWrongKind(actualKind = RegexKind.SKIP)}>
+        }
+        """
+    )
+
+    private fun String.stringTokenHasWrongKind(literalText: String = this, actualKind: RegexKind) =
+            errorAnnot(
+                this,
+                JccErrorMessages.stringLiteralIsNotToken(regexText = literalText, actualRegexKind = actualKind)
+            )
 
 
 }

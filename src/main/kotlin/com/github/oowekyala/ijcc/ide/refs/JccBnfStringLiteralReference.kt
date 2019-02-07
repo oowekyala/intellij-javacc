@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
@@ -9,6 +10,7 @@ import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
+import java.util.*
 
 /**
  * Reference from a literal regex written in BNF to its [Token]. Regexes in BNF are always in the
@@ -34,7 +36,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         val file = element.containingFile
         val grammar = file.lexicalGrammar
 
-        return grammar.defaultState.matchLiteral(element, exact)
+        return grammar.defaultState.matchLiteral(element, exact, consideredRegexKinds = EnumSet.allOf(RegexKind::class.java))
     }
 
     override fun resolve(): PsiElement? = resolveToken(exact = true)?.psiElement
