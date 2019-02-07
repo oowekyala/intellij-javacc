@@ -22,7 +22,7 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
     val nonTerminalProductions: Sequence<JccNonTerminalProduction>
 
     /** All terminal productions. */
-    val regexpProductions: Sequence<JccRegularExprProduction>
+    val regexProductions: Sequence<JccRegexProduction>
 
     /** The injectable file root. */
     val grammarFileRoot: JccGrammarFileRoot?
@@ -35,8 +35,8 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
      */
     val globalNamedTokens: Sequence<JccNamedRegularExpression>
 
-    /** Regexpr specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
-    val globalTokenSpecs: Sequence<JccRegexprSpec>
+    /** Regex specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
+    val globalTokenSpecs: Sequence<JccRegexSpec>
 
     /** Options section. */
     val options: JccOptionSection?

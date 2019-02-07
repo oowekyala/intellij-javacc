@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
-import com.github.oowekyala.ijcc.lang.psi.JccInlineRegularExpression
+import com.github.oowekyala.ijcc.lang.psi.JccContainerRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
@@ -22,8 +22,8 @@ class AddNameToRegexIntention :
 
     override fun run(project: Project, editor: Editor, element: JccRegularExpression): () -> Unit {
         val regexText = when (element) {
-            is JccInlineRegularExpression -> element.regexpElement?.text
-            else                          -> element.text
+            is JccContainerRegularExpression -> element.regexElement?.text
+            else                                                                -> element.text
         } ?: ""
 
 

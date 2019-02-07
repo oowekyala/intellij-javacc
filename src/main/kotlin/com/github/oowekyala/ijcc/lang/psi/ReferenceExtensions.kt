@@ -1,12 +1,12 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.model.ExplicitToken
-import com.github.oowekyala.ijcc.lang.model.SyntheticToken
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccStringTokenReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
+import com.github.oowekyala.ijcc.lang.model.ExplicitToken
+import com.github.oowekyala.ijcc.lang.model.SyntheticToken
 
 /**
  * @author Clément Fournier
@@ -14,17 +14,17 @@ import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
  */
 
 
-val JccLiteralRegexpUnit.typedReference: JccStringTokenReference
+val JccLiteralRegexUnit.typedReference: JccStringTokenReference
     get() = reference as JccStringTokenReference
 
 
 val JccLiteralRegularExpression.typedReference: JccStringTokenReference
     get() = unit.typedReference
 
-val JccTokenReferenceUnit.typedReference: JccTerminalReference
+val JccTokenReferenceRegexUnit.typedReference: JccTerminalReference
     get() = reference as JccTerminalReference
 
-val JccRegularExpressionReference.typedReference: JccTerminalReference
+val JccRefRegularExpression.typedReference: JccTerminalReference
     get() = unit.typedReference
 
 val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
@@ -36,15 +36,15 @@ val JccNonTerminalExpansionUnit.typedReference: JccNonTerminalReference
  * unit. Is null if the regex is a token reference (eg <foo>) whose token couldn't
  * be resolved.
  */
-val JccRegexpExpansionUnit.referencedToken: Token?
+val JccRegexExpansionUnit.referencedToken: Token?
     get() {
         val regex = regularExpression
 
         return when (regex) {
-            is JccRegularExpressionReference -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
-            is JccLiteralRegularExpression   -> regex.typedReference.resolveToken(exact = true)
+            is JccRefRegularExpression -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
+            is JccLiteralRegularExpression                                -> regex.typedReference.resolveToken(exact = true)
             // everything else is synthesized
-            else                             -> SyntheticToken(this)
+            else                                                          -> SyntheticToken(this)
         }
     }
 

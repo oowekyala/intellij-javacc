@@ -28,9 +28,9 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
             JccParserDeclaration::class.java,
             JccTokenManagerDecls::class.java,
 
-            JccRegularExprProduction::class.java,
-            JccRegexprSpec::class.java,
-            JccRegexpExpansionUnit::class.java,
+            JccRegexProduction::class.java,
+            JccRegexSpec::class.java,
+            JccRegexExpansionUnit::class.java,
 
             JccNonTerminalProduction::class.java
         )
@@ -39,12 +39,12 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean {
         val value = element.value
-        return value is JccRegularExprProduction || value is JccOptionSection || value is JccNonTerminalProduction
+        return value is JccRegexProduction || value is JccOptionSection || value is JccNonTerminalProduction
     }
 
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
         val value = element.value
-        return value is JccRegexprSpec || value is JccRegexpExpansionUnit
+        return value is JccRegexSpec || value is JccRegexExpansionUnit
                 // TODO these should not be leaves, ideally their declarations would be shown as well
                 || value is JccTokenManagerDecls || value is JccParserDeclaration
     }
@@ -86,10 +86,10 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
 
             override fun isVisible(treeElement: TreeElement): Boolean =
                     when (treeElement.let { it as JccStructureTreeElement }.element) {
-                        is JccRegexprSpec           -> false
-                        is JccRegularExprProduction -> false
-                        is JccRegexpExpansionUnit   -> false
-                        else                        -> true
+                        is JccRegexSpec                                          -> false
+                        is JccRegexProduction -> false
+                        is JccRegexExpansionUnit                                -> false
+                        else                                                     -> true
                     }
 
             override fun isReverted(): Boolean = true

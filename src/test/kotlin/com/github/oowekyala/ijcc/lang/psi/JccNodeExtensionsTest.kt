@@ -12,7 +12,7 @@ import io.kotlintest.shouldBe
 class JccNodeExtensionsTest : JccTestBase() {
 
 
-    fun `test JccRegexpSpec isPrivate`() {
+    fun `test JccRegexSpec isPrivate`() {
 
         val spec = createRegexSpec(project, RegexKind.TOKEN, "<#FOO: \"f\" >")
 

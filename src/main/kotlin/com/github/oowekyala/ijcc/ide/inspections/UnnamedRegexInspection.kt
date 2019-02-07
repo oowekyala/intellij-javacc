@@ -22,20 +22,20 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
     """.trimIndent()
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : JccVisitor() {
-        override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-            if (o.parent !is JccRegexprSpec && o.regexpElement !is JccTokenReferenceUnit && o.regexpElement !is JccLiteralRegexpUnit) {
+        override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
+            if (o.parent !is JccRegexSpec && o.regexElement !is JccTokenReferenceRegexUnit && o.regexElement !is JccLiteralRegexUnit) {
                 holder.registerProblem(o, GenericProblemDesc)
             }
         }
 
-        override fun visitRegexprSpec(o: JccRegexprSpec) {
+        override fun visitRegexSpec(o: JccRegexSpec) {
             if (o.regexKind == RegexKind.TOKEN) {
                 val regex = o.regularExpression
 
                 if (regex !is JccNamedRegularExpression) {
                     val desc = when (regex) {
-                        is JccRegularExpressionReference -> FreeStandingReferenceProblemDesc
-                        else                             -> GenericProblemDesc
+                        is JccRefRegularExpression -> FreeStandingReferenceProblemDesc
+                        else                                                          -> GenericProblemDesc
                     }
                     holder.registerProblem(
                         o,

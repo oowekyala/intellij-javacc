@@ -40,13 +40,13 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
 
         // specs used in other specs or regular expressions
-        val inExpr: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        val inExpr: THashSet<JccRegexSpec> = ContainerUtil.newTroveSet<JccRegexSpec>()
         // specs used in other
-        val reachable: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
-        val inSuppressed: THashSet<JccRegexprSpec> = ContainerUtil.newTroveSet<JccRegexprSpec>()
+        val reachable: THashSet<JccRegexSpec> = ContainerUtil.newTroveSet<JccRegexSpec>()
+        val inSuppressed: THashSet<JccRegexSpec> = ContainerUtil.newTroveSet<JccRegexSpec>()
 
         grammarTraverser(file)
-            .filterTypes { it == JccTypes.JCC_TOKEN_REFERENCE_UNIT }
+            .filterTypes { it == JccTypes.JCC_TOKEN_REFERENCE_REGEX_UNIT }
             .traverse()
             .map { resolveToken(it) }
             .filter(Condition.NOT_NULL)
@@ -67,13 +67,13 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
                 .expand(object : Cond<PsiElement>() {
                     override fun value(element: PsiElement?): Boolean =
                             when (element) {
-                                is JccRegexprSpec        ->
+                                is JccRegexSpec                                                  ->
                                     reachable.contains(element) || inSuppressed.contains(element)
-                                is JccTokenReferenceUnit -> {
+                                is JccTokenReferenceRegexUnit -> {
                                     reachable.addIfNotNull(element.typedReference.resolveToken())
                                     false
                                 }
-                                else                     -> true
+                                else                                                             -> true
                             }
                 }).traverse().size()
             prev = size
@@ -82,7 +82,7 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
 
 
-        for (spec: JccRegexprSpec in tokens.filter { it.isPrivate }.filter { o -> !inSuppressed.contains(o) }) {
+        for (spec: JccRegexSpec in tokens.filter { it.isPrivate }.filter { o -> !inSuppressed.contains(o) }) {
             when {
                 !inExpr.contains(spec)    -> "Unused private regex"
                 !reachable.contains(spec) -> "Unreachable private regex"
@@ -100,9 +100,9 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
         return holder.resultsArray
     }
 
-    private fun resolveToken(o: PsiElement?): JccRegexprSpec? = when (o) {
-        is JccTokenReferenceUnit -> o.typedReference.resolveToken()
-        else                     -> null
+    private fun resolveToken(o: PsiElement?): JccRegexSpec? = when (o) {
+        is JccTokenReferenceRegexUnit -> o.typedReference.resolveToken()
+        else                                                             -> null
     }
 
     companion object {

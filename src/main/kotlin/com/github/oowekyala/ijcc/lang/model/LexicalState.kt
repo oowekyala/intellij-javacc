@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexpUnit
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.match
 import java.util.*
 import java.util.function.Function
@@ -64,11 +64,11 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                 ?.let { it.first }
 
     /**
-     * Returns the string token that matches exactly this regexp unit.
+     * Returns the string token that matches exactly this regex unit.
      *
      * @return the matched token if it was found
      */
-    fun matchLiteral(literal: JccLiteralRegexpUnit,
+    fun matchLiteral(literal: JccLiteralRegexUnit,
                      exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
             matchLiteral(literal.match, exact, consideredRegexKinds)

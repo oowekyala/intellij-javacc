@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.intellij.util.ThreeState
 
-interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner {
+interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner, JccProduction {
 
     val javaBlock: JccJavaBlock?
 

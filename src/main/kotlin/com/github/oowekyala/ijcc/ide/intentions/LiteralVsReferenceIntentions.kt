@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexpElement
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexElement
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
@@ -11,21 +11,21 @@ import com.intellij.psi.PsiDocumentManager
 
 
 class TokenInliningIntention
-    : JccSelfTargetingEditorIntentionBase<JccTokenReferenceUnit>(
-    JccTokenReferenceUnit::class.java,
+    : JccSelfTargetingEditorIntentionBase<JccTokenReferenceRegexUnit>(
+    JccTokenReferenceRegexUnit::class.java,
     "Inline literal reference"
 ) {
 
-    override fun isApplicableTo(element: JccTokenReferenceUnit): Boolean =
+    override fun isApplicableTo(element: JccTokenReferenceRegexUnit): Boolean =
             element.typedReference.resolveToken()?.asSingleLiteral() != null
 
-    override fun run(project: Project, editor: Editor, element: JccTokenReferenceUnit): () -> Unit {
-        val newLiteral: JccLiteralRegexpUnit =
+    override fun run(project: Project, editor: Editor, element: JccTokenReferenceRegexUnit): () -> Unit {
+        val newLiteral: JccLiteralRegexUnit =
                 element.typedReference
                     .resolveToken()!!
                     .asSingleLiteral()!!
                     .text
-                    .let { createRegexpElement(project, it) }
+                    .let { createRegexElement(project, it) }
 
         return {
             element.safeReplace(newLiteral)
@@ -36,24 +36,24 @@ class TokenInliningIntention
 
 
 class ReplaceLiteralWithReferenceIntention :
-    JccSelfTargetingEditorIntentionBase<JccLiteralRegexpUnit>(
-        JccLiteralRegexpUnit::class.java,
+    JccSelfTargetingEditorIntentionBase<JccLiteralRegexUnit>(
+        JccLiteralRegexUnit::class.java,
         "Replace literal with reference"
     ) {
 
-    override fun isApplicableTo(element: JccLiteralRegexpUnit): Boolean =
+    override fun isApplicableTo(element: JccLiteralRegexUnit): Boolean =
             element.typedReference.resolveToken(exact = true)
                 ?.let { it.isExplicit && it.name != null } == true
 
 
-    override fun run(project: Project, editor: Editor, element: JccLiteralRegexpUnit): () -> Unit {
-        val newUnit: JccTokenReferenceUnit = element.typedReference
+    override fun run(project: Project, editor: Editor, element: JccLiteralRegexUnit): () -> Unit {
+        val newRegexUnit: JccTokenReferenceRegexUnit = element.typedReference
             .resolveToken(exact = true)!!
             .name!!
-            .let { createRegexpElement(project, "<$it>") }
+            .let { createRegexElement(project, "<$it>") }
 
         return {
-            element.safeReplace(newUnit)
+            element.safeReplace(newRegexUnit)
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
         }
     }

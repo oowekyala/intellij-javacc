@@ -4,10 +4,10 @@ import com.github.oowekyala.ijcc.ide.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
@@ -220,7 +220,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
     }
 
-    override fun visitRegularExprProduction(o: JccRegularExprProduction) {
+    override fun visitRegexProduction(o: JccRegexProduction) {
         o.lexicalStateList?.identifierList?.forEach {
             myHolder += highlightInfo(it, LEXICAL_STATE.highlightType)
         }
@@ -244,7 +244,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
 
-    override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+    override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
 
         o.regularExpression.runIt {
             if (it is JccNamedRegularExpression && it.isPrivate) {
@@ -275,7 +275,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             }
         }
     }
-    override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
+    override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
                 if (reffed == null) wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
@@ -291,6 +291,17 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     )
                 } else highlightInfo(o, TOKEN_REFERENCE.highlightType)
 
+
+    }
+
+    override fun visitCharacterListRegexUnit(o: JccCharacterListRegexUnit) {
+
+        if (o.characterDescriptorList.isEmpty() && !o.isNegated) {
+            myHolder += errorInfo(
+                o,
+                "Empty character set is not allowed as it will not match any character"
+            )
+        }
 
     }
 
@@ -350,7 +361,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             }
     }
 
-    override fun visitRegexprSpec(element: JccRegexprSpec) {
+    override fun visitRegexSpec(element: JccRegexSpec) {
         // highlight the name of a global named regex
         element.regularExpression
             .let { it as? JccNamedRegularExpression }
@@ -387,7 +398,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
     }
 
-    private fun checkValidity(spec: JccRegexprSpec) {
+    private fun checkValidity(spec: JccRegexSpec) {
 
         spec.asSingleLiteral()?.runIt { regex ->
             spec.containingFile.globalTokenSpecs

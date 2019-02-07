@@ -69,10 +69,10 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         visitJavaBlock(o.javaBlock)
     }
 
-    override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+    override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
         if (o.parent is JccAssignedExpansionUnit) {
             pushStringLeaf("getToken(1)")
-        } else super.visitRegexpExpansionUnit(o)
+        } else super.visitRegexExpansionUnit(o)
     }
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
@@ -157,9 +157,9 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         )
     }
 
-    override fun visitLocalLookahead(o: JccLocalLookahead) {
+    override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
 
-        o.javaExpression?.accept(this) ?: return super.visitLocalLookahead(o)
+        o.javaExpression?.accept(this) ?: return super.visitLocalLookaheadUnit(o)
 
         surroundTop("if /*lookahead*/ (", ");") //fixme?
     }

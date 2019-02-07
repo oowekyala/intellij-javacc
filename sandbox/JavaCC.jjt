@@ -1122,7 +1122,7 @@ void token_manager_decls() :
   "TOKEN_MGR_DECLS" ":" ClassOrInterfaceBody()
 }
 
-void regexpr_kind() :
+void regex_kind() :
 {}
 {
   "TOKEN"

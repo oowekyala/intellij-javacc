@@ -10,7 +10,7 @@ import io.kotlintest.shouldBe
  * @author Clément Fournier
  * @since 1.0
  */
-class ParserTest : ParserTestDsl() {
+class AstStructureTests : ParserTestDsl() {
 
 
     fun testAssignmentPos() {
@@ -23,8 +23,8 @@ class ParserTest : ParserTestDsl() {
                 }
             }
 
-            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
-                it.regularExpression shouldBe child<JccRegularExpressionReference> {
+            it.assignableExpansionUnit shouldBe child<JccRegexExpansionUnit> {
+                it.regularExpression shouldBe child<JccRefRegularExpression> {
                     it.unit shouldBe child {
                         it.nameIdentifier shouldBe child {
                             it.name shouldBe "REF"
@@ -44,7 +44,7 @@ class ParserTest : ParserTestDsl() {
                 }
             }
 
-            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
+            it.assignableExpansionUnit shouldBe child<JccRegexExpansionUnit> {
                 it.regularExpression shouldBe child<JccLiteralRegularExpression> {
                     it.unit shouldBe child {}
                 }
@@ -61,14 +61,14 @@ class ParserTest : ParserTestDsl() {
                 }
             }
 
-            it.assignableExpansionUnit shouldBe child<JccRegexpExpansionUnit> {
+            it.assignableExpansionUnit shouldBe child<JccRegexExpansionUnit> {
 
                 it.regularExpression shouldBe child<JccNamedRegularExpression> {
                     it.nameIdentifier shouldBe child {
                         it.name shouldBe "f"
                     }
 
-                    it.regexpElement shouldBe child<JccLiteralRegexpUnit> {}
+                    it.regexElement shouldBe child<JccLiteralRegexUnit> {}
                 }
             }
         }
@@ -96,7 +96,7 @@ class ParserTest : ParserTestDsl() {
 
     fun testExpansionPrecedence() {
 
-        "\"foo\"" should matchExpansion<JccRegexpExpansionUnit> {
+        "\"foo\"" should matchExpansion<JccRegexExpansionUnit> {
             it.regularExpression shouldBe child<JccLiteralRegularExpression> {
                 it.unit shouldBe child {}
             }
@@ -104,26 +104,26 @@ class ParserTest : ParserTestDsl() {
 
         "\"foo\" \"bar\"" should matchExpansion<JccExpansionSequence> {
 
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+            child<JccRegexExpansionUnit>(ignoreChildren = true) {}
         }
 
         "\"ff\" | \"cd\"" should matchExpansion<JccExpansionAlternative> {
 
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) { }
+            child<JccRegexExpansionUnit>(ignoreChildren = true) { }
 
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) { }
+            child<JccRegexExpansionUnit>(ignoreChildren = true) { }
         }
 
         """"ff" | <baz> | "f" foo()""" should matchExpansion<JccExpansionAlternative> {
             // check that the node is not left recursive
 
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) { }
+            child<JccRegexExpansionUnit>(ignoreChildren = true) { }
 
-            child<JccRegexpExpansionUnit>(ignoreChildren = true) { }
+            child<JccRegexExpansionUnit>(ignoreChildren = true) { }
 
             child<JccExpansionSequence> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) { }
+                child<JccRegexExpansionUnit>(ignoreChildren = true) { }
                 child<JccNonTerminalExpansionUnit> {
                     child<JccIdentifier> { it.name shouldBe "foo" }
                     child<JccJavaExpressionList> { }
@@ -142,9 +142,9 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             it.expansion shouldBe child<JccExpansionAlternative> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
             }
         }
 
@@ -154,8 +154,8 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             it.expansion shouldBe child<JccExpansionAlternative> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
             }
         }
 
@@ -167,7 +167,7 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
             // not an alternative anymore
-            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            it.expansion shouldBe child<JccRegexExpansionUnit>(ignoreChildren = true) {}
         }
 
         paren.text shouldBe "(<baz>)"
@@ -182,9 +182,9 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             it.expansion shouldBe child<JccExpansionSequence> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
             }
         }
 
@@ -194,8 +194,8 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             it.expansion shouldBe child<JccExpansionSequence> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
             }
         }
 
@@ -207,7 +207,7 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
             // not a sequence anymore
-            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            it.expansion shouldBe child<JccRegexExpansionUnit>(ignoreChildren = true) {}
         }
 
         paren.text shouldBe "(<baz>)"
@@ -223,10 +223,10 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             it.expansion shouldBe child<JccExpansionAlternative> {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
                 child<JccExpansionSequence> {
-                    child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                    child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                    child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                    child<JccRegexExpansionUnit>(ignoreChildren = true) {}
                 }
             }
         }
@@ -241,8 +241,8 @@ class ParserTest : ParserTestDsl() {
         paren should matchPsi<JccParenthesizedExpansionUnit> {
             // not an alternative anymore
             sequence = child {
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
-                child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
+                child<JccRegexExpansionUnit>(ignoreChildren = true) {}
             }
         }
 
@@ -254,7 +254,7 @@ class ParserTest : ParserTestDsl() {
 
         paren should matchPsi<JccParenthesizedExpansionUnitImpl> {
             // not a sequence anymore
-            it.expansion shouldBe child<JccRegexpExpansionUnit>(ignoreChildren = true) {}
+            it.expansion shouldBe child<JccRegexExpansionUnit>(ignoreChildren = true) {}
         }
 
         paren.text shouldBe "(<boo>)"

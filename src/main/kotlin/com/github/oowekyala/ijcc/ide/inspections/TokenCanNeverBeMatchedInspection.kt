@@ -40,19 +40,19 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
 
-                override fun visitRegexprSpec(spec: JccRegexprSpec) {
+                override fun visitRegexSpec(spec: JccRegexSpec) {
                     if (spec.isPrivate) return
                     val expansion = spec.getRootRegexElement(followReferences = false)
                     if (expansion != null) {
                         when (expansion) {
-                            is JccLiteralRegexpUnit -> holder.checkRegexElement(
+                            is JccLiteralRegexUnit -> holder.checkRegexElement(
                                 spec,
                                 expansion,
                                 specOwnsProblem = true
                             )
-                            is JccRegexpAlternative -> {
-                                expansion.regexpElementList.forEach {
-                                    if (it is JccLiteralRegexpUnit) {
+                            is JccRegexAlternativeElt                                 -> {
+                                expansion.regexElementList.forEach {
+                                    if (it is JccLiteralRegexUnit) {
                                         holder.checkRegexElement(spec, it, specOwnsProblem = false)
                                     }
                                 }
@@ -69,11 +69,11 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         fun problemDescription(realMatchName: String?) =
                 "This token can never be matched, ${realMatchName ?: "another token"} matches its input instead"
 
-        private fun ProblemsHolder.checkRegexElement(spec: JccRegexprSpec,
-                                                     elt: JccLiteralRegexpUnit,
+        private fun ProblemsHolder.checkRegexElement(spec: JccRegexSpec,
+                                                     elt: JccLiteralRegexUnit,
                                                      specOwnsProblem: Boolean
         ) {
-            val matchedBy: List<JccRegexprSpec> = JccStringTokenReference(elt)
+            val matchedBy: List<JccRegexSpec> = JccStringTokenReference(elt)
                 .multiResolveToken(exact = false)
                 .filterIsInstance<ExplicitToken>()
                 // matching itself doesn't count
@@ -95,7 +95,7 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         }
 
 
-        class NavigateToOtherTokenFix(private val realMatch: SmartPsiElementPointer<JccRegexprSpec>) : LocalQuickFix {
+        class NavigateToOtherTokenFix(private val realMatch: SmartPsiElementPointer<JccRegexSpec>) : LocalQuickFix {
             override fun getFamilyName(): String = NavigateFixName
 
             override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

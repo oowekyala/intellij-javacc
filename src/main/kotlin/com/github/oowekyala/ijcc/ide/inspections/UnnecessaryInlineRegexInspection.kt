@@ -27,9 +27,9 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
-                override fun visitInlineRegularExpression(o: JccInlineRegularExpression) {
-                    val regex = o.regexpElement
-                    if (regex is JccLiteralRegexpUnit || regex is JccTokenReferenceUnit && regex.typedReference.resolveToken()?.isPrivate == false) {
+                override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
+                    val regex = o.regexElement
+                    if (regex is JccLiteralRegexUnit || regex is JccTokenReferenceRegexUnit && regex.typedReference.resolveToken()?.isPrivate == false) {
                         holder.registerProblem(o, ProblemDescription, MyQuickFix())
                     }
                 }
@@ -53,8 +53,8 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
             override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
 
                 try {
-                    val inline = descriptor.psiElement as JccInlineRegularExpression
-                    val regex = inline.regexpElement!!.promoteToRegex()
+                    val inline = descriptor.psiElement as JccContainerRegularExpression
+                    val regex = inline.regexElement!!.promoteToRegex()
                     inline.safeReplace(regex)
                 } catch (e: IncorrectOperationException) {
                     Log { error(e) }

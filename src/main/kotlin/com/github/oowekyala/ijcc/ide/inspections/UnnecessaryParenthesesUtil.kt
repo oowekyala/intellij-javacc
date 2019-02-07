@@ -43,26 +43,26 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // (["hello"])      // unnecessary
         // ((..)?)          // unnecessary
         // ("(") #Node      // unnecessary
-        inside is JccExpansionUnit                                        -> false // expansions units are indivisible
+        inside is JccExpansionUnit                                          -> false // expansions units are indivisible
 
         //  ("(" Expr() ")")     #Node    // necessary unless doc
-        outside is JccScopedExpansionUnit                                 -> true
+        outside is JccScopedExpansionUnit                                   -> true
 
         // LOOKAHEAD( ("foo" | "bar") )   // unnecessary
         // LOOKAHEAD(1, ("foo" | "bar") ) // unnecessary
-        outside is JccLocalLookahead                                      -> false // then it's top level of a semantic lookahead
+        outside is JccLocalLookaheadUnit -> false // then it's top level of a semantic lookahead
 
         // (LOOKAHEAD(2) "foo" | "foo" "bar") // clarifying
         // (LOOKAHEAD(2) "foo" "f" | "foo" "bar") // clarifying
         // ("foo" | "bar") "bzaz"   // necessary
         // ("foo" | "bar") | "bzaz" // unnecessary
-        inside is JccExpansionAlternative                                 ->
+        inside is JccExpansionAlternative                                   ->
             keepLookahead && inside.isLookahead() || outside !is JccExpansionAlternative
 
 
         // ("foo" "bar")  {}                // unnecessary
         // ("foo" "bar")  (hello() | "f")   // unnecessary, necessary
-        outside is JccExpansionSequence && inside is JccExpansionSequence -> {
+        outside is JccExpansionSequence && inside is JccExpansionSequence   -> {
             val nextSibling = nextSiblingNoWhitespace
             when {
                 // ("foo" "bar")  {foo();}            // clarifying
@@ -73,20 +73,20 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
             }
         }
 
-        else                                                              -> true
+        else                                                                -> true
     }
 }
 
 private fun JccExpansionUnit.isDocumented() = when (this) {
-    is JccParserActionsUnit -> false
-    is JccLocalLookahead    -> false
-    else                    -> true
+    is JccParserActionsUnit                                     -> false
+    is JccLocalLookaheadUnit -> false
+    else                                                        -> true
 }
 
-private fun JccExpansionSequence.isLookahead() = expansionUnitList[0] is JccLocalLookahead
+private fun JccExpansionSequence.isLookahead() = expansionUnitList[0] is JccLocalLookaheadUnit
 private fun JccExpansionAlternative.isLookahead(): Boolean {
     val fst = expansionList[0]
-    return fst is JccLocalLookahead || fst is JccExpansionSequence && fst.isLookahead()
+    return fst is JccLocalLookaheadUnit || fst is JccExpansionSequence && fst.isLookahead()
 }
 /* TESTS
 

@@ -41,12 +41,12 @@ abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), Jc
     override fun getUseScope(): SearchScope = GlobalSearchScope.fileScope(containingFile)
 
     override fun getReference(): PsiReference? = when (this) {
-        is JccTokenReferenceUnit       -> JccTerminalReference(this)
-        is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
-        is JccLiteralRegexpUnit        -> JccStringTokenReference(this)
+        is JccTokenReferenceRegexUnit -> JccTerminalReference(this)
+        is JccNonTerminalExpansionUnit                                   -> JccNonTerminalReference(this)
+        is JccLiteralRegexUnit                                           -> JccStringTokenReference(this)
         // Having it here breaks the Find Usages function
         // see ReferenceExtensions.typedReference
         // is JccNodeClassOwner        -> JjtNodePolyReference(this).takeIf { isNotVoid }
-        else                           -> null
+        else                                                             -> null
     }
 }

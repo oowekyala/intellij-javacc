@@ -52,7 +52,7 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
     private val SuppressRegex = Pattern.compile(SuppressionUtil.COMMON_SUPPRESS_REGEXP)
 
-    private val RegexpSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
+    private val RegexSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
 
     class SuppressIntention(elt: PsiElement, toolId: String)
         : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {
@@ -75,14 +75,14 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
     private fun containerName(element: PsiElement) =
             when (element.getNearestContainer()) {
-                is JccFile                                               -> "file"
-                is JccRegexprSpec                                        -> "token specification"
-                is JccNonTerminalProduction, is JccRegularExprProduction -> "production"
-                else                                                     -> "element"
+                is JccFile                                                                            -> "file"
+                is JccRegexSpec                                                                       -> "token specification"
+                is JccNonTerminalProduction, is JccRegexProduction -> "production"
+                else                                                                                  -> "element"
             }
 
     private fun PsiElement.isContainer(): Boolean =
-            this is JccFile || this is JccNonTerminalProduction || this is JccRegexprSpec || this is JccRegularExprProduction
+            this is JccFile || this is JccNonTerminalProduction || this is JccRegexSpec || this is JccRegexProduction
 
     private fun PsiElement.getNearestContainer(): PsiElement? = getAllContainers().firstOrNull()
 
@@ -92,8 +92,8 @@ object JccInspectionSuppressor : InspectionSuppressor {
     private fun PsiElement.leadingComments(): Sequence<String> {
 
         val ignoredSet = when (this) {
-            is JccRegexprSpec -> RegexpSpecIgnoreSet
-            else              -> JccTypesExt.WhitespaceTypeSet
+            is JccRegexSpec -> RegexSpecIgnoreSet
+            else                                               -> JccTypesExt.WhitespaceTypeSet
         }
 
 

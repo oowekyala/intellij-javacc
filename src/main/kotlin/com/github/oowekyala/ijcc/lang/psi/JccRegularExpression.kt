@@ -2,11 +2,11 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 /**
- * Represents a regular expression. Distinct from the [JccRegexpElement]
+ * Represents a regular expression. Distinct from the [JccRegexElement]
  * tree, which is why [safeReplace] should be used to ensure the replaced
  * element is in the correct tree.
  */
-interface JccRegularExpression : JccRegexpLike {
+interface JccRegularExpression : JccRegexLike {
 
     val pattern: Regex?
     val prefixPattern: Regex?

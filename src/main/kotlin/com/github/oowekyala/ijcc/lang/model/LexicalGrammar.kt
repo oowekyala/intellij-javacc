@@ -18,7 +18,7 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> by lazy {
-        buildStatesMap(grammarFileRoot?.childrenSequence()?.filter { it is JccBnfProduction || it is JccRegularExprProduction }
+        buildStatesMap(grammarFileRoot?.childrenSequence()?.filter { it is JccBnfProduction || it is JccRegexProduction }
             ?: emptySequence())
     }
 
@@ -37,9 +37,9 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
         private fun buildStatesMap(allProductions: Sequence<PsiElement>): Map<String, LexicalState> {
 
-            val (regexpProductions, bnfProductions) =
-                    allProductions.partition { it is JccRegularExprProduction }
-                        .map({ it.filterIsInstance<JccRegularExprProduction>() },
+            val (regexProductions, bnfProductions) =
+                    allProductions.partition { it is JccRegexProduction }
+                        .map({ it.filterIsInstance<JccRegexProduction>() },
                             { it.filterIsInstance<JccBnfProduction>() })
 
             val defaultBuilder = LexicalStateBuilder(DefaultStateName)
@@ -51,9 +51,9 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             )
 
             // productions applying to all states, processed when all states are known
-            val applyToAll = mutableListOf<JccRegularExprProduction>()
+            val applyToAll = mutableListOf<JccRegexProduction>()
 
-            for (production in regexpProductions) {
+            for (production in regexProductions) {
                 val rstates = production.lexicalStateList
 
                 val relevantBuilders: List<LexicalStateBuilder> = if (rstates == null) {
@@ -68,15 +68,15 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
                     names.map { builders.getOrPut(it) { LexicalStateBuilder(it) } }
                 }
 
-                for (spec in production.regexprSpecList) {
+                for (spec in production.regexSpecList) {
                     relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
                 }
 
             }
 
-            for (regexpProduction in applyToAll) {
+            for (regexProduction in applyToAll) {
 
-                for (spec in regexpProduction.regexprSpecList) {
+                for (spec in regexProduction.regexSpecList) {
                     builders.values.asSequence().distinct().forEach { it.addToken(ExplicitToken(spec)) }
                 }
             }
@@ -86,25 +86,25 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             // deal with synthetic tokens
             for (bnfProduction in bnfProductions) {
 
-                val regexpExpansions =
+                val regexExpansions =
                         bnfProduction.expansion
                             ?.descendantSequence(includeSelf = true)
-                            ?.filterIsInstance<JccRegexpExpansionUnit>()
+                            ?.filterIsInstance<JccRegexExpansionUnit>()
                             ?: emptySequence()
 
-                for (regexExpansion in regexpExpansions) {
+                for (regexExpansion in regexExpansions) {
 
 
                     val token = when (val r = regexExpansion.regularExpression.getRootRegexElement(false)) {
 
-                        is JccLiteralRegexpUnit ->  // if the string isn't covered by an explicit token, it's synthesized
+                        is JccLiteralRegexUnit                                           ->  // if the string isn't covered by an explicit token, it's synthesized
                             currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
 
                         // necessarily references an explicit token
-                        is JccTokenReferenceUnit -> null
+                        is JccTokenReferenceRegexUnit -> null
 
                         // everything else is synthesized
-                        else -> SyntheticToken(regexExpansion)
+                        else                                                             -> SyntheticToken(regexExpansion)
                     } as? SyntheticToken
 
                     token?.runIt {

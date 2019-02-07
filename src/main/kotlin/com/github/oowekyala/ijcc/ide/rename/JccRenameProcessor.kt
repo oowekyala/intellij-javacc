@@ -22,7 +22,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         if (element !is JccIdentifier) return false
 
         return element.parent.let {
-            it is JccTokenReferenceUnit
+            it is JccTokenReferenceRegexUnit
                     || it is JccNonTerminalExpansionUnit
                     || it is JccNamedRegularExpression
                     || it is JccJavaNonTerminalProductionHeader

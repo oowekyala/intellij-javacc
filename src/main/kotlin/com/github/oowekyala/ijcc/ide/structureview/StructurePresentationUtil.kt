@@ -26,21 +26,21 @@ fun JccPsiElement.getPresentationForStructure(): ItemPresentation =
  */
 fun JccPsiElement.getPresentableText(): String {
     return when (this) {
-        is JccOptionSection         -> "Options" // TODO add parser class name
-        is JccOptionBinding         -> "$name = $stringValue"
+        is JccOptionSection                                      -> "Options" // TODO add parser class name
+        is JccOptionBinding                                      -> "$name = $stringValue"
 
-        is JccParserDeclaration     -> "class ${grammarOptions.parserSimpleName}"
-        is JccTokenManagerDecls     -> "TOKEN_MGR_DECLS"
+        is JccParserDeclaration                                  -> "class ${grammarOptions.parserSimpleName}"
+        is JccTokenManagerDecls                                  -> "TOKEN_MGR_DECLS"
 
-        is JccRegularExprProduction -> regexprKind.text
+        is JccRegexProduction -> regexKind.text
 
-        is JccRegexprSpec           -> regularExpression.getPresentableText()
-        is JccRegexpExpansionUnit   -> regularExpression.getPresentableText()
-        is JccRegularExpression     -> getPresentableText()
-        is JccNonTerminalProduction -> getPresentableText()
+        is JccRegexSpec                                          -> regularExpression.getPresentableText()
+        is JccRegexExpansionUnit                                -> regularExpression.getPresentableText()
+        is JccRegularExpression                                  -> getPresentableText()
+        is JccNonTerminalProduction                              -> getPresentableText()
 
-        is JccFile                  -> name
-        else                        -> "" + this
+        is JccFile                                               -> name
+        else                                                     -> "" + this
     }
 }
 
@@ -82,13 +82,13 @@ private fun JccNonTerminalProduction.getPresentableText(): String {
 
 fun JccPsiElement.getLocationString(): String? {
     when (this) {
-        is JccRegexprSpec           -> {
+        is JccRegexSpec                                          -> {
             val outboundState = lexicalStateTransition
             if (outboundState != null) {
                 return "${UIUtil.rightArrow()} ${outboundState.name}"
             }
         }
-        is JccRegularExprProduction -> {
+        is JccRegexProduction -> {
             val states = lexicalStateList
             if (states != null) {
                 val identList = states.identifierList
@@ -105,19 +105,19 @@ fun JccPsiElement.getLocationString(): String? {
 }
 
 fun JccPsiElement.getIcon(): Icon? = when (this) {
-    is JccOptionSection         -> JavaccIcons.JAVACC_OPTION
-    is JccOptionBinding         -> JavaccIcons.JAVACC_OPTION
+    is JccOptionSection                                      -> JavaccIcons.JAVACC_OPTION
+    is JccOptionBinding                                      -> JavaccIcons.JAVACC_OPTION
 
-    is JccTokenManagerDecls     -> JavaccIcons.TOKEN_MGR_DECLS
-    is JccParserDeclaration     -> JavaccIcons.PARSER_DECLARATION
+    is JccTokenManagerDecls                                  -> JavaccIcons.TOKEN_MGR_DECLS
+    is JccParserDeclaration                                  -> JavaccIcons.PARSER_DECLARATION
 
-    is JccRegularExprProduction -> JavaccIcons.TOKEN
-    is JccRegexprSpec           -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
-    is JccRegexpExpansionUnit   -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
+    is JccRegexProduction -> JavaccIcons.TOKEN
+    is JccRegexSpec                                          -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
+    is JccRegexExpansionUnit                                -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
 
-    is JccBnfProduction         -> JavaccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
-    is JccJavacodeProduction    -> JavaccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
-    else                        -> getIcon(0) // this isn't implemented by our classes
+    is JccBnfProduction                                      -> JavaccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
+    is JccJavacodeProduction                                 -> JavaccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
+    else                                                     -> getIcon(0) // this isn't implemented by our classes
 }
 
 
