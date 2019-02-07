@@ -7,7 +7,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -66,14 +65,25 @@ val JccRegexLike.enclosingToken: Token
  *
  */
 val JccRegexSpec.lexicalStatesNameOrEmptyForAll: List<String>
-    get() = production.lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
-
+    get() = production.lexicalStatesNameOrEmptyForAll
 
 val JccRegexSpec.production
     get() = parent as JccRegexProduction
 
 val JccRegexSpec.regexKind: RegexKind
     get() = production.regexKind.modelConstant
+
+val JccRegexProduction.lexicalStatesNameOrEmptyForAll: List<String>
+    get() = lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
+
+
+val JccRegexSpec.isIgnoreCase: Boolean
+    get() = production.isIgnoreCase
+
+val JccRegexProduction.isIgnoreCase: Boolean
+    get() = regexKind.siblingSequence(forward = true)
+        .takeWhile { !it.isOfType(JccTypes.JCC_COLON, JccTypes.JCC_LBRACE) }
+        .any { it.isOfType(JccTypes.JCC_IGNORE_CASE_OPTION) }
 
 
 private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {

@@ -70,8 +70,8 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     fun `test duplicate string token definition POS`() = checkByText(
         """
             TOKEN: {
-               <error descr="Duplicate definition of string token \"foo\""><#FOO: "foo"></error>
-             | <error descr="Duplicate definition of string token \"foo\""><BAR: "foo" ></error>
+               <#FOO: "foo">
+             | <error descr="Duplicate definition of string token \"foo\" (see <FOO>)"><BAR: "foo" ></error>
             }
         """.inGrammarCtx()
     )
@@ -106,6 +106,41 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """
              TOKEN: {
                 < ~[] >
+            }
+        """.inGrammarCtx()
+    )
+
+    fun `test ignore case precedence POS`() = checkByText(
+        """
+            TOKEN [IGNORE_CASE] : {
+                < FOO: "foo" >
+            }
+
+            void Foo():{} {
+              <error descr="String is matched by an IGNORE_CASE regular expression and should refer to the token by name (<FOO>)">"foo"</error>
+            }
+
+        """.inGrammarCtx()
+    )
+
+    fun `test ignore case precedence NEG`() = checkByText(
+        """
+            TOKEN : {
+                < FOO: "foo" >
+            }
+
+            void Foo():{} {
+              "foo"
+            }
+
+        """.inGrammarCtx()
+    )
+
+    fun `test ignore case duplicates`() = checkByText(
+        """
+            TOKEN [IGNORE_CASE]: {
+                  <Foo: "FOO" >
+                | <error descr="Duplicate definition of string token \"foo\" (see <Foo>)"><FO: "foo" ></error>
             }
         """.inGrammarCtx()
     )

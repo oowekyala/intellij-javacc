@@ -25,12 +25,12 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         return element?.ancestors(includeSelf = true)?.firstOfAnyType(*stopTypes)?.let {
             when (it) {
-                is JccScopedExpansionUnit                          -> JjtNodeDocMaker.makeDoc(it)
-                is JccBnfProduction                                -> JccNonTerminalDocMaker.makeDoc(it)
-                is JccJavacodeProduction                           -> JccNonTerminalDocMaker.makeDoc(it)
-                is JccRegexSpec -> JccTerminalDocMaker.makeDoc(ExplicitToken(it))
-                is JccRegexExpansionUnit                          -> it.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
-                else                                               -> null
+                is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(it)
+                is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(it)
+                is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(it)
+                is JccRegexSpec           -> JccTerminalDocMaker.makeDoc(ExplicitToken(it))
+                is JccRegexExpansionUnit  -> it.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
+                else                      -> null
             }
         }
     }

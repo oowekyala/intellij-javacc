@@ -51,9 +51,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                 .filter { consideredRegexKinds.contains(it.regexKind) }
                 .mapNotNull { token ->
                     if (exact) {
-                        token.asStringToken
-                            ?.takeIf { it.match == toMatch }
-                            ?.let { Pair(token, toMatch) }
+                        if (token.matchesLiteral(toMatch)) Pair(token, toMatch) else null
                     } else {
                         val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 

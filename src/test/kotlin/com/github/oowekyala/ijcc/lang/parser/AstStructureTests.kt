@@ -1,7 +1,9 @@
 package com.github.oowekyala.ijcc.lang.parser
 
+import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccParenthesizedExpansionUnitImpl
+import com.github.oowekyala.ijcc.lang.psi.impl.*
 import com.github.oowekyala.ijcc.lang.util.matchPsi
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -258,6 +260,43 @@ class AstStructureTests : ParserTestDsl() {
         }
 
         paren.text shouldBe "(<boo>)"
+
+    }
+
+
+    fun testIgnoreCaseRegex() {
+
+        val prod = """ TOKEN [IGNORE_CASE] : {
+             "foo"
+            }
+        """.asProduction()
+
+
+        prod should matchPsi<JccRegexProduction> {
+            it.isIgnoreCase shouldBe true
+            it.lexicalStateList shouldBe null
+            it.lexicalStatesNameOrEmptyForAll shouldBe LexicalState.JustDefaultState
+            it.regexKind shouldBe child {
+                it.text shouldBe "TOKEN"
+            }
+
+            child<JccRegexSpec> {
+                it.lexicalActions shouldBe null
+                it.lexicalStateTransition shouldBe null
+                it.name shouldBe null
+                it.nameIdentifier shouldBe null
+
+                it.isIgnoreCase shouldBe true
+                it.isPrivate shouldBe false
+                it.lexicalStatesNameOrEmptyForAll shouldBe LexicalState.JustDefaultState
+
+                it.regularExpression shouldBe child<JccLiteralRegularExpression> {
+
+                    it.unit shouldBe child {}
+                }
+            }
+        }
+
 
     }
 

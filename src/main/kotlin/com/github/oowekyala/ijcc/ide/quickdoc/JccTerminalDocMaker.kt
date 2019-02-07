@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
-import com.github.oowekyala.ijcc.lang.model.RegexKind
-import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.lang.model.RegexKind
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.codeInsight.documentation.DocumentationManager
@@ -23,6 +23,7 @@ object JccTerminalDocMaker {
         name = token.name,
         kind = token.regexKind,
         isExplicit = token.isExplicit,
+        isIgnoreCase = token.isIgnoreCase,
         states = token.lexicalStatesOrEmptyForAll
     ) {
         token.regularExpression?.accept(RegexDocVisitor(it))
@@ -31,10 +32,11 @@ object JccTerminalDocMaker {
 
     @TestOnly
     fun makeDocImpl(name: String?,
-                             kind: RegexKind,
-                             isExplicit: Boolean,
-                             states: List<String>,
-                             expansion: (StringBuilder) -> Unit) = buildQuickDoc {
+                    kind: RegexKind,
+                    isExplicit: Boolean,
+                    isIgnoreCase: Boolean,
+                    states: List<String>,
+                    expansion: (StringBuilder) -> Unit) = buildQuickDoc {
         definition {
             val nameOrNot = name?.let { bold(angles(it)) } ?: "(unnamed)"
 
@@ -44,6 +46,7 @@ object JccTerminalDocMaker {
         }
 
         sections {
+            section("Case-sensitive") { if (isIgnoreCase) "true" else "false" }
             section("Lexical states") {
                 states.let {
                     if (it.isEmpty()) "All" else it.joinToString(separator = ", ")

@@ -376,6 +376,7 @@ class JccQuickdocTest : JccTestBase() {
                 name = name,
                 kind = RegexKind.TOKEN,
                 isExplicit = false,
+                isIgnoreCase = false,
                 states = LexicalState.JustDefaultState
             ) { it.append(expansion) }
 

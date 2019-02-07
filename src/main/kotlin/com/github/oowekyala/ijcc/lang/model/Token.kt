@@ -41,7 +41,7 @@ sealed class Token {
     abstract val name: String?
     abstract val regexKind: RegexKind
     abstract val isPrivate: Boolean
-
+    abstract val isIgnoreCase: Boolean
 
     val prefixPattern: Regex? by lazy { regularExpression?.prefixPattern }
 
@@ -60,14 +60,28 @@ sealed class Token {
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
      * regex spec definitions like "Check regex".
+     * TODO ignore case
      */
-    fun matches(string: String): Boolean = prefixPattern?.matches(string) == true
+    fun matches(string: String): Boolean =
+            prefixPattern?.matches(string) == true
 
     /**
-     * Returns true if this token is the same literal unit as this one.
+     * Returns true if this token is the same literal unit as this one,
+     * modulo [isIgnoreCase].
      */
     fun matchesLiteral(unit: JccLiteralRegexUnit): Boolean =
-            regularExpression?.asSingleLiteral(followReferences = false)?.let { unit.match == it.match } == true
+            regularExpression?.asSingleLiteral(followReferences = false)?.let {
+                unit.match.equals(it.match, ignoreCase = isIgnoreCase)
+            } == true
+
+    /**
+     * Returns true if this token is the same literal unit as this one,
+     * modulo [isIgnoreCase].
+     */
+    fun matchesLiteral(literalMatch: String): Boolean =
+            regularExpression?.asSingleLiteral(followReferences = false)?.let {
+                literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
+            } == true
 
 
     companion object {
@@ -76,7 +90,8 @@ sealed class Token {
 
         /**
          * Comparator that considers two string tokens with the same match equal (compare to 0).
-         * Otherwise just compares document offset.
+         * Otherwise just compares document offset. This is used to avoid adding duplicate tokens
+         * to the [LexicalState], not to report errors.
          */
         private val stringTokenComparator: Comparator<Token> = Comparator { t1, t2 ->
 
@@ -84,8 +99,11 @@ sealed class Token {
             val t2Str = t2.asStringToken
 
             return@Comparator when {
-                t1Str != null && t2Str != null && t1Str.match == t2Str.match -> 0
-                else                                                         -> offsetComparator.compare(t1, t2)
+                t1Str != null && t2Str != null && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str)) -> 0
+                else                                                                                     -> offsetComparator.compare(
+                    t1,
+                    t2
+                )
             }
         }
 
@@ -100,7 +118,7 @@ sealed class Token {
 }
 
 /**
- * Declared explicitly by the user. The spec can be private.
+ * Declared explicitly by the user.
  */
 data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexSpec>) : Token() {
 
@@ -110,15 +128,16 @@ data class ExplicitToken(val specPointer: SmartPsiElementPointer<JccRegexSpec>) 
     val spec: JccRegexSpec?
         get() = specPointer.element
 
-    override val lexicalStatesOrEmptyForAll: List<String>
-        get() = spec?.lexicalStatesNameOrEmptyForAll ?: JustDefaultState // default?
-
     override val regularExpression: JccRegularExpression? get() = spec?.regularExpression
-    override val lexicalStateTransition: String? get() = spec?.lexicalStateTransition?.name
 
+    // should these be initialised at construction time?
+    override val lexicalStateTransition: String? get() = spec?.lexicalStateTransition?.name
     override val regexKind: RegexKind get() = spec?.regexKind ?: RegexKind.TOKEN
     override val isPrivate: Boolean get() = spec?.isPrivate == true
     override val name: String? get() = spec?.name
+    override val isIgnoreCase: Boolean get() = spec?.isIgnoreCase == true
+    override val lexicalStatesOrEmptyForAll: List<String>
+        get() = spec?.lexicalStatesNameOrEmptyForAll ?: JustDefaultState // default?
 
 }
 
@@ -137,12 +156,10 @@ data class SyntheticToken(val declUnitPointer: SmartPsiElementPointer<JccRegexEx
     override val isPrivate: Boolean = false
     override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
     override val lexicalStateTransition: String? = null
-
+    override val isIgnoreCase: Boolean = false
 
     override val name: String? get() = declUnit?.name
-
     override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
-
     val declUnit: JccRegexExpansionUnit? get() = declUnitPointer.element!!
 
 }

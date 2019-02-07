@@ -258,19 +258,34 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                 val ref: Token = o.referencedToken!!
 
-                myHolder += if (ref.isPrivate) {
-                    JccHighlightUtil.wrongReferenceInfo(
+                myHolder += when {
+                    ref.isPrivate    -> JccHighlightUtil.errorInfo(
                         literalUnit,
                         "String token \"${literalUnit.match}\" has been defined as a private (#) regular expression"
                     )
-                } else {
-                    // all is well
-                    val message = ref.name?.let { "Matched by <$it>" } ?: "Implicitly declared token"
-                    highlightInfo(
-                        literalUnit,
-                        TOKEN_LITERAL_REFERENCE.highlightType,
-                        message = message
-                    )
+
+                    ref.isIgnoreCase -> {
+                        // then it cannot be implicit
+
+                        val tokenName = ref.name?.let { "(<$it>)" } ?: "(unnamed!)"
+
+                        JccHighlightUtil.errorInfo(
+                            literalUnit,
+                            "String is matched by an IGNORE_CASE regular expression and should refer to the token by name $tokenName"
+                        )
+                    }
+                    else             -> {
+                        // all is well
+                        val message =
+                                if (ref.isExplicit) "Matched by " + (ref.name?.let { "<$it>" } ?: "a token")
+                                else "Implicitly declared token"
+
+                        highlightInfo(
+                            literalUnit,
+                            TOKEN_LITERAL_REFERENCE.highlightType,
+                            message = message
+                        )
+                    }
                 }
             }
         }
@@ -402,10 +417,12 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         spec.asSingleLiteral()?.runIt { regex ->
             spec.containingFile.globalTokenSpecs
-                .filter { it !== spec }
-                .any { it.regularExpression.asSingleLiteral()?.textMatches(regex) == true }
-                .ifTrue {
-                    myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}")
+                // only consider those above
+                .filter { it.textOffset < spec.textOffset }
+                .find { it.definedToken.matchesLiteral(regex) }
+                ?.runIt {
+                    val message = it.name?.let { " (see <$it>)" } ?: ""
+                    myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}$message")
                 }
         }
 
