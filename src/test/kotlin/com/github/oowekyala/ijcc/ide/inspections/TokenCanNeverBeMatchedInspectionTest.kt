@@ -12,44 +12,12 @@ class TokenCanNeverBeMatchedInspectionTest : JccInspectionTestBase(TokenCanNever
     private fun warning(content: String, realMatchName: String?) =
             warningAnnot(content, problemDescription(realMatchName))
 
-    fun testInAlternative() = checkByText(
-        """
-
-           TOKEN: {
-               <FOO: "foo">
-             | <BAR: "bar" | ${warning("\"foo\"", "FOO")}>
-           }
-        """.trimIndent().inGrammarCtx()
-    )
-
-    fun testInAlternative2() = checkByText(
-        """
-
-           TOKEN: {
-               <BAR: "bar" | "foo">
-             | ${warning("<FOO: \"foo\">", "BAR")}
-           }
-        """.trimIndent().inGrammarCtx()
-    )
-
-
-    fun testCrossAlternatives() = checkByText(
-        """
-
-           TOKEN: {
-               <FOO: "foo" | "bar" >
-             | <BAR: "qux" | ${warning("\"bar\"", "FOO")} | "quux" >
-           }
-        """.trimIndent().inGrammarCtx()
-    )
-
-
     fun testUnnamed() = checkByText(
         """
 
            TOKEN: {
                < "foo" | "bar" >
-             | <BAR: "qux" | ${warning("\"bar\"", null)} | "quux" >
+             | < "qux" | ${warning("\"bar\"", null)} | "quux" >
            }
         """.trimIndent().inGrammarCtx()
     )
