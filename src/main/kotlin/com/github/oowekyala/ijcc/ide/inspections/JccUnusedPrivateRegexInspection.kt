@@ -87,7 +87,12 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
 
 
-        for (token: ExplicitToken in tokens.filter { o -> !inSuppressed.contains(o) }.filterIsInstance<ExplicitToken>()) {
+        val privateTokens =
+                tokens.filter { o -> !inSuppressed.contains(o) }
+                    .filterIsInstance<ExplicitToken>()
+                    .filter { it.isPrivate }
+
+        for (token: ExplicitToken in privateTokens) {
             when {
                 !inExpr.contains(token)    -> "Unused private regex"
                 !reachable.contains(token) -> "Unreachable private regex"
