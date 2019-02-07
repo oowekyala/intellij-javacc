@@ -269,16 +269,10 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                         "String token \"${literalUnit.match}\" has been defined as a private (#) regular expression"
                     )
 
-                    ref.isIgnoreCase -> {
-                        // then it cannot be implicit
-
-                        val tokenName = ref.name?.let { "(<$it>)" } ?: "(unnamed!)"
-
-                        JccHighlightUtil.errorInfo(
-                            literalUnit,
-                            "String is matched by an IGNORE_CASE regular expression and should refer to the token by name $tokenName"
-                        )
-                    }
+                    ref.isIgnoreCase -> JccHighlightUtil.errorInfo(
+                        literalUnit,
+                        JccErrorMessages.stringLiteralMatchedbyIgnoreCaseCannotBeUsedInBnf(ref.name)
+                    )
                     else             -> {
                         // all is well
                         val message =

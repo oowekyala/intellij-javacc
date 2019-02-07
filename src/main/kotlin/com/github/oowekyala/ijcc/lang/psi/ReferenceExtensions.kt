@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
+import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 import com.github.oowekyala.ijcc.lang.model.ExplicitToken
@@ -41,10 +41,11 @@ val JccRegexExpansionUnit.referencedToken: Token?
         val regex = regularExpression
 
         return when (regex) {
-            is JccRefRegularExpression     -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
-            is JccLiteralRegularExpression -> regex.typedReference.resolveToken(exact = true)
-            // everything else is synthesized
-            else                           -> SyntheticToken(this)
+            is JccRefRegularExpression -> regex.typedReference.resolveToken()?.let { ExplicitToken(it) }
+            else                       -> when (val unit = regex.asSingleLiteral(followReferences = false)) {
+                null -> SyntheticToken(this) // everything else is synthesized
+                else -> unit.typedReference.resolveToken(exact = true)
+            }
         }
     }
 

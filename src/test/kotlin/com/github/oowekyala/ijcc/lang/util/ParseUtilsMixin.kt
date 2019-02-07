@@ -34,8 +34,12 @@ interface ParseUtilsMixin {
         .expansion!!
 
     @Language("JavaCC")
-    fun String.inGrammarCtx(): String = asJccGrammar().containingFile.text
+    fun String.inGrammarCtx(): String =
+            """
+                $DummyHeader
 
+                $this
+            """
     fun String.asExpansion(): JccExpansion = createExpansion(getProject(), this)
 
     fun String.asProduction(): JccProductionLike =
@@ -45,6 +49,17 @@ interface ParseUtilsMixin {
 
     fun String.asJccGrammar(): JccFile =
             JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
+
+    companion object {
+        @Language("JavaCC")
+        const val DummyHeader = """
+                PARSER_BEGIN(dummy)
+
+                public class dummy {}
+
+                PARSER_END(dummy)
+                """
+    }
 
 }
 
