@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.ide.refs.JccStringTokenReference
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -73,12 +72,21 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                                                      elt: JccLiteralRegexUnit,
                                                      specOwnsProblem: Boolean
         ) {
-            val matchedBy: List<JccRegexSpec> = JccStringTokenReference(elt)
-                .multiResolveToken(exact = false)
-                .filterIsInstance<ExplicitToken>()
-                // matching itself doesn't count
-                .mapNotNull { it.spec }
-                .filterNot { it === spec }
+
+            val consideredStates = spec.lexicalStatesNameOrEmptyForAll
+
+
+            val matchedBy: List<JccRegexSpec> =
+                    spec.containingFile.lexicalGrammar
+                        .lexicalStates
+                        .asSequence()
+                        .filter { consideredStates.isEmpty() || consideredStates.contains(it.name) }
+                        .mapNotNull { it.matchLiteral(elt, false) }
+                        .filterIsInstance<ExplicitToken>()
+                        // matching itself doesn't count
+                        .mapNotNull { it.spec }
+                        .filterNot { it === spec }
+                        .toList()
 
             if (matchedBy.isNotEmpty()) {
 

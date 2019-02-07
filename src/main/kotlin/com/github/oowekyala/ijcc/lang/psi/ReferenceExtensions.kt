@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
-import com.github.oowekyala.ijcc.ide.refs.JccStringTokenReference
+import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 import com.github.oowekyala.ijcc.lang.model.ExplicitToken
@@ -14,11 +14,11 @@ import com.github.oowekyala.ijcc.lang.model.Token
  */
 
 
-val JccLiteralRegexUnit.typedReference: JccStringTokenReference
-    get() = reference as JccStringTokenReference
+val JccLiteralRegexUnit.typedReference: JccBnfStringLiteralReference
+    get() = reference as JccBnfStringLiteralReference
 
 
-val JccLiteralRegularExpression.typedReference: JccStringTokenReference
+val JccLiteralRegularExpression.typedReference: JccBnfStringLiteralReference
     get() = unit.typedReference
 
 val JccTokenReferenceRegexUnit.typedReference: JccTerminalReference

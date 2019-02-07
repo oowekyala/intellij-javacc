@@ -416,13 +416,18 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private fun checkValidity(spec: JccRegexSpec) {
 
         spec.asSingleLiteral()?.runIt { regex ->
-            spec.containingFile.globalTokenSpecs
+            myFile.lexicalGrammar
+
+                .allTokens
                 // only consider those above
-                .filter { it.textOffset < spec.textOffset }
-                .find { it.definedToken.matchesLiteral(regex) }
-                ?.runIt {
-                    val message = it.name?.let { " (see <$it>)" } ?: ""
-                    myHolder += errorInfo(spec, "Duplicate definition of string token ${regex.text}$message")
+                .filter { (it.textOffset ?: Int.MAX_VALUE ) < spec.textOffset }
+                .find { it.matchesLiteral(regex) }
+                ?.runIt { token ->
+                    val message = "Duplicate definition of string token ${regex.text} (" + when {
+                        !token.isExplicit -> "implicitly defined" + token.line?.let { " at line $it" }.orEmpty() + ""
+                        else              -> token.name?.let { "see <$it>" } ?: "unnamed"
+                    } + ")"
+                    myHolder += errorInfo(spec, message)
                 }
         }
 

@@ -145,4 +145,16 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """.inGrammarCtx()
     )
 
+    fun `test duplicate string synthetic precedence`() = checkByText(
+        """
+            void Foo() :{}{
+              "Foo"
+            }
+
+            <*> TOKEN : {
+                 <error descr="Duplicate definition of string token \"Foo\" (implicitly defined at line 12)">< Foo: "Foo" ></error>
+            }
+        """.inGrammarCtx()
+    )
+
 }

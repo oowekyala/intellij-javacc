@@ -47,6 +47,10 @@ sealed class Token {
 
     val isExplicit: Boolean = this is ExplicitToken
 
+    val textOffset: Int? get() = psiElement?.textOffset
+
+    val line: Int? get() = psiElement?.lineNumber
+
     /** Returns true if this is a single literal token. */
     val asStringToken: JccLiteralRegexUnit?
         get() = regularExpression?.asSingleLiteral(followReferences = false)

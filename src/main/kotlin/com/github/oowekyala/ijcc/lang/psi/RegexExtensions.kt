@@ -52,9 +52,9 @@ val JccRegexLike.enclosingToken: Token
         val enclosingRegex = ancestors(includeSelf = true).first { it is JccRegularExpression }
 
         return when (val parent = enclosingRegex.parent) {
-            is JccRegexSpec -> ExplicitToken(parent)
-            is JccRegexExpansionUnit                          -> SyntheticToken(parent)
-            else                                               -> throw IllegalStateException("No enclosing context?")
+            is JccRegexSpec          -> ExplicitToken(parent)
+            is JccRegexExpansionUnit -> SyntheticToken(parent)
+            else                     -> throw IllegalStateException("No enclosing context?")
         }
     }
 

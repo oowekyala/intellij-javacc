@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.util.prepend
 import com.github.oowekyala.ijcc.util.takeUntil
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
@@ -119,3 +120,7 @@ fun PsiElement.isOfType(elementType: IElementType, vararg rest: IElementType): B
 
 
 fun TextRange.containsInside(offset: Int): Boolean = offset in (startOffset + 1)..(endOffset - 1)
+
+
+val PsiElement.lineNumber
+    get() = StringUtil.offsetToLineNumber(containingFile.text, textOffset)
