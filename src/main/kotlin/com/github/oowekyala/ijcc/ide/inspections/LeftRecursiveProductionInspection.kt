@@ -1,8 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.leftMostSet
+import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -30,7 +29,6 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
     """.trimIndent()
 
     override fun runForWholeFile(): Boolean = true
-
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return emptyArray()
@@ -95,7 +93,6 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         @TestOnly
         fun makeMessageImpl(loopPath: List<String>) =
                 "Left-recursion detected: " + loopPath.joinToString(separator = " -> ")
-
     }
 
 }
@@ -104,6 +101,6 @@ private typealias ProdPath = ImmutableList<JccNonTerminalProduction>
 // unsure means "being visited"
 private typealias VisitStatuses = MutableMap<JccNonTerminalProduction, VisitStatus>
 
-private enum class VisitStatus {
+enum class VisitStatus {
     NOT_VISITED, VISITED, BEING_VISITED
 }

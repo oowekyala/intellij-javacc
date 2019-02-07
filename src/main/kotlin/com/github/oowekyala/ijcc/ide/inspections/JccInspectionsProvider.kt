@@ -20,6 +20,7 @@ object JccInspectionsProvider : InspectionToolProvider {
         ConsecutiveParserActionsInspection::class.java,
         LookaheadIsNotAtChoicePointInspection::class.java,
         ActionWithinLookaheadInspection::class.java,
-        LeftRecursiveProductionInspection::class.java
+        LeftRecursiveProductionInspection::class.java,
+        LoopInRegexInspection::class.java
     )
 }

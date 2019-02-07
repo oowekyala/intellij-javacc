@@ -75,12 +75,12 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
             }
 
     companion object {
-        const val DisplayName = "Token can never be matched"
+        const val DisplayName = "String will never be matched as a string token"
         const val RealNavigateFixName = "Navigate to real matching token"
         const val NavigateFixName = "Navigate to string token"
 
         fun problemDescription(literalText: String, stringTokenName: String?, realMatchName: String?) =
-                "$literalText token  cannot be matched as ${stringTokenName?.let { "the string literal token <$it>" }
+                "$literalText token cannot be matched as ${stringTokenName?.let { "the string literal token <$it>" }
                     ?: "a string literal token"}, " +
                         "${realMatchName ?: "another token"} matches its input instead"
 

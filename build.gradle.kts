@@ -175,8 +175,12 @@ tasks {
                 <p>What's new:
                 <ul>
                     <li>Completion of string literals with available string tokens</li>
-                    <li>Left-recursive production detection.</li>
+                    <li>100% coverage of JavaCC semantic errors</li>
                     <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
+                    <li>Left-recursive production detection, and regex loop detection</li>
+                    <li>Usage of string tokens that would be matched as another token now trigger a warning (see inspections page).
+                    "Token can never be matched" inspection has been toned down because it triggered false positives.
+                    </li>
                 </ul>
 
                 <p>What's fixed:
