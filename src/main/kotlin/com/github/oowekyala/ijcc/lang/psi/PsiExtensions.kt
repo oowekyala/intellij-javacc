@@ -7,6 +7,7 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 
 /** Lazy sequence of children. */
@@ -112,8 +113,9 @@ inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out 
         PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
 
 
+fun PsiElement.isOfType(elt: IElementType): Boolean = node?.elementType == elt
 
-fun PsiElement.isOfType(elementType: IElementType): Boolean = node.elementType == elementType
+fun PsiElement.isOfType(elt: IElementType, vararg elementType: IElementType): Boolean = node?.elementType?.let { TokenSet.create(elt, *elementType).contains(it) } == true
 
 
 fun TextRange.containsInside(offset: Int): Boolean = offset in (startOffset + 1)..(endOffset - 1)

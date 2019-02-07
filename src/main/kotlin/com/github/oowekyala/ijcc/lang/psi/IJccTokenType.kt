@@ -7,4 +7,4 @@ import com.intellij.psi.tree.IElementType
  * @author Clément Fournier
  * @since 1.0
  */
-class IJccTokenType(id: String) : IElementType(id, JavaccLanguage)
+class IJccTokenType(val id: String) : IElementType(id, JavaccLanguage)
