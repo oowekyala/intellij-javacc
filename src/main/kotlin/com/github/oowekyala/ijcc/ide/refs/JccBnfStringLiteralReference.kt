@@ -4,13 +4,15 @@ import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
-import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import java.util.*
+import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
+import com.intellij.codeInsight.TailType
+import com.intellij.codeInsight.lookup.TailTypeDecorator
 
 /**
  * Reference from a literal regex written in BNF to its [Token]. Regexes in BNF are always in the
@@ -53,12 +55,15 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         .lexicalGrammar
         .defaultState
         .tokens
+        .asSequence()
         .filter { !it.isPrivate }
         .mapNotNull { token ->
             val asString = token.getAsStringToken() ?: return@mapNotNull null
 
             LookupElementBuilder
-                .create(asString.text)
+                .create(asString.text.removeSuffix("\""))
+                .withPsiElement(token.psiElement)
+                .withPresentableText(asString.text)
                 .withIcon(JavaccIcons.TOKEN)
                 .withTypeText(token.let {
                     buildString {
@@ -77,6 +82,14 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
                         }
                     }
                 }, true)
+        }.map {
+            TailTypeDecorator.withTail(
+               it, TailType.createSimpleTailType('"')
+            )
+        }.map {
+            TailTypeDecorator.withTail(
+                it, TailType.SPACE
+            )
         }
         .toList().toTypedArray()
 
