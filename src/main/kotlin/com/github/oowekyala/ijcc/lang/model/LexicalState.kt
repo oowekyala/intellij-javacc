@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
+import com.github.oowekyala.ijcc.lang.psi.JccRefRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.match
 import java.util.*
 import java.util.function.Function
@@ -114,9 +115,14 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
             /** Must be called in document order. */
             fun addToken(token: Token) {
-                if (mySpecs.none { Token.areEquivalent(it, token) }) {
+
+                if ( // freestanding regex refs are ignored
+                    token.regularExpression !is JccRefRegularExpression
                     // don't add duplicate synthetic tokens in the same state
+                    && mySpecs.none { Token.areEquivalent(it, token) }) {
+
                     mySpecs.add(token)
+
                 }
             }
 

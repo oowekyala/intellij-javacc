@@ -429,9 +429,13 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 .asSequence()
                 .mapNotNull { st ->
                     st.matchLiteral(regex, exact = true)
-                        ?.takeUnless { it == regex.enclosingToken }
+                        ?.takeUnless {
+                            // this follows references
+                            it.getAsStringToken() == regex
+                        }
                         ?.let { Pair(st, it) }
                 }
+                // TODO reduce, foreach makes no sense
                 .forEach { (state, token) ->
                     myHolder += errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
                 }

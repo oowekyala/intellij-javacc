@@ -74,14 +74,10 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                                                      specOwnsProblem: Boolean
         ) {
 
-            val consideredStates = spec.lexicalStatesNameOrEmptyForAll
-
-
             val matchedBy: List<JccRegexSpec> =
                     spec.containingFile.lexicalGrammar // TODO optimise
-                        .lexicalStates
+                        .getLexicalStates(spec.lexicalStatesNameOrEmptyForAll.toSet())
                         .asSequence()
-                        .filter { consideredStates.isEmpty() || consideredStates.contains(it.name) }
                         .mapNotNull { it.matchLiteral(elt, false) }
                         .filterIsInstance<ExplicitToken>()
                         // matching itself doesn't count

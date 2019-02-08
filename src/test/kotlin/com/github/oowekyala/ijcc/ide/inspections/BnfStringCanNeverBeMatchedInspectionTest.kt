@@ -164,4 +164,16 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
         """
     )
 
+    /*
+TODO
+    PARSER_END(Foo)
+      TOKEN: {
+        <foo:<boo>>
+      | <boo:"str">
+      // JavaCC says "str" cannot be matched as <boo>,
+      // will always be matched as <foo>, this is a warning though
+   }
+
+     */
+
 }

@@ -177,22 +177,42 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
     )
 
-    fun `test nearly label redefinition NEG`() = checkByText(
+    fun `test label redefinition NEG`() = checkByText(
         """
             $DummyHeader
             TOKEN: {
                <boo:"str">
-             | <foo:<boo>>
+             | <foo:<boo>> // this is probably a bug in JavaCC, it's inconsistent
             }
         """
     )
 
-    fun `test nearly label redefinition NEG 2`() = checkByText(
+    fun `test label redefinition forward NEG`() = checkByText(
         """
             $DummyHeader
             TOKEN: {
-               <boo:"str">
-             | <foo:<boo>>
+                <foo:<boo>> // this is probably a bug in JavaCC, it's inconsistent
+             |  <boo:"str">
+            }
+        """
+    )
+
+    fun `test freestanding forward ref NEG`() = checkByText(
+        """
+            $DummyHeader
+            TOKEN: {
+               <foo>
+             | <foo:"str">
+            }
+        """
+    )
+
+    fun `test freestanding ref NEG`() = checkByText(
+        """
+            $DummyHeader
+            TOKEN: {
+               <foo:"str">
+             | <foo>
             }
         """
     )
