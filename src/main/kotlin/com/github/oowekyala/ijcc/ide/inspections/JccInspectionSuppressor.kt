@@ -75,10 +75,10 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
     private fun containerName(element: PsiElement) =
             when (element.getNearestContainer()) {
-                is JccFile                                                                            -> "file"
-                is JccRegexSpec                                                                       -> "token specification"
+                is JccFile                                         -> "file"
+                is JccRegexSpec                                    -> "token specification"
                 is JccNonTerminalProduction, is JccRegexProduction -> "production"
-                else                                                                                  -> "element"
+                else                                               -> "element"
             }
 
     private fun PsiElement.isContainer(): Boolean =
@@ -93,7 +93,7 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
         val ignoredSet = when (this) {
             is JccRegexSpec -> RegexSpecIgnoreSet
-            else                                               -> JccTypesExt.WhitespaceTypeSet
+            else            -> JccTypesExt.WhitespaceTypeSet
         }
 
 

@@ -19,15 +19,15 @@ class JccStructureTreeElement(val element: JccPsiElement)
     override fun getValue(): Any = element
 
     override fun getAlphaSortKey(): String = when (element) {
-        is JccOptionSection                                      -> "aaaaaaa"
-        is JccParserDeclaration                                  -> "aaaaaaZ"
-        is JccTokenManagerDecls                                  -> "aaaaaZZ"
-        is JccRegexProduction -> "aaaaZZZ"
-        else                                                     -> element.getPresentableText()
+        is JccOptionSection     -> "aaaaaaa"
+        is JccParserDeclaration -> "aaaaaaZ"
+        is JccTokenManagerDecls -> "aaaaaZZ"
+        is JccRegexProduction   -> "aaaaZZZ"
+        else                    -> element.getPresentableText()
     }
 
     override fun getChildren(): Array<TreeElement> = when (element) {
-        is JccFile                                               ->
+        is JccFile            ->
             listOfNotNull(
                 element.options,
                 element.parserDeclaration,
@@ -37,15 +37,15 @@ class JccStructureTreeElement(val element: JccPsiElement)
                 .plus(element.nonTerminalProductions)
 
         is JccRegexProduction -> element.regexSpecList
-        is JccOptionSection                                      -> element.optionBindingList
-        is JccBnfProduction                                      ->
+        is JccOptionSection   -> element.optionBindingList
+        is JccBnfProduction   ->
             element.expansion
                 ?.descendantSequence(includeSelf = true)
                 ?.filterIsInstance<JccRegexExpansionUnit>()
                 // consider only synthetic tokens
                 ?.filter { it.referencedToken?.isExplicit == false }
                 ?.toList().orEmpty()
-        else                                                     -> emptyList()
+        else                  -> emptyList()
     }
         .map { JccStructureTreeElement(it) }
         .toTypedArray()

@@ -36,7 +36,11 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         val file = element.containingFile
         val grammar = file.lexicalGrammar
 
-        return grammar.defaultState.matchLiteral(element, exact, consideredRegexKinds = EnumSet.allOf(RegexKind::class.java))
+        return grammar.defaultState.matchLiteral(
+            element,
+            exact,
+            consideredRegexKinds = EnumSet.allOf(RegexKind::class.java)
+        )
     }
 
     override fun resolve(): PsiElement? = resolveToken(exact = true)?.psiElement

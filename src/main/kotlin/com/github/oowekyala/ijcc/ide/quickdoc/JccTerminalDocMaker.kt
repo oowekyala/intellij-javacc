@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
-import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*

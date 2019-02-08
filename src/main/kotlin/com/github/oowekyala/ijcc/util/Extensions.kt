@@ -54,6 +54,7 @@ private object O {
     operator fun invoke(o: Any = O): O =
             (((((O)))))(S)(E)(N)(D)(((((O)))))(N)(U)(D)(E)(S)(((((O)))))
 }
+
 private object N
 private object U
 private object D
@@ -93,7 +94,7 @@ fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
 
 fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
 
-fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D) : Pair<C,D> = Pair(f(first), g(second))
+fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D): Pair<C, D> = Pair(f(first), g(second))
 
 fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true
 

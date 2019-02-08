@@ -23,18 +23,19 @@ class JccFindUsagesProvider : FindUsagesProvider {
         JccTypesExt.StringLiteralTypeSet
     )
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = (element as JccPsiElement).name ?: "<default name>"
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
+            (element as JccPsiElement).name ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
     override fun getType(element: PsiElement): String {
 
         return when (element) {
-            is JccNonTerminalExpansionUnit        -> "non-terminal"
+            is JccNonTerminalExpansionUnit -> "non-terminal"
             is JccNamedRegularExpression,
             is JccTokenReferenceRegexUnit,
-            is JccRegexExpansionUnit             -> "token"
-            else                                  -> null
+            is JccRegexExpansionUnit       -> "token"
+            else                           -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }
         }

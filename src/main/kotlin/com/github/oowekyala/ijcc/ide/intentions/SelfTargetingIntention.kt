@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
-import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.ancestors
 import com.github.oowekyala.ijcc.lang.psi.containsInside
 import com.intellij.codeInsight.FileModificationService

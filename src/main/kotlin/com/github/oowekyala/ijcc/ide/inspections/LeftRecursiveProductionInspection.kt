@@ -1,7 +1,8 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.leftMostSet
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType

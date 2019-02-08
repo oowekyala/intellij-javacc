@@ -4,10 +4,7 @@ import com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention
 import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.ijcc.util.deleteWhitespace
-import com.intellij.codeInspection.LocalQuickFix
-import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import org.intellij.lang.annotations.Language
 

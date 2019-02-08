@@ -52,7 +52,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
 
     /** Returns true if this is a single literal token. */
     fun getAsStringToken(): JccLiteralRegexUnit? =
-            // this relies on the fact that the reference doesn't use the lexical grammar
+    // this relies on the fact that the reference doesn't use the lexical grammar
             regularExpression?.asSingleLiteral(followReferences = true)
 
     val psiElement: JccPsiElement? get () = psiPointer.element

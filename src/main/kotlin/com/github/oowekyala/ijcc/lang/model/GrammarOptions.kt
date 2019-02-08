@@ -21,8 +21,12 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
         }
 
     // TODO parse from the PARSER def
-    val parserPackage: String  by lazy { parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: "" }
-    val parserSimpleName: String  by lazy { parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: "" }
+    val parserPackage: String  by lazy {
+        parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: ""
+    }
+    val parserSimpleName: String  by lazy {
+        parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: ""
+    }
 
     val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 

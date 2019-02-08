@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccParenthesizedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccZeroOrOne
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
-import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -23,9 +22,9 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
         when (it.node.elementType) {
             JccTypes.JCC_RPARENTH, JccTypes.JCC_LPARENTH ->
                 it.parent as? JccParenthesizedExpansionUnit
-            JccTypes.JCC_QUESTION                                                       ->
+            JccTypes.JCC_QUESTION                        ->
                 it.let { it.parent as? JccZeroOrOne }?.let { it.parent as? JccParenthesizedExpansionUnit }
-            else                                                                                                       -> null
+            else                                         -> null
         }
     }
 
@@ -51,7 +50,7 @@ class ReplaceBracedExpansionUnitWithParenthesizedIntention : PsiElementBaseInten
             element.takeIf {
                 when (it.node.elementType) {
                     JccTypes.JCC_RBRACKET, JccTypes.JCC_LBRACKET -> true
-                    else                                                                                                       -> false
+                    else                                         -> false
                 }
             }
                 ?.let { it.parent is JccOptionalExpansionUnit } == true

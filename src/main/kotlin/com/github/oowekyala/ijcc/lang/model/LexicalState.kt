@@ -51,13 +51,13 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                 filterWith(consideredRegexKinds, stopAtOffset).firstOrNull { it.matchesLiteral(toMatch) }
             else
                 filterWith(consideredRegexKinds, stopAtOffset)
-                .mapNotNull { token ->
-                    val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
+                    .mapNotNull { token ->
+                        val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                    if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
-                }
-                .maxWith(matchComparator)
-                ?.let { it.first }
+                        if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
+                    }
+                    .maxWith(matchComparator)
+                    ?.let { it.first }
 
     /**
      * Returns the string token that matches exactly this regex unit.

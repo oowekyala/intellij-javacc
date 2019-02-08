@@ -2,9 +2,9 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
 import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor.Companion.linearise
-import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
+import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
 import com.intellij.lang.injection.MultiHostInjector

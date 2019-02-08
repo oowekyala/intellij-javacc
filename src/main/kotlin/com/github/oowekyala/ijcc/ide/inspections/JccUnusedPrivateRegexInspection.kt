@@ -14,7 +14,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
 import gnu.trove.THashSet
-import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 import org.intellij.lang.annotations.Language
 
 /**
@@ -86,7 +85,6 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
         }
 
 
-
         val privateTokens =
                 tokens.filter { o -> !inSuppressed.contains(o) }
                     .filterIsInstance<ExplicitToken>()
@@ -96,7 +94,7 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
             when {
                 !inExpr.contains(token)    -> "Unused private regex"
                 !reachable.contains(token) -> "Unreachable private regex"
-                else                      -> null
+                else                       -> null
             }?.runIt { message ->
                 val spec = token.spec ?: return@runIt
                 holder.registerProblem(

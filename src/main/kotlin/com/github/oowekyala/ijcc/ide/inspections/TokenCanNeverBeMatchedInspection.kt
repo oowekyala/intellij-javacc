@@ -45,12 +45,12 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
                     val expansion = spec.getRootRegexElement(followReferences = false)
                     if (expansion != null) {
                         when (expansion) {
-                            is JccLiteralRegexUnit -> holder.checkRegexElement(
+                            is JccLiteralRegexUnit    -> holder.checkRegexElement(
                                 spec,
                                 expansion,
                                 specOwnsProblem = true
                             )
-                            is JccRegexAlternativeElt                                 -> {
+                            is JccRegexAlternativeElt -> {
                                 expansion.regexElementList.forEach {
                                     if (it is JccLiteralRegexUnit) {
                                         holder.checkRegexElement(spec, it, specOwnsProblem = false)

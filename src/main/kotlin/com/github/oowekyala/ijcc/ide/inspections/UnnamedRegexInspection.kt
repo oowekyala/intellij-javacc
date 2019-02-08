@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.ide.intentions.AddNameToRegexIntention
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInspection.IntentionWrapper
 import com.intellij.codeInspection.ProblemsHolder
@@ -36,7 +36,7 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
                 if (regex !is JccNamedRegularExpression) {
                     val desc = when (regex) {
                         is JccRefRegularExpression -> FreeStandingReferenceProblemDesc
-                        else                                                          -> GenericProblemDesc
+                        else                       -> GenericProblemDesc
                     }
                     holder.registerProblem(
                         o,
@@ -51,6 +51,7 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
     companion object {
         const val DisplayName = "Unnamed regular expression"
         const val GenericProblemDesc = "Unnamed token"
-        const val FreeStandingReferenceProblemDesc = "JavaCC ignores free-standing regular expression references unless they have a different name"
+        const val FreeStandingReferenceProblemDesc =
+                "JavaCC ignores free-standing regular expression references unless they have a different name"
     }
 }

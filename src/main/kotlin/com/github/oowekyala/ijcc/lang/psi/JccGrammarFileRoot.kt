@@ -1,4 +1,3 @@
-
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure

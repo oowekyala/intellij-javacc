@@ -1,7 +1,10 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
+import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexElement
+import com.github.oowekyala.ijcc.lang.psi.safeReplace
+import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager

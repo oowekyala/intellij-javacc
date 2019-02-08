@@ -265,12 +265,12 @@ fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRege
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? {
     return when (this) {
-        is JccNamedRegularExpression                                  -> this.regexElement
-        is JccRefRegularExpression -> this.unit
-        is JccContainerRegularExpression                              -> this.regexElement
-        is JccEofRegularExpression                                    -> null
-        is JccLiteralRegularExpression                                -> this.unit
-        else                                                          -> throw IllegalStateException(this.toString())
+        is JccNamedRegularExpression     -> this.regexElement
+        is JccRefRegularExpression       -> this.unit
+        is JccContainerRegularExpression -> this.regexElement
+        is JccEofRegularExpression       -> null
+        is JccLiteralRegularExpression   -> this.unit
+        else                             -> throw IllegalStateException(this.toString())
     }?.unwrapParens()?.let {
         when (it) {
             is JccTokenReferenceRegexUnit ->
@@ -287,7 +287,7 @@ fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false):
 
 fun JccRegexElement.unwrapParens(): JccRegexElement = when (this) {
     is JccParenthesizedRegexUnit -> this.regexElement.unwrapParens()
-    else                                                            -> this
+    else                         -> this
 }
 
 
@@ -340,8 +340,8 @@ val JccCharacterListRegexUnit.isAnyMatch: Boolean
  */
 fun JccRegexElement.promoteToRegex(): JccRegularExpression = when (this) {
     is JccTokenReferenceRegexUnit -> createRegex<JccRefRegularExpression>(project, text)
-    is JccLiteralRegexUnit                                           -> createRegex<JccLiteralRegularExpression>(project, text)
-    else                                                             -> createRegex<JccContainerRegularExpression>(project, "< $text >")
+    is JccLiteralRegexUnit        -> createRegex<JccLiteralRegularExpression>(project, text)
+    else                          -> createRegex<JccContainerRegularExpression>(project, "< $text >")
 }
 
 // constrain the hierarchies to be the same to avoid some confusions
@@ -359,15 +359,15 @@ fun JccRegexElement.safeReplace(regex: JccRegexElement): PsiElement? {
     return when {
         regex is JccTokenReferenceRegexUnit
                 && parent is JccRegularExpression
-                && parent !is JccRefRegularExpression ->
+                && parent !is JccRefRegularExpression     ->
             parent.safeReplace(regex.promoteToRegex())
 
         regex is JccLiteralRegexUnit
                 && parent is JccRegularExpression
-                && parent !is JccLiteralRegularExpression                                ->
+                && parent !is JccLiteralRegularExpression ->
             parent.safeReplace(regex.promoteToRegex())
 
-        else                                                                             -> replace(regex)
+        else                                              -> replace(regex)
     }
 }
 

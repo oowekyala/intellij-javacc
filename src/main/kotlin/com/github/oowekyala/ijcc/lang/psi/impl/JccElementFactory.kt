@@ -7,7 +7,10 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiParserFacade
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.lang.annotations.Language
 
@@ -111,8 +114,6 @@ object JccElementFactory {
         return file.nonTerminalProductions.first().findChildOfType(JccLocalLookaheadUnit::class.java)!!.javaExpression!!
     }
 
-    
-    
 
     fun createJavaBlock(project: Project, text: String): JccJavaBlock {
         val fileText = """
@@ -186,8 +187,8 @@ object JccElementFactory {
      * Create from an AST node, used by the parser.
      */
     fun createElement(node: ASTNode): PsiElement = JccTypes.Factory.createElement(node)
-    
-    
+
+
     @Language("JavaCC")
     const val DummyHeader = """
                 PARSER_BEGIN(dummy)
@@ -196,7 +197,7 @@ object JccElementFactory {
 
                 PARSER_END(dummy)
                 """
-    
+
 }
 
 

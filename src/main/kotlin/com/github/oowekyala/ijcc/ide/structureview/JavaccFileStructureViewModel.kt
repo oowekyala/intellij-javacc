@@ -86,10 +86,10 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
 
             override fun isVisible(treeElement: TreeElement): Boolean =
                     when (treeElement.let { it as JccStructureTreeElement }.element) {
-                        is JccRegexSpec                                          -> false
-                        is JccRegexProduction -> false
-                        is JccRegexExpansionUnit                                -> false
-                        else                                                     -> true
+                        is JccRegexSpec          -> false
+                        is JccRegexProduction    -> false
+                        is JccRegexExpansionUnit -> false
+                        else                     -> true
                     }
 
             override fun isReverted(): Boolean = true

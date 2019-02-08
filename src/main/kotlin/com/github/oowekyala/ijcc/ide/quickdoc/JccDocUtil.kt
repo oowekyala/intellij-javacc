@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.javadoc.JavaDocUtil

@@ -293,6 +293,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             }
         }
     }
+
     override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
@@ -427,7 +428,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 .getLexicalStates(myStates)
                 .asSequence()
                 .mapNotNull { st ->
-                    st.matchLiteral(regex, exact = true)?.takeUnless { it == regex.enclosingToken }?.let { Pair(st, it) }
+                    st.matchLiteral(regex, exact = true)?.takeUnless { it == regex.enclosingToken }
+                        ?.let { Pair(st, it) }
                 }
                 .forEach { (state, token) ->
                     myHolder += errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))

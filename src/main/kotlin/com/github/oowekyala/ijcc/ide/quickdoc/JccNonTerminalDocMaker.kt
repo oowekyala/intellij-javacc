@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.ide.inspections.docIsNecessary
-import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.model.Token
@@ -72,12 +71,14 @@ object JccNonTerminalDocMaker {
         fun startOn(jccExpansion: JccExpansion) {
 
             fun skipUninteresting(exp: JccExpansion): JccExpansion? = when {
-                exp is JccParenthesizedExpansionUnit && !exp.docIsNecessary() ->
+                exp is JccParenthesizedExpansionUnit && !exp.docIsNecessary()                         ->
                     exp.expansion?.let { skipUninteresting(it) }
-                exp is JccScopedExpansionUnit                                 -> skipUninteresting(exp.expansionUnit)
+                exp is JccScopedExpansionUnit                                                         -> skipUninteresting(
+                    exp.expansionUnit
+                )
                 exp is JccExpansionSequence && exp.expansionUnitList.count { it.isDocumented() } == 1 ->
                     skipUninteresting(exp.expansionUnitList.first { it.isDocumented() })
-                else                                                          -> exp
+                else                                                                                  -> exp
             }
 
             val root = skipUninteresting(jccExpansion) ?: return
@@ -89,11 +90,11 @@ object JccNonTerminalDocMaker {
         }
 
         private fun JccExpansion.isDocumented(): Boolean = when (this) {
-            is JccParserActionsUnit                                     -> false
-            is JccLocalLookaheadUnit -> false
-            is JccExpansionSequence                                     -> expansionUnitList.any { it.isDocumented() }
-            is JccExpansionAlternative                                  -> expansionList.any { it.isDocumented() }
-            else                                                        -> true
+            is JccParserActionsUnit    -> false
+            is JccLocalLookaheadUnit   -> false
+            is JccExpansionSequence    -> expansionUnitList.any { it.isDocumented() }
+            is JccExpansionAlternative -> expansionList.any { it.isDocumented() }
+            else                       -> true
         }
 
         override fun visitExpansionAlternative(o: JccExpansionAlternative) {

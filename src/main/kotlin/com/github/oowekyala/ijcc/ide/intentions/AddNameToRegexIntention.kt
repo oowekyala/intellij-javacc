@@ -23,7 +23,7 @@ class AddNameToRegexIntention :
     override fun run(project: Project, editor: Editor, element: JccRegularExpression): () -> Unit {
         val regexText = when (element) {
             is JccContainerRegularExpression -> element.regexElement?.text
-            else                                                                -> element.text
+            else                             -> element.text
         } ?: ""
 
 
