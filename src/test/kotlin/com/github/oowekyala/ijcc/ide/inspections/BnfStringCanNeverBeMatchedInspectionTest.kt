@@ -31,6 +31,20 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
         """
     )
 
+    fun `test synthetic neg`() = checkByText(
+        """
+            $DummyHeader
+
+           void Foo():
+           {}
+           {
+               "foo" "foo"
+           }
+
+
+        """
+    )
+
     fun `test pos`() = checkByText(
         """
             $DummyHeader

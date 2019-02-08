@@ -299,7 +299,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         myHolder +=
                 when {
                     reffed == null                             ->
-                        wrongReferenceInfo(o.nameIdentifier, "Undefined lexical token name \"${o.name}\"")
+                        wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
                     reffed.isPrivate && !o.canReferencePrivate -> wrongReferenceInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"

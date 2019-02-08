@@ -1,5 +1,8 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntheticToken
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -13,7 +16,8 @@ import com.intellij.pom.Navigatable
  * TODO represent synthetic members as non navigatable?
  *
  */
-class JccStructureTreeElement(val element: JccPsiElement)
+class JccStructureTreeElement(val element: JccPsiElement,
+                             private val lexicalGrammar: LexicalGrammar)
     : StructureViewTreeElement, SortableTreeElement, Navigatable by element {
 
     override fun getValue(): Any = element
@@ -38,18 +42,19 @@ class JccStructureTreeElement(val element: JccPsiElement)
 
         is JccRegexProduction -> element.regexSpecList
         is JccOptionSection   -> element.optionBindingList
-        is JccBnfProduction   ->
-            element.expansion
-                ?.descendantSequence(includeSelf = true)
-                ?.filterIsInstance<JccRegexExpansionUnit>()
-                // consider only synthetic tokens
-                ?.filter { it.referencedToken?.isExplicit == false }
-                ?.toList().orEmpty()
+        is JccBnfProduction   ->{
+            lexicalGrammar
+                .defaultState
+                .tokens
+                .mapNotNull { it as? SyntheticToken }
+                .filter { it.regularExpression?.ancestors(includeSelf = false)?.any { it == element } == true }
+                .mapNotNull { it.declUnit }
+                .toList()
+        }
         else                  -> emptyList()
     }
-        .map { JccStructureTreeElement(it) }
+        .map { JccStructureTreeElement(it, lexicalGrammar) }
         .toTypedArray()
-
 
     override fun getPresentation(): ItemPresentation = element.getPresentationForStructure()
 

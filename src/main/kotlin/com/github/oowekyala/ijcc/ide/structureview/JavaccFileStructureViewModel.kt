@@ -16,7 +16,7 @@ import com.intellij.openapi.actionSystem.Shortcut
  * @since 1.0
  */
 class JavaccFileStructureViewModel(psiFile: JccFile)
-    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile)),
+    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile, psiFile.lexicalGrammar)),
     StructureViewModel.ElementInfoProvider {
 
     init {

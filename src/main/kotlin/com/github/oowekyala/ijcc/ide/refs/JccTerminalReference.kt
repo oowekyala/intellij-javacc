@@ -38,6 +38,8 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
         return element.containingFile
             .grammarFileRoot.allProductions()
             .flatMap { it.tokensUnfiltered() }
+                // references can't declare themselves
+            .filter { it.regularExpression !is JccRefRegularExpression }
             .firstOrNull { it.name == searchedName }
     }
 

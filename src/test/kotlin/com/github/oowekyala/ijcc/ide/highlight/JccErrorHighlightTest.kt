@@ -233,6 +233,40 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     )
 
 
+    fun `test token ref can't define itself bnf `() = checkByText(
+        """
+           $DummyHeader
+
+            void Foo():
+            {}
+            {
+                <${"foo".undefinedStringToken()}>
+            }
+
+        """
+    )
+
+
+    fun `test token ref can't define itself bnf in container`() = checkByText(
+        """
+           $DummyHeader
+
+            void Foo():
+            {}
+            {
+                <<${"foo".undefinedStringToken()}>>
+            }
+
+        """
+    )
+
+    private fun String.undefinedStringToken() =
+            errorAnnot(
+                this,
+                JccErrorMessages.undefinedTokenName(name = this)
+            )
+
+
     private fun String.stringTokenHasWrongKind(literalText: String = this, actualKind: RegexKind) =
             errorAnnot(
                 this,

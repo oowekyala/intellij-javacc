@@ -53,10 +53,36 @@ class StructureViewTest : JccTestBase() {
         {}
         {
             "flabberGasted" // synthetic
+            "flabberGasted" // no duplicate
+        }
+        """,
+        """
+    -dummy.jjt
+    class Dummy
+    -TOKEN
+    <FOO : "hello">
+    <BAR : "hye">
+    -Foo()
+    <"flabberGasted">
+    """
+    )
+
+
+    fun `test synthetic token duplicates`() = doTest(
+        """
+        $DummyHeader
+
+        <Astate> TOKEN: {
+              <FOO: "hello">
+            | <BAR: "hye"> { foo(); }
         }
 
-
-
+        void Foo():
+        {}
+        {
+            "hello" // synthetic
+            "flabberGasted" // no duplicate
+        }
     """,
         """
         -dummy.jjt

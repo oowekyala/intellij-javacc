@@ -45,6 +45,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val prefixPattern: Regex? by lazy { regularExpression?.prefixPattern }
 
     val isExplicit: Boolean = this is ExplicitToken
+    val isSynthetic: Boolean = !isExplicit
 
     val textOffset: Int? get() = psiElement?.textOffset
 

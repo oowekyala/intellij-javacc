@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
+import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 import org.jetbrains.annotations.TestOnly
 
 /**
@@ -56,5 +57,7 @@ object JccErrorMessages {
 
     fun stringLiteralIsPrivate(regexText: String) =
             "String token $regexText has been defined as a private (#) regular expression"
+
+    fun undefinedTokenName(name:String) = "Undefined lexical token name \"$name\""
 
 }
