@@ -86,10 +86,6 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
             TailTypeDecorator.withTail(
                it, TailType.createSimpleTailType('"')
             )
-        }.map {
-            TailTypeDecorator.withTail(
-                it, TailType.SPACE
-            )
         }
         .toList().toTypedArray()
 

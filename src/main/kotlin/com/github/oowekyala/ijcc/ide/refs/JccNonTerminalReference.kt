@@ -1,12 +1,17 @@
 package com.github.oowekyala.ijcc.ide.refs
 
+import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
 import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
+import com.intellij.codeInsight.TailType
+import com.intellij.codeInsight.TailTypes
+import com.intellij.codeInsight.completion.simple.ParenthesesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -36,7 +41,21 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
 
     override fun getVariants(): Array<Any?> =
             element.containingFile.nonTerminalProductions.map {
-                LookupElementBuilder.create(it, it.name).withIcon(it.getPresentationIcon())
+                LookupElementBuilder.create(it, it.name)
+                    .withPresentableText(it.getPresentableText())
+                    .withIcon(it.getPresentationIcon())
+            }.map {
+                TailTypeDecorator.withTail(
+                    it, TailType.LPARENTH
+                )
+            }.map {
+                TailTypeDecorator.withTail(
+                    it, TailType.createSimpleTailType(')')
+                )
+            }.map {
+                TailTypeDecorator.withTail(
+                    it, TailType.SPACE
+                )
             }.toList().toTypedArray()
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
