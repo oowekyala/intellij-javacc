@@ -170,11 +170,11 @@ tasks {
             """
                 <p>What's new:
                 <ul>
-                    <li>Completion of string literals with available string tokens!</li>
+                    <li>Completion of string literals with available string tokens</li>
                     <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
                     <li>100% coverage of JavaCC semantic errors</li>
                     <li>Left-recursive production detection, and regex loop detection</li>
-                    <li>Usage of string tokens that would be matched as another token now trigger a warning (see inspections page).
+                    <li>Usage of string tokens that would be matched as another token now trigger a warning.
                     "Token can never be matched" inspection has been toned down because it triggered false positives.
                     </li>
                 </ul>
@@ -182,7 +182,7 @@ tasks {
                 <p>What's fixed:
                 <ul>
                     <li>Match JavaCC's errors more closely, in particular with string token definitions, which it treats very specially.</li>
-                    <li>Countless false positives of "token name was not defined"</li>
+                    <li>Countless false positives of "token name has not been defined"</li>
                 </ul>
             """.trimIndent()
         )
