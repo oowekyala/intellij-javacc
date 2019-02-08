@@ -30,11 +30,7 @@ class AddNameToRegexIntention :
         val newExpr = createRegex<JccNamedRegularExpression>(element.project, "< FOO: $regexText >")
         return {
             val replaced = element.safeReplace(newExpr)
-            startTemplate(
-                project,
-                editor,
-                replaced
-            )
+            startTemplate(project, editor, replaced)
         }
     }
 

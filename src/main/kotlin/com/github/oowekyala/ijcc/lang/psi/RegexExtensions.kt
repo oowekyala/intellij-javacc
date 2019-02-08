@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
+import com.github.oowekyala.ijcc.lang.psi.impl.JccRegularExpressionImpl
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -33,18 +34,25 @@ val JccLiteralRegularExpression.match: String
  * visit to return null. Any unresolved token reference also causes
  * to return null.
  */
-fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? {
-    val root = this
-    val visitor = RegexResolutionVisitor(prefixMatch)
-    root.accept(visitor)
+fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? =
+        toPatternImpl(prefixMatch, mutableSetOf())
+
+private fun JccRegularExpression.toPatternImpl(prefixMatch: Boolean = false,
+                                               visited: MutableSet<JccTokenReferenceRegexUnit>): Regex? {
+    val visitor = RegexResolutionVisitor(prefixMatch, visited)
+    this.accept(visitor)
     return if (visitor.unresolved) null
-    else try {
-        Regex(visitor.builder.toString())
-    } catch (e: PatternSyntaxException) {
-        LOG.error(e)
-        null
+    else visitor.builder.toString().toRegexSafe()?.also {
+        (this as JccRegularExpressionImpl).pattern = it // cache it
     }
 }
+
+private fun String.toRegexSafe(): Regex? =
+        try {
+            Regex(this)
+        } catch (e: PatternSyntaxException) {
+            null
+        }
 
 /** Returns the token this regex is declared in. Is synthetic if the regex occurs in a BNF expansion. */
 val JccRegexLike.enclosingToken: Token
@@ -86,7 +94,9 @@ val JccRegexProduction.isIgnoreCase: Boolean
         .any { it.isOfType(JccTypes.JCC_IGNORE_CASE_OPTION) }
 
 
-private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor() {
+private class RegexResolutionVisitor(prefixMatch: Boolean,
+                                     private val visited: MutableSet<JccTokenReferenceRegexUnit>) :
+    RegexLikeDFVisitor() {
 
     val builder = StringBuilder()
 
@@ -111,10 +121,17 @@ private class RegexResolutionVisitor(prefixMatch: Boolean) : RegexLikeDFVisitor(
     }
 
     override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
+        if (unresolved || o in visited) {
+            unresolved = true // cyclic reference
+            return
+        }
+        visited += o // add the token ref
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
-        else ref.regularExpression?.pattern?.toString().let { builder.append(it) }
+        else ref.regularExpression?.toPatternImpl(false, visited)?.toString()?.let { builder.append(it) } ?: run {
+            unresolved = true
+        }
     }
 
     override fun visitRefRegularExpression(o: JccRefRegularExpression) {
@@ -263,7 +280,12 @@ fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRege
  * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccContainerRegularExpression]
  * if needed. Also unwraps [JccParenthesizedRegexUnit]s occurring at the top.
  */
-fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? {
+fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? =
+        getRootRegexElementImpl(followReferences, mutableSetOf())
+
+private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boolean,
+                                                         visited: MutableSet<JccTokenReferenceRegexUnit>): JccRegexElement? {
+
     return when (this) {
         is JccNamedRegularExpression     -> this.regexElement
         is JccRefRegularExpression       -> this.unit
@@ -274,12 +296,19 @@ fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false):
     }?.unwrapParens()?.let {
         when (it) {
             is JccTokenReferenceRegexUnit ->
-                if (followReferences)
-                    it.typedReference
-                        .resolveToken()
-                        ?.regularExpression
-                        ?.getRootRegexElement(followReferences)
-                else it
+                if (followReferences) {
+                    if (it in visited) {
+                        return it // cyclic reference
+                    }
+
+                    visited += it
+                    val reffed = it.typedReference.resolveToken()?.regularExpression
+
+                    return when (reffed) {
+                        null -> it
+                        else -> reffed.getRootRegexElementImpl(followReferences, visited)
+                    }
+                } else it
             else                          -> it
         }
     }

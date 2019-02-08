@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
+import com.intellij.codeInsight.FileModificationService
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -19,6 +20,7 @@ abstract class JccSelfTargetingEditorIntentionBase<T : PsiElement>(
 
         val kRunnable = run(project, editor, element)
 
+        FileModificationService.getInstance().prepareFileForWrite(element.containingFile)
         if (startInWriteAction()) {
             kRunnable()
         } else {

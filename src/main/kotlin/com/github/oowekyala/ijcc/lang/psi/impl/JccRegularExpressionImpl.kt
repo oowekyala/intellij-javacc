@@ -21,7 +21,14 @@ abstract class JccRegularExpressionImpl(node: ASTNode) : JccPsiElementImpl(node)
     }
 
 
-    override val pattern: Regex? by lazy { toPattern(prefixMatch = false) }
+    override var pattern: Regex? = null
+        get() {
+            if (field == null) {
+                field = toPattern(prefixMatch = false)
+            }
+            return field
+        }
+
     override val prefixPattern: Regex? by lazy {
         toPattern(prefixMatch = true)
     }

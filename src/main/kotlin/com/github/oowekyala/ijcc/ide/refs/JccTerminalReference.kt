@@ -33,6 +33,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
         // This can't use the lexical grammar directly,
         // because the lexical grammar uses references of this type
         // to resolve string tokens
+        // TODO you should optimise that, split lexical grammar initialisation in 2
 
         return element.containingFile
             .grammarFileRoot.allProductions()
@@ -62,10 +63,13 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
             element.containingFile.lexicalGrammar
                 .allTokens
                 .filter { canReferencePrivate || !it.isPrivate }
-                .map {
-                    LookupElementBuilder
-                        .create(it.name!!)
-                        .withIcon(it.psiElement?.getPresentationIcon())
+                .mapNotNull { token ->
+                    token.name?.let { name ->
+                        LookupElementBuilder
+                            .create(name)
+                            .withIcon(token.psiElement?.getPresentationIcon())
+
+                    }
                 }
                 .map {
                     TailTypeDecorator.withTail(it, TailType.createSimpleTailType('>'))

@@ -21,6 +21,10 @@ class RemoveNameFromRegexIntention
         element.safeReplace(element.regexElement!!.promoteToRegex())
     }
 
-    override fun isApplicableTo(element: JccNamedRegularExpression): Boolean =
-            element.parent !is JccRegexSpec && element.regexElement != null
+    override fun isApplicableTo(element: JccNamedRegularExpression): Boolean {
+
+
+
+        return element.parent !is JccRegexSpec && element.regexElement != null
+    }
 }
