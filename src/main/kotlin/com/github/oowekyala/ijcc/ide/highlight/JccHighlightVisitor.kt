@@ -428,7 +428,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 .getLexicalStates(myStates)
                 .asSequence()
                 .mapNotNull { st ->
-                    st.matchLiteral(regex, exact = true)?.takeUnless { it == regex.enclosingToken }
+                    st.matchLiteral(regex, exact = true)
+                        ?.takeUnless { it == regex.enclosingToken }
                         ?.let { Pair(st, it) }
                 }
                 .forEach { (state, token) ->

@@ -74,10 +74,6 @@ intellij {
 
 tasks {
 
-    test {
-        useJUnitPlatform()
-    }
-
     val GenerationTaskGroup = "Code generation"
 
     val generateParser by creating(GenerateParser::class) {
