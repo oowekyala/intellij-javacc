@@ -4,10 +4,10 @@ package com.github.oowekyala.ijcc.ide.inspections
  * @author Clément Fournier
  * @since 1.0
  */
-class UnnecessaryInlineRegexInspectionTest : JccInspectionTestBase(UnnecessaryInlineRegexInspection()) {
+class UnnecessaryAngledBracesRegexInspectionTest : JccInspectionTestBase(UnnecessaryAngledBracesRegexInspection()) {
 
 
-    private fun warnung(s: String) = warningAnnot(s, UnnecessaryInlineRegexInspection.ProblemDescription)
+    private fun warnung(s: String) = warningAnnot(s, UnnecessaryAngledBracesRegexInspection.ProblemDescription)
 
     fun testLiteralString() = checkByText(
         warnung("""< "foo" >""").inExpansionCtx()
@@ -42,6 +42,22 @@ class UnnecessaryInlineRegexInspectionTest : JccInspectionTestBase(UnnecessaryIn
 
             void Foo():{} {
               < <FOO> >
+            }
+
+        """.trimIndent()
+    )
+
+
+    fun testUnclosedBraces() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN: {
+              < #FOO: "foo" >
+            }
+
+            void Foo():{} {
+              < "foo"<EOLError descr="'>' expected, got '}'"></EOLError>
             }
 
         """.trimIndent()

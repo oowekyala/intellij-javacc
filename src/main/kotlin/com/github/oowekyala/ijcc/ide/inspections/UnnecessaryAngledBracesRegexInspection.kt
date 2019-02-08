@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
@@ -14,7 +15,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
+class UnnecessaryAngledBracesRegexInspection : JccInspectionBase(InspectionName) {
 
     @Language("HTML")
     override fun getStaticDescription(): String? = """
@@ -28,7 +29,8 @@ class UnnecessaryInlineRegexInspection : JccInspectionBase(InspectionName) {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
             object : JccVisitor() {
                 override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
-                    val regex = o.regexElement
+                    if (!o.lastChild.isOfType(JccTypes.JCC_GT)) return // unclosed
+                    val regex = o.regexElement ?: return
                     if (regex is JccLiteralRegexUnit || regex is JccTokenReferenceRegexUnit && regex.typedReference.resolveToken()?.isPrivate == false) {
                         holder.registerProblem(o, ProblemDescription, MyQuickFix())
                     }
