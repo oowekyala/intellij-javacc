@@ -3,6 +3,8 @@ package com.github.oowekyala.ijcc.util
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
 import com.github.oowekyala.ijcc.settings.javaccSettings
+import com.intellij.psi.impl.source.tree.injected.StringLiteralEscaper
+import org.apache.commons.lang3.StringEscapeUtils
 import org.intellij.lang.annotations.Language
 
 /**

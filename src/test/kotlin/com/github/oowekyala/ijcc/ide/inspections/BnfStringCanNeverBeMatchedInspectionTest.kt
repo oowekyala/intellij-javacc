@@ -9,8 +9,8 @@ import com.github.oowekyala.ijcc.ide.inspections.BnfStringCanNeverBeMatchedInspe
 class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfStringCanNeverBeMatchedInspection()) {
 
 
-    private fun String.warning(missedMatchName: String?, realMatchName: String?) =
-            warningAnnot(this, problemDescription(this, missedMatchName, realMatchName))
+    private fun String.warning(missedMatchName: String?, realMatchName: String?, literalText: String = this) =
+            warningAnnot(this, problemDescription(literalText, missedMatchName, realMatchName))
 
     fun `test neg`() = checkByText(
         """
@@ -144,7 +144,7 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
              void Foo():
              {}
              {
-                 <boo : ${"\"foo\"".warning("boo", "foo")}>
+                 ${"<boo : \"foo\">".warning(literalText = "\"foo\"", missedMatchName = "boo", realMatchName = "foo")}
                  <foo> "foo"
              }
         """
