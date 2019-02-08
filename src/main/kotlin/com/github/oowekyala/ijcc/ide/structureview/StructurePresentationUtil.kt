@@ -15,6 +15,7 @@ import com.intellij.psi.util.PsiFormatUtilBase
 import com.intellij.ui.RowIcon
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.UIUtil
+import groovyjarjarantlr.build.ANTLR.root
 import javax.swing.Icon
 
 
@@ -54,12 +55,37 @@ private fun JccRegularExpression.getPresentableText(): String {
         builder.append(name).append(" : ")
     }
 
-    builder += asSingleLiteral()?.text ?: "..."
+    getRootRegexElement(followReferences = false)?.getPresentableText(builder)
 
     builder.append('>')
     return builder.toString()
 }
 
+fun JccRegexElement.getPresentableText(): String =
+        StringBuilder().also { getPresentableText(it) }.toString()
+
+private fun JccRegexElement.getPresentableText(builder: StringBuilder) {
+    when (this) {
+        is JccLiteralRegexUnit,
+        is JccTokenReferenceRegexUnit                     -> builder += this.text
+        is JccRegexAlternativeElt, is JccRegexSequenceElt -> {
+            val (seq, delim) = when (this) {
+                is JccRegexSequenceElt    -> Pair(this.regexUnitList, " ")
+                is JccRegexAlternativeElt -> Pair(this.regexElementList, " | ")
+                else                      -> throw IllegalStateException(root.toString())
+            }
+
+            seq.asSequence()
+                .takeWhile { it is JccLiteralRegexUnit || it is JccTokenReferenceRegexUnit }
+                .map { it.text }
+                .toList()
+                .ifEmpty { listOf("...") }
+                .joinTo(builder, separator = delim, limit = 2)
+        }
+
+        else                                              -> builder += "..."
+    }
+}
 
 private fun JccNonTerminalProduction.getPresentableText(): String {
     val header = header
