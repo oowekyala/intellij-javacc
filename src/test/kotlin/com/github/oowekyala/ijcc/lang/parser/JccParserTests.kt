@@ -11,13 +11,15 @@ import com.intellij.testFramework.ParsingTestCase
  */
 class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition, JavaParserDefinition()) {
 
-    fun testProductions() = doTest(true)
-    fun testTokens() = doTest(true)
-    fun testParentheses() = doTest(true)
-    fun testLookaheads() = doTest(true)
-    fun testRegexPrecedence() = doTest(true)
-    fun testAssignments() = doTest(true)
-    fun testTokenFail() = doTest(true)
+    private val checkIt = false
+
+    fun testProductions() = doTest(checkIt)
+    fun testTokens() = doTest(checkIt)
+    fun testParentheses() = doTest(checkIt)
+    fun testLookaheads() = doTest(checkIt)
+    fun testRegexPrecedence() = doTest(checkIt)
+    fun testAssignments() = doTest(checkIt)
+    fun testTokenFail() = doTest(checkIt)
 
     override fun getTestDataPath(): String = ParserTestDataPath
 

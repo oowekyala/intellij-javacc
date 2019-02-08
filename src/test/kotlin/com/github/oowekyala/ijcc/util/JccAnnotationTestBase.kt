@@ -13,7 +13,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-open class JccAnnotationTestBase : JccTestBase() {
+abstract class JccAnnotationTestBase : JccTestBase() {
     protected fun doTest(vararg additionalFilenames: String) {
         myFixture.testHighlighting(fileName, *additionalFilenames)
     }

@@ -12,7 +12,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.1
  */
-class StructureViewTest : JccTestBase() {
+class JccStructureViewTest : JccTestBase() {
     fun `test tokens`() = doTest(
         """
         $DummyHeader
@@ -57,14 +57,14 @@ class StructureViewTest : JccTestBase() {
         }
         """,
         """
-    -dummy.jjt
-    class Dummy
-    -TOKEN
-    <FOO : "hello">
-    <BAR : "hye">
-    -Foo()
-    <"flabberGasted">
-    """
+            -dummy.jjt
+             class Dummy
+             -TOKEN
+              <FOO : "hello">
+              <BAR : "hye">
+             -Foo()
+              <"flabberGasted">
+            """
     )
 
 
@@ -72,7 +72,7 @@ class StructureViewTest : JccTestBase() {
         """
         $DummyHeader
 
-        <Astate> TOKEN: {
+        TOKEN: {
               <FOO: "hello">
             | <BAR: "hye"> { foo(); }
         }
@@ -80,7 +80,7 @@ class StructureViewTest : JccTestBase() {
         void Foo():
         {}
         {
-            "hello" // synthetic
+            "hello" // refs the explicit
             "flabberGasted" // no duplicate
         }
     """,

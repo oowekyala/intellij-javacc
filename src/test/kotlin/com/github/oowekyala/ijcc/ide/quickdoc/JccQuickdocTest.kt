@@ -52,8 +52,9 @@ class JccQuickdocTest : JccTestBase() {
     private val simpleFooTokenDoc = buildQuickDoc {
         definition { "TOKEN\t${bold(angles("FOO"))}" }
         sections {
-            section("Lexical states") { "DEFAULT" }
             section("Expansion") { "\"foo\"" }
+            section("Case-sensitive") { "true" }
+            section("Lexical states") { "DEFAULT" }
         }
     }
 
@@ -140,8 +141,9 @@ class JccQuickdocTest : JccTestBase() {
         buildQuickDoc {
             definition { "TOKEN\t" + bold(angles("BAR")) }
             sections {
-                section(header = "Lexical states") { "DEFAULT" }
                 section(header = "Expansion") { "( \"bar\" ) | " + psiLink("token/FOO", "\"foo\"") }
+                section("Case-sensitive") { "true" }
+                section(header = "Lexical states") { "DEFAULT" }
             }
         }
     )
