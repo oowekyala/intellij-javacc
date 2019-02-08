@@ -103,6 +103,9 @@
                                  implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
         <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
 
+        <highlightUsagesHandlerFactory
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JccHighlightStringTokenUsagesHandlerFactory"/>
+
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
