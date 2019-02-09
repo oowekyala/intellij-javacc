@@ -422,7 +422,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         spec.asSingleLiteral()?.runIt { regex ->
 
-            val myStates = spec.lexicalStatesNameOrEmptyForAll.toSet()
+            val myStates = spec.lexicalStatesOrEmptyForAll.toSet()
 
             myFile.lexicalGrammar
                 .getLexicalStates(myStates)
@@ -467,7 +467,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
         if (spec.regularExpression is JccEofRegularExpression) {
 
-            if (spec.lexicalStatesNameOrEmptyForAll.isEmpty()) {
+            if (spec.lexicalStatesOrEmptyForAll.isEmpty()) {
                 myHolder += errorInfo(spec, "EOF action/state change must be specified for all states, i.e., <*>TOKEN:")
             }
 

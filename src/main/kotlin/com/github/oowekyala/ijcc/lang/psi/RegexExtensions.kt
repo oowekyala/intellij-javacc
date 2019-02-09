@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
@@ -16,16 +15,13 @@ import java.util.regex.PatternSyntaxException
 
  */
 
-private val LOG: Logger = Logger.getInstance("#com.github.oowekyala.ijcc.lang.psi.RegexExtensionsKt")
 
+val JccRegularExpression.pattern: Regex?
+    get() = toPattern(prefixMatch = false)
 
-/** The text matched by this literal regex. */
-val JccLiteralRegexUnit.match: String
-    get() = stringLiteral.text.removeSurrounding("\"")
+val JccRegularExpression.prefixPattern: Regex?
+    get() = toPattern(prefixMatch = true)
 
-/** The text matched by this literal regex. */
-val JccLiteralRegularExpression.match: String
-    get() = unit.match
 
 /**
  * Converts a regular expression to a [Regex] that may be executed
@@ -33,7 +29,7 @@ val JccLiteralRegularExpression.match: String
  * visit to return null. Any unresolved token reference also causes
  * to return null.
  */
-fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? =
+private fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? =
         toPatternImpl(prefixMatch, mutableSetOf())
 
 private fun JccRegularExpression.toPatternImpl(prefixMatch: Boolean = false,
@@ -64,12 +60,20 @@ val JccRegexLike.enclosingToken: Token
     }
 
 
+/** The text matched by this literal regex. */
+val JccLiteralRegexUnit.match: String
+    get() = stringLiteral.text.removeSurrounding("\"")
+
+/** The text matched by this literal regex. */
+val JccLiteralRegularExpression.match: String
+    get() = unit.match
+
 /**
  * Returns the list of lexical states this regex applies to.
  * If empty then this regex applies to all states (<*>).
  *
  */
-val JccRegexSpec.lexicalStatesNameOrEmptyForAll: List<String>
+val JccRegexSpec.lexicalStatesOrEmptyForAll: List<String>
     get() = production.lexicalStatesNameOrEmptyForAll
 
 val JccRegexSpec.production
@@ -90,7 +94,9 @@ val JccRegexProduction.isIgnoreCase: Boolean
         .takeWhile { !it.isOfType(JccTypes.JCC_COLON, JccTypes.JCC_LBRACE) }
         .any { it.isOfType(JccTypes.JCC_IGNORE_CASE_OPTION) }
 
-
+/**
+ * Converts a [JccRegexElement] to an executable regular expression.
+ */
 private class RegexResolutionVisitor(prefixMatch: Boolean,
                                      private val visited: MutableSet<JccTokenReferenceRegexUnit>) :
     RegexLikeDFVisitor() {
@@ -294,10 +300,12 @@ fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRege
  * is the deepest element that could be found by following indirections, which may itself be a
  * [JccTokenReferenceRegexUnit] in case of either a reference cycle, or an unresolved token name.
  */
-fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? =
-        getRootRegexElementImpl(followReferences, mutableSetOf())
+fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false,
+                                             unwrapParens: Boolean = true): JccRegexElement? =
+        getRootRegexElementImpl(followReferences, unwrapParens, mutableSetOf())
 
 private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boolean,
+                                                         unwrapParens: Boolean,
                                                          visited: MutableSet<JccTokenReferenceRegexUnit>): JccRegexElement? {
 
     return when (this) {
@@ -307,7 +315,9 @@ private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boole
         is JccEofRegularExpression       -> null
         is JccLiteralRegularExpression   -> this.unit
         else                             -> throw IllegalStateException(this.toString())
-    }?.unwrapParens()?.let {
+    }?.let {
+        if (unwrapParens) it.unwrapParens() else it
+    }?.let {
         when (it) {
             is JccTokenReferenceRegexUnit ->
                 if (followReferences) {
@@ -320,7 +330,7 @@ private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boole
 
                     return when (reffed) {
                         null -> it
-                        else -> reffed.getRootRegexElementImpl(followReferences, visited)
+                        else -> reffed.getRootRegexElementImpl(followReferences, unwrapParens, visited)
                     }
                 } else it
             else                          -> it

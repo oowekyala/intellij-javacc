@@ -1,12 +1,10 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.isEmptyMatchPossible
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.ProblemDescriptor
+import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiElementVisitor
 import org.intellij.lang.annotations.Language
 
 /**
@@ -23,29 +21,36 @@ class RegexMayMatchEmptyStringInspection : JccInspectionBase(DisplayName) {
         runtime.
     """.trimIndent()
 
-    override fun runForWholeFile(): Boolean = true
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
+            object : JccVisitor() {
 
-    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
-        if (file !is JccFile) return emptyArray()
 
-        val grammar = file.lexicalGrammar
+                override fun visitRegexSpec(o: JccRegexSpec) = visitRegularExpressionOwner(o)
 
-        val holder = ProblemsHolder(manager, file, isOnTheFly)
+                override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) = visitRegularExpressionOwner(o)
 
-        for (token in grammar.allTokens) {
+                // this wouldn't be called without explicit override and delegation because it's a
+                // other hierarchies take priority in the visitor (regex expansion unit delegates to
+                // expansion unit by default)
+                override fun visitRegularExpressionOwner(o: JccRegularExpressionOwner) {
 
-            if (token.regularExpression?.isEmptyMatchPossible() == true) {
-                holder.registerProblem(
-                    token.regularExpression!!,
-                    makeMessage(token.name, token.lexicalStatesOrEmptyForAll),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING
-                )
+                    val r = o.regularExpression
+
+                    val root = r.getRootRegexElement(followReferences = false, unwrapParens = false)
+
+                    if (root == null || root.unwrapParens() is JccTokenReferenceRegexUnit) return
+
+                    // basically if it's a string token it's easy to check
+
+                    if (r.isEmptyMatchPossible()) {
+                        holder.registerProblem(
+                            root, // report on the root and not on the name
+                            makeMessage(o.name, LexicalState.JustDefaultState),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+                        )
+                    }
+                }
             }
-        }
-
-        return holder.resultsArray
-    }
-
 
     companion object {
         const val DisplayName = "Regular expression can match the empty string"

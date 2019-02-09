@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
-import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.*
 import com.github.oowekyala.ijcc.lang.util.matchPsi
@@ -288,7 +287,7 @@ class AstStructureTests : ParserTestDsl() {
 
                 it.isIgnoreCase shouldBe true
                 it.isPrivate shouldBe false
-                it.lexicalStatesNameOrEmptyForAll shouldBe LexicalState.JustDefaultState
+                it.lexicalStatesOrEmptyForAll shouldBe LexicalState.JustDefaultState
 
                 it.regularExpression shouldBe child<JccLiteralRegularExpression> {
 

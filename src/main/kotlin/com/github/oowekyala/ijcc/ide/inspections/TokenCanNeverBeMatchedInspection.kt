@@ -76,7 +76,7 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
             val matchedBy: List<JccRegexSpec> =
                     spec.containingFile.lexicalGrammar // TODO optimise
-                        .getLexicalStates(spec.lexicalStatesNameOrEmptyForAll.toSet())
+                        .getLexicalStates(spec.lexicalStatesOrEmptyForAll.toSet())
                         .asSequence()
                         .mapNotNull { it.matchLiteral(elt, false) }
                         .filterIsInstance<ExplicitToken>()

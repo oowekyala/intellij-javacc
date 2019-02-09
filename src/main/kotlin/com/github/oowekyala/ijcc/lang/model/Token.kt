@@ -54,7 +54,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     /** Returns true if this is a single literal token. */
     fun getAsStringToken(): JccLiteralRegexUnit? =
     // this relies on the fact that the reference doesn't use the lexical grammar
-            regularExpression?.asSingleLiteral(followReferences = true)
+            regularExpression?.asSingleLiteral(followReferences = true) // TODO should we unwrap unnecessary parentheses?
 
     val psiElement: JccRegularExpressionOwner? get () = psiPointer.element
 
@@ -129,7 +129,7 @@ data class ExplicitToken(override val psiPointer: SmartPsiElementPointer<JccRege
     override val name: String? get() = spec?.name
     override val isIgnoreCase: Boolean get() = spec?.isIgnoreCase == true
     override val lexicalStatesOrEmptyForAll: List<String>
-        get() = spec?.lexicalStatesNameOrEmptyForAll ?: JustDefaultState // default?
+        get() = spec?.lexicalStatesOrEmptyForAll ?: JustDefaultState // default?
 
 }
 
