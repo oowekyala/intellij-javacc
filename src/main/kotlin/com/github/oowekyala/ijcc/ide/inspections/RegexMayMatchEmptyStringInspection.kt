@@ -29,7 +29,7 @@ class RegexMayMatchEmptyStringInspection : JccInspectionBase(DisplayName) {
 
                 override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) = visitRegularExpressionOwner(o)
 
-                // this wouldn't be called without explicit override and delegation because it's a
+                // this wouldn't be called without explicit override and delegation because
                 // other hierarchies take priority in the visitor (regex expansion unit delegates to
                 // expansion unit by default)
                 override fun visitRegularExpressionOwner(o: JccRegularExpressionOwner) {

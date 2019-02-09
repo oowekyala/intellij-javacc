@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.JavaDocElementType
 
 /**
- * Base class for inspections.
+ * Base class for inspections. TODO stop extending the Java-specific base class or what
  *
  * @author Clément Fournier
  * @since 1.0

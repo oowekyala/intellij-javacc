@@ -30,7 +30,7 @@ class RegexMayMatchEmptyStringInspectionTest : JccInspectionTestBase(RegexMayMat
             $DummyHeader
 
             TOKEN: {
-                ${"<FOO: \"\">".warning()}
+                <FOO: ${"\"\"".warning()}>
             }
         """
     )
@@ -40,7 +40,7 @@ class RegexMayMatchEmptyStringInspectionTest : JccInspectionTestBase(RegexMayMat
             $DummyHeader
 
             TOKEN: {
-                ${"<FOO: \"a\" | (\"b\")?>".warning()}
+                <FOO:${"\"a\" | (\"b\")?".warning()}>
             }
         """
     )
@@ -50,7 +50,7 @@ class RegexMayMatchEmptyStringInspectionTest : JccInspectionTestBase(RegexMayMat
         """
             $DummyHeader
             TOKEN:{
-                  ${"<FOO: (<BAZ>)?>".warning()}
+                  <FOO: ${"(<BAZ>)?".warning()}>
                 | <BAR: <BAZ>>
                 | <BAZ: "foo">
             }

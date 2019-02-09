@@ -119,17 +119,20 @@ private fun JccExpansion.computeLeftMost(acc: MutableSet<JccNonTerminalProductio
 
 private val nullableKey: Key<ThreeState> = Key.create<ThreeState>("jcc.bnf.isNullable")
 
+// This caches the nullability status of productions and regexes,
+// so as to avoid running in quadratic time, in case of very long
+// call chains. This appears to be safe
 private fun <T : JccPsiElement> T.computeAndCacheNullability(alreadySeen: ImmutableList<T>,
                                                              compute: T.(ImmutableList<T>) -> Boolean?): Boolean {
 
     val isNullable = getUserData(nullableKey) ?: ThreeState.UNSURE
 
     if (isNullable == ThreeState.UNSURE && this !in alreadySeen) {
-        val computed = compute(this, alreadySeen.add(this))
+        val computed = this.compute(alreadySeen.add(this))
         if (computed != null) {
             putUserData(nullableKey, if (computed) ThreeState.YES else ThreeState.NO)
             return computed
         } // else stays unsure
     }
-    return false // still unsure
+    return isNullable == ThreeState.YES
 }
