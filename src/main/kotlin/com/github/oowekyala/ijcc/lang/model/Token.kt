@@ -29,26 +29,26 @@ import com.intellij.psi.SmartPsiElementPointer
 @Suppress("LeakingThis")
 sealed class Token {    // we could have a type parameter here, but I'm too lazy to write Token<*> everywhere
 
+
+    abstract val psiPointer: SmartPsiElementPointer<out JccRegularExpressionOwner>
+
     /**
      * Returns the list of lexical states this token applies to.
      * Returns empty if the token applies to all states.
      */
     abstract val lexicalStatesOrEmptyForAll: List<String>
     abstract val lexicalStateTransition: String?
-    abstract val regularExpression: JccRegularExpression?
     abstract val name: String?
     abstract val regexKind: RegexKind
     abstract val isPrivate: Boolean
     abstract val isIgnoreCase: Boolean
-    abstract val psiPointer: SmartPsiElementPointer<out JccPsiElement>
-
-    val prefixPattern: Regex? by lazy { regularExpression?.prefixPattern }
 
     val isExplicit: Boolean = this is ExplicitToken
     val isSynthetic: Boolean = !isExplicit
 
+    val regularExpression: JccRegularExpression? get() = psiPointer.element?.regularExpression
+    val prefixPattern: Regex? get() = regularExpression?.prefixPattern
     val textOffset: Int? get() = psiElement?.textOffset
-
     val line: Int? get() = psiElement?.lineNumber
 
     /** Returns true if this is a single literal token. */
@@ -56,7 +56,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     // this relies on the fact that the reference doesn't use the lexical grammar
             regularExpression?.asSingleLiteral(followReferences = true)
 
-    val psiElement: JccPsiElement? get () = psiPointer.element
+    val psiElement: JccRegularExpressionOwner? get () = psiPointer.element
 
 
     /**
@@ -122,8 +122,6 @@ data class ExplicitToken(override val psiPointer: SmartPsiElementPointer<JccRege
     val spec: JccRegexSpec?
         get() = psiPointer.element
 
-    override val regularExpression: JccRegularExpression? get() = spec?.regularExpression
-
     // should these be initialised at construction time?
     override val lexicalStateTransition: String? get() = spec?.lexicalStateTransition?.name
     override val regexKind: RegexKind get() = spec?.regexKind ?: RegexKind.TOKEN
@@ -156,6 +154,5 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
     override val isIgnoreCase: Boolean = false
 
     override val name: String? get() = regularExpression?.name
-    override val regularExpression: JccRegularExpression? get() = declUnit?.regularExpression
 
 }

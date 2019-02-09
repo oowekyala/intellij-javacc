@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.ide.inspections.LeftRecursiveProductionInspection
 import com.intellij.util.ThreeState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
@@ -14,16 +15,42 @@ import kotlinx.collections.immutable.immutableListOf
 
 
 /**
- * Returns true if this expansion can expand to the empty string, returns false otherwise.
- * To determine nullability of a production, use [JccNonTerminalProduction.isNullable] instead,
- * which caches the result.
+ * Returns true if this regexp element can match the empty string.
+ */
+fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccRegexElement> = immutableListOf()): Boolean =
+        when (this) {
+            is JccLiteralRegexUnit        -> text.length == 2 // ""
+            is JccCharacterListRegexUnit  -> false // assume that
+            is JccParenthesizedRegexUnit  -> occurrenceIndicator.let {
+                // test it whether there is a + or nothing
+                it is JccZeroOrOne             // ?
+                        || it is JccZeroOrMore // *
+                        || it is JccRepetitionRange && it.first == 0 // if no first then this is false
+                        || regexElement.isEmptyMatchPossible(alreadySeen) // +
+            }
+            is JccRegexSequenceElt        -> regexUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
+            is JccRegexAlternativeElt     -> regexElementList.any { it.isEmptyMatchPossible(alreadySeen) }
+            is JccTokenReferenceRegexUnit ->
+                if (this in alreadySeen) false // cyclic reference
+                else typedReference.resolveToken()
+                    ?.psiElement
+                    ?.regularExpression
+                    ?.getRootRegexElement(followReferences = false)
+                    ?.isEmptyMatchPossible(alreadySeen.add(this)) == true
+            else                          -> throw IllegalStateException(this.toString())
+        }
+
+/**
+ * Returns true if this expansion can expand to the empty string. To determine nullability
+ * of a production, use [JccNonTerminalProduction.isNullable] instead, which caches the result.
+ * [LeftRecursiveProductionInspection] refreshed the cache regularly for the whole file.
  */
 fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean =
         when (this) {
             is JccParserActionsUnit          -> true
             is JccLocalLookaheadUnit         -> true
             is JccOptionalExpansionUnit      -> true
-            is JccRegexExpansionUnit         -> false
+            is JccRegexExpansionUnit         -> false // todo use the above
             is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible(alreadySeen)
             is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
             is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
@@ -32,10 +59,10 @@ fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalP
             }
             is JccExpansionSequence          -> expansionUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
             is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible(alreadySeen) }
-            is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
             is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
                 it is JccBnfProduction && it.computeNullability(alreadySeen)
             } ?: false
+            is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
             else                             -> false
         }
 

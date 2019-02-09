@@ -126,6 +126,7 @@
   implements("production|token_manager_decls")="production_like"
   implements("non_terminal_production|regex_production")="production"
   implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
+  implements("regex_spec|regex_expansion_unit")="regular_expression_owner"
 }
 
 // Grammar for the JavaCC language
@@ -282,45 +283,43 @@ private regex_spec_recover        ::= // exclude ident, most important is the pi
 /* Type hierarchy is
 
    JccExpansion
-   |- JccExpansionAlternative
+   |- JccExpansionAlternative               seq | seq | ...
    |- JccExpansionSequenceOrUnit
-      |- JccExpansionSequence
+      |- JccExpansionSequence               unit unit ...
       |- JccExpansionUnit
          |- JccLocalLookaheadUnit           LOOKAHEAD(...)
          |- JccParserActionsUnit            { java }
          |- JccParenthesizedExpansionUnit   ( exp )
          |- JccOptionalExpansionUnit        [ exp ]
-         |- JccTryCatchExpansionUnit        try { java } ...
+         |- JccTryCatchExpansionUnit        try { exp } catch (...) { java }
          |- JccAssignedExpansionUnit        lhs = assignable
          |- JccAssignableExpansionUnit
             |- JccRegexExpansionUnit        regular_expression
             |- JccNonterminalExpansionUnit  name(..)
  */
 
-fake expansion                      ::=
-fake expansion_sequence_or_unit     ::=
 
 private expansion_choices 	        ::=
         expansion_alternative
     |   expansion_sequence
 
-expansion_alternative       ::=
+expansion_alternative           ::=
     expansion_sequence ( "|" expansion_sequence )+ {pin="|" methods=[expansionList="expansion_sequence_or_unit"]}
 
-expansion_sequence 	        ::=
+expansion_sequence 	            ::=
     ( expansion_unit )+ {recoverWhile="#auto"}
 
 
 
-expansion_unit 	            ::=
+expansion_unit 	                ::=
     priv_expansion_unit scoped_expansion_unit?
     {recoverWhile="#auto"}
 
-left scoped_expansion_unit  ::=
+left scoped_expansion_unit      ::=
     jjtree_node_descriptor
     { methods=[nameIdentifier="jjtree_node_descriptor/identifier"] }
 
-private priv_expansion_unit 	    ::=
+private priv_expansion_unit 	::=
     (   local_lookahead_unit
 	| 	parser_actions_unit
 	| 	parenthesized_expansion_unit
@@ -330,21 +329,21 @@ private priv_expansion_unit 	    ::=
 	|   assignable_expansion_unit
     )
 
-assignable_expansion_unit ::=
+assignable_expansion_unit       ::=
       regex_expansion_unit
     | non_terminal_expansion_unit
 
-assigned_expansion_unit ::=
+assigned_expansion_unit         ::=
     java_assignment_lhs "=" assignable_expansion_unit
     {pin=2}
 
-parser_actions_unit     ::=
+parser_actions_unit             ::=
     java_block
 
-regex_expansion_unit   ::=
+regex_expansion_unit            ::=
     regular_expression
 
-local_lookahead_unit 	    ::=
+local_lookahead_unit 	        ::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
 
 
@@ -445,10 +444,10 @@ private complex_regex_choices 	::=
         regex_alternative_elt
     |   regex_sequence_elt
 
-regex_alternative_elt 	            ::=
+regex_alternative_elt 	        ::=
     regex_sequence_elt ( "|" regex_sequence_elt )+
 
-regex_sequence_elt                 ::=
+regex_sequence_elt              ::=
     regex_unit+ {pin('.*')=1}
 
 regex_unit 	    ::=
@@ -461,11 +460,11 @@ regex_unit 	    ::=
 literal_regex_unit              ::=
     string_literal
 
-token_reference_regex_unit            ::=
+token_reference_regex_unit      ::=
 	"<" identifier ">"
     {pin=identifier}
 
-parenthesized_regex_unit       ::=
+parenthesized_regex_unit        ::=
     "(" complex_regex_choices ")" occurrence_indicator_or_range?
     {methods=[occurrence_indicator="occurrence_indicator_or_range"]}
 
@@ -503,6 +502,8 @@ fake identifier_owner           ::= identifier {
     implements="com.intellij.psi.PsiNameIdentifierOwner"
 }
 
+fake regular_expression_owner   ::= regular_expression
+
 fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_node_descriptor] java_block? {
     methods=[
         header="java_non_terminal_production_header"
@@ -510,6 +511,9 @@ fake non_terminal_production    ::= java_non_terminal_production_header [jjtree_
     ]
 }
 
+// marker interfaces
+fake expansion                  ::=
+fake expansion_sequence_or_unit ::=
 fake regex_element              ::=
 fake regex_like                 ::=
 fake production_like            ::=
@@ -519,7 +523,6 @@ fake production                 ::=
 
 identifier                      ::=    IDENT                {name="identifier"}
 private string_literal          ::=    STRING_LITERAL       {name="string literal"}
-
 
 boolean_literal                 ::=    "true" | "false"     {name="boolean literal"}
 

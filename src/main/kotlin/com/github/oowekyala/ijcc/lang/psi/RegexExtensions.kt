@@ -250,6 +250,13 @@ val JccNamedRegularExpression.nameTextRange: TextRange
 val JccRegexSpec.nameTextRange: TextRange?
     get() = regularExpression.let { it as? JccNamedRegularExpression }?.nameTextRange
 
+/**
+ * Gets the first value of the range. It may be null because the pin
+ * is on the brace.
+ */
+val JccRepetitionRange.first: Int?
+    get() = childrenSequence().firstOrNull { it.isOfType(JccTypes.JCC_INTEGER_LITERAL) }?.text?.toInt()
+
 
 /**
  * Return the regex if it's a single literal, unwrapping
@@ -279,6 +286,12 @@ fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRege
 /**
  * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccContainerRegularExpression]
  * if needed. Also unwraps [JccParenthesizedRegexUnit]s occurring at the top.
+ *
+ * May return null only if this is a [JccEofRegularExpression].
+ *
+ * If [followReferences]=true and the root is a [JccTokenReferenceRegexUnit], then the returned element
+ * is the deepest element that could be found by following indirections, which may itself be a
+ * [JccTokenReferenceRegexUnit] in case of either a reference cycle, or an unresolved token name.
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? =
         getRootRegexElementImpl(followReferences, mutableSetOf())
@@ -314,9 +327,16 @@ private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boole
     }
 }
 
-fun JccRegexElement.unwrapParens(): JccRegexElement = when (this) {
-    is JccParenthesizedRegexUnit -> this.regexElement.unwrapParens()
-    else                         -> this
+/**
+ * Unwraps unnecessary (no occurrence indicator) parentheses on a regex
+ * element and returns the innermost significant element. This is only
+ * safe on a place where we know undecorated parentheses are unnecessary,
+ * e.g. on the root element.
+ */
+fun JccRegexElement.unwrapParens(): JccRegexElement = when {
+    this is JccParenthesizedRegexUnit
+            && this.occurrenceIndicator == null -> this.regexElement.unwrapParens()
+    else                                        -> this
 }
 
 
