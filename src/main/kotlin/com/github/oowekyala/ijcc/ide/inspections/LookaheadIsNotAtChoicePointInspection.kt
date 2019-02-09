@@ -86,12 +86,10 @@ class LookaheadIsNotAtChoicePointInspection : JccInspectionBase(DisplayName) {
 
     companion object {
 
-        private const val DisplayName = "LOOKAHEAD is not at a choice point"
+        private const val DisplayName = "Local lookahead is not at a choice point"
         const val IgnoredProblemDesc = "LOOKAHEAD is not at a choice point, it will be ignored"
-        const val NestedProblemDesc =
-                "Only semantic lookahead is considered when it is nested.  Syntactic lookahead is ignored."
-        const val SemanticProblemDesc =
-                "LOOKAHEAD is not at a choice point, only semantic lookahead will be performed"
+        const val NestedProblemDesc = "Only semantic lookahead is considered when it is nested.  Syntactic lookahead is ignored."
+        const val SemanticProblemDesc = "LOOKAHEAD is not at a choice point, only semantic lookahead will be performed"
 
         const val FixDescription = "Delete lookahead specification"
 

@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.lang.psi.typedReference
+import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -29,6 +30,8 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
         <p>This is implemented as an inspection for performance, but it's not an
         "optional error" for JavaCC so I suggest never to turn it off.</p>
     """.trimIndent()
+
+    override fun getDefaultLevel(): HighlightDisplayLevel = HighlightDisplayLevel.ERROR
 
     override fun runForWholeFile(): Boolean = true
 

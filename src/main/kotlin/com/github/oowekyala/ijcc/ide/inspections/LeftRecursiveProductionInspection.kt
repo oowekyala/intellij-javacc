@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.inspections
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.leftMostSet
+import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -29,6 +30,8 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         <p>This is implemented as an inspection for performance, but it's not an
         "optional error" for JavaCC so I suggest never to turn it off.</p>
     """.trimIndent()
+
+    override fun getDefaultLevel(): HighlightDisplayLevel = HighlightDisplayLevel.ERROR
 
     override fun runForWholeFile(): Boolean = true
 

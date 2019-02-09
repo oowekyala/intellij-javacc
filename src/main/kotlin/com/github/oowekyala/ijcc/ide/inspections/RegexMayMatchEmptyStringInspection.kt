@@ -23,6 +23,8 @@ class RegexMayMatchEmptyStringInspection : JccInspectionBase(DisplayName) {
         runtime.
     """.trimIndent()
 
+    override fun runForWholeFile(): Boolean = true
+
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return emptyArray()
 
@@ -46,7 +48,7 @@ class RegexMayMatchEmptyStringInspection : JccInspectionBase(DisplayName) {
 
 
     companion object {
-        const val DisplayName = "Regular expression may match empty string"
+        const val DisplayName = "Regular expression can match the empty string"
 
         fun makeMessage(name: String?, states: List<String>): String {
             val statesPart = when {
