@@ -1,23 +1,43 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.ide.inspections.LeftRecursiveProductionInspection
+import com.intellij.openapi.util.Key
 import com.intellij.util.ThreeState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
 
-/**
- * Extensions to compute properties of BNF productions such as nullability,
- * start and follow set, left-recursivity, etc.
- *
- * @author Clément Fournier
- * @since 1.0
- */
-
 
 /**
- * Returns true if this regexp element can match the empty string.
+ * Returns true if this regular expression can match the empty string.
  */
-fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccRegexElement> = immutableListOf()): Boolean =
+fun JccRegularExpression.isEmptyMatchPossible(): Boolean = computeNullability(immutableListOf())
+
+/**
+ * Returns true if this regular expression element can match the empty string.
+ */
+fun JccRegexElement.isEmptyMatchPossible(): Boolean = isEmptyMatchPossible(immutableListOf())
+
+
+private fun JccRegularExpression.computeNullability(alreadySeen: ImmutableList<JccRegularExpression>): Boolean =
+        computeAndCacheNullability(alreadySeen) { getRootRegexElement(followReferences = false)?.isEmptyMatchPossible(it) }
+
+/**
+ * Returns true if this production can expand to the empty string.
+ */
+fun JccNonTerminalProduction.isEmptyMatchPossible(): Boolean = when (this) {
+    is JccBnfProduction -> computeNullability(immutableListOf())
+    else                -> false
+}
+
+/**
+ * Returns true if this expansion can expand to the empty string.
+ */
+fun JccExpansion.isEmptyMatchPossible(): Boolean = isEmptyMatchPossible(immutableListOf())
+
+private fun JccBnfProduction.computeNullability(alreadySeen: ImmutableList<JccBnfProduction>): Boolean =
+        computeAndCacheNullability(alreadySeen) { expansion?.isEmptyMatchPossible(it) }
+
+
+private fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccRegularExpression>): Boolean =
         when (this) {
             is JccLiteralRegexUnit        -> text.length == 2 // ""
             is JccCharacterListRegexUnit  -> false // assume that
@@ -31,21 +51,12 @@ fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccRegexElem
             is JccRegexSequenceElt        -> regexUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
             is JccRegexAlternativeElt     -> regexElementList.any { it.isEmptyMatchPossible(alreadySeen) }
             is JccTokenReferenceRegexUnit ->
-                if (this in alreadySeen) false // cyclic reference
-                else typedReference.resolveToken()
-                    ?.psiElement
-                    ?.regularExpression
-                    ?.getRootRegexElement(followReferences = false)
-                    ?.isEmptyMatchPossible(alreadySeen.add(this)) == true
+                typedReference.resolveToken()?.regularExpression?.computeNullability(alreadySeen) == true
             else                          -> throw IllegalStateException(this.toString())
         }
 
-/**
- * Returns true if this expansion can expand to the empty string. To determine nullability
- * of a production, use [JccNonTerminalProduction.isNullable] instead, which caches the result.
- * [LeftRecursiveProductionInspection] refreshed the cache regularly for the whole file.
- */
-fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean =
+
+private fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccBnfProduction>): Boolean =
         when (this) {
             is JccParserActionsUnit          -> true
             is JccLocalLookaheadUnit         -> true
@@ -61,24 +72,10 @@ fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccNonTerminalP
             is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible(alreadySeen) }
             is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
                 it is JccBnfProduction && it.computeNullability(alreadySeen)
-            } ?: false
+            } == true
             is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
             else                             -> false
         }
-
-private fun JccBnfProduction.computeNullability(alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf()): Boolean {
-    if (isNullable == ThreeState.UNSURE) {
-        if (this in alreadySeen) {
-            // left recursion detected!!
-            return isNullable == ThreeState.YES
-        }
-        val computed = expansion?.isEmptyMatchPossible(alreadySeen.add(this))
-        if (computed != null) {
-            isNullable = if (computed) ThreeState.YES else ThreeState.NO
-        } // else stays unsure
-    }
-    return isNullable == ThreeState.YES
-}
 
 /**
  * Gets the set of productions that this production can expand to without consuming any tokens.
@@ -86,10 +83,8 @@ private fun JccBnfProduction.computeNullability(alreadySeen: ImmutableList<JccNo
  * be resolved or this is a javacode production.
  */
 fun JccNonTerminalProduction.leftMostSet(): Set<JccNonTerminalProduction>? = when (this) {
-    is JccJavacodeProduction -> null
-    is JccBnfProduction      ->
-        mutableSetOf<JccNonTerminalProduction>().takeIf { expansion?.computeLeftMost(it) == true }
-    else                     -> null
+    is JccBnfProduction -> mutableSetOf<JccNonTerminalProduction>().takeIf { expansion?.computeLeftMost(it) == true }
+    else                -> null
 }
 
 /** Populates the leftmost set of this expansion. */
@@ -120,3 +115,21 @@ private fun JccExpansion.computeLeftMost(acc: MutableSet<JccNonTerminalProductio
             is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.also { acc += it } != null
             else                             -> true // valid, but nothing to do
         }
+
+
+private val nullableKey: Key<ThreeState> = Key.create<ThreeState>("jcc.bnf.isNullable")
+
+private fun <T : JccPsiElement> T.computeAndCacheNullability(alreadySeen: ImmutableList<T>,
+                                                             compute: T.(ImmutableList<T>) -> Boolean?): Boolean {
+
+    val isNullable = getUserData(nullableKey) ?: ThreeState.UNSURE
+
+    if (isNullable == ThreeState.UNSURE && this !in alreadySeen) {
+        val computed = compute(this, alreadySeen.add(this))
+        if (computed != null) {
+            putUserData(nullableKey, if (computed) ThreeState.YES else ThreeState.NO)
+            return computed
+        } // else stays unsure
+    }
+    return false // still unsure
+}
