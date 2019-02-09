@@ -10,6 +10,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiFile
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.immutableSetOf
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
 
@@ -60,15 +61,18 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         visitStatuses[this] = VisitStatus.BEING_VISITED
 
 
-        val myLeftMost = leftMostSets[this] ?: return
+        val myLeftMost = leftMostSets[this] ?: immutableSetOf()
 
         loop@ for (ref in myLeftMost) {
 
-            val prod = ref.typedReference.resolveProduction() ?: return
+            val prod = ref.typedReference.resolveProduction() ?: run {
+                visitStatuses[this] = VisitStatus.VISITED
+                return
+            }
 
             when (visitStatuses[prod]) {
-                VisitStatus.VISITED -> break@loop // should we continue?
-                VisitStatus.NOT_VISITED ->
+                VisitStatus.VISITED       -> break@loop // should we continue?
+                VisitStatus.NOT_VISITED   ->
                     // recurse
                     prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(Pair(prod, ref)), holder)
                 VisitStatus.BEING_VISITED -> {

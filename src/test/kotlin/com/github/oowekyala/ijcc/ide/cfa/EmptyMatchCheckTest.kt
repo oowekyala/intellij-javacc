@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 import io.kotlintest.matchers.collections.contain
 import io.kotlintest.matchers.collections.containExactly
 import io.kotlintest.matchers.collections.shouldContainAll
+import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.containAll
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -65,7 +66,7 @@ class EmptyMatchCheckTest : JccAnnotationTestBase() {
             }
         """.asProduction() as JccBnfProduction
 
-        prod.leftMostSet()!!.map { it.name } should contain("foo")
+        prod.leftMostSet()!!.map { it.name }.shouldContainExactly("foo")
 
     }
 
@@ -90,7 +91,7 @@ class EmptyMatchCheckTest : JccAnnotationTestBase() {
 
         """.asJccGrammar().nonTerminalProductions.first()
 
-        prod.leftMostSet()!!.map { it.name }.shouldContainAll("foo", "bar", "qux")
+        prod.leftMostSet()!!.map { it.name }.shouldContainExactly("foo", "bar", "qux")
 
     }
 

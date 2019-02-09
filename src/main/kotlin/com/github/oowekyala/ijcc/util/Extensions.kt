@@ -91,6 +91,14 @@ fun String.deleteWhitespace(): String = replace(Regex("\\s"), "")
 fun <T : Any> MutableCollection<T>.addIfNotNull(t: T?) = ContainerUtil.addIfNotNull(this, t)
 
 fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
+/**
+ * Needs a sequence that is iterable multiple times.
+ */
+fun <T> Sequence<T>.takeUntil(pred: (T) -> Boolean): Sequence<T> {
+    val fst = indexOfFirst { pred(it) }
+    return take(fst + 1)
+}
+
 
 fun <T> Sequence<T>.prepend(t: T): Sequence<T> = sequenceOf(t).plus(this)
 
@@ -100,3 +108,10 @@ fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { 
 
 
 fun <T> Comparator<T>.deemsEqual(t1: T, t2: T) = compare(t1, t2) == 0
+
+public inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R): R? =
+        fold(initial as R?) { r, t ->
+            if (t == null || r == null) null
+            else operation(r, t)
+        }
+

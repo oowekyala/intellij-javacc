@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.util.foldNullable
+import com.github.oowekyala.ijcc.util.takeUntil
 import com.intellij.openapi.util.Key
 import com.intellij.util.ThreeState
 import kotlinx.collections.immutable.ImmutableList
@@ -89,7 +91,7 @@ private fun emptyLeftMostSet(): LeftMostSet = immutableSetOf()
  * be resolved or this is a javacode production.
  */
 fun JccNonTerminalProduction.leftMostSet(): LeftMostSet? = when (this) {
-    is JccBnfProduction -> expansion?.computeLeftMost(emptyLeftMostSet()) ?: emptyLeftMostSet()
+    is JccBnfProduction -> expansion?.computeLeftMost() ?: emptyLeftMostSet()
     else                -> null
 }
 
@@ -97,27 +99,27 @@ fun JccNonTerminalProduction.leftMostSet(): LeftMostSet? = when (this) {
  *
  * @return True if the result is valid
  */
-private fun JccExpansion.computeLeftMost(current: LeftMostSet): LeftMostSet? =
+private fun JccExpansion.computeLeftMost(): LeftMostSet? =
         when (this) {
-            is JccRegexExpansionUnit         -> current
-            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost(current)
-            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost(current)
-            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost(current)
-            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost(current)
-            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost(current)
+            is JccRegexExpansionUnit         -> immutableSetOf()
+            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost()
+            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost()
+            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost()
+            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost()
+            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost()
             is JccExpansionSequence          ->
 
                 expansionUnitList.asSequence()
-                    .takeWhile { it.isEmptyMatchPossible() || it is JccNonTerminalExpansionUnit }
-                    .map { it.computeLeftMost(current) }
-                    .fold(current as LeftMostSet?) { a, b -> b?.let { a?.addAll(it) } }
-
+                    .takeUntil { !it.isEmptyMatchPossible() }
+                    .map { it.computeLeftMost() }
+                    .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
             is JccExpansionAlternative       ->
                 expansionList.asSequence()
-                    .map { it.computeLeftMost(current) }
-                    .fold(current as LeftMostSet?) { a, b -> b?.let { a?.addAll(it) } }
-            is JccNonTerminalExpansionUnit   -> current.add(this)
-            else                             -> current // valid, but nothing to do
+                    .map { it.computeLeftMost() }
+                    .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
+
+            is JccNonTerminalExpansionUnit   -> immutableSetOf(this)
+            else                             -> immutableSetOf() // valid, but nothing to do
         }
 
 
