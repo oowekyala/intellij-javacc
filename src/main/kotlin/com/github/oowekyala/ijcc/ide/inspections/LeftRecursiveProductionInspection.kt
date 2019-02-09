@@ -1,8 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.leftMostSet
+import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
@@ -39,24 +38,23 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         if (file !is JccFile) return emptyArray()
 
         val leftMostSets = file.nonTerminalProductions.associateWith { it.leftMostSet() }
-        val visited: VisitStatuses =
-                file.nonTerminalProductions.associateWithTo(mutableMapOf()) { VisitStatus.NOT_VISITED }
+        val visited = file.nonTerminalProductions.associateWithTo(mutableMapOf()) { VisitStatus.NOT_VISITED }
 
         val holder = ProblemsHolder(manager, file, isOnTheFly)
 
 
         for (prod in leftMostSets.keys) {
             if (visited[prod] != VisitStatus.VISITED) {
-                prod.checkLeftRecursion(leftMostSets, visited, immutableListOf(), holder)
+                prod.checkLeftRecursion(leftMostSets, visited, immutableListOf(Pair(prod, null)), holder)
             }
         }
 
         return holder.resultsArray
     }
 
-    private fun JccNonTerminalProduction.checkLeftRecursion(leftMostSets: Map<JccNonTerminalProduction, Set<JccNonTerminalProduction>?>,
-                                                            visitStatuses: VisitStatuses,
-                                                            loopPath: ProdPath,
+    private fun JccNonTerminalProduction.checkLeftRecursion(leftMostSets: Map<JccNonTerminalProduction, LeftMostSet?>,
+                                                            visitStatuses: MutableMap<JccNonTerminalProduction, VisitStatus>,
+                                                            loopPath: ProductionLoopPath,
                                                             holder: ProblemsHolder) {
 
         visitStatuses[this] = VisitStatus.BEING_VISITED
@@ -64,25 +62,36 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
         val myLeftMost = leftMostSets[this] ?: return
 
-        val myLoopPath: ProdPath = loopPath.add(this)
+        for (ref in myLeftMost) {
 
-        for (prod in myLeftMost) {
+            val prod = ref.typedReference.resolveProduction() ?: return
 
             if (visitStatuses[prod] == VisitStatus.BEING_VISITED) {
-                val myIdx = myLoopPath.indexOf(prod)
-                if (myIdx !in myLoopPath.indices) continue // ??
+                val myIdx = loopPath.indexOfFirst { it.first == prod }
+                if (myIdx < 0) continue // ??
 
-                // report left recursion
+                val subPath: ProductionLoopPath = loopPath.subList(myIdx, loopPath.size).add(Pair(prod, ref))
+
+                // report on the root production
                 holder.registerProblem(
-                    prod,
-                    makeMessage(myLoopPath.subList(myIdx, myLoopPath.size).add(prod)),
+                    prod.nameIdentifier,
+                    makeMessage(subPath),
                     ProblemHighlightType.ERROR
                 )
+
+                for ((_, cyclePart) in subPath.removeAt(0)) {
+                    cyclePart?.runIt {
+                        holder.registerProblem(
+                            cyclePart,
+                            cyclePartMessage(),
+                            ProblemHighlightType.ERROR
+                        )
+                    }
+                }
                 break
+            } else {
+                prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(Pair(prod, ref)), holder)
             }
-
-
-            prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(this), holder)
         }
 
         visitStatuses[this] = VisitStatus.VISITED
@@ -92,20 +101,24 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
     companion object {
 
         const val DisplayName = "Left-recursive production"
-
-        private fun makeMessage(loopPath: List<JccNonTerminalProduction>) = makeMessageImpl(loopPath.map { it.name })
+        private fun makeMessage(loopPath: ProductionLoopPath) = makeMessageImpl(loopPath.map { it.first.name })
 
         @TestOnly
         fun makeMessageImpl(loopPath: List<String>) =
                 "Left-recursion detected: " + loopPath.joinToString(separator = " -> ")
+
+        fun cyclePartMessage() = "Part of a left-recursive cycle"
     }
 
 }
 
-private typealias ProdPath = ImmutableList<JccNonTerminalProduction>
-// unsure means "being visited"
-private typealias VisitStatuses = MutableMap<JccNonTerminalProduction, VisitStatus>
-
 enum class VisitStatus {
     NOT_VISITED, VISITED, BEING_VISITED
 }
+
+/**
+ * List of visited productions zipped with the expansion unit that
+ * added them to the path. Only the first in the list has no corresponding
+ * expansion unit.
+ */
+private typealias ProductionLoopPath = ImmutableList<Pair<JccNonTerminalProduction, JccNonTerminalExpansionUnit?>>

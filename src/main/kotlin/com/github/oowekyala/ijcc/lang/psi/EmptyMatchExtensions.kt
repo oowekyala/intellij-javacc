@@ -3,7 +3,9 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.intellij.openapi.util.Key
 import com.intellij.util.ThreeState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.immutableSetOf
 
 
 /**
@@ -77,43 +79,45 @@ private fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccBnfP
             else                             -> false
         }
 
+typealias LeftMostSet = ImmutableSet<JccNonTerminalExpansionUnit>
+
+private fun emptyLeftMostSet(): LeftMostSet = immutableSetOf()
+
 /**
  * Gets the set of productions that this production can expand to without consuming any tokens.
  * This is used to check for left-recursion. If null then either a production reference couldn't
  * be resolved or this is a javacode production.
  */
-fun JccNonTerminalProduction.leftMostSet(): Set<JccNonTerminalProduction>? = when (this) {
-    is JccBnfProduction -> mutableSetOf<JccNonTerminalProduction>().takeIf { expansion?.computeLeftMost(it) == true }
+fun JccNonTerminalProduction.leftMostSet(): LeftMostSet? = when (this) {
+    is JccBnfProduction -> expansion?.computeLeftMost(emptyLeftMostSet()) ?: emptyLeftMostSet()
     else                -> null
 }
 
-/** Populates the leftmost set of this expansion. */
-private fun JccExpansion.computeLeftMost(acc: MutableSet<JccNonTerminalProduction>): Boolean =
+/** Populates the leftmost set of this expansion. Populates the set via side effects.
+ *
+ * @return True if the result is valid
+ */
+private fun JccExpansion.computeLeftMost(current: LeftMostSet): LeftMostSet? =
         when (this) {
-            is JccRegexExpansionUnit         -> true
-            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost(acc)
-            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost(acc) == true
-            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost(acc) == true
-            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost(acc) == true
-            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost(acc) == true
-            is JccExpansionSequence          -> {
-                var isValid = true
-                for (unit in expansionUnitList) {
-                    val unitIsValid = unit.computeLeftMost(acc)
-                    if (!unitIsValid) {
-                        isValid = false
-                        break
-                    } else if (!unit.isEmptyMatchPossible()) {
-                        break // valid, don't process the rest
-                    }
-                }
-                isValid
-            }
-            // breaks early if one returns false
-            is JccExpansionAlternative       -> expansionList.all { it.computeLeftMost(acc) }
-            // no recursion here. Just local.
-            is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.also { acc += it } != null
-            else                             -> true // valid, but nothing to do
+            is JccRegexExpansionUnit         -> current
+            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost(current)
+            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost(current)
+            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost(current)
+            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost(current)
+            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost(current)
+            is JccExpansionSequence          ->
+
+                expansionUnitList.asSequence()
+                    .takeWhile { it.isEmptyMatchPossible() || it is JccNonTerminalExpansionUnit }
+                    .map { it.computeLeftMost(current) }
+                    .fold(current as LeftMostSet?) { a, b -> b?.let { a?.addAll(it) } }
+
+            is JccExpansionAlternative       ->
+                expansionList.asSequence()
+                    .map { it.computeLeftMost(current) }
+                    .fold(current as LeftMostSet?) { a, b -> b?.let { a?.addAll(it) } }
+            is JccNonTerminalExpansionUnit   -> current.add(this)
+            else                             -> current // valid, but nothing to do
         }
 
 

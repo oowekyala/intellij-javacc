@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.ide.inspections.LeftRecursiveProductionInspection.Companion.cyclePartMessage
 import com.github.oowekyala.ijcc.ide.inspections.LeftRecursiveProductionInspection.Companion.makeMessageImpl
 
 /**
@@ -9,7 +10,11 @@ import com.github.oowekyala.ijcc.ide.inspections.LeftRecursiveProductionInspecti
 class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiveProductionInspection()) {
 
 
-    private fun warning(prod: String, path: List<String>) = errorAnnot(prod.trimIndent(), makeMessageImpl(path))
+    private fun String.warning(vararg path: String) =
+            errorAnnot(trimIndent(), makeMessageImpl(path.toList()))
+
+
+    private fun String.cyclePart() = errorAnnot(trimIndent(), cyclePartMessage())
 
 
     fun testSelfRecursion() = checkByText(
@@ -19,12 +24,9 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
                 "foo" Foo() // right recursion
             }
 
-            ${warning("""
-            void Bar(): {} {
-                Bar() "foo" // left recursion
-            }""",
-            listOf("Bar", "Bar")
-            )}
+             void ${"Bar".warning("Bar", "Bar")}(): {} {
+                    ${"Bar()".cyclePart()} "foo" // left recursion
+             }
 
         """.trimIndent().inGrammarCtx()
     )
@@ -32,17 +34,13 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
     fun testMutualLeftRecursion() = checkByText(
         """
 
-            ${warning(
-            """
-            void Foo(): {} {
-                Bar() "bar"
-            }""",
-            listOf("Foo", "Bar", "Foo")
-            )}
+            void ${"Foo".warning("Foo", "Bar", "Foo")}(): {} {
+                ${"Bar()".cyclePart()} "bar"
+            }
 
             // undetected, because we consider it visited
             void Bar(): {} {
-                Foo() "foo" // left recursion
+                 ${"Foo()".cyclePart()} "foo" // left recursion
             }
 
         """.trimIndent().inGrammarCtx()
@@ -51,22 +49,18 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
     fun testIndirectLeftRecursion() = checkByText(
         """
 
-            ${warning(
-            """
-            void Foo(): {} {
-                Bar() "bar"
-            }""",
-            listOf("Foo", "Bar", "Baz", "Foo")
-            )}
+            void ${"Foo".warning("Foo", "Bar", "Baz", "Foo")}(): {} {
+                ${"Bar()".cyclePart()} "bar"
+            }
 
             // undetected
             void Bar(): {} {
-                ("foo")? Baz() "foo"
+                ("foo")? ${"Baz()".cyclePart()} "foo"
             }
 
             // undetected
             void Baz(): {} {
-                Foo() "foo"
+                ${"Foo()".cyclePart()} "foo"
             }
         """.trimIndent().inGrammarCtx()
     )
@@ -96,21 +90,17 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
                 Foo2() "bar"
             }
 
-            ${warning(
-            """
-            void Foo2(): {} {
-                Bar() "bar"
-            }""",
-            listOf("Foo2", "Bar", "Baz", "Foo2")
-            )}
+            void ${"Foo2".warning("Foo2", "Bar", "Baz", "Foo2")}(): {} {
+                ${"Bar()".cyclePart()} "bar"
+            }
 
             void Bar(): {} {
-                ("foo")* Baz() "foo"
+                ("foo")* ${"Baz()".cyclePart()} "foo"
             }
 
 
             void Baz(): {} {
-               Foo2() "foo"
+               ${"Foo2()".cyclePart()} "foo"
             }
         """.trimIndent().inGrammarCtx()
     )
