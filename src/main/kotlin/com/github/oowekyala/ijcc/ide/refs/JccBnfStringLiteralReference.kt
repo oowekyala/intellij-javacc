@@ -56,7 +56,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         .defaultState
         .tokens
         .asSequence()
-        .filter { !it.isPrivate }
+        .filter { !it.isPrivate && it.regexKind == RegexKind.TOKEN }
         .mapNotNull { token ->
             val asString = token.getAsStringToken() ?: return@mapNotNull null
 
