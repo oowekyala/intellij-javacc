@@ -128,6 +128,22 @@
   implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
 }
 
+// Grammar for the JavaCC language
+// Compared to the JavaCC grammar used by JavaCC itself, this grammar has a few significant differences:
+// * It doesn't embed the Java grammar. Java elements are not parsed and are left to injection
+// * The JavaCC grammar has fewer different nodes, but some are used in different syntactic contexts.
+//   This grammar uses different nodes to keep the type hierarchy clear.
+//   * E.g. in JavaCC, a literal string "foo" may occur either as an expansion unit, as a regular
+//     expression (eg in token specs), and as a regex element (e.g. in < foo: "foo" >).
+//   * In this grammar, those three contexts correspond to different type hierarchies:
+//     JccExpansion, JccRegularExpression, and JccRegexElement. This makes ASTs deeper but
+//     allows greater abstraction (on a counterpart, we have to take care when modifying PSI).
+// * In JavaCC, an expansion is invariably an expansion alternative (RChoice), with possibly
+//   just one child. Children are always expansion sequences (RSequence), with possibly just
+//   one child. That tree structure is more predictable, but also much deeper than necessary.
+//   Here, expansion alternatives and sequences are only pushed on the tree if they have at
+//   least two children. That makes ASTs easier to navigate and query, but also harder to modify.
+
 javacc_input 	::=
     grammar_file_root
 
@@ -162,6 +178,19 @@ parser_begin        ::=
 parser_end        ::=
     "PARSER_END" "(" identifier ")"
 
+/* Productions. */
+/* These are the top-level blocks of a JavaCC file. */
+
+/* Type hierarchy is
+
+   JccProductionLike
+   |- JccTokenManagerDecls
+   |- JccProduction
+      |- JccRegexProduction
+      |- JccNonTerminalProduction
+         |- JccBnfProduction
+         |- JccJavacodeProduction
+ */
 
 private production_impl  ::=
         javacode_production
@@ -247,6 +276,26 @@ regex_spec 	    ::=
 private regex_spec_recover        ::= // exclude ident, most important is the pipe
     !('<' | 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | 'private' | 'protected' | 'public' | 'void' | '|' | '}' | PRIMITIVE_TYPE)
 
+/* Expansions */
+/* These only occur within BNF productions. */
+
+/* Type hierarchy is
+
+   JccExpansion
+   |- JccExpansionAlternative
+   |- JccExpansionSequenceOrUnit
+      |- JccExpansionSequence
+      |- JccExpansionUnit
+         |- JccLocalLookaheadUnit           LOOKAHEAD(...)
+         |- JccParserActionsUnit            { java }
+         |- JccParenthesizedExpansionUnit   ( exp )
+         |- JccOptionalExpansionUnit        [ exp ]
+         |- JccTryCatchExpansionUnit        try { java } ...
+         |- JccAssignedExpansionUnit        lhs = assignable
+         |- JccAssignableExpansionUnit
+            |- JccRegexExpansionUnit        regular_expression
+            |- JccNonterminalExpansionUnit  name(..)
+ */
 
 fake expansion                      ::=
 fake expansion_sequence_or_unit     ::=
@@ -333,6 +382,19 @@ finally_clause                  ::=
     "finally" java_block
 
 /* Regular expressions */
+/* These contain regex elements and may not occur as expansions. */
+/* When occurring as expansions, they're wrapped in a JccRegexExpansionUnit. */
+
+/* Type hierarchy is
+
+  JccRegularExpression
+   |- JccLiteralRegularExpression           "foo"
+   |- JccRefRegularExpression               <FOO>
+   |- JccNamedRegularExpression             < name: regex_element >
+   |- JccContainerRegularExpression         < regex_element >
+   |- JccEofRegularExpression               <EOF>
+*/
+
 
 regular_expression	::=
         literal_regular_expression
@@ -364,6 +426,20 @@ container_regular_expression       ::=
 	"<" complex_regex_choices ">"
 	{pin=1}
 
+/* Regex elements. */
+/* These are always contained within regexes, and are not equivalent. */
+
+/* Type hierarchy is
+
+   JccRegexElement
+   |- JccRegexAlternativeElt             seq | seq | ...
+   |- JccRegexSequenceElt                unit unit ...
+   |- JccRegexUnit
+      |- JccLiteralRegexUnit             "foo"
+      |- JccTokenReferenceRegexUnit      <FOO>
+      |- JccParenthesizedExpansionUnit   ( elt )
+      |- JccCharacterListRegexUnit       ["a"-"z", ...]
+ */
 
 private complex_regex_choices 	::=
         regex_alternative_elt
@@ -400,7 +476,16 @@ character_descriptor 	        ::=
     STRING_LITERAL [ "-" STRING_LITERAL ]
     {pin=1 recoverWhile="#auto"}
 
-// Occurrence indicators
+/* Occurrence indicators */
+
+/* Type hierarchy is
+   JccOccurrenceIndicatorOrRange
+   |- JccRepetitionRange                 {1, 2}
+   |- JccOccurrenceIndicator
+      |- JccOneOrMore                    +
+      |- JccZeroOrMore                   *
+      |- JccZeroOrOne                    ?
+ */
 
 occurrence_indicator_or_range   ::= occurrence_indicator | repetition_range
 occurrence_indicator            ::= one_or_more | zero_or_one | zero_or_more
