@@ -62,35 +62,43 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
         val myLeftMost = leftMostSets[this] ?: return
 
-        for (ref in myLeftMost) {
+        loop@ for (ref in myLeftMost) {
 
             val prod = ref.typedReference.resolveProduction() ?: return
 
-            if (visitStatuses[prod] == VisitStatus.BEING_VISITED) {
-                val myIdx = loopPath.indexOfFirst { it.first == prod }
-                if (myIdx < 0) continue // ??
+            when (visitStatuses[prod]) {
+                VisitStatus.VISITED -> break@loop // should we continue?
+                VisitStatus.NOT_VISITED ->
+                    // recurse
+                    prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(Pair(prod, ref)), holder)
+                VisitStatus.BEING_VISITED -> {
+                    // then prod is left recursive because it's somewhere on the path
 
-                val subPath: ProductionLoopPath = loopPath.subList(myIdx, loopPath.size).add(Pair(prod, ref))
+                    val myIdx = loopPath.indexOfFirst { it.first == prod }
+                    if (myIdx < 0) continue@loop // ??
 
-                // report on the root production
-                holder.registerProblem(
-                    prod.nameIdentifier,
-                    makeMessage(subPath),
-                    ProblemHighlightType.ERROR
-                )
+                    val subPath: ProductionLoopPath = loopPath.subList(myIdx, loopPath.size).add(Pair(prod, ref))
 
-                for ((_, cyclePart) in subPath.removeAt(0)) {
-                    cyclePart?.runIt {
-                        holder.registerProblem(
-                            cyclePart,
-                            cyclePartMessage(),
-                            ProblemHighlightType.ERROR
-                        )
+                    // report on the root production
+                    holder.registerProblem(
+                        prod.nameIdentifier,
+                        makeMessage(subPath),
+                        ProblemHighlightType.ERROR
+                    )
+
+                    for ((prodOnCycle, cyclePart) in subPath.removeAt(0)) {
+                        cyclePart?.runIt {
+                            holder.registerProblem(
+                                cyclePart,
+                                cyclePartMessage(),
+                                ProblemHighlightType.ERROR
+                            )
+                        }
+                        // avoid revisiting those, they're already part of one cycle
+                        visitStatuses[prodOnCycle] = VisitStatus.VISITED
                     }
+                    break@loop
                 }
-                break
-            } else {
-                prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(Pair(prod, ref)), holder)
             }
         }
 
