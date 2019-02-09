@@ -21,6 +21,7 @@ object JccInspectionsProvider : InspectionToolProvider {
         LookaheadIsNotAtChoicePointInspection::class.java,
         ActionWithinLookaheadInspection::class.java,
         LeftRecursiveProductionInspection::class.java,
-        LoopInRegexInspection::class.java
+        LoopInRegexInspection::class.java,
+        RegexMayMatchEmptyStringInspection::class.java
     )
 }

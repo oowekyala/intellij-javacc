@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
-import com.github.oowekyala.ijcc.lang.psi.impl.JccRegularExpressionImpl
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -42,9 +41,7 @@ private fun JccRegularExpression.toPatternImpl(prefixMatch: Boolean = false,
     val visitor = RegexResolutionVisitor(prefixMatch, visited)
     this.accept(visitor)
     return if (visitor.unresolved) null
-    else visitor.builder.toString().toRegexSafe()?.also {
-        (this as JccRegularExpressionImpl).pattern = it // cache it
-    }
+    else visitor.builder.toString().toRegexSafe()
 }
 
 private fun String.toRegexSafe(): Regex? =
@@ -129,9 +126,13 @@ private class RegexResolutionVisitor(prefixMatch: Boolean,
         val ref = o.typedReference.resolveToken()
         if (ref == null)
             unresolved = true
-        else ref.regularExpression?.toPatternImpl(false, visited)?.toString()?.let { builder.append(it) } ?: run {
-            unresolved = true
-        }
+        else ref.regularExpression
+            ?.toPatternImpl(false, visited)
+            ?.toString()
+            ?.let { builder.append(it) }
+            ?: run {
+                unresolved = true
+            }
     }
 
     override fun visitRefRegularExpression(o: JccRefRegularExpression) {

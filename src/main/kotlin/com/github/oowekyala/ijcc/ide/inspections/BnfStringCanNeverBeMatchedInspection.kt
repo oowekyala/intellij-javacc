@@ -56,9 +56,9 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
 
                     val myStringToken = when (o.regularExpression) {
-                        // the named regex may have be in the state but not match because
+                        // the named regex may be in the state but not match because
                         // a reference to it placed above in the file matches instead. A
-                        // named regex is however counted as a token.
+                        // named regex is however counted as a different token.
                         is JccNamedRegularExpression -> SyntheticToken(o)
                         else                         -> defaultState.matchLiteral(unit, exact = true) ?: return // error
                     }
