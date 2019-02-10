@@ -13,14 +13,13 @@ import io.kotlintest.should
  */
 
 
-open class ParserTestDsl : JccTestBase() {
-
+abstract class ParserTestDsl : JccTestBase() {
 
 
     protected inline fun <reified N : PsiElement> matchExpansion(ignoreChildren: Boolean = false,
                                                                  noinline nodeSpec: PsiSpec<N>): AssertionMatcher<String> =
-            {
-                it.asExpansion() should matchPsi(ignoreChildren, nodeSpec)
-            }
+        {
+            it.asExpansion() should matchPsi(ignoreChildren, nodeSpec)
+        }
 }
 

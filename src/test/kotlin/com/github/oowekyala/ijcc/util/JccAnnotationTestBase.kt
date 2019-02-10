@@ -3,8 +3,6 @@ package com.github.oowekyala.ijcc.util
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
 import com.github.oowekyala.ijcc.settings.javaccSettings
-import com.intellij.psi.impl.source.tree.injected.StringLiteralEscaper
-import org.apache.commons.lang3.StringEscapeUtils
 import org.intellij.lang.annotations.Language
 
 /**
@@ -19,22 +17,22 @@ abstract class JccAnnotationTestBase : JccTestBase() {
     }
 
     protected fun checkHighlighting(@Language("Rust") text: String) =
-            checkByText(
-                text,
-                checkWarn = false,
-                checkWeakWarn = false,
-                checkInfo = true,
-                ignoreExtraHighlighting = false
-            )
+        checkByText(
+            text,
+            checkWarn = false,
+            checkWeakWarn = false,
+            checkInfo = true,
+            ignoreExtraHighlighting = false
+        )
 
     protected fun checkInfo(@Language("JavaCC") text: String) =
-            checkByText(text, checkWarn = false, checkWeakWarn = false, checkInfo = true)
+        checkByText(text, checkWarn = false, checkWeakWarn = false, checkInfo = true)
 
     protected fun checkWarnings(@Language("JavaCC") text: String) =
-            checkByText(text, checkWarn = true, checkWeakWarn = true, checkInfo = false)
+        checkByText(text, checkWarn = true, checkWeakWarn = true, checkInfo = false)
 
     protected fun checkErrors(@Language("JavaCC") text: String) =
-            checkByText(text, checkWarn = false, checkWeakWarn = false, checkInfo = false)
+        checkByText(text, checkWarn = false, checkWeakWarn = false, checkInfo = false)
 
     protected fun checkByText(
         @Language("JavaCC") text: String,
@@ -111,7 +109,8 @@ abstract class JccAnnotationTestBase : JccTestBase() {
 
     private fun disableInjection() {
         val settingsState = myFixture.project.javaccSettings.myState
-        myFixture.project.javaccSettings.myState = settingsState.copy(injectionSupportLevel = InjectionSupportLevel.DISABLED)
+        myFixture.project.javaccSettings.myState =
+            settingsState.copy(injectionSupportLevel = InjectionSupportLevel.DISABLED)
     }
 
     private fun checkFix(
@@ -151,9 +150,9 @@ abstract class JccAnnotationTestBase : JccTestBase() {
 
 
     private fun annot(content: String, desc: String, tagName: String) =
-            desc.replace("\"", "\\\"").let { escapedDesc ->
-                "<$tagName descr=\"$escapedDesc\">$content</$tagName>"
-            }
+        desc.replace("\"", "\\\"").let { escapedDesc ->
+            "<$tagName descr=\"$escapedDesc\">$content</$tagName>"
+        }
 
     fun warningAnnot(s: String, desc: String) = annot(s, desc, "warning")
     fun errorAnnot(s: String, desc: String) = annot(s, desc, "error")

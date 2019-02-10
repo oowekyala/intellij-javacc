@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
@@ -59,6 +60,17 @@ val JccRegexLike.enclosingToken: Token
         }
     }
 
+/**
+ * Container regular expressions may be unclosed because of the way we parse
+ * them. E.g. when editing, `<` is a container, `<a` is a ref, `<a:` is a named
+ * regex. Inspections that inspect container regular expressions should not
+ * report unclosed regexes, otherwise they would report incomplete types that
+ * were meant to type something else.
+ */
+val JccContainerRegularExpression.isUnclosed: Boolean
+    get() = regexElement.let {
+        it == null || it == this.astChildrenSequence(reversed = true).filter { !it.isError }.firstOrNull()
+    }
 
 /** The text matched by this literal regex. */
 val JccLiteralRegexUnit.match: String

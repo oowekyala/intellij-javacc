@@ -91,12 +91,14 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
                         for (regexExpansion in regexExpansions) {
 
+                            val regex = regexExpansion.regularExpression
 
-                            val token = when (val r = regexExpansion.regularExpression.getRootRegexElement(false)) {
+                            if (regex is JccEofRegularExpression) continue // doesn't generate a token
+
+                            val token = when (val r = regex.getRootRegexElement(false)) {
 
                                 is JccLiteralRegexUnit        ->  // if the string isn't covered by an explicit token, it's synthesized
-                                    currentSpecs.firstOrNull { it.matchesLiteral(r) } // following references may cause infinite recursion
-                                        ?: SyntheticToken(regexExpansion)
+                                    currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
 
                                 // necessarily references an explicit token
                                 is JccTokenReferenceRegexUnit -> null

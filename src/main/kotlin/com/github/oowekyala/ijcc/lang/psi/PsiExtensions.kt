@@ -60,7 +60,11 @@ fun PsiElement.siblingSequence(forward: Boolean) =
 
 /** Returns true if the node's token type is [TokenType.WHITE_SPACE]. */
 val PsiElement.isWhitespace: Boolean
-    get() = node.elementType == TokenType.WHITE_SPACE
+    get() = isOfType(TokenType.WHITE_SPACE)
+
+/** Returns true if the node's token type is [TokenType.ERROR_ELEMENT]. */
+val PsiElement.isError
+    get() = isOfType(TokenType.ERROR_ELEMENT)
 
 val PsiElement.prevSiblingNoWhitespace: PsiElement?
     get() = siblingSequence(forward = false).firstOrNull { !it.isWhitespace }
@@ -70,6 +74,26 @@ val PsiElement.nextSiblingNoWhitespace: PsiElement?
 
 val PsiElement.lastChildNoWhitespace: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isWhitespace }
+
+val PsiElement.lastChildNoError: PsiElement?
+    inline get() = childrenSequence(reversed = true).firstOrNull { !it.isError }
+
+
+fun PsiElement.astChildrenSequence(reversed: Boolean = false,
+                                   filter: TokenSet = TokenSet.ANY): Sequence<PsiElement> =
+    when (reversed) {
+        false -> node.getChildren(filter).mapTo(mutableListOf()) { it.psi }.asSequence().filterNotNull()
+        true  -> {
+            val children = node.getChildren(filter)
+            var i = children.size
+            sequence {
+                while (i > 0) {
+                    val child = children[--i].psi
+                    if (child != null) yield(child)
+                }
+            }
+        }
+    }
 
 /** Parent sequence, stopping at the file node. */
 fun PsiElement.ancestors(includeSelf: Boolean) =

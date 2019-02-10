@@ -24,7 +24,7 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : JccVisitor() {
         override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
-            if (o.parent !is JccRegexSpec && o.regexElement !is JccTokenReferenceRegexUnit && o.regexElement !is JccLiteralRegexUnit) {
+            if (!o.isUnclosed && o.parent !is JccRegexSpec && o.regexElement !is JccTokenReferenceRegexUnit && o.regexElement !is JccLiteralRegexUnit) {
                 holder.registerProblem(o, GenericProblemDesc)
             }
         }
@@ -34,6 +34,9 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
                 val regex = o.regularExpression
 
                 if (regex !is JccNamedRegularExpression) {
+                    // avoid false positive
+                    if (regex is JccContainerRegularExpression && regex.isUnclosed) return
+
                     val desc = when (regex) {
                         is JccRefRegularExpression -> FreeStandingReferenceProblemDesc
                         else                       -> GenericProblemDesc

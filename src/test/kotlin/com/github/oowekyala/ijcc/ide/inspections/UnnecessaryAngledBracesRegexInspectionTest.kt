@@ -63,5 +63,20 @@ class UnnecessaryAngledBracesRegexInspectionTest : JccInspectionTestBase(Unneces
         """.trimIndent()
     )
 
+    fun testUnclosedBraces2() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN: {
+              < #FOO: "foo" >
+            }
+
+            void Foo():{} {
+              <<error descr="'#', <identifier>, EOF or '|' expected, got '}'"> </error>
+            }
+
+        """.trimIndent()
+    )
+
 
 }

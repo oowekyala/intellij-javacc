@@ -1,7 +1,9 @@
 package com.github.oowekyala.ijcc.lang.util
 
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
+import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.lang.LanguageCommenters
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
@@ -44,13 +46,13 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
      * marker with the given id and replace it with `<caret>`.
      */
     protected fun String.selectCaretMarker(id: String): String =
-            replace("/*caret[$id]*/", "<caret>")
-                .also {
-                    check(this != it) {
-                        "No caret with id [$id] found"
-                    }
+        replace("/*caret[$id]*/", "<caret>")
+            .also {
+                check(this != it) {
+                    "No caret with id [$id] found"
                 }
-                .replace(Regex("/\\*caret.*?\\*/"), "")
+            }
+            .replace(Regex("/\\*caret.*?\\*/"), "")
 
 
     protected fun checkByText(
@@ -68,7 +70,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     }
 
     private fun getVirtualFileByName(path: String): VirtualFile? =
-            LocalFileSystem.getInstance().findFileByPath(path)
+        LocalFileSystem.getInstance().findFileByPath(path)
 
 
     protected inline fun <reified T : PsiElement> findElementInEditor(marker: String = "^"): T {
@@ -158,14 +160,16 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
 
 
     inline fun <reified R : JccExpansion> String.asExpansionOfType(): R =
-            asExpansion().also { check(it is R) }.let { it as R }
+        asExpansion().also { check(it is R) }.let { it as R }
+
+    inline fun <reified R : JccRegularExpression> String.asRegex(): R = JccElementFactory.createRegex(project, this)
 
 
     companion object {
 
         @Language("JavaCC")
         const val DummyHeader =
-                """
+            """
 PARSER_BEGIN(Dummy)
 
 package dummy.grammar;

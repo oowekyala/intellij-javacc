@@ -95,6 +95,24 @@ class JccStructureViewTest : JccTestBase() {
          """
     )
 
+
+    fun `test EOF regex is not added`() = doTest(
+        """
+        $DummyHeader
+
+        void Foo():
+        {}
+        {
+            <EOF>
+        }
+    """,
+        """
+        -dummy.jjt
+         class Dummy
+         Foo()
+         """
+    )
+
     private fun doPresentationDataTest(@Language("JavaCC") code: String, expectedPresentableText: String,
                                        isPublic: Boolean) {
         myFixture.configureByText("main.rs", code)

@@ -47,6 +47,8 @@ fun JccPsiElement.getPresentableText(): String {
 
 
 private fun JccRegularExpression.getPresentableText(): String {
+    if (this is JccEofRegularExpression) return "<EOF>"
+
     val builder = StringBuilder()
 
     builder.append('<')
@@ -82,7 +84,6 @@ private fun JccRegexElement.getPresentableText(builder: StringBuilder) {
                 .ifEmpty { listOf("...") }
                 .joinTo(builder, separator = delim, limit = 2)
         }
-
         else                                              -> builder += "..."
     }
 }

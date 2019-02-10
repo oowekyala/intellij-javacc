@@ -29,7 +29,8 @@ class UnnecessaryAngledBracesRegexInspection : JccInspectionBase(InspectionName)
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
         object : JccVisitor() {
             override fun visitContainerRegularExpression(o: JccContainerRegularExpression) {
-                if (!o.lastChild.isOfType(JccTypes.JCC_GT)) return // unclosed
+                if (o.isUnclosed) return
+
                 val regex = o.regexElement ?: return
                 if (regex is JccLiteralRegexUnit || regex is JccTokenReferenceRegexUnit && regex.typedReference.resolveToken()?.isPrivate == false) {
                     holder.registerProblem(o, ProblemDescription, MyQuickFix())
