@@ -152,6 +152,7 @@ tags
 
 # End of https://www.gitignore.io/api/vim
 secrets.properties
-.idea/javacc.xmlsandbox/config
+.idea/javacc.xml
 # ignore things added to the sandbox unless explicitly added
 sandbox
+.idea/inspectionProfiles/
