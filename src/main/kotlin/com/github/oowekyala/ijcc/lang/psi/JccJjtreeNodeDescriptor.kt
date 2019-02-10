@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.JavaccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.intellij.psi.PsiElement
 
 /**
@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
+interface JccJjtreeNodeDescriptor : JccPsiElement, JccIdentifierOwner {
 
     /**
      * Returns the expression if one was specified.
@@ -27,7 +27,7 @@ interface JccJjtreeNodeDescriptor : JavaccPsiElement, JccIdentifierOwner {
     /** Either the identifier or the void element. */
     @JvmDefault
     val namingLeaf: PsiElement
-        get() = nameIdentifier ?: node.findChildByType(JavaccTypes.JCC_VOID_KEYWORD)!!.psi
+        get() = nameIdentifier ?: node.findChildByType(JccTypes.JCC_VOID_KEYWORD)!!.psi
 
     /**
      * Gets the production header of the production to which this

@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 
-interface JccJavaAssignmentLhs : JavaccPsiElement, PsiLanguageInjectionHost {
+interface JccJavaAssignmentLhs : JccPsiElement, PsiLanguageInjectionHost {
 
     val javaName: JccJavaName
 
@@ -15,9 +15,9 @@ interface JccJavaAssignmentLhs : JavaccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createAssignmentLhs(project, text))
-                .let { it as PsiLanguageInjectionHost }
-                .also { HostSpec.replaceHost(this, it) }
+        this.replace(JccElementFactory.createAssignmentLhs(project, text))
+            .let { it as PsiLanguageInjectionHost }
+            .also { HostSpec.replaceHost(this, it) }
 
 
     @JvmDefault

@@ -13,8 +13,8 @@ abstract class RegexLikeDFVisitor : DepthFirstVisitor() {
 
     abstract override fun visitEofRegularExpression(o: JccEofRegularExpression)
 
-    abstract override fun visitRegularExpressionReference(o: JccRegularExpressionReference)
+    abstract override fun visitRefRegularExpression(o: JccRefRegularExpression)
 
-    abstract override fun visitInlineRegularExpression(o: JccInlineRegularExpression)
+    abstract override fun visitContainerRegularExpression(o: JccContainerRegularExpression)
 
 }

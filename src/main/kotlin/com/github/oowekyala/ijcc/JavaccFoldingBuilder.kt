@@ -49,23 +49,23 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is JccTokenReferenceUnit    -> literalRegexpForRef(psi)!!.stringLiteral.text
-            is JccParserDeclaration     -> "/PARSER DECLARATION/"
-            is JccTokenManagerDecls     -> "/TOKEN MANAGER DECLARATIONS/"
-            is JccRegularExprProduction -> "${psi.regexprKind.text}: {..}"
-            is JccOptionSection         -> "options {..}"
-            is JccJavaBlock             -> "{..}"
-            is JccParserActionsUnit     -> "{..}"
-            is JccLocalLookahead        -> {
+            is JccTokenReferenceRegexUnit -> literalRegexForRef(psi)!!.stringLiteral.text
+            is JccParserDeclaration       -> "/PARSER DECLARATION/"
+            is JccTokenManagerDecls       -> "/TOKEN MANAGER DECLARATIONS/"
+            is JccRegexProduction         -> "${psi.regexKind.text}: {..}"
+            is JccOptionSection           -> "options {..}"
+            is JccJavaBlock               -> "{..}"
+            is JccParserActionsUnit       -> "{..}"
+            is JccLocalLookaheadUnit      -> {
                 if (psi.integerLiteral != null && psi.expansion == null && psi.javaExpression == null) {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
                 } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
             }
-            is JccBnfProduction         -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+            is JccBnfProduction           -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
                 ?: ""}/"
-            is JccJavacodeProduction    -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
+            is JccJavacodeProduction      -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
                 ?: ""}/"
-            else                        -> throw UnsupportedOperationException("Unhandled case $psi")
+            else                          -> throw UnsupportedOperationException("Unhandled case $psi")
         }
     }
 
@@ -74,8 +74,8 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
         private val LOG = Logger.getInstance(JavaccFoldingBuilder::class.java)
 
 
-        private fun literalRegexpForRef(regexRef: JccTokenReferenceUnit): JccLiteralRegexpUnit? =
-                regexRef.typedReference.resolveToken()?.asSingleLiteral()
+        private fun literalRegexForRef(regexRef: JccTokenReferenceRegexUnit): JccLiteralRegexUnit? =
+            regexRef.typedReference.resolveToken()?.asStringToken
 
         private val newLines = CharArray(2)
 
@@ -93,24 +93,24 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             // all lookaheads in the same bnf production belong in the same group
             private var currentLookaheadGroup: FoldingGroup? = null
             // all regex productions belong in the same group
-            private val regexpProductionsGroup = FoldingGroup.newGroup("terminals")
+            private val regexProductionsGroup = FoldingGroup.newGroup("terminals")
 
-            override fun visitTokenReferenceUnit(o: JccTokenReferenceUnit) {
-                val ref = literalRegexpForRef(o)
+            override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
+                val ref = literalRegexForRef(o)
                 if (ref != null) {
                     result += FoldingDescriptor(o, o.textRange)
                 }
             }
 
-            override fun visitRegularExprProduction(o: JccRegularExprProduction) {
-                result += FoldingDescriptor(o.node, o.textRange, regexpProductionsGroup)
+            override fun visitRegexProduction(o: JccRegexProduction) {
+                result += FoldingDescriptor(o.node, o.textRange, regexProductionsGroup)
 
                 currentJBlockGroup = FoldingGroup.newGroup("tokens:blocks:" + o.name)
-                super.visitRegularExprProduction(o)
+                super.visitRegexProduction(o)
                 currentJBlockGroup = null
             }
 
-            override fun visitRegexprSpec(o: JccRegexprSpec) {
+            override fun visitRegexSpec(o: JccRegexSpec) {
                 o.lexicalActions?.run {
                     result += FoldingDescriptor(node, textRange, currentJBlockGroup)
                 }
@@ -128,7 +128,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                 return range
             }
 
-            override fun visitLocalLookahead(o: JccLocalLookahead) {
+            override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
                 result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
@@ -164,7 +164,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
             override fun visitJavaBlock(javaBlock: JccJavaBlock) = visitJavaBlockLike(javaBlock)
 
-            private fun visitJavaBlockLike(elt: JavaccPsiElement) {
+            private fun visitJavaBlockLike(elt: JccPsiElement) {
                 if (elt.textLength > 2) { // not just "{}"
                     result += if (currentJBlockGroup != null)
                         FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)

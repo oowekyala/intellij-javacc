@@ -10,7 +10,7 @@ import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
 
-class JccGrammarFileRootImpl(node: ASTNode) : JavaccPsiElementImpl(node), JccGrammarFileRoot {
+class JccGrammarFileRootImpl(node: ASTNode) : JccPsiElementImpl(node), JccGrammarFileRoot {
     override val linearInjectedStructure: LinearInjectedStructure by lazy {
         if (pluginSettings.injectionSupportLevel == DISABLED)
             throw IllegalStateException("This method should not be called if Java injection is disabled")

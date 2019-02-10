@@ -1122,7 +1122,7 @@ void token_manager_decls() :
   "TOKEN_MGR_DECLS" ":" ClassOrInterfaceBody()
 }
 
-void regexpr_kind() :
+void regex_kind() :
 {}
 {
   "TOKEN"
@@ -1398,8 +1398,8 @@ void Modifiers() :
 {
  (
   LOOKAHEAD(2)
-  ( "public" | "static" | "protected" | "private" | "final" | "abstract" | 
-    "synchronized" | "native" | "transient" | "volatile" | "strictfp" | Annotation()
+  ( "public" | "static" | <PROTECTED> | "private" | "final" | "abstract" |
+    <SYNCHRONIZED> | <NATIVE> | <TRANSIENT> | "volatile" | "strictfp" | Annotation()
   )
  )*
 }

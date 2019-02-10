@@ -1,4 +1,3 @@
-
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure
@@ -12,7 +11,7 @@ import com.github.oowekyala.ijcc.lang.injection.LinearInjectedStructure
  * utilities to work with the whole grammar, e.g. [JccFile.grammarOptions].
  *
  */
-interface JccGrammarFileRoot : JavaccPsiElement {
+interface JccGrammarFileRoot : JccPsiElement {
 
     val optionSection: JccOptionSection?
 

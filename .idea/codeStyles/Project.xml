@@ -33,6 +33,9 @@
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
       <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="false" />
       <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="false" />
+      <indentOptions>
+        <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      </indentOptions>
     </codeStyleSettings>
   </code_scheme>
 </component>

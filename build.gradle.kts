@@ -2,7 +2,7 @@
 
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
-
+import java.net.URI
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -17,7 +17,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.0"
+version = "1.1"
 
 
 ext {
@@ -32,12 +32,16 @@ ext {
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        url = URI("http://dl.bintray.com/kotlin/kotlinx")
+    }
 }
 
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
+    compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     // https://mvnrepository.com/artifact/net.java.dev.javacc/javacc
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.1")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
@@ -69,10 +73,6 @@ intellij {
 
 
 tasks {
-
-    test {
-        useJUnitPlatform()
-    }
 
     val GenerationTaskGroup = "Code generation"
 
@@ -108,6 +108,8 @@ tasks {
 
         doLast {
 
+            val deletedNames = listOf("JccRegularExpressionOwnerImpl.java")
+
             fun getPsiFiles(root: String): FileCollection {
 
                 val psiInterfaces = "$root$PathToPsiRoot"
@@ -121,7 +123,7 @@ tasks {
 
             val genPsiFileDups = getPsiFiles("$buildDir/gen").filter { genFile ->
                 // in this source tree they're .java
-                genFile.isFile && userPsiFiles.any { it == genFile.nameWithoutExtension }
+                genFile.isFile && (userPsiFiles.any { it == genFile.nameWithoutExtension } || genFile.name in deletedNames)
             }
             logger.info("Detected ${genPsiFileDups.count()} generated PSI files overridden by sources in the main source tree:")
             genPsiFileDups.sorted().forEach { logger.info(it.name) }
@@ -156,6 +158,7 @@ tasks {
 
     runIde {
         jvmArgs = listOf("-Xmx2G")
+        setConfigDirectory(projectDir.resolve("sandbox").resolve("config"))
     }
 
     publishPlugin {
@@ -167,27 +170,32 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                <p>I think we're good for release 1.0!</p>
+                Main topic: improved support for the lexer generator.
                 <p>What's new:
                 <ul>
-                    <li>Significantly improved coverage of JavaCC errors and warnings</li>
-                    <li>The TOKEN_MGR_DECLS and the parser class declaration are now in the structure view</li>
-                    <li>Some new live templates allow to enter the PARSER_BEGIN section and options section easily</li>
-                    <li>Intentions and inspections:
-                    <ul>
-                        <li>All inspections can now be suppressed with a comment</li>
-                        <li>Add "Lookahead is not at choice point" inspection</li>
-                        <li>Improve "Unnecessary angled braces" inspection to handle token references as well</li>
-                        <li>Add "Add name to regular expression" intention, and "Remove name from regular expression"</li>
-                    </ul>
+                    <li>Completion of string literals with known string tokens!</li>
+                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
+                    <li>100% coverage of JavaCC semantic errors</li>
+                    <li>Left-recursive production detection, and regex loop detection</li>
+                    <li>Usage of string tokens that would be matched as another token now trigger a warning.
+                    "Token can never be matched" inspection has been toned down because it triggered false positives.
                     </li>
-
+                    <li><b>Java injection support has been downgraded to experimental status.</b> The
+                    current implementation is very resource-intensive, and it has been observed to cause
+                    significant delays in e.g. inspection highlight refresh. That undermines the responsiveness
+                    and usefulness of many other features so it's now disabled by default. You can still use
+                    it of course by setting the injection level in the plugin settings (Settings | Languages & Frameworks | JavaCC).
+                    </li>
                 </ul>
 
                 <p>What's fixed:
                 <ul>
-                    <li>Fix inconsistencies in Find Usages (#11)</li>
-                    <li>Improve resilience of the parser in token specifications</li>
+                    <li>Many misunderstandings of the JavaCC spec, in particular regarding string token definitions, which it treats very specially.</li>
+                    <li>Countless false positives of "token name has not been defined"</li>
+                    <li>False positives with "Token can never be matched" inspection</li>
+                    <li>"Consecutive parser actions unit" inspection reporting on all siblings</li>
+                    <li>Significant performance issues in files with many tokens</li>
+                    <li>Caching issues, which caused changes to not be refreshed often enough</li>
                 </ul>
             """.trimIndent()
         )

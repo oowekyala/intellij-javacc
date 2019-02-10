@@ -44,5 +44,5 @@ object JavaccParserDefinition : ParserDefinition {
         astNode: ASTNode?,
         astNode1: ASTNode?
     ): ParserDefinition.SpaceRequirements =
-            ParserDefinition.SpaceRequirements.MAY
+        ParserDefinition.SpaceRequirements.MAY
 }

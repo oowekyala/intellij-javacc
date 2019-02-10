@@ -13,14 +13,14 @@ void lookaheads(): {}
     LOOKAHEAD({ doSth(); }, {getToken(1).kind != NATURAL})  // invalid parse
 }
  */
-val JccLocalLookahead.isLexical
+val JccLocalLookaheadUnit.isLexical
     get() = integerLiteral != null
 
-val JccLocalLookahead.isSyntactic
+val JccLocalLookaheadUnit.isSyntactic
     get() = expansion != null
 
-val JccLocalLookahead.isSemantic
+val JccLocalLookaheadUnit.isSemantic
     get() = javaExpression != null
 
-val JccLocalLookahead.lexicalAmount: Int?
+val JccLocalLookaheadUnit.lexicalAmount: Int?
     get() = integerLiteral?.text?.toInt()

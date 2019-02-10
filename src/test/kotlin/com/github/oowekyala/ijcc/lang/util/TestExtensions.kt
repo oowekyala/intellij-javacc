@@ -40,7 +40,7 @@ fun <A, B> Matcher<A>.map(f: (B) -> A): Matcher<B> = object : Matcher<B> {
 
 
 inline fun stringMatchersIgnoreWhitespace(assertions: IgnoreWhitespaceCtx.() -> Unit): Unit =
-        IgnoreWhitespaceCtx().assertions()
+    IgnoreWhitespaceCtx().assertions()
 
 /** Rebinds match methods for strings to something that normalizes whitespace before handling. */
 class IgnoreWhitespaceCtx {

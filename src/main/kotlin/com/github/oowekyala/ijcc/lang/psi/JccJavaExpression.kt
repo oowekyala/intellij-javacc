@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 
-interface JccJavaExpression : JavaccPsiElement, PsiLanguageInjectionHost {
+interface JccJavaExpression : JccPsiElement, PsiLanguageInjectionHost {
 
 
     @JvmDefault
@@ -14,12 +14,12 @@ interface JccJavaExpression : JavaccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createJavaExpression(project, text))
-                .let { it as PsiLanguageInjectionHost }
-                .also { HostSpec.replaceHost(this, it) }
+        this.replace(JccElementFactory.createJavaExpression(project, text))
+            .let { it as PsiLanguageInjectionHost }
+            .also { HostSpec.replaceHost(this, it) }
 
 
     @JvmDefault
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
-            MultilineTextEscaper(this)
+        MultilineTextEscaper(this)
 }

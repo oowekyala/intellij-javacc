@@ -182,7 +182,6 @@ TOKEN :
 
 // Node kinds
 | < NODE: "node" >
-| < DOCUMENT_NODE: "document-node" >
 | < TEXT: "text" >
 | < COMMENT: "comment" >
 | < NAMESPACE_NODE: "namespace-node" >

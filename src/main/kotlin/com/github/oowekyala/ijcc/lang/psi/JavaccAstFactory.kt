@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.lang.JccTypes
 import com.intellij.lang.ASTFactory
 import com.intellij.lang.DefaultASTFactory
 import com.intellij.openapi.components.ServiceManager
@@ -27,8 +28,9 @@ object JavaccAstFactory : ASTFactory() {
     }
 
     override fun createLeaf(type: IElementType, text: CharSequence): LeafElement? {
-        return if (JccTypesExt.CommentTypeSet.contains(type)) {
-            myDefaultASTFactory.createComment(type, text)
-        } else LeafPsiElement(type, text)
+        return when {
+            JccTypesExt.CommentTypeSet.contains(type) -> myDefaultASTFactory.createComment(type, text)
+            else                                      -> LeafPsiElement(type, text)
+        }
     }
 }

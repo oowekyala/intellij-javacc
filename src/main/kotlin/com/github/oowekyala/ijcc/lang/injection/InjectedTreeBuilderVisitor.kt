@@ -69,10 +69,10 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         visitJavaBlock(o.javaBlock)
     }
 
-    override fun visitRegexpExpansionUnit(o: JccRegexpExpansionUnit) {
+    override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
         if (o.parent is JccAssignedExpansionUnit) {
             pushStringLeaf("getToken(1)")
-        } else super.visitRegexpExpansionUnit(o)
+        } else super.visitRegexExpansionUnit(o)
     }
 
     override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
@@ -157,15 +157,15 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         )
     }
 
-    override fun visitLocalLookahead(o: JccLocalLookahead) {
+    override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
 
-        o.javaExpression?.accept(this) ?: return super.visitLocalLookahead(o)
+        o.javaExpression?.accept(this) ?: return super.visitLocalLookaheadUnit(o)
 
         surroundTop("if /*lookahead*/ (", ");") //fixme?
     }
 
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-            jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
+        jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
     override fun visitJjtreeNodeDescriptorExpr(o: JccJjtreeNodeDescriptorExpr) {
         visitJavaExpression(o.javaExpression)
@@ -251,10 +251,10 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     companion object {
 
         /** Gets the injection subtree for the given node. */
-        fun getInjectedSubtreeFor(node: JavaccPsiElement): InjectionStructureTree =
-                InjectedTreeBuilderVisitor()
-                    .also { node.accept(it) }
-                    .nodeStack[0]
+        fun getInjectedSubtreeFor(node: JccPsiElement): InjectionStructureTree =
+            InjectedTreeBuilderVisitor()
+                .also { node.accept(it) }
+                .nodeStack[0]
 
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
@@ -344,7 +344,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                 """.trimIndent()
         }
 
-        fun wrapInFileContext(element: JavaccPsiElement,
+        fun wrapInFileContext(element: JccPsiElement,
                               node: InjectionStructureTree): InjectionStructureTree {
 
             val file = element.containingFile

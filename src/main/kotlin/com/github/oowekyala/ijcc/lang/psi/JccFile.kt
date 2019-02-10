@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.insight.model.GrammarOptions
-import com.github.oowekyala.ijcc.insight.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
@@ -13,7 +13,7 @@ import com.intellij.psi.tree.IFileElementType
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
+interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 
     /** The unique parser declaration of this file. */
     val parserDeclaration: JccParserDeclaration?
@@ -22,12 +22,15 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
     val nonTerminalProductions: Sequence<JccNonTerminalProduction>
 
     /** All terminal productions. */
-    val regexpProductions: Sequence<JccRegularExprProduction>
+    val regexProductions: Sequence<JccRegexProduction>
 
     /** The injectable file root. */
     val grammarFileRoot: JccGrammarFileRoot?
 
+    /** Information about lexical states and defined tokens. */
     val lexicalGrammar: LexicalGrammar
+    /** Information about defined productions. */
+    val syntaxGrammar: SyntaxGrammar
 
     /**
      * Named regexes of the TOKEN kind defined globally in the file.
@@ -35,13 +38,11 @@ interface JccFile : PsiFile, JavaccPsiElement, PsiClassOwner {
      */
     val globalNamedTokens: Sequence<JccNamedRegularExpression>
 
-    /** Regexpr specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
-    val globalTokenSpecs: Sequence<JccRegexprSpec>
+    /** Regex specs of the TOKEN kind defined globally in the file. Superset of [globalNamedTokens]. */
+    val globalTokenSpecs: Sequence<JccRegexSpec>
 
     /** Options section. */
     val options: JccOptionSection?
-
-    override val grammarOptions: GrammarOptions
 
 
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>

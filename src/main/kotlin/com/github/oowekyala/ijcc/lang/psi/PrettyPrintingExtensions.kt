@@ -5,14 +5,14 @@ package com.github.oowekyala.ijcc.lang.psi
  * @author Clément Fournier
  * @since 1.0
  */
-fun JavaccPsiElement.prettyName() = when (this) {
+fun JccPsiElement.foldingName() = when (this) {
     is JccOptionalExpansionUnit      -> "[...]"
-    is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.prettyName()
+    is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.foldingName()
     is JccOptionSection              -> "options {..}"
     is JccParserDeclaration          -> "/PARSER DECLARATION/"
     is JccTokenManagerDecls          -> "/TOKEN MANAGER DECLARATIONS/"
-    is JccRegularExprProduction      -> "${regexprKind.text}: {..}"
-    is JccLocalLookahead             -> {
+    is JccRegexProduction            -> "${regexKind.text}: {..}"
+    is JccLocalLookaheadUnit         -> {
         if (isLexical && !isSyntactic && !isSemantic) {
             "LOOKAHEAD($lexicalAmount)"
         } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
@@ -24,4 +24,6 @@ fun JavaccPsiElement.prettyName() = when (this) {
     else                             -> text
 }
 
-fun JccOccurrenceIndicator?.prettyName() = this?.text ?: ""
+
+fun JccOccurrenceIndicator?.foldingName() = this?.text ?: ""
+

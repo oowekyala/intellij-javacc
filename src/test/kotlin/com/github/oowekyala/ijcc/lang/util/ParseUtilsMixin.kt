@@ -1,9 +1,8 @@
 package com.github.oowekyala.ijcc.lang.util
 
-import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
-import com.github.oowekyala.ijcc.lang.psi.JccExpansion
-import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.intellij.openapi.project.Project
 import org.intellij.lang.annotations.Language
 
@@ -35,14 +34,33 @@ interface ParseUtilsMixin {
         .expansion!!
 
     @Language("JavaCC")
-    fun String.inGrammarCtx(): String = asJccGrammar().containingFile.text
+    fun String.inGrammarCtx(): String =
+        """
+                $DummyHeader
 
-    fun String.asExpansion(): JccExpansion = JccElementFactory.createBnfExpansion(getProject(), this)
+                $this
+            """
+
+    fun String.asExpansion(): JccExpansion = createExpansion(getProject(), this)
+
+    fun String.asProduction(): JccProductionLike =
+        asJccGrammar().grammarFileRoot!!.childrenSequence().filterIsInstance<JccProductionLike>().first()
 
     fun String.asJccFile(): JccFile = JccElementFactory.createFile(getProject(), this)
 
     fun String.asJccGrammar(): JccFile =
-            JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
+        JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
+
+    companion object {
+        @Language("JavaCC")
+        const val DummyHeader = """
+                PARSER_BEGIN(dummy)
+
+                public class dummy {}
+
+                PARSER_END(dummy)
+                """
+    }
 
 }
 

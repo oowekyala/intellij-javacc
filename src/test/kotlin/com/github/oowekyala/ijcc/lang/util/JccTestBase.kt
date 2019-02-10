@@ -1,19 +1,24 @@
 package com.github.oowekyala.ijcc.lang.util
 
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
+import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.intellij.lang.LanguageCommenters
+import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
 
 /**
  * Base class offering utilities to parse and create tests.
- * Mostly copied from intellij-rust.
+ * Mostly copied from intellij-JavaCC.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -41,18 +46,18 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
      * marker with the given id and replace it with `<caret>`.
      */
     protected fun String.selectCaretMarker(id: String): String =
-            replace("/*caret[$id]*/", "<caret>")
-                .also {
-                    check(this != it) {
-                        "No caret with id [$id] found"
-                    }
+        replace("/*caret[$id]*/", "<caret>")
+            .also {
+                check(this != it) {
+                    "No caret with id [$id] found"
                 }
-                .replace(Regex("/\\*caret.*?\\*/"), "")
+            }
+            .replace(Regex("/\\*caret.*?\\*/"), "")
 
 
     protected fun checkByText(
-        @Language("Rust") before: String,
-        @Language("Rust") after: String,
+        @Language("JavaCC") before: String,
+        @Language("JavaCC") after: String,
         action: () -> Unit
     ) {
         configureByText(before)
@@ -65,7 +70,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     }
 
     private fun getVirtualFileByName(path: String): VirtualFile? =
-            LocalFileSystem.getInstance().findFileByPath(path)
+        LocalFileSystem.getInstance().findFileByPath(path)
 
 
     protected inline fun <reified T : PsiElement> findElementInEditor(marker: String = "^"): T {
@@ -93,7 +98,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     ): List<Triple<T, String, Int>> {
         val commentPrefix = LanguageCommenters.INSTANCE.forLanguage(myFixture.file.language).lineCommentPrefix ?: "//"
         val caretMarker = "$commentPrefix$marker"
-        val text = myFixture.file.text
+        val text = myFixture.file.text!!
         val result = mutableListOf<Triple<T, String, Int>>()
         var markerOffset = -caretMarker.length
         while (true) {
@@ -111,6 +116,34 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         return result
     }
 
+    // got from intellij-kotlin,
+    fun Document.extractMarkerOffset(project: Project, caretMarker: String = "<caret>"): Int {
+        return extractMultipleMarkerOffsets(project, caretMarker).singleOrNull() ?: -1
+    }
+
+    private fun Document.extractMultipleMarkerOffsets(project: Project, caretMarker: String = "<caret>"): List<Int> {
+        val offsets = ArrayList<Int>()
+
+        runWriteAction {
+            val text = StringBuilder(text)
+            while (true) {
+                val offset = text.indexOf(caretMarker)
+                if (offset >= 0) {
+                    text.delete(offset, offset + caretMarker.length)
+                    setText(text.toString())
+
+                    offsets += offset
+                } else {
+                    break
+                }
+            }
+        }
+
+        PsiDocumentManager.getInstance(project).commitAllDocuments()
+        PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(this)
+
+        return offsets
+    }
 
     protected fun applyQuickFix(name: String) {
         val action = myFixture.findSingleIntention(name)
@@ -127,13 +160,16 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
 
 
     inline fun <reified R : JccExpansion> String.asExpansionOfType(): R =
-            asExpansion().also { check(it is R) }.let { it as R }
+        asExpansion().also { check(it is R) }.let { it as R }
+
+    inline fun <reified R : JccRegularExpression> String.asRegex(): R = JccElementFactory.createRegex(project, this)
 
 
     companion object {
 
-        const val DummyHeader =
-                """
+        @Language("JavaCC")
+        const val DummyHeader = // changing spaces on that may break tests, don't do
+            """
 PARSER_BEGIN(Dummy)
 
 package dummy.grammar;

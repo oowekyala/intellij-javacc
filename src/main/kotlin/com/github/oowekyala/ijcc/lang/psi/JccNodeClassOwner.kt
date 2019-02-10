@@ -12,7 +12,7 @@ import com.intellij.psi.search.GlobalSearchScope
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccNodeClassOwner : JavaccPsiElement, JccIdentifierOwner {
+interface JccNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 
     val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
 

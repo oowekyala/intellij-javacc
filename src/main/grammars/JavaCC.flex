@@ -15,13 +15,13 @@
  */
 package com.github.oowekyala.ijcc.lang.lexer;
 
-import com.intellij.psi.TokenType;
 import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.JavaTokenType;
 import com.intellij.psi.impl.source.tree.JavaDocElementType;
 
-import static com.github.oowekyala.ijcc.lang.JavaccTypes.*;
+import static com.github.oowekyala.ijcc.lang.JccTypes.*;
 
 %%
 

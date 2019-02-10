@@ -1,9 +1,7 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.intellij.util.ThreeState
-
-interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner {
+interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner, JccProduction {
 
     val javaBlock: JccJavaBlock?
 
@@ -13,9 +11,6 @@ interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner {
 
     override fun getNameIdentifier(): JccIdentifier
 
-    /**
-     * Populated by the whole-file inspection, used by the highlight visitor
-     */
-    val isNullable: ThreeState
+    override fun getName(): String = nameIdentifier.name
 
 }

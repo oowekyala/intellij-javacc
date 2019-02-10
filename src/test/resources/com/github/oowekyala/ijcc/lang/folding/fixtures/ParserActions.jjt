@@ -2,19 +2,19 @@
 PARSER_END(JJTreeParser)</fold>
 
 <fold text='SKIP: {..}' expand='false'>SKIP : {
-    "(:"</fold> <fold text="{..}">{ commentNestingDepth++; }
-}
+    "(:" <fold text="{..}">{ commentNestingDepth++; }
+}</fold>
 
 
-void QuantifiedExpr():
+<fold text='/BNF QuantifiedExpr()/' expand='true'>void QuantifiedExpr():
 {}
 {
-  (<SOME> <fold text="{..}">{ jjtThis.setUniversallyQuantified(false); })
+  (<SOME> <fold text="{..}"><fold text='{..}' expand='false'>{ jjtThis.setUniversallyQuantified(false); }</fold>)
   VarBindingList(false)
   <SATISFIES> ExprSingle()
-}
+}</fold>
 
-JAVACODE
+<fold text='/JAVACODE node_descriptor_expression() #NodeDescriptorExpression/' expand='true'>JAVACODE
 void node_descriptor_expression() #NodeDescriptorExpression
 {
   Token tok;
@@ -31,4 +31,4 @@ void node_descriptor_expression() #NodeDescriptorExpression
     }
     tok = getNextToken();
   }
-}
+}</fold>
