@@ -23,6 +23,7 @@ class JccFindUsagesProvider : FindUsagesProvider {
         JccTypesExt.StringLiteralTypeSet
     )
 
+
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
         (element as JccPsiElement).name ?: "<default name>"
 

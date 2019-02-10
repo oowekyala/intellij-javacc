@@ -6,10 +6,12 @@ import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
+import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import java.util.*
@@ -47,6 +49,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
 
     override fun resolve(): PsiElement? = resolveToken(exact = true)?.psiElement
 
+    override fun calculateDefaultRangeInElement(): TextRange = element.innerRange()
 
     /**
      * Enables autocompletion. Only tokens from the default state are considered.

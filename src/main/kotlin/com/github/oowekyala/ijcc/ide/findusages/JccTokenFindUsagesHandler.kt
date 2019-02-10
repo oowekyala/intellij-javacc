@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
-import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.find.findUsages.FindUsagesHandler
 import com.intellij.find.findUsages.FindUsagesHandlerFactory
@@ -15,23 +14,19 @@ object JccStringTokenFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
             is JccLiteralRegexUnit ->
                 element.typedReference!!
                     .resolveToken(exact = true)
-                    ?.let { JccTokenFindUsagesHandler(it) }
-            is JccIdentifier       -> {
-                val token = element.namedTokenDef!!.definedToken
-                JccTokenFindUsagesHandler(token)
-            }
+                    ?.let { JccTokenFindUsagesHandler(it.psiElement!!) }
+
+            is JccIdentifier       -> JccTokenFindUsagesHandler(element.namedTokenDef!!)
             else                   -> null
         }
 
     override fun canFindUsages(element: PsiElement): Boolean =
-        element is JccLiteralRegexUnit && element.typedReference != null // a non-null typed refere
+        element is JccLiteralRegexUnit && element.typedReference != null
             || element is JccIdentifier && element.namedTokenDef != null
 
 }
 
-class JccTokenFindUsagesHandler(val token: Token) : FindUsagesHandler(token.psiElement!!) {
-    override fun getPrimaryElements(): Array<PsiElement> = listOfNotNull(token.psiElement).toTypedArray()
-
+class JccTokenFindUsagesHandler(regexOwner: JccRegularExpressionOwner) : FindUsagesHandler(regexOwner) {
 
     override fun findReferencesToHighlight(target: PsiElement,
                                            searchScope: SearchScope): MutableCollection<PsiReference> {
