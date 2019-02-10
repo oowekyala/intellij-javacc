@@ -21,8 +21,6 @@ import com.intellij.psi.TokenType
  */
 class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
-    // TODO add more general folding regions that are not collapsed by default
-
     override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
                                           root: PsiElement,
                                           document: Document,

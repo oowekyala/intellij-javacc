@@ -136,10 +136,6 @@ inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(): T? =
     PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false)
 
 
-inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out PsiElement>): T? =
-    PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
-
-
 fun PsiElement.isOfType(elementType: IElementType): Boolean = node?.elementType == elementType
 fun PsiElement.isOfType(elementType: IElementType, vararg rest: IElementType): Boolean =
     node?.elementType.let { TokenSet.create(elementType, *rest).contains(it) }

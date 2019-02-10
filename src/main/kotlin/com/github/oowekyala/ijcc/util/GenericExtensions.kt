@@ -117,9 +117,7 @@ fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D): Pair<C, D> = Pair(f(f
 fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true
 
 
-fun <T> Comparator<T>.deemsEqual(t1: T, t2: T) = compare(t1, t2) == 0
-
-public inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R): R? =
+inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R): R? =
     fold(initial as R?) { r, t ->
         if (t == null || r == null) null
         else operation(r, t)
