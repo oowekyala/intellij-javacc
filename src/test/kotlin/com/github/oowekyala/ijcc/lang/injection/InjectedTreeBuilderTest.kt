@@ -82,7 +82,12 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
 
         """.trimIndent()
             .let { JccElementFactory.createFile(project, it) }
-            .let { Pair(getInjectedSubtreeFor(it.grammarFileRoot!!), it.grammarFileRoot!!.linearInjectedStructure) }
+            .let {
+                Pair(
+                    getInjectedSubtreeFor(it.grammarFileRoot!!),
+                    JavaccLanguageInjector.getLinearStructureFor(it.grammarFileRoot!!)
+                )
+            }
 
         stringMatchersIgnoreWhitespace {
 
