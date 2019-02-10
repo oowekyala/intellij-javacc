@@ -110,7 +110,7 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
         enum class ErrorType {
             UNUSED, UNREACHABLE;
 
-            fun makeMessage(prodName: String) = name.toLowerCase().capitalize() + "production \"$prodName\""
+            fun makeMessage(prodName: String) = name.toLowerCase().capitalize() + " production \"$prodName\""
         }
     }
 }

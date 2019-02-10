@@ -125,10 +125,14 @@ public inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: 
         else operation(r, t)
     }
 
-fun <T, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K): MostlySingularMultiMap<K, T> {
-    val multiMap = MostlySingularMultiMap<K, T>()
+fun <T, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K): MostlySingularMultiMap<K, T> =
+    associateByToMostlySingular(keySelector) { it }
+
+fun <T, K, V> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K,
+                                                      valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
+    val multiMap = MostlySingularMultiMap<K, V>()
     for (element in this) {
-        multiMap.add(keySelector(element), element)
+        multiMap.add(keySelector(element), valueTransform(element))
     }
     return multiMap
 }
