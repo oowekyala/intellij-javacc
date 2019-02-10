@@ -58,7 +58,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
         .asSequence()
         .filter { !it.isPrivate && it.regexKind == RegexKind.TOKEN }
         .mapNotNull { token ->
-            val asString = token.getAsStringToken() ?: return@mapNotNull null
+            val asString = token.asStringToken ?: return@mapNotNull null
 
             LookupElementBuilder
                 .create(asString.text.removeSuffix("\""))

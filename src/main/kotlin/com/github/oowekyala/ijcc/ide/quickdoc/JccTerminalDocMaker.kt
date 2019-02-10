@@ -85,7 +85,7 @@ object JccTerminalDocMaker {
             val reffed = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.getAsStringToken()?.text ?: angles(o.name!!)
+            val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
 
             DocumentationManager.createHyperlink(
                 sb,

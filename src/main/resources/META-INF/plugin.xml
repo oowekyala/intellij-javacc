@@ -78,7 +78,8 @@
         <lang.syntaxHighlighterFactory
                 language="JavaCC"
                 implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
-        <lang.commenter language="JavaCC" implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
+        <lang.commenter language="JavaCC"
+                        implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
 
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
@@ -103,6 +104,10 @@
                                  implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
         <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
 
+        <referencesSearch
+                implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
+        <findUsagesHandlerFactory
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
         <highlightUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccHighlightStringTokenUsagesHandlerFactory"/>
 

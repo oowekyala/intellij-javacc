@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.highlighting.HighlightUsagesHandlerBase
 import com.intellij.codeInsight.highlighting.HighlightUsagesHandlerFactoryBase
@@ -51,15 +52,26 @@ class JccHighlightStringTokenUsagesHandler(editor: Editor,
 
         val token = targets[0].typedReference.resolveToken(exact = true) ?: return
 
-        myFile.nonTerminalProductions
-            .filterIsInstance<JccBnfProduction>()
-            .flatMap { it.expansion?.descendantSequence(includeSelf = true) ?: emptySequence() }
-            .filterIsInstance<JccLiteralRegularExpression>()
-            .filter {
-                it.typedReference.resolveToken(exact = true) == token
-            }.forEach {
-                addOccurrence(it)
-            }
+        findReferencesTo(token, myFile) {
+            this.addOccurrence(it)
+            true
+        }
+    }
+
+    companion object {
+
+        fun findReferencesTo(token: Token, file: JccFile, handler: (JccLiteralRegularExpression) -> Boolean) =
+            file.nonTerminalProductions
+                .filterIsInstance<JccBnfProduction>()
+                .flatMap { it.expansion?.descendantSequence(includeSelf = true) ?: emptySequence() }
+                .filterIsInstance<JccLiteralRegularExpression>()
+                .filter {
+                    it.typedReference.resolveToken(exact = true) == token
+                }.forEach {
+                    handler(it)
+                }
+
+
     }
 
 

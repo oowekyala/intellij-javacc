@@ -3,8 +3,11 @@ package com.github.oowekyala.ijcc.ide.refs
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionOwner
+import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
+import com.github.oowekyala.ijcc.lang.psi.canReferencePrivate
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
+import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
@@ -34,8 +37,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
 
     private val canReferencePrivate = referenceUnit.canReferencePrivate
 
-    override fun resolve(): JccIdentifier? =
-        resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
+    override fun resolve(): JccRegularExpressionOwner? = resolveToken()?.psiElement
 
     fun resolveToken(): Token? {
         val searchedName = element.name ?: return null

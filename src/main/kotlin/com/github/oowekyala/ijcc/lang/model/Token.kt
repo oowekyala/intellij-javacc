@@ -54,9 +54,8 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val name: String? get() = regularExpression?.name
 
     /** Returns true if this is a single literal token. */
-    fun getAsStringToken(): JccLiteralRegexUnit? =
-    // this relies on the fact that the reference doesn't use the lexical grammar
-        regularExpression?.asSingleLiteral(followReferences = true) // TODO should we unwrap unnecessary parentheses?
+    val asStringToken: JccLiteralRegexUnit?
+        get() = regularExpression?.asSingleLiteral(followReferences = true)
 
     val psiElement: JccRegularExpressionOwner? get() = psiPointer.element
 
@@ -80,7 +79,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * modulo [isIgnoreCase].
      */
     fun matchesLiteral(literalMatch: String): Boolean =
-        getAsStringToken()?.let {
+        asStringToken?.let {
             literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
         } == true
 
@@ -95,8 +94,8 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
 
             if (t1.name != null && t2.name != null && t2.name != t1.name) return false
 
-            val t1Str = t1.getAsStringToken()
-            val t2Str = t2.getAsStringToken()
+            val t1Str = t1.asStringToken
+            val t2Str = t2.asStringToken
 
             return t1Str != null
                 && t2Str != null

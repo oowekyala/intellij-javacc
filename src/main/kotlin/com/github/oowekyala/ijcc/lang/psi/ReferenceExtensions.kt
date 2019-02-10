@@ -49,9 +49,12 @@ val JccRegexExpansionUnit.referencedToken: Token?
         }
     }
 
-val JccRegexSpec.definedToken: Token
-    get() = ExplicitToken(this)
-
+val JccRegularExpressionOwner.definedToken: Token
+    get() = when (this) {
+        is JccRegexSpec          -> ExplicitToken(this)
+        is JccRegexExpansionUnit -> SyntheticToken(this)
+        else                     -> throw IllegalStateException(this.toString())
+    }
 /**
  * Null if [JccNodeClassOwner.isVoid], not null otherwise.
  * This is not yielded by PsiElement.getReference because it breaks

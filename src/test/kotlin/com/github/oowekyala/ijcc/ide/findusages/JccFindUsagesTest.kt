@@ -31,6 +31,31 @@ class JccFindUsagesTest : JccTestBase() {
             """
     )
 
+
+    fun `test token ref`() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <foo: "fo" | "b">
+                //^
+            }
+
+
+            TOKEN: {
+                <bar: <foo>> $Token
+            }
+
+
+            void MyFour() #Four:{}
+            {
+                <foo> $Token
+            }
+
+        """
+    )
+
     fun `test implicit token`() = doTestByText(
         """
 
@@ -38,7 +63,7 @@ class JccFindUsagesTest : JccTestBase() {
 
             void Four():{}
             {
-                "4"
+                "4" $Token
                //^
             }
 
@@ -62,7 +87,146 @@ class JccFindUsagesTest : JccTestBase() {
         """
     )
 
+    fun `test implicit usage`() = doTestByText(
+        """
 
+            $DummyHeader
+
+            void Four():{}
+            {
+                "4" $Token
+            }
+
+            void Foo():{}
+            {
+                Hello() "4" #Four $Token
+                       //^
+            }
+
+            void Hello():{}
+            {
+                "4" #Four $Token
+            }
+
+
+
+            void MyFour() #Four:{}
+            {
+                "4" $Token
+            }
+
+        """
+    )
+
+    fun `test string usage of spec from string`() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <four: "4"> $Token
+            }
+
+            void Four():{}
+            {
+                "4" $Token
+            }
+
+            void Foo():{}
+            {
+                Hello() "4" #Four $Token
+                       //^
+            }
+
+            void Hello():{}
+            {
+                "4" #Four $Token
+            }
+
+
+
+            void MyFour() #Four:{}
+            {
+                "4" $Token
+            }
+
+        """
+    )
+
+
+    fun `test string usage of spec from name`() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <four: "4"> $Token
+                //^
+            }
+
+            void Four():{}
+            {
+                "4" $Token
+            }
+
+            void Foo():{}
+            {
+                Hello() "4" #Four $Token
+            }
+
+            void Hello():{}
+            {
+                "4" #Four $Token
+            }
+
+
+
+            void MyFour() #Four:{}
+            {
+                <four> $Token
+            }
+
+        """
+    )
+
+
+    fun `test string usage of spec from literal in spec`() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <four: "4"> $Token
+                      //^
+
+            }
+
+            void Four():{}
+            {
+                "4" $Token
+            }
+
+            void Foo():{}
+            {
+                Hello() "4" #Four $Token
+            }
+
+            void Hello():{}
+            {
+                "4" #Four $Token
+            }
+
+
+
+            void MyFour() #Four:{}
+            {
+                <four> $Token
+            }
+
+        """
+    )
+
+    // this is taken from the kotlin plugin i think
     private fun doTestByText(@Language("JavaCC") code: String) {
         configureByText(code)
 

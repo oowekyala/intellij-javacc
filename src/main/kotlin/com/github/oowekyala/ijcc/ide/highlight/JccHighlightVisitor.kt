@@ -414,7 +414,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     st.matchLiteral(regex, exact = true)
                         ?.takeUnless {
                             // this follows references
-                            it.getAsStringToken() == regex
+                            it.asStringToken == regex
                         }
                         ?.let { Pair(st, it) }
                 }

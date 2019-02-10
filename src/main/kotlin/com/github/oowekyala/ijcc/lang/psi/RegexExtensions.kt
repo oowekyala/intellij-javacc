@@ -283,6 +283,9 @@ val JccLiteralRegexUnit.isStringToken: Boolean
     get() = parent is JccLiteralRegularExpression // common case
         || firstAncestorOrNull<JccRegularExpression>()?.asSingleLiteral(followReferences = false) == this
 
+val JccIdentifier.namedTokenDef: JccRegularExpressionOwner?
+    get() = parent.let { it as? JccNamedRegularExpression }?.let { it.parent as? JccRegularExpressionOwner }
+
 
 /**
  * Return the regex if it's a single literal, unwrapping

@@ -32,9 +32,9 @@ class JccFindUsagesProvider : FindUsagesProvider {
 
         return when (element) {
             is JccNonTerminalExpansionUnit -> "non-terminal"
-            is JccNamedRegularExpression,
-            is JccTokenReferenceRegexUnit,
-            is JccRegexExpansionUnit       -> "token"
+            is JccRegexElement, // TODO should we be more specific?
+            is JccRegularExpression,
+            is JccRegularExpressionOwner   -> "token"
             else                           -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }
