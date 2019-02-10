@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntheticToken
-import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
@@ -17,7 +16,7 @@ import com.intellij.pom.Navigatable
  *
  */
 class JccStructureTreeElement(val element: JccPsiElement,
-                             private val lexicalGrammar: LexicalGrammar)
+                              private val lexicalGrammar: LexicalGrammar)
     : StructureViewTreeElement, SortableTreeElement, Navigatable by element {
 
     override fun getValue(): Any = element
@@ -42,7 +41,7 @@ class JccStructureTreeElement(val element: JccPsiElement,
 
         is JccRegexProduction -> element.regexSpecList
         is JccOptionSection   -> element.optionBindingList
-        is JccBnfProduction   ->{
+        is JccBnfProduction   -> {
             lexicalGrammar
                 .defaultState
                 .tokens

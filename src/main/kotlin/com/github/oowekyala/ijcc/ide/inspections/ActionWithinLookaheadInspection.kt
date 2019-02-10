@@ -24,20 +24,20 @@ class ActionWithinLookaheadInspection : JccInspectionBase(DisplayName) {
 
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
-                override fun visitParserActionsUnit(o: JccParserActionsUnit) {
+        object : JccVisitor() {
+            override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-                    if (o.ancestors(false).any { it is JccLocalLookaheadUnit }) {
-                        holder.registerProblem(
-                            o,
-                            ProblemDescription,
-                            DeleteExpansionIntention.quickFix(
-                                FixDescription, o.containingFile
-                            )
+                if (o.ancestors(false).any { it is JccLocalLookaheadUnit }) {
+                    holder.registerProblem(
+                        o,
+                        ProblemDescription,
+                        DeleteExpansionIntention.quickFix(
+                            FixDescription, o.containingFile
                         )
-                    }
+                    )
                 }
             }
+        }
 
 
     companion object {

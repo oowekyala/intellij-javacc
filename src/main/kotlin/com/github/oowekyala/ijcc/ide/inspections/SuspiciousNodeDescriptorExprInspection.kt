@@ -52,24 +52,24 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
     override fun isEnabledByDefault(): Boolean = true
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
+        object : JccVisitor() {
 
-                override fun visitJjtreeNodeDescriptor(o: JccJjtreeNodeDescriptor) {
-                    if (o.expansionUnit == null || o.descriptorExpr == null) return
+            override fun visitJjtreeNodeDescriptor(o: JccJjtreeNodeDescriptor) {
+                if (o.expansionUnit == null || o.descriptorExpr == null) return
 
-                    val identifier = o.nameIdentifier ?: return
+                val identifier = o.nameIdentifier ?: return
 
-                    if (identifier.nextSibling?.node?.elementType == JccTypes.JCC_JJTREE_NODE_DESCRIPTOR_EXPR) return
-                    else {
-                        holder.registerProblem(
-                            o.descriptorExpr!!,
-                            makeDescription(o),
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            MyAddTrueQuickFix
-                        )
-                    }
+                if (identifier.nextSibling?.node?.elementType == JccTypes.JCC_JJTREE_NODE_DESCRIPTOR_EXPR) return
+                else {
+                    holder.registerProblem(
+                        o.descriptorExpr!!,
+                        makeDescription(o),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        MyAddTrueQuickFix
+                    )
                 }
             }
+        }
 
     companion object {
 
@@ -77,7 +77,7 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
         const val InspectionName = "Suspicious JJTree node descriptor expression"
 
         fun makeDescription(nodeDescriptor: JccJjtreeNodeDescriptor) =
-                "Ambiguous node descriptor expression for #${nodeDescriptor.name}"
+            "Ambiguous node descriptor expression for #${nodeDescriptor.name}"
 
         private object LOG : EnclosedLogger()
         private object MyAddTrueQuickFix : LocalQuickFix {
@@ -93,11 +93,11 @@ class SuspiciousNodeDescriptorExprInspection : JccInspectionBase(InspectionName)
                     val ident = scopedUnit.jjtreeNodeDescriptor.namingLeaf
 
                     val identEndOffset =
-                            nodeDescriptor.startOffsetInParent + ident.startOffsetInParent + ident.textLength
+                        nodeDescriptor.startOffsetInParent + ident.startOffsetInParent + ident.textLength
                     val newText = scopedUnit.text.insert(identEndOffset, "(true)")
 
                     val newExpansion =
-                            createExpansion(parens.project, newText) as JccExpansionSequence
+                        createExpansion(parens.project, newText) as JccExpansionSequence
 
                     // insert into existing sequence
                     if (context is JccExpansionSequence) {

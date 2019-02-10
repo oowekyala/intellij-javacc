@@ -30,7 +30,7 @@ val JccRegularExpression.prefixPattern: Regex?
  * to return null.
  */
 private fun JccRegularExpression.toPattern(prefixMatch: Boolean = false): Regex? =
-        toPatternImpl(prefixMatch, mutableSetOf())
+    toPatternImpl(prefixMatch, mutableSetOf())
 
 private fun JccRegularExpression.toPatternImpl(prefixMatch: Boolean = false,
                                                visited: MutableSet<JccTokenReferenceRegexUnit>): Regex? {
@@ -41,11 +41,11 @@ private fun JccRegularExpression.toPatternImpl(prefixMatch: Boolean = false,
 }
 
 private fun String.toRegexSafe(): Regex? =
-        try {
-            Regex(this)
-        } catch (e: PatternSyntaxException) {
-            null
-        }
+    try {
+        Regex(this)
+    } catch (e: PatternSyntaxException) {
+        null
+    }
 
 /** Returns the token this regex is declared in. Is synthetic if the regex occurs in a BNF expansion. */
 val JccRegexLike.enclosingToken: Token
@@ -193,12 +193,12 @@ private class RegexResolutionVisitor(prefixMatch: Boolean,
         fun String.quoteRegexChar(): String = when {
             length == 1                      -> Pattern.quote(this)
             this == "\\n"
-                    || this == "\\r"
-                    || this == "\\f"
-                    || this == "\\b"
-                    || this == "\\a"
-                    || this == "\\e"
-                    || this == "\\\\"        -> this
+                || this == "\\r"
+                || this == "\\f"
+                || this == "\\b"
+                || this == "\\a"
+                || this == "\\e"
+                || this == "\\\\"            -> this
             this.matches(UnicodeStringRegex) -> "\\x{" + this.removePrefix("\\u") + "}"
             else                             -> this // ??
         }
@@ -271,7 +271,7 @@ val JccRepetitionRange.first: Int?
  * if needed.
  */
 fun JccRegexSpec.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexUnit? =
-        regularExpression.asSingleLiteral(followReferences)
+    regularExpression.asSingleLiteral(followReferences)
 
 
 /**
@@ -280,7 +280,7 @@ fun JccRegexSpec.asSingleLiteral(followReferences: Boolean = false): JccLiteralR
  * if needed.
  */
 fun JccRegularExpression.asSingleLiteral(followReferences: Boolean = false): JccLiteralRegexUnit? =
-        getRootRegexElement(followReferences) as? JccLiteralRegexUnit
+    getRootRegexElement(followReferences) as? JccLiteralRegexUnit
 
 /**
  * Returns the root regex element, unwrapping
@@ -288,7 +288,7 @@ fun JccRegularExpression.asSingleLiteral(followReferences: Boolean = false): Jcc
  * if needed.
  */
 fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRegexElement? =
-        regularExpression.getRootRegexElement(followReferences)
+    regularExpression.getRootRegexElement(followReferences)
 
 /**
  * Returns the root regex element, unwrapping a [JccNamedRegularExpression] or [JccContainerRegularExpression]
@@ -302,7 +302,7 @@ fun JccRegexSpec.getRootRegexElement(followReferences: Boolean = false): JccRege
  */
 fun JccRegularExpression.getRootRegexElement(followReferences: Boolean = false,
                                              unwrapParens: Boolean = true): JccRegexElement? =
-        getRootRegexElementImpl(followReferences, unwrapParens, mutableSetOf())
+    getRootRegexElementImpl(followReferences, unwrapParens, mutableSetOf())
 
 private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boolean,
                                                          unwrapParens: Boolean,
@@ -346,8 +346,8 @@ private fun JccRegularExpression.getRootRegexElementImpl(followReferences: Boole
  */
 fun JccRegexElement.unwrapParens(): JccRegexElement = when {
     this is JccParenthesizedRegexUnit
-            && this.occurrenceIndicator == null -> this.regexElement.unwrapParens()
-    else                                        -> this
+        && this.occurrenceIndicator == null -> this.regexElement.unwrapParens()
+    else                                    -> this
 }
 
 
@@ -356,7 +356,7 @@ fun JccRegexElement.unwrapParens(): JccRegexElement = when {
  */
 val JccTokenReferenceRegexUnit.canReferencePrivate: Boolean
     get() = ancestors(includeSelf = false).firstOrNull { it is JccRegularExpression } !is JccRefRegularExpression
-            || ancestors(includeSelf = false).any { it is JccRegexSpec }
+        || ancestors(includeSelf = false).any { it is JccRegexSpec }
 
 val JccCharacterDescriptor.baseCharElement: PsiElement
     get() = firstChild
@@ -418,16 +418,16 @@ fun JccRegexElement.safeReplace(regex: JccRegexElement): PsiElement? {
     val parent = parent
     return when {
         regex is JccTokenReferenceRegexUnit
-                && parent is JccRegularExpression
-                && parent !is JccRefRegularExpression     ->
+            && parent is JccRegularExpression
+            && parent !is JccRefRegularExpression     ->
             parent.safeReplace(regex.promoteToRegex())
 
         regex is JccLiteralRegexUnit
-                && parent is JccRegularExpression
-                && parent !is JccLiteralRegularExpression ->
+            && parent is JccRegularExpression
+            && parent !is JccLiteralRegularExpression ->
             parent.safeReplace(regex.promoteToRegex())
 
-        else                                              -> replace(regex)
+        else                                          -> replace(regex)
     }
 }
 

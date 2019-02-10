@@ -52,6 +52,6 @@ class UnnamedRegexInspection : JccInspectionBase(DisplayName) {
         const val DisplayName = "Unnamed regular expression"
         const val GenericProblemDesc = "Unnamed token"
         const val FreeStandingReferenceProblemDesc =
-                "JavaCC ignores free-standing regular expression references unless they have a different name"
+            "JavaCC ignores free-standing regular expression references unless they have a different name"
     }
 }

@@ -24,7 +24,7 @@ class JccFindUsagesProvider : FindUsagesProvider {
     )
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
-            (element as JccPsiElement).name ?: "<default name>"
+        (element as JccPsiElement).name ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
@@ -44,10 +44,10 @@ class JccFindUsagesProvider : FindUsagesProvider {
     override fun getHelpId(psiElement: PsiElement): String? = HelpID.FIND_OTHER_USAGES
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean =
-            psiElement is JccIdentifier
-                    || psiElement is JccRegexSpec
-                    || psiElement is JccNonTerminalProduction
-                    || psiElement is JccRegexExpansionUnit
+        psiElement is JccIdentifier
+            || psiElement is JccRegexSpec
+            || psiElement is JccNonTerminalProduction
+            || psiElement is JccRegexExpansionUnit
 
     private object Log : EnclosedLogger()
 }

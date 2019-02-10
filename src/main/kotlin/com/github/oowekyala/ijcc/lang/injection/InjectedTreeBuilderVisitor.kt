@@ -165,7 +165,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     }
 
     private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-            jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
+        jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
     override fun visitJjtreeNodeDescriptorExpr(o: JccJjtreeNodeDescriptorExpr) {
         visitJavaExpression(o.javaExpression)
@@ -252,9 +252,9 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
         /** Gets the injection subtree for the given node. */
         fun getInjectedSubtreeFor(node: JccPsiElement): InjectionStructureTree =
-                InjectedTreeBuilderVisitor()
-                    .also { node.accept(it) }
-                    .nodeStack[0]
+            InjectedTreeBuilderVisitor()
+                .also { node.accept(it) }
+                .nodeStack[0]
 
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {

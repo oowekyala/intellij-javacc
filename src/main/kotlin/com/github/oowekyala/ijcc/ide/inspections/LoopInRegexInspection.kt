@@ -69,8 +69,8 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
         val myNode = psiElement ?: return
 
         val myRefs =
-                myNode.descendantSequence(includeSelf = true)
-                    .filterIsInstance<JccTokenReferenceRegexUnit>()
+            myNode.descendantSequence(includeSelf = true)
+                .filterIsInstance<JccTokenReferenceRegexUnit>()
 
 
         for (refUnit in myRefs) {
@@ -105,7 +105,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
 
         @TestOnly
         fun makeMessageImpl(loopPath: List<String>) =
-                "Loop detected in regular expression: " + loopPath.joinToString(separator = " -> ")
+            "Loop detected in regular expression: " + loopPath.joinToString(separator = " -> ")
 
     }
 

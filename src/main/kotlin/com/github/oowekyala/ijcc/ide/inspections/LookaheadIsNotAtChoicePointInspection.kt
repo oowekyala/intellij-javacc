@@ -36,59 +36,60 @@ class LookaheadIsNotAtChoicePointInspection : JccInspectionBase(DisplayName) {
     override fun isEnabledByDefault(): Boolean = true
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
+        object : JccVisitor() {
 
-                override fun visitLocalLookaheadUnit(la: JccLocalLookaheadUnit) {
+            override fun visitLocalLookaheadUnit(la: JccLocalLookaheadUnit) {
 
-                    if (la.lexicalAmount != null && la.lexicalAmount != 0) {
+                if (la.lexicalAmount != null && la.lexicalAmount != 0) {
 
-                        val lookfrom = la.parent as? JccExpansionSequence ?: la
+                    val lookfrom = la.parent as? JccExpansionSequence ?: la
 
-                        val isGParentChoicePoint = when (val gParent = lookfrom.parent) {
-                            is JccExpansionAlternative       -> true
-                            is JccOptionalExpansionUnit      -> true
-                            is JccParenthesizedExpansionUnit -> gParent.occurrenceIndicator != null
-                            else                             -> false
-                        }
+                    val isGParentChoicePoint = when (val gParent = lookfrom.parent) {
+                        is JccExpansionAlternative       -> true
+                        is JccOptionalExpansionUnit      -> true
+                        is JccParenthesizedExpansionUnit -> gParent.occurrenceIndicator != null
+                        else                             -> false
+                    }
 
-                        val parent = la.parent
-                        val isFirstInSeq = parent is JccExpansionSequence && parent.expansionUnitList[0] === la
+                    val parent = la.parent
+                    val isFirstInSeq = parent is JccExpansionSequence && parent.expansionUnitList[0] === la
 
-                        if (!isGParentChoicePoint || !isFirstInSeq) {
+                    if (!isGParentChoicePoint || !isFirstInSeq) {
 
-                            val desc = if (la.isSemantic) SemanticProblemDesc else IgnoredProblemDesc
+                        val desc = if (la.isSemantic) SemanticProblemDesc else IgnoredProblemDesc
 
-                            holder.registerProblem(
-                                la,
-                                desc,
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                DeleteExpansionIntention.quickFix(
-                                    EmptyParserActionsInspection.FixDescription, la.containingFile
-                                )
+                        holder.registerProblem(
+                            la,
+                            desc,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            DeleteExpansionIntention.quickFix(
+                                EmptyParserActionsInspection.FixDescription, la.containingFile
                             )
-                        } else if (la.ancestors(includeSelf = false).any { it is JccLocalLookaheadUnit } && la.isSyntactic) {
-                            // don't report both
+                        )
+                    } else if (la.ancestors(includeSelf = false).any { it is JccLocalLookaheadUnit } && la.isSyntactic) {
+                        // don't report both
 
-                            holder.registerProblem(
-                                la,
-                                NestedProblemDesc,
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                DeleteExpansionIntention.quickFix(
-                                    EmptyParserActionsInspection.FixDescription, la.containingFile
-                                )
-
+                        holder.registerProblem(
+                            la,
+                            NestedProblemDesc,
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            DeleteExpansionIntention.quickFix(
+                                EmptyParserActionsInspection.FixDescription, la.containingFile
                             )
-                        }
+
+                        )
                     }
                 }
             }
+        }
 
 
     companion object {
 
         private const val DisplayName = "Local lookahead is not at a choice point"
         const val IgnoredProblemDesc = "LOOKAHEAD is not at a choice point, it will be ignored"
-        const val NestedProblemDesc = "Only semantic lookahead is considered when it is nested.  Syntactic lookahead is ignored."
+        const val NestedProblemDesc =
+            "Only semantic lookahead is considered when it is nested.  Syntactic lookahead is ignored."
         const val SemanticProblemDesc = "LOOKAHEAD is not at a choice point, only semantic lookahead will be performed"
 
         const val FixDescription = "Delete lookahead specification"

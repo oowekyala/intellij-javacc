@@ -45,8 +45,8 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
         val value = element.value
         return value is JccRegexSpec || value is JccRegexExpansionUnit
-                // TODO these should not be leaves, ideally their declarations would be shown as well
-                || value is JccTokenManagerDecls || value is JccParserDeclaration
+            // TODO these should not be leaves, ideally their declarations would be shown as well
+            || value is JccTokenManagerDecls || value is JccParserDeclaration
     }
 
 
@@ -61,20 +61,20 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
             override fun getShortcut(): Array<Shortcut> = emptyArray()
 
             override fun isVisible(treeElement: TreeElement): Boolean =
-                    when (treeElement.let { it as JccStructureTreeElement }.element) {
-                        is JccOptionSection -> false
-                        is JccOptionBinding -> false
-                        else                -> true
-                    }
+                when (treeElement.let { it as JccStructureTreeElement }.element) {
+                    is JccOptionSection -> false
+                    is JccOptionBinding -> false
+                    else                -> true
+                }
 
             override fun isReverted(): Boolean = true
 
             override fun getPresentation(): ActionPresentation =
-                    ActionPresentationData(
-                        "Show JavaCC Options",
-                        "Show the options for code generation",
-                        JavaccIcons.JAVACC_OPTION
-                    )
+                ActionPresentationData(
+                    "Show JavaCC Options",
+                    "Show the options for code generation",
+                    JavaccIcons.JAVACC_OPTION
+                )
 
             override fun getName(): String = "OptionFilter"
         }
@@ -85,21 +85,21 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
             override fun getShortcut(): Array<Shortcut> = emptyArray()
 
             override fun isVisible(treeElement: TreeElement): Boolean =
-                    when (treeElement.let { it as JccStructureTreeElement }.element) {
-                        is JccRegexSpec          -> false
-                        is JccRegexProduction    -> false
-                        is JccRegexExpansionUnit -> false
-                        else                     -> true
-                    }
+                when (treeElement.let { it as JccStructureTreeElement }.element) {
+                    is JccRegexSpec          -> false
+                    is JccRegexProduction    -> false
+                    is JccRegexExpansionUnit -> false
+                    else                     -> true
+                }
 
             override fun isReverted(): Boolean = true
 
             override fun getPresentation(): ActionPresentation =
-                    ActionPresentationData(
-                        "Show Lexical Structure",
-                        "Show tokens specifications.",
-                        JavaccIcons.TOKEN_HEADER
-                    )
+                ActionPresentationData(
+                    "Show Lexical Structure",
+                    "Show tokens specifications.",
+                    JavaccIcons.TOKEN_HEADER
+                )
 
             override fun getName(): String = "TerminalFilter"
         }

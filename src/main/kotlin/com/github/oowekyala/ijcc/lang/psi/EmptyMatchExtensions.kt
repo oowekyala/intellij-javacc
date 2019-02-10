@@ -22,7 +22,7 @@ fun JccRegexElement.isEmptyMatchPossible(): Boolean = isEmptyMatchPossible(immut
 
 
 private fun JccRegularExpression.computeNullability(alreadySeen: ImmutableList<JccRegularExpression>): Boolean =
-        computeAndCacheNullability(alreadySeen) { getRootRegexElement(followReferences = false)?.isEmptyMatchPossible(it) }
+    computeAndCacheNullability(alreadySeen) { getRootRegexElement(followReferences = false)?.isEmptyMatchPossible(it) }
 
 /**
  * Returns true if this production can expand to the empty string.
@@ -38,48 +38,48 @@ fun JccNonTerminalProduction.isEmptyMatchPossible(): Boolean = when (this) {
 fun JccExpansion.isEmptyMatchPossible(): Boolean = isEmptyMatchPossible(immutableListOf())
 
 private fun JccBnfProduction.computeNullability(alreadySeen: ImmutableList<JccBnfProduction>): Boolean =
-        computeAndCacheNullability(alreadySeen) { expansion?.isEmptyMatchPossible(it) }
+    computeAndCacheNullability(alreadySeen) { expansion?.isEmptyMatchPossible(it) }
 
 
 private fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccRegularExpression>): Boolean =
-        when (this) {
-            is JccLiteralRegexUnit        -> text.length == 2 // ""
-            is JccCharacterListRegexUnit  -> false // assume that
-            is JccParenthesizedRegexUnit  -> occurrenceIndicator.let {
-                // test it whether there is a + or nothing
-                it is JccZeroOrOne             // ?
-                        || it is JccZeroOrMore // *
-                        || it is JccRepetitionRange && it.first == 0 // if no first then this is false
-                        || regexElement.isEmptyMatchPossible(alreadySeen) // +
-            }
-            is JccRegexSequenceElt        -> regexUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
-            is JccRegexAlternativeElt     -> regexElementList.any { it.isEmptyMatchPossible(alreadySeen) }
-            is JccTokenReferenceRegexUnit ->
-                typedReference.resolveToken()?.regularExpression?.computeNullability(alreadySeen) == true
-            else                          -> throw IllegalStateException(this.toString())
+    when (this) {
+        is JccLiteralRegexUnit        -> text.length == 2 // ""
+        is JccCharacterListRegexUnit  -> false // assume that
+        is JccParenthesizedRegexUnit  -> occurrenceIndicator.let {
+            // test it whether there is a + or nothing
+            it is JccZeroOrOne             // ?
+                || it is JccZeroOrMore // *
+                || it is JccRepetitionRange && it.first == 0 // if no first then this is false
+                || regexElement.isEmptyMatchPossible(alreadySeen) // +
         }
+        is JccRegexSequenceElt        -> regexUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
+        is JccRegexAlternativeElt     -> regexElementList.any { it.isEmptyMatchPossible(alreadySeen) }
+        is JccTokenReferenceRegexUnit ->
+            typedReference.resolveToken()?.regularExpression?.computeNullability(alreadySeen) == true
+        else                          -> throw IllegalStateException(this.toString())
+    }
 
 
 private fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccBnfProduction>): Boolean =
-        when (this) {
-            is JccParserActionsUnit          -> true
-            is JccLocalLookaheadUnit         -> true
-            is JccOptionalExpansionUnit      -> true
-            is JccRegexExpansionUnit         -> false // todo use the above
-            is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible(alreadySeen)
-            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
-            is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
-                it is JccZeroOrOne || it is JccZeroOrMore
-                        || expansion?.isEmptyMatchPossible(alreadySeen) == true // test it whether there is a + or nothing
-            }
-            is JccExpansionSequence          -> expansionUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
-            is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible(alreadySeen) }
-            is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
-                it is JccBnfProduction && it.computeNullability(alreadySeen)
-            } == true
-            is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
-            else                             -> false
+    when (this) {
+        is JccParserActionsUnit          -> true
+        is JccLocalLookaheadUnit         -> true
+        is JccOptionalExpansionUnit      -> true
+        is JccRegexExpansionUnit         -> false // todo use the above
+        is JccScopedExpansionUnit        -> expansionUnit.isEmptyMatchPossible(alreadySeen)
+        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.isEmptyMatchPossible(alreadySeen) == true
+        is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
+            it is JccZeroOrOne || it is JccZeroOrMore
+                || expansion?.isEmptyMatchPossible(alreadySeen) == true // test it whether there is a + or nothing
         }
+        is JccExpansionSequence          -> expansionUnitList.all { it.isEmptyMatchPossible(alreadySeen) }
+        is JccExpansionAlternative       -> expansionList.any { it.isEmptyMatchPossible(alreadySeen) }
+        is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
+            it is JccBnfProduction && it.computeNullability(alreadySeen)
+        } == true
+        is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
+        else                             -> false
+    }
 
 typealias LeftMostSet = ImmutableSet<JccNonTerminalExpansionUnit>
 
@@ -100,27 +100,27 @@ fun JccNonTerminalProduction.leftMostSet(): LeftMostSet? = when (this) {
  * @return True if the result is valid
  */
 private fun JccExpansion.computeLeftMost(): LeftMostSet? =
-        when (this) {
-            is JccRegexExpansionUnit         -> immutableSetOf()
-            is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost()
-            is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost()
-            is JccOptionalExpansionUnit      -> expansion?.computeLeftMost()
-            is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost()
-            is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost()
-            is JccExpansionSequence          ->
+    when (this) {
+        is JccRegexExpansionUnit         -> immutableSetOf()
+        is JccScopedExpansionUnit        -> expansionUnit.computeLeftMost()
+        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.computeLeftMost()
+        is JccOptionalExpansionUnit      -> expansion?.computeLeftMost()
+        is JccParenthesizedExpansionUnit -> expansion?.computeLeftMost()
+        is JccTryCatchExpansionUnit      -> expansion?.computeLeftMost()
+        is JccExpansionSequence          ->
 
-                expansionUnitList.asSequence()
-                    .takeUntil { !it.isEmptyMatchPossible() }
-                    .map { it.computeLeftMost() }
-                    .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
-            is JccExpansionAlternative       ->
-                expansionList.asSequence()
-                    .map { it.computeLeftMost() }
-                    .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
+            expansionUnitList.asSequence()
+                .takeUntil { !it.isEmptyMatchPossible() }
+                .map { it.computeLeftMost() }
+                .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
+        is JccExpansionAlternative       ->
+            expansionList.asSequence()
+                .map { it.computeLeftMost() }
+                .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
 
-            is JccNonTerminalExpansionUnit   -> immutableSetOf(this)
-            else                             -> immutableSetOf() // valid, but nothing to do
-        }
+        is JccNonTerminalExpansionUnit   -> immutableSetOf(this)
+        else                             -> immutableSetOf() // valid, but nothing to do
+    }
 
 
 private val nullableKey: Key<ThreeState> = Key.create<ThreeState>("jcc.bnf.isNullable")

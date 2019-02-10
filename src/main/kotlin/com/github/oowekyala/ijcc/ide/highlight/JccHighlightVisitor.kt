@@ -48,16 +48,16 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
 
     private val myDuplicateMethods =
-            THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { file ->
-                // get the duplicate prods for the file
-                val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
+        THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { file ->
+            // get the duplicate prods for the file
+            val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
 
-                for (prod in file.nonTerminalProductions) {
-                    signatures.add(prod.name, prod)
-                }
-
-                signatures
+            for (prod in file.nonTerminalProductions) {
+                signatures.add(prod.name, prod)
             }
+
+            signatures
+        }
 
     override fun analyze(file: PsiFile,
                          updateWholeFile: Boolean,
@@ -280,8 +280,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     else                             -> {
                         // all is well
                         val message =
-                                if (ref.isExplicit) "Matched by " + (ref.name?.let { "<$it>" } ?: "a token")
-                                else "Implicitly declared token"
+                            if (ref.isExplicit) "Matched by " + (ref.name?.let { "<$it>" } ?: "a token")
+                            else "Implicitly declared token"
 
                         highlightInfo(
                             literalUnit,
@@ -297,19 +297,19 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
-                when {
-                    reffed == null                             ->
-                        wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
-                    reffed.isPrivate && !o.canReferencePrivate -> wrongReferenceInfo(
-                        o.nameIdentifier,
-                        "Token name \"${o.name}\" refers to a private (with a #) regular expression"
-                    )
-                    reffed.regexKind != RegexKind.TOKEN        -> wrongReferenceInfo(
-                        o.nameIdentifier,
-                        "Token name ${o.name} refers to a non-token (SKIP, MORE, IGNORE_IN_BNF) regular expression"
-                    )
-                    else                                       -> highlightInfo(o, TOKEN_REFERENCE.highlightType)
-                }
+            when {
+                reffed == null                             ->
+                    wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
+                reffed.isPrivate && !o.canReferencePrivate -> wrongReferenceInfo(
+                    o.nameIdentifier,
+                    "Token name \"${o.name}\" refers to a private (with a #) regular expression"
+                )
+                reffed.regexKind != RegexKind.TOKEN        -> wrongReferenceInfo(
+                    o.nameIdentifier,
+                    "Token name ${o.name} refers to a non-token (SKIP, MORE, IGNORE_IN_BNF) regular expression"
+                )
+                else                                       -> highlightInfo(o, TOKEN_REFERENCE.highlightType)
+            }
 
 
     }
@@ -351,8 +351,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
 
         val checkRange =
-                checkCharLength(descriptor.baseCharElement, left)
-                        && right != null && checkCharLength(descriptor.toCharElement!!, right)
+            checkCharLength(descriptor.baseCharElement, left)
+                && right != null && checkCharLength(descriptor.toCharElement!!, right)
 
         if (checkRange && (left[0].toInt() > right!![0].toInt())) {
 
@@ -491,7 +491,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     companion object {
         fun makeEmptyExpMessage(exp: JccExpansionUnit) =
-                "Expansion within \"${exp.foldingName()}\" can be matched by empty string"
+            "Expansion within \"${exp.foldingName()}\" can be matched by empty string"
 
 
         private val classRegex = Regex("\\bclass\\s+(\\w+)")

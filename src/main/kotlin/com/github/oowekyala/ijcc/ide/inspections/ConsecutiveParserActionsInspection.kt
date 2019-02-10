@@ -30,33 +30,33 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
     """.trimIndent()
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
-                override fun visitParserActionsUnit(o: JccParserActionsUnit) {
+        object : JccVisitor() {
+            override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-                    var rightEdge: JccParserActionsUnit? = o.nextSiblingNoWhitespace as? JccParserActionsUnit
-                    if (rightEdge != null) {
+                var rightEdge: JccParserActionsUnit? = o.nextSiblingNoWhitespace as? JccParserActionsUnit
+                if (rightEdge != null) {
 
 
-                        var myRange = o.textRange.union(rightEdge.textRange)
-                        var last: JccParserActionsUnit = rightEdge
+                    var myRange = o.textRange.union(rightEdge.textRange)
+                    var last: JccParserActionsUnit = rightEdge
 
+                    rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
+
+                    while (rightEdge != null) {
+                        last = rightEdge
+                        myRange = myRange.union(rightEdge.textRange)
                         rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
-
-                        while (rightEdge != null) {
-                            last = rightEdge
-                            myRange = myRange.union(rightEdge.textRange)
-                            rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
-                        }
-
-                        holder.registerProblem(
-                            o.parent,
-                            ProblemDescription,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            MyQuickFix(SmartPointerManager.createPointer(o), SmartPointerManager.createPointer(last))
-                        )
                     }
+
+                    holder.registerProblem(
+                        o.parent,
+                        ProblemDescription,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        MyQuickFix(SmartPointerManager.createPointer(o), SmartPointerManager.createPointer(last))
+                    )
                 }
             }
+        }
 
 
     companion object {
@@ -87,11 +87,11 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
 
 
                 val newBlock =
-                        toMerge.joinToString(separator = " ", prefix = "{", postfix = "}") {
-                            it.javaBlock.text.removeSurrounding("{", "}")
-                        }.let {
-                            createExpansion(project, it) as JccParserActionsUnit
-                        }
+                    toMerge.joinToString(separator = " ", prefix = "{", postfix = "}") {
+                        it.javaBlock.text.removeSurrounding("{", "}")
+                    }.let {
+                        createExpansion(project, it) as JccParserActionsUnit
+                    }
 
                 try {
                     first.replace(newBlock)

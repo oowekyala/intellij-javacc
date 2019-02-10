@@ -47,43 +47,43 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
+        object : JccVisitor() {
 
-                override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
-                    val unit = o.regularExpression.asSingleLiteral(followReferences = true) ?: return
+            override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
+                val unit = o.regularExpression.asSingleLiteral(followReferences = true) ?: return
 
-                    val defaultState = o.containingFile.lexicalGrammar.defaultState
+                val defaultState = o.containingFile.lexicalGrammar.defaultState
 
 
-                    val myStringToken = when (o.regularExpression) {
-                        // the named regex may be in the state but not match because
-                        // a reference to it placed above in the file matches instead. A
-                        // named regex is however counted as a different token.
-                        is JccNamedRegularExpression -> SyntheticToken(o)
-                        else                         -> defaultState.matchLiteral(unit, exact = true) ?: return // error
-                    }
-                    val realMatch = defaultState.matchLiteral(unit, exact = false) ?: return
+                val myStringToken = when (o.regularExpression) {
+                    // the named regex may be in the state but not match because
+                    // a reference to it placed above in the file matches instead. A
+                    // named regex is however counted as a different token.
+                    is JccNamedRegularExpression -> SyntheticToken(o)
+                    else                         -> defaultState.matchLiteral(unit, exact = true) ?: return // error
+                }
+                val realMatch = defaultState.matchLiteral(unit, exact = false) ?: return
 
-                    if (myStringToken != realMatch) {
+                if (myStringToken != realMatch) {
 
-                        val myFixes = when {
-                            myStringToken.isExplicit -> arrayOf(
-                                NavigateToOtherTokenFix(RealNavigateFixName, realMatch.psiPointer),
-                                NavigateToOtherTokenFix(NavigateFixName, myStringToken.psiPointer)
-                            )
-                            else                     ->
-                                arrayOf(NavigateToOtherTokenFix(RealNavigateFixName, realMatch.psiPointer))
-                        }
-
-                        holder.registerProblem(
-                            o,
-                            problemDescription(unit.text, myStringToken.name, realMatch.name),
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            *myFixes
+                    val myFixes = when {
+                        myStringToken.isExplicit -> arrayOf(
+                            NavigateToOtherTokenFix(RealNavigateFixName, realMatch.psiPointer),
+                            NavigateToOtherTokenFix(NavigateFixName, myStringToken.psiPointer)
                         )
+                        else                     ->
+                            arrayOf(NavigateToOtherTokenFix(RealNavigateFixName, realMatch.psiPointer))
                     }
+
+                    holder.registerProblem(
+                        o,
+                        problemDescription(unit.text, myStringToken.name, realMatch.name),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        *myFixes
+                    )
                 }
             }
+        }
 
     companion object {
         const val DisplayName = "String will never be matched as a string token"
@@ -91,9 +91,9 @@ class BnfStringCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         const val NavigateFixName = "Navigate to string token"
 
         fun problemDescription(literalText: String, stringTokenName: String?, realMatchName: String?) =
-                "$literalText cannot be matched as ${stringTokenName?.let { "the string literal token <$it>" }
-                    ?: "a string literal token"}, " +
-                        "${realMatchName ?: "another token"} matches its input instead"
+            "$literalText cannot be matched as ${stringTokenName?.let { "the string literal token <$it>" }
+                ?: "a string literal token"}, " +
+                "${realMatchName ?: "another token"} matches its input instead"
 
 
         class NavigateToOtherTokenFix(private val myname: String,

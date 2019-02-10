@@ -20,15 +20,15 @@ class TokenInliningIntention
 ) {
 
     override fun isApplicableTo(element: JccTokenReferenceRegexUnit): Boolean =
-            element.typedReference.resolveToken()?.getAsStringToken() != null
+        element.typedReference.resolveToken()?.getAsStringToken() != null
 
     override fun run(project: Project, editor: Editor, element: JccTokenReferenceRegexUnit): () -> Unit {
         val newLiteral: JccLiteralRegexUnit =
-                element.typedReference
-                    .resolveToken()!!
-                    .getAsStringToken()!!
-                    .text
-                    .let { createRegexElement(project, it) }
+            element.typedReference
+                .resolveToken()!!
+                .getAsStringToken()!!
+                .text
+                .let { createRegexElement(project, it) }
 
         return {
             element.safeReplace(newLiteral)
@@ -45,8 +45,8 @@ class ReplaceLiteralWithReferenceIntention :
     ) {
 
     override fun isApplicableTo(element: JccLiteralRegexUnit): Boolean =
-            element.typedReference.resolveToken(exact = true)
-                ?.let { it.isExplicit && it.name != null } == true
+        element.typedReference.resolveToken(exact = true)
+            ?.let { it.isExplicit && it.name != null } == true
 
 
     override fun run(project: Project, editor: Editor, element: JccLiteralRegexUnit): () -> Unit {

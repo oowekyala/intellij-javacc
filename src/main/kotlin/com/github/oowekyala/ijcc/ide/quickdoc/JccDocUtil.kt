@@ -60,10 +60,10 @@ object JccDocUtil {
 
     class DocBuilder(private val stringBuilder: StringBuilder) {
 
-        fun definition(defContents: () -> String) =
-                buildDefinition {
-                    append(defContents())
-                }
+        fun definition(defContents: () -> String): Unit =
+            buildDefinition {
+                append(defContents())
+            }
 
 
         fun buildDefinition(defContents: java.lang.StringBuilder.() -> Unit) {
@@ -82,12 +82,12 @@ object JccDocUtil {
 
     class SectionsBuilder(private val stringBuilder: StringBuilder) {
 
-        fun emptySection(header: String) = buildSection(header, sectionDelim = "") { }
+        fun emptySection(header: String): Unit = buildSection(header, sectionDelim = "") { }
 
-        fun section(header: String, sectionDelim: String = ":", body: () -> String) =
-                buildSection(header, sectionDelim) {
-                    append(body())
-                }
+        fun section(header: String, sectionDelim: String = ":", body: () -> String): Unit =
+            buildSection(header, sectionDelim) {
+                append(body())
+            }
 
         fun buildSection(header: String, sectionDelim: String = ":", body: java.lang.StringBuilder.() -> Unit) {
             stringBuilder.append(SECTION_HEADER_START)
@@ -124,8 +124,8 @@ object HtmlUtil {
 
     @Language("HTML")
     fun psiLink(target: String, @Language("HTML") text: String, codeLink: Boolean = true) =
-            (if (codeLink) code(text) else text).let {
-                "<a href=\"${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}$target\">$it</a>"
-            }
+        (if (codeLink) code(text) else text).let {
+            "<a href=\"${DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL}$target\">$it</a>"
+        }
 
 }

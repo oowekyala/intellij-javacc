@@ -13,8 +13,8 @@ import com.intellij.usageView.UsageViewLongNameLocation
  */
 class JccDescriptionProvider : ElementDescriptionProvider {
     override fun getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String? =
-            when (location) {
-                is UsageViewLongNameLocation -> element.text
-                else                         -> null
-            }
+        when (location) {
+            is UsageViewLongNameLocation -> element.text
+            else                         -> null
+        }
 }

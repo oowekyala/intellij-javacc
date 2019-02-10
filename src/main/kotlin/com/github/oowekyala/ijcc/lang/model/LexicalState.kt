@@ -48,17 +48,17 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                      exact: Boolean,
                      stopAtOffset: Int = Int.MAX_VALUE,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            if (exact)
-                filterWith(consideredRegexKinds, stopAtOffset).firstOrNull { it.matchesLiteral(toMatch) }
-            else
-                filterWith(consideredRegexKinds, stopAtOffset)
-                    .mapNotNull { token ->
-                        val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
+        if (exact)
+            filterWith(consideredRegexKinds, stopAtOffset).firstOrNull { it.matchesLiteral(toMatch) }
+        else
+            filterWith(consideredRegexKinds, stopAtOffset)
+                .mapNotNull { token ->
+                    val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 
-                        if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
-                    }
-                    .maxWith(matchComparator)
-                    ?.let { it.first }
+                    if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
+                }
+                .maxWith(matchComparator)
+                ?.let { it.first }
 
     /**
      * Returns the string token that matches exactly this regex unit.
@@ -69,7 +69,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
                      exact: Boolean,
                      stopAtOffset: Int = Int.MAX_VALUE,
                      consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-            matchLiteral(literal.match, exact, stopAtOffset, consideredRegexKinds)
+        matchLiteral(literal.match, exact, stopAtOffset, consideredRegexKinds)
 
 
     override fun equals(other: Any?): Boolean {
@@ -88,9 +88,9 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
     }
 
     private fun filterWith(consideredRegexKinds: Set<RegexKind>, maxOffset: Int): Sequence<Token> =
-            tokens.asSequence()
-                .filter { consideredRegexKinds.contains(it.regexKind) }
-                .takeWhile { (it.textOffset ?: Int.MAX_VALUE) <= maxOffset }
+        tokens.asSequence()
+            .filter { consideredRegexKinds.contains(it.regexKind) }
+            .takeWhile { (it.textOffset ?: Int.MAX_VALUE) <= maxOffset }
 
     companion object {
 
@@ -102,8 +102,8 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
          * the highest token in the file.
          */
         private val matchComparator =
-                Comparator.comparingInt<Pair<Token, String>> { it.second.length }
-                    .thenComparing<Token>(Function { it.first }, Token.offsetComparator)
+            Comparator.comparingInt<Pair<Token, String>> { it.second.length }
+                .thenComparing<Token>(Function { it.first }, Token.offsetComparator)
 
         const val DefaultStateName = "DEFAULT"
 

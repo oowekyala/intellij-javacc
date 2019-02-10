@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
  * Gets the binding for the given option value if present.
  */
 fun <T : Any> JccOptionSection.getBindingFor(genericOption: GenericOption<T>): JccOptionBinding? =
-        optionBindingList.firstOrNull { it.name == genericOption.name }
+    optionBindingList.firstOrNull { it.name == genericOption.name }
 
 
 /** Returns the string value for presentation. */
@@ -51,7 +51,7 @@ val JccOptionBinding.modelOption: GenericOption<*>?
 
 /** Returns true if types match. */
 fun <T : Any> JccOptionBinding.matchesType(expectedType: JccOptionType<T>): Boolean =
-        expectedType.projection == optionValue?.optionType
+    expectedType.projection == optionValue?.optionType
 
 /** Returns the string value for presentation. */
 val JccOptionBinding.stringValue: String

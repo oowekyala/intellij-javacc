@@ -21,7 +21,7 @@ class JccLiteralRegexManipulator : AbstractElementManipulator<JccLiteralRegexUni
     ): JccLiteralRegexUnit? {
         val oldText = regex.stringLiteral.text
         val newText = oldText.substring(0, range.startOffset) + newContent +
-                oldText.substring(range.endOffset)
+            oldText.substring(range.endOffset)
         return regex.replace(
             createRegexElement<JccLiteralRegexUnit>(
                 regex.project,

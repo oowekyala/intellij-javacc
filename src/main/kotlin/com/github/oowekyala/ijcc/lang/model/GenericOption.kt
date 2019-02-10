@@ -28,10 +28,10 @@ abstract class GenericOption<T : Any>(
 
     /** Gets the value of this option from an binding. If it's null then the default value is used. */
     open fun getValue(optionBinding: JccOptionBinding?, config: GrammarOptions): T =
-            optionBinding
-                ?.takeIf { it.matchesType(expectedType) }
-                ?.let { expectedType.projection.parseStringValue(optionBinding.stringValue) }
-                .let { getActualValue(it, config) }
+        optionBinding
+            ?.takeIf { it.matchesType(expectedType) }
+            ?.let { expectedType.projection.parseStringValue(optionBinding.stringValue) }
+            .let { getActualValue(it, config) }
 
 
     /**
@@ -47,7 +47,7 @@ abstract class GenericOption<T : Any>(
 
     /** Must be implemented if [staticDefaultValue] is null. */
     protected open fun defaultValueFallback(config: GrammarOptions): T =
-            staticDefaultValue ?: TODO("Should have been implemented!")
+        staticDefaultValue ?: TODO("Should have been implemented!")
 
 
 }

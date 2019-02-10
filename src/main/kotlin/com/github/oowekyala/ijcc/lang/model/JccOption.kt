@@ -294,7 +294,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
         : JccOption<String>(STRING, "") {
 
         override fun defaultValueFallback(config: GrammarOptions): String =
-                System.getProperties().getProperty("file.encoding")
+            System.getProperties().getProperty("file.encoding")
     }
 
     object JDK_VERSION : JccOption<String>(STRING, "1.5")

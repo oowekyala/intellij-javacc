@@ -8,9 +8,9 @@ import com.intellij.codeInsight.template.impl.DefaultLiveTemplatesProvider
  */
 class JavaccTemplatesProvider : DefaultLiveTemplatesProvider {
     override fun getDefaultLiveTemplateFiles(): Array<String> =
-            arrayOf(
-                "/com/github/oowekyala/ijcc/liveTemplates/JavaCC"
-            )
+        arrayOf(
+            "/com/github/oowekyala/ijcc/liveTemplates/JavaCC"
+        )
 
     override fun getHiddenLiveTemplateFiles(): Array<String>? = emptyArray()
 

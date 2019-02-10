@@ -18,7 +18,7 @@ class JavaccStructureViewBuilderFactory : PsiStructureViewFactory {
                 override fun isRootNodeShown(): Boolean = false
 
                 override fun createStructureViewModel(editor: Editor?): StructureViewModel =
-                        JavaccFileStructureViewModel(psiFile)
+                    JavaccFileStructureViewModel(psiFile)
             }
         }
     }

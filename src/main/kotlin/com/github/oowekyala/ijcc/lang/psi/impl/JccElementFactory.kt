@@ -22,7 +22,7 @@ import org.intellij.lang.annotations.Language
 
 object JccElementFactory {
     private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
-            PsiTreeUtil.findChildOfType(this, clazz)
+        PsiTreeUtil.findChildOfType(this, clazz)
 
 
     private val Project.psiFileFactory
@@ -65,7 +65,7 @@ object JccElementFactory {
     }
 
     inline fun <reified T : JccExpansion>
-            createExpansion(project: Project, text: String): T {
+        createExpansion(project: Project, text: String): T {
 
         val fileText = """
             $DummyHeader
@@ -81,12 +81,12 @@ object JccElementFactory {
 
 
     inline fun <reified T : JccRegularExpression>
-            createRegex(project: Project, text: String): T =
-            createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
+        createRegex(project: Project, text: String): T =
+        createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
 
     inline fun <reified T : JccRegexElement>
-            createRegexElement(project: Project, text: String): T =
-            createRegex<JccContainerRegularExpression>(project, "< $text >").regexElement as T
+        createRegexElement(project: Project, text: String): T =
+        createRegex<JccContainerRegularExpression>(project, "< $text >").regexElement as T
 
 
     fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexSpec {
@@ -181,7 +181,7 @@ object JccElementFactory {
     }
 
     fun createFile(project: Project, text: String): JccFile =
-            project.psiFileFactory.createFileFromText("dummy.jjt", JavaccFileType, text) as JccFile
+        project.psiFileFactory.createFileFromText("dummy.jjt", JavaccFileType, text) as JccFile
 
     /**
      * Create from an AST node, used by the parser.

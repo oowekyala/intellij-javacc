@@ -39,7 +39,7 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
     val lookahead: Int by lazy { getOptionValueOrDefault(JccOption.LOOKAHEAD) }
 
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
-            genericOption.getValue(options?.getBindingFor(genericOption), this)
+        genericOption.getValue(options?.getBindingFor(genericOption), this)
 
     companion object {
         private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
@@ -47,7 +47,7 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
 
         /** Indexes all known JavaCC or JJTree options by their name.*/
         val knownOptions: Map<String, GenericOption<*>> =
-                JccOption.values.plus(JjtOption.values).associateBy { it.name }
+            JccOption.values.plus(JjtOption.values).associateBy { it.name }
 
     }
 }

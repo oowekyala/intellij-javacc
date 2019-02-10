@@ -24,7 +24,6 @@ class RemoveNameFromRegexIntention
     override fun isApplicableTo(element: JccNamedRegularExpression): Boolean {
 
 
-
         return element.parent !is JccRegexSpec && element.regexElement != null
     }
 }

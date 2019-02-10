@@ -105,7 +105,7 @@ class TreeLineariserVisitor private constructor(knownPrefixBuilder: StringBuilde
 
         /** Linearise the given structure tree into a structure suitable for injection. */
         fun linearise(tree: InjectionStructureTree): LinearInjectedStructure =
-                TreeLineariserVisitor(StringBuilder()).startOn(tree)
+            TreeLineariserVisitor(StringBuilder()).startOn(tree)
 
     }
 }

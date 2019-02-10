@@ -25,7 +25,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     private val canReferencePrivate = referenceUnit.canReferencePrivate
 
     override fun resolve(): JccIdentifier? =
-            resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
+        resolveToken()?.regularExpression.let { it as? JccNamedRegularExpression }?.nameIdentifier
 
     fun resolveToken(): Token? {
         val searchedName = element.name ?: return null
@@ -38,13 +38,13 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
         return element.containingFile
             .grammarFileRoot.allProductions()
             .flatMap { it.tokensUnfiltered() }
-                // references can't declare themselves
+            // references can't declare themselves
             .filter { it.regularExpression !is JccRefRegularExpression }
             .firstOrNull { it.name == searchedName }
     }
 
     private fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
-            this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+        this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
 
     private fun JccProduction.tokensUnfiltered(): Sequence<Token> {
         return when (this) {
@@ -62,25 +62,25 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     }
 
     override fun getVariants(): Array<Any> =
-            element.containingFile.lexicalGrammar
-                .allTokens
-                .filter { canReferencePrivate || !it.isPrivate }
-                .mapNotNull { token ->
-                    token.name?.let { name ->
-                        LookupElementBuilder
-                            .create(name)
-                            .withIcon(token.psiElement?.getPresentationIcon())
+        element.containingFile.lexicalGrammar
+            .allTokens
+            .filter { canReferencePrivate || !it.isPrivate }
+            .mapNotNull { token ->
+                token.name?.let { name ->
+                    LookupElementBuilder
+                        .create(name)
+                        .withIcon(token.psiElement?.getPresentationIcon())
 
-                    }
                 }
-                .map {
-                    TailTypeDecorator.withTail(it, TailType.createSimpleTailType('>'))
-                }
-                .map {
-                    TailTypeDecorator.withTail(it, TailType.SPACE)
-                }
-                .toList()
-                .toTypedArray()
+            }
+            .map {
+                TailTypeDecorator.withTail(it, TailType.createSimpleTailType('>'))
+            }
+            .map {
+                TailTypeDecorator.withTail(it, TailType.SPACE)
+            }
+            .toList()
+            .toTypedArray()
 
 
     override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent

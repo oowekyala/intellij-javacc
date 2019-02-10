@@ -15,9 +15,9 @@ interface JccJavaAssignmentLhs : JccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createAssignmentLhs(project, text))
-                .let { it as PsiLanguageInjectionHost }
-                .also { HostSpec.replaceHost(this, it) }
+        this.replace(JccElementFactory.createAssignmentLhs(project, text))
+            .let { it as PsiLanguageInjectionHost }
+            .also { HostSpec.replaceHost(this, it) }
 
 
     @JvmDefault

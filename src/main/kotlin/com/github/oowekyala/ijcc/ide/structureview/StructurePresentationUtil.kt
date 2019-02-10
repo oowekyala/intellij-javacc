@@ -20,7 +20,7 @@ import javax.swing.Icon
 
 
 fun JccPsiElement.getPresentationForStructure(): ItemPresentation =
-        PresentationData(getPresentableText(), getLocationString(), getPresentationIcon(), null)
+    PresentationData(getPresentableText(), getLocationString(), getPresentationIcon(), null)
 
 /**
  * For the structure view.
@@ -62,7 +62,7 @@ private fun JccRegularExpression.getPresentableText(): String {
 }
 
 fun JccRegexElement.getPresentableText(): String =
-        StringBuilder().also { getPresentableText(it) }.toString()
+    StringBuilder().also { getPresentableText(it) }.toString()
 
 private fun JccRegexElement.getPresentableText(builder: StringBuilder) {
     when (this) {

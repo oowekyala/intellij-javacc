@@ -13,11 +13,11 @@ interface JccJavaBlock : JccPsiElement, PsiLanguageInjectionHost {
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createJavaBlock(project, text))
-                .let { it as PsiLanguageInjectionHost }
-                .also { HostSpec.replaceHost(this, it) }
+        this.replace(JccElementFactory.createJavaBlock(project, text))
+            .let { it as PsiLanguageInjectionHost }
+            .also { HostSpec.replaceHost(this, it) }
 
     @JvmDefault
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
-            MultilineTextEscaper(this)
+        MultilineTextEscaper(this)
 }

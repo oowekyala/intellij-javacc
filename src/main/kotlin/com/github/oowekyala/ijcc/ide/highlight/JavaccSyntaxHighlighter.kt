@@ -15,7 +15,7 @@ import com.intellij.psi.tree.IElementType
 class JavaccSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> {
         val highlight =
-                JavaccHighlightingColors.getTokenHighlight(tokenType)
+            JavaccHighlightingColors.getTokenHighlight(tokenType)
         return when (highlight) {
             null -> emptyArray()
             else -> arrayOf(highlight)

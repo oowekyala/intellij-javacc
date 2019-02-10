@@ -42,12 +42,12 @@ fun PsiElement.descendantSequence(reversed: Boolean = false, depthFirst: Boolean
 fun PsiElement.descendantSequence(includeSelf: Boolean,
                                   reversed: Boolean = false,
                                   depthFirst: Boolean = false): Sequence<PsiElement> =
-        descendantSequence(reversed, depthFirst).let {
-            when {
-                includeSelf -> it.prepend(this)
-                else        -> it
-            }
+    descendantSequence(reversed, depthFirst).let {
+        when {
+            includeSelf -> it.prepend(this)
+            else        -> it
         }
+    }
 
 
 /** Lazy sequence of siblings.
@@ -55,8 +55,8 @@ fun PsiElement.descendantSequence(includeSelf: Boolean,
  * @param forward If true the sequence iterates on the following siblings, otherwise on the previous siblings
  */
 fun PsiElement.siblingSequence(forward: Boolean) =
-        if (forward) generateSequence(this.nextSibling) { it.nextSibling }
-        else generateSequence(this.prevSibling) { it.prevSibling }
+    if (forward) generateSequence(this.nextSibling) { it.nextSibling }
+    else generateSequence(this.prevSibling) { it.prevSibling }
 
 /** Returns true if the node's token type is [TokenType.WHITE_SPACE]. */
 val PsiElement.isWhitespace: Boolean
@@ -73,10 +73,10 @@ val PsiElement.lastChildNoWhitespace: PsiElement?
 
 /** Parent sequence, stopping at the file node. */
 fun PsiElement.ancestors(includeSelf: Boolean) =
-        generateSequence(if (includeSelf) this else parent) { it.parent }.takeWhile { it !is PsiDirectory }
+    generateSequence(if (includeSelf) this else parent) { it.parent }.takeWhile { it !is PsiDirectory }
 
 inline fun <reified T : PsiElement> PsiElement.firstAncestorOrNull(includeSelf: Boolean = false): T? =
-        ancestors(includeSelf).filterIsInstance<T>().firstOrNull()
+    ancestors(includeSelf).filterIsInstance<T>().firstOrNull()
 
 val PsiElement.textRangeInParent: TextRange
     get() {
@@ -90,35 +90,35 @@ fun PsiElement.rangeInParent(f: (PsiElement) -> TextRange) = f(this).relativize(
 
 /** Returns this text range as seen from the [container] range. */
 fun TextRange.relativize(container: TextRange): TextRange? =
-        when {
-            startOffset < container.startOffset || endOffset > container.endOffset -> null
-            else                                                                   ->
-                (startOffset - container.startOffset).let { TextRange(it, it + length) }
-        }
+    when {
+        startOffset < container.startOffset || endOffset > container.endOffset -> null
+        else                                                                   ->
+            (startOffset - container.startOffset).let { TextRange(it, it + length) }
+    }
 
 fun PsiElement.siblingRangeTo(brother: PsiElement): Sequence<PsiElement> =
-        if (this.parent !== brother.parent) throw IllegalArgumentException()
-        else when {
-            this === brother                                       ->
-                sequenceOf(this)
-            this.startOffsetInParent < brother.startOffsetInParent ->
-                this.siblingSequence(forward = true).takeUntil(brother).prepend(this)
-            else                                                   ->
-                this.siblingSequence(forward = false).takeUntil(brother).prepend(this)
+    if (this.parent !== brother.parent) throw IllegalArgumentException()
+    else when {
+        this === brother                                       ->
+            sequenceOf(this)
+        this.startOffsetInParent < brother.startOffsetInParent ->
+            this.siblingSequence(forward = true).takeUntil(brother).prepend(this)
+        else                                                   ->
+            this.siblingSequence(forward = false).takeUntil(brother).prepend(this)
 
-        }
+    }
 
 inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(): T? =
-        PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false)
+    PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false)
 
 
 inline fun <reified T : PsiElement> PsiElement.ancestorOrSelf(stopAt: Class<out PsiElement>): T? =
-        PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
+    PsiTreeUtil.getParentOfType(this, T::class.java, /* strict */ false, stopAt)
 
 
 fun PsiElement.isOfType(elementType: IElementType): Boolean = node?.elementType == elementType
 fun PsiElement.isOfType(elementType: IElementType, vararg rest: IElementType): Boolean =
-        node?.elementType.let { TokenSet.create(elementType, *rest).contains(it) }
+    node?.elementType.let { TokenSet.create(elementType, *rest).contains(it) }
 
 
 fun TextRange.containsInside(offset: Int): Boolean = offset in (startOffset + 1)..(endOffset - 1)

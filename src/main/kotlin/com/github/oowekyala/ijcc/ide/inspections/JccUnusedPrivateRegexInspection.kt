@@ -69,16 +69,16 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
                 .filter(Conditions.instanceOf(JccRegularExpression::class.java))
                 .expand(object : Cond<PsiElement>() {
                     override fun value(element: PsiElement?): Boolean =
-                            when (element) {
-                                is JccRegexSpec               -> ExplicitToken(element).let {
-                                    reachable.contains(it) || inSuppressed.contains(it)
-                                }
-                                is JccTokenReferenceRegexUnit -> {
-                                    reachable.addIfNotNull(element.typedReference.resolveToken())
-                                    false
-                                }
-                                else                          -> true
+                        when (element) {
+                            is JccRegexSpec               -> ExplicitToken(element).let {
+                                reachable.contains(it) || inSuppressed.contains(it)
                             }
+                            is JccTokenReferenceRegexUnit -> {
+                                reachable.addIfNotNull(element.typedReference.resolveToken())
+                                false
+                            }
+                            else                          -> true
+                        }
                 }).traverse().size()
             prev = size
             size = reachable.size
@@ -86,9 +86,9 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
 
         val privateTokens =
-                tokens.filter { o -> !inSuppressed.contains(o) }
-                    .filterIsInstance<ExplicitToken>()
-                    .filter { it.isPrivate }
+            tokens.filter { o -> !inSuppressed.contains(o) }
+                .filterIsInstance<ExplicitToken>()
+                .filter { it.isPrivate }
 
         for (token: ExplicitToken in privateTokens) {
             when {

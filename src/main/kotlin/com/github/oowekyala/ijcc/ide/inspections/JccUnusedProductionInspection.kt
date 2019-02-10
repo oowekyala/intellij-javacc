@@ -66,15 +66,15 @@ class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
         while (size != prev) {
             grammarTraverserOnlyBnf(file).expand(object : Cond<PsiElement>() {
                 override fun value(element: PsiElement?): Boolean =
-                        when (element) {
-                            is JccNonTerminalProduction    ->
-                                inParsing.contains(element) || inSuppressed.contains(element)
-                            is JccNonTerminalExpansionUnit -> {
-                                inParsing.addIfNotNull(element.typedReference.resolveProduction())
-                                false
-                            }
-                            else                           -> true
+                    when (element) {
+                        is JccNonTerminalProduction    ->
+                            inParsing.contains(element) || inSuppressed.contains(element)
+                        is JccNonTerminalExpansionUnit -> {
+                            inParsing.addIfNotNull(element.typedReference.resolveProduction())
+                            false
                         }
+                        else                           -> true
+                    }
             }).traverse().size()
             prev = size
             size = inParsing.size

@@ -38,36 +38,36 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
 
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
+        object : JccVisitor() {
 
-                override fun visitRegexSpec(spec: JccRegexSpec) {
-                    if (spec.isPrivate || spec.name != null) return
-                    val expansion = spec.getRootRegexElement(followReferences = false)
-                    if (expansion != null) {
-                        when (expansion) {
-                            is JccLiteralRegexUnit    -> holder.checkRegexElement(
-                                spec,
-                                expansion,
-                                specOwnsProblem = true
-                            )
-                            is JccRegexAlternativeElt -> {
-                                expansion.regexElementList.forEach {
-                                    if (it is JccLiteralRegexUnit) {
-                                        holder.checkRegexElement(spec, it, specOwnsProblem = false)
-                                    }
+            override fun visitRegexSpec(spec: JccRegexSpec) {
+                if (spec.isPrivate || spec.name != null) return
+                val expansion = spec.getRootRegexElement(followReferences = false)
+                if (expansion != null) {
+                    when (expansion) {
+                        is JccLiteralRegexUnit    -> holder.checkRegexElement(
+                            spec,
+                            expansion,
+                            specOwnsProblem = true
+                        )
+                        is JccRegexAlternativeElt -> {
+                            expansion.regexElementList.forEach {
+                                if (it is JccLiteralRegexUnit) {
+                                    holder.checkRegexElement(spec, it, specOwnsProblem = false)
                                 }
                             }
                         }
                     }
                 }
             }
+        }
 
     companion object {
         const val DisplayName = "Token can never be matched"
         const val NavigateFixName = "Navigate to matching token"
 
         fun problemDescription(realMatchName: String?) =
-                "This token can never be matched, ${realMatchName ?: "another token"} matches its input instead"
+            "This token can never be matched, ${realMatchName ?: "another token"} matches its input instead"
 
         private fun ProblemsHolder.checkRegexElement(spec: JccRegexSpec,
                                                      elt: JccLiteralRegexUnit,
@@ -75,15 +75,15 @@ class TokenCanNeverBeMatchedInspection : JccInspectionBase(DisplayName) {
         ) {
 
             val matchedBy: List<JccRegexSpec> =
-                    spec.containingFile.lexicalGrammar // TODO optimise
-                        .getLexicalStates(spec.lexicalStatesOrEmptyForAll.toSet())
-                        .asSequence()
-                        .mapNotNull { it.matchLiteral(elt, false) }
-                        .filterIsInstance<ExplicitToken>()
-                        // matching itself doesn't count
-                        .mapNotNull { it.spec }
-                        .filterNot { it === spec }
-                        .toList()
+                spec.containingFile.lexicalGrammar // TODO optimise
+                    .getLexicalStates(spec.lexicalStatesOrEmptyForAll.toSet())
+                    .asSequence()
+                    .mapNotNull { it.matchLiteral(elt, false) }
+                    .filterIsInstance<ExplicitToken>()
+                    // matching itself doesn't count
+                    .mapNotNull { it.spec }
+                    .filterNot { it === spec }
+                    .toList()
 
             if (matchedBy.isNotEmpty()) {
 

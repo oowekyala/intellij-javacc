@@ -70,7 +70,7 @@ abstract class SelfTargetingIntention<TElement : PsiElement>(
     protected open fun allowCaretInsideElement(element: PsiElement): Boolean = true
 
     final override fun isAvailable(project: Project, editor: Editor, file: PsiFile): Boolean =
-            getTarget(editor, file) != null
+        getTarget(editor, file) != null
 
 
     final override fun invoke(project: Project, editor: Editor?, file: PsiFile) {

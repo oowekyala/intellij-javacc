@@ -22,18 +22,18 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
 
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
-                override fun visitParserActionsUnit(o: JccParserActionsUnit) {
+        object : JccVisitor() {
+            override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-                    if (o.text.deleteWhitespace() == "{}") {
-                        holder.registerProblem(
-                            o,
-                            ProblemDescription,
-                            DeleteExpansionIntention.quickFix(FixDescription, o.containingFile)
-                        )
-                    }
+                if (o.text.deleteWhitespace() == "{}") {
+                    holder.registerProblem(
+                        o,
+                        ProblemDescription,
+                        DeleteExpansionIntention.quickFix(FixDescription, o.containingFile)
+                    )
                 }
             }
+        }
 
 
     companion object {

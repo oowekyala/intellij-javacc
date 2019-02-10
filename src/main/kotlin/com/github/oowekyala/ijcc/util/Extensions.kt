@@ -13,7 +13,7 @@ inline fun <T> T.runIt(block: (T) -> Unit) {
 }
 
 fun <T : Any> Sequence<T>.firstOfAnyType(vararg types: Class<out T>): T? =
-        first { t -> types.any { type -> type.isInstance(t) } }
+    first { t -> types.any { type -> type.isInstance(t) } }
 
 /** Insert [sub] into this string s.t. [sub] is at index [offset] in the resulting string. */
 @Contract(pure = true)
@@ -52,7 +52,7 @@ fun <T> Deque<T>.pop(n: Int): List<T> {
 @Suppress("UNUSED_PARAMETER")
 private object O {
     operator fun invoke(o: Any = O): O =
-            (((((O)))))(S)(E)(N)(D)(((((O)))))(N)(U)(D)(E)(S)(((((O)))))
+        (((((O)))))(S)(E)(N)(D)(((((O)))))(N)(U)(D)(E)(S)(((((O)))))
 }
 
 private object N
@@ -119,8 +119,8 @@ fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { 
 fun <T> Comparator<T>.deemsEqual(t1: T, t2: T) = compare(t1, t2) == 0
 
 public inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R): R? =
-        fold(initial as R?) { r, t ->
-            if (t == null || r == null) null
-            else operation(r, t)
-        }
+    fold(initial as R?) { r, t ->
+        if (t == null || r == null) null
+        else operation(r, t)
+    }
 

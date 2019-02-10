@@ -29,7 +29,7 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
     }
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
-            getParenthesizedParent(element)?.let { it.occurrenceIndicator is JccZeroOrOne } == true
+        getParenthesizedParent(element)?.let { it.occurrenceIndicator is JccZeroOrOne } == true
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         val ref = getParenthesizedParent(element)!!
@@ -47,13 +47,13 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
 class ReplaceBracedExpansionUnitWithParenthesizedIntention : PsiElementBaseIntentionAction() {
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean =
-            element.takeIf {
-                when (it.node.elementType) {
-                    JccTypes.JCC_RBRACKET, JccTypes.JCC_LBRACKET -> true
-                    else                                         -> false
-                }
+        element.takeIf {
+            when (it.node.elementType) {
+                JccTypes.JCC_RBRACKET, JccTypes.JCC_LBRACKET -> true
+                else                                         -> false
             }
-                ?.let { it.parent is JccOptionalExpansionUnit } == true
+        }
+            ?.let { it.parent is JccOptionalExpansionUnit } == true
 
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         val ref = element.parent as JccOptionalExpansionUnit

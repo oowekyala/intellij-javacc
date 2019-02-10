@@ -31,10 +31,10 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
     fun getLexicalStates(namesOrEmptyForAll: Set<String>): Collection<LexicalState> =
-            when {
-                namesOrEmptyForAll.isEmpty() -> lexicalStates
-                else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
-            }
+        when {
+            namesOrEmptyForAll.isEmpty() -> lexicalStates
+            else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
+        }
 
     val defaultState: LexicalState
         get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
@@ -48,11 +48,11 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             // and only builds "lexical states" during the semanticise phase.
             // hence why we need two traversals here.
             val allLexicalStatesNames =
-                    allProductions().filterIsInstance<JccRegexProduction>()
-                        .flatMap { it.lexicalStatesNameOrEmptyForAll.asSequence() }
-                        .plus(DefaultStateName) // always there
-                        .distinct()
-                        .toList()
+                allProductions().filterIsInstance<JccRegexProduction>()
+                    .flatMap { it.lexicalStatesNameOrEmptyForAll.asSequence() }
+                    .plus(DefaultStateName) // always there
+                    .distinct()
+                    .toList()
 
             // state name to builder
             val builders = allLexicalStatesNames.associateWith { name -> LexicalStateBuilder(name) }
@@ -81,10 +81,10 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
 
                         val regexExpansions =
-                                production.expansion
-                                    ?.descendantSequence(includeSelf = true)
-                                    ?.filterIsInstance<JccRegexExpansionUnit>()
-                                    ?: emptySequence()
+                            production.expansion
+                                ?.descendantSequence(includeSelf = true)
+                                ?.filterIsInstance<JccRegexExpansionUnit>()
+                                ?: emptySequence()
 
                         val currentSpecs = defaultBuilder.currentSpecs
 

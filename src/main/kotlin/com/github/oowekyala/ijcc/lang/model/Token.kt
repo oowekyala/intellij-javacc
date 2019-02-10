@@ -54,7 +54,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     /** Returns true if this is a single literal token. */
     fun getAsStringToken(): JccLiteralRegexUnit? =
     // this relies on the fact that the reference doesn't use the lexical grammar
-            regularExpression?.asSingleLiteral(followReferences = true) // TODO should we unwrap unnecessary parentheses?
+        regularExpression?.asSingleLiteral(followReferences = true) // TODO should we unwrap unnecessary parentheses?
 
     val psiElement: JccRegularExpressionOwner? get () = psiPointer.element
 
@@ -65,7 +65,7 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * TODO ignore case
      */
     fun matches(string: String): Boolean =
-            prefixPattern?.matches(string) == true
+        prefixPattern?.matches(string) == true
 
     /**
      * Returns true if this token is the same literal unit as this one,
@@ -78,9 +78,9 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      * modulo [isIgnoreCase].
      */
     fun matchesLiteral(literalMatch: String): Boolean =
-            getAsStringToken()?.let {
-                literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
-            } == true
+        getAsStringToken()?.let {
+            literalMatch.equals(it.match, ignoreCase = isIgnoreCase)
+        } == true
 
 
     companion object {
@@ -97,15 +97,15 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
             val t2Str = t2.getAsStringToken()
 
             return t1Str != null
-                    && t2Str != null
-                    && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str))
+                && t2Str != null
+                && (t1.matchesLiteral(t2Str) || t2.matchesLiteral(t1Str))
         }
 
         /**
          * Compares document offset of two tokens. Tokens defined higher in the file are considered greater.
          */
         val offsetComparator: Comparator<Token> =
-                Comparator.comparingInt { -(it.textOffset ?: 0) }
+            Comparator.comparingInt { -(it.textOffset ?: 0) }
 
     }
 

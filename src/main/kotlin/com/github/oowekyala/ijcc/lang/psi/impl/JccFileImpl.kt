@@ -95,9 +95,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override fun getClasses(): Array<PsiClass> {
 
         val injected =
-                grammarFileRoot?.let { InjectedLanguageManager.getInstance(project).getInjectedPsiFiles(it) }
-                    ?.takeIf { it.isNotEmpty() }
-                    ?: return emptyArray()
+            grammarFileRoot?.let { InjectedLanguageManager.getInstance(project).getInjectedPsiFiles(it) }
+                ?.takeIf { it.isNotEmpty() }
+                ?: return emptyArray()
 
         return injected.mapNotNull {
             it.first.descendantSequence().map { it as? PsiClass }.firstOrNull { it != null }

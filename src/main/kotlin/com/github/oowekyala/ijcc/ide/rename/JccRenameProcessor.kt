@@ -23,18 +23,18 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
 
         return element.parent.let {
             it is JccTokenReferenceRegexUnit
-                    || it is JccNonTerminalExpansionUnit
-                    || it is JccNamedRegularExpression
-                    || it is JccJavaNonTerminalProductionHeader
-                    || it is JccJjtreeNodeDescriptor
+                || it is JccNonTerminalExpansionUnit
+                || it is JccNamedRegularExpression
+                || it is JccJavaNonTerminalProductionHeader
+                || it is JccJjtreeNodeDescriptor
         }
     }
 
     private fun isTerminal(psiElement: PsiElement): Boolean? {
         val elt =
-                if (psiElement is JccIdentifier)
-                    PsiTreeUtil.findFirstParent(psiElement) { it is JccIdentifierOwner }
-                else psiElement as? JccIdentifierOwner
+            if (psiElement is JccIdentifier)
+                PsiTreeUtil.findFirstParent(psiElement) { it is JccIdentifierOwner }
+            else psiElement as? JccIdentifierOwner
 
         return elt is JccNamedRegularExpression
     }

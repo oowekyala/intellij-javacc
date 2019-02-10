@@ -12,20 +12,20 @@ import com.github.oowekyala.ijcc.lang.psi.nodeIdentifier
 object JjtNodeDocMaker {
 
     fun makeDoc(scopedUnit: JccScopedExpansionUnit): String? =
-            scopedUnit.nodeIdentifier?.let { id ->
-                buildQuickDoc {
-                    buildDefinition {
-                        append("#${id.name}") // use the unprefixed name
-                    }
-                    sections {
-                        buildSection(BnfSectionName, sectionDelim = " ::=") {
-                            scopedUnit.expansionUnit.let {
-                                JccNonTerminalDocMaker.ExpansionMinifierVisitor(this).startOn(it)
-                            }
+        scopedUnit.nodeIdentifier?.let { id ->
+            buildQuickDoc {
+                buildDefinition {
+                    append("#${id.name}") // use the unprefixed name
+                }
+                sections {
+                    buildSection(BnfSectionName, sectionDelim = " ::=") {
+                        scopedUnit.expansionUnit.let {
+                            JccNonTerminalDocMaker.ExpansionMinifierVisitor(this).startOn(it)
                         }
-                        jjtreeSection(scopedUnit)
-
                     }
+                    jjtreeSection(scopedUnit)
+
                 }
             }
+        }
 }

@@ -66,10 +66,10 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
     val keys: TextAttributesKey = TextAttributesKey.createTextAttributesKey("JAVACC_$name", base)
 
     val displayName =
-            name.replace('_', ' ')
-                .toLowerCase().capitalize()
-                .replace("Jjtree", "JJTree")
-                .replace("Javacc", "JavaCC")
+        name.replace('_', ' ')
+            .toLowerCase().capitalize()
+            .replace("Jjtree", "JJTree")
+            .replace("Javacc", "JavaCC")
 
     open val highlightType: HighlightInfoType = createSymbolTypeInfo(HighlightInfoType.SYMBOL_TYPE_SEVERITY)
 

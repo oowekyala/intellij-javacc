@@ -140,15 +140,15 @@ class HostSpec(val prefix: String?, val suffix: String?,
      * This spec is thereafter unusable.
      */
     fun appendSuffixAndDestroy(additionalSuffix: CharSequence): HostSpec =
-            HostSpec(
-                prefix = prefix,
-                suffix = (suffix ?: "") + additionalSuffix,
-                host = host!!,
-                rangeGetter = rangeGetter
-            ).also {
-                // this makes this spec unusable
-                HostIndex.remove(this)
-            }
+        HostSpec(
+            prefix = prefix,
+            suffix = (suffix ?: "") + additionalSuffix,
+            host = host!!,
+            rangeGetter = rangeGetter
+        ).also {
+            // this makes this spec unusable
+            HostIndex.remove(this)
+        }
 
     private fun remapHost(newHost: PsiLanguageInjectionHost) {
         HostIndex[this] = SmartPointerManager.createPointer(newHost)
@@ -157,10 +157,10 @@ class HostSpec(val prefix: String?, val suffix: String?,
     companion object {
         /** Global index of leaves to actual injection hosts. */
         private val HostIndex: MutableMap<HostSpec, SmartPsiElementPointer<PsiLanguageInjectionHost>> =
-                HashMap()
+            HashMap()
 
         private val ReplaceMap: MutableMap<PsiLanguageInjectionHost, PsiLanguageInjectionHost> =
-                HashMap()
+            HashMap()
 
         fun replaceHost(replaced: PsiLanguageInjectionHost, replacement: PsiLanguageInjectionHost) {
             ReplaceMap[replaced] = replacement

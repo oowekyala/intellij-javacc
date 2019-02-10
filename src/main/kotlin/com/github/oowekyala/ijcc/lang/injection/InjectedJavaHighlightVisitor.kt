@@ -16,11 +16,11 @@ import com.intellij.psi.PsiResolveHelper
 class InjectedJavaHighlightVisitor(private val resolveHelper: PsiResolveHelper) : HighlightVisitorImpl(resolveHelper) {
 
     override fun suitableForFile(file: PsiFile): Boolean =
-            InjectedLanguageManager.getInstance(file.project).let { manager ->
-                manager.isInjectedFragment(file) && manager.getInjectionHost(file).let { host ->
-                    host is JccPsiElement && host.pluginSettings.injectionSupportLevel == InjectionSupportLevel.FULL
-                }
+        InjectedLanguageManager.getInstance(file.project).let { manager ->
+            manager.isInjectedFragment(file) && manager.getInjectionHost(file).let { host ->
+                host is JccPsiElement && host.pluginSettings.injectionSupportLevel == InjectionSupportLevel.FULL
             }
+        }
 
     override fun clone(): HighlightVisitorImpl = InjectedJavaHighlightVisitor(resolveHelper)
 

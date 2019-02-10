@@ -20,7 +20,7 @@ import com.intellij.psi.PsiElement
  */
 object JavaccLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> =
-            mutableListOf(JccJavaCompilationUnit::class.java, JccGrammarFileRoot::class.java)
+        mutableListOf(JccJavaCompilationUnit::class.java, JccGrammarFileRoot::class.java)
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
         if (context !is JccPsiElement) return
@@ -47,7 +47,7 @@ object JavaccLanguageInjector : MultiHostInjector {
     }
 
     fun getLinearStructureFor(grammarFileRoot: JccGrammarFileRoot): LinearInjectedStructure =
-            linearise(getInjectedSubtreeFor(grammarFileRoot))
+        linearise(getInjectedSubtreeFor(grammarFileRoot))
 
 
 }

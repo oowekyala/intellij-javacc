@@ -28,11 +28,11 @@ interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageIn
 
     @JvmDefault
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
-            MultilineTextEscaper(this)
+        MultilineTextEscaper(this)
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-            this.replace(JccElementFactory.createJavaNonterminalHeader(project, text)) as PsiLanguageInjectionHost
+        this.replace(JccElementFactory.createJavaNonterminalHeader(project, text)) as PsiLanguageInjectionHost
 
 
 }

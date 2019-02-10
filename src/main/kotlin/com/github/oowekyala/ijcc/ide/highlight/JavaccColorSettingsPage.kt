@@ -28,7 +28,7 @@ class JavaccColorSettingsPage : ColorSettingsPage {
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey>? = additionalAttributes
 
     private val attributes: Array<AttributesDescriptor> =
-            JavaccHighlightingColors.values().map { AttributesDescriptor(it.displayName, it.keys) }.toTypedArray()
+        JavaccHighlightingColors.values().map { AttributesDescriptor(it.displayName, it.keys) }.toTypedArray()
 
     private val additionalAttributes: Map<String, TextAttributesKey> = mapOf(
         "jcckeyword" to JavaccHighlightingColors.JAVACC_KEYWORD.keys,

@@ -16,9 +16,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.util.ThreeState
+import com.siyeh.ig.javadoc.DanglingJavadocInspection
 import java.util.regex.Pattern
 
-
+/**
+ * Allows suppressing inspections.
+ */
 object JccInspectionSuppressor : InspectionSuppressor {
     override fun getSuppressActions(element: PsiElement?, toolId: String): Array<SuppressQuickFix> {
         val seq: Sequence<SuppressQuickFix> = element?.let {
@@ -37,10 +40,21 @@ object JccInspectionSuppressor : InspectionSuppressor {
         return seq.toList().toTypedArray()
     }
 
+    private val AlwaysSuppressedInspections = setOf(
+        /*
+        TODO
+          the plain Java DanglingJavadoc inspection doesn't consider
+          Nonterminal productions as worthy. Introduce a JavaCC-specific
+          similar inspection
+        */
+        DanglingJavadocInspection().id
+    )
 
     override fun isSuppressedFor(element: PsiElement, toolId: String): Boolean =
-            element.ancestors(includeSelf = true).any { isSuppressedByComment(it, toolId) }
-
+        element is JccPsiElement && (
+            toolId in AlwaysSuppressedInspections
+                || element.ancestors(includeSelf = true).any { isSuppressedByComment(it, toolId) }
+            )
 
     private fun isSuppressedByComment(element: PsiElement, toolId: String): Boolean {
         return element.leadingComments().any { comment ->
@@ -54,6 +68,9 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
     private val RegexSpecIgnoreSet = TokenSet.create(TokenType.WHITE_SPACE, JccTypes.JCC_UNION /* | */)
 
+    /**
+     * Intention to suppress an inspection.
+     */
     class SuppressIntention(elt: PsiElement, toolId: String)
         : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {
 
@@ -74,20 +91,20 @@ object JccInspectionSuppressor : InspectionSuppressor {
     }
 
     private fun containerName(element: PsiElement) =
-            when (element.getNearestContainer()) {
-                is JccFile                                         -> "file"
-                is JccRegexSpec                                    -> "token specification"
-                is JccNonTerminalProduction, is JccRegexProduction -> "production"
-                else                                               -> "element"
-            }
+        when (element.getNearestContainer()) {
+            is JccFile                                         -> "file"
+            is JccRegexSpec                                    -> "token specification"
+            is JccNonTerminalProduction, is JccRegexProduction -> "production"
+            else                                               -> "element"
+        }
 
     private fun PsiElement.isContainer(): Boolean =
-            this is JccFile || this is JccNonTerminalProduction || this is JccRegexSpec || this is JccRegexProduction
+        this is JccFile || this is JccNonTerminalProduction || this is JccRegexSpec || this is JccRegexProduction
 
     private fun PsiElement.getNearestContainer(): PsiElement? = getAllContainers().firstOrNull()
 
     private fun PsiElement.getAllContainers(): Sequence<PsiElement> =
-            ancestors(includeSelf = true).filter { it.isContainer() }
+        ancestors(includeSelf = true).filter { it.isContainer() }
 
     private fun PsiElement.leadingComments(): Sequence<String> {
 

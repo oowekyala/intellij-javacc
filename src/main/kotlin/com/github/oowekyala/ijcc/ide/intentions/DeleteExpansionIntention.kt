@@ -24,7 +24,7 @@ class DeleteExpansionIntention(val name: String = "Delete expansion")
 
     companion object {
         fun quickFix(name: String = "Delete expansion", file: PsiFile): LocalQuickFix =
-                IntentionWrapper.wrapToQuickFix(DeleteExpansionIntention(name), file)
+            IntentionWrapper.wrapToQuickFix(DeleteExpansionIntention(name), file)
     }
 }
 

@@ -17,40 +17,40 @@ object JccHighlightUtil {
                       type: HighlightInfoType,
                       severity: HighlightSeverity = type.getSeverity(null),
                       message: String? = null): HighlightInfo =
-            highlightInfo(element.textRange, type, severity, message)
+        highlightInfo(element.textRange, type, severity, message)
 
     fun highlightInfo(textRange: TextRange,
                       type: HighlightInfoType,
                       severity: HighlightSeverity = type.getSeverity(null), // hack
                       message: String? = null): HighlightInfo =
 
-            HighlightInfo.newHighlightInfo(type)
-                .range(textRange)
-                .severity(severity)
-                .also { if (message != null) it.descriptionAndTooltip(message) }
-                .createUnconditionally()
+        HighlightInfo.newHighlightInfo(type)
+            .range(textRange)
+            .severity(severity)
+            .also { if (message != null) it.descriptionAndTooltip(message) }
+            .createUnconditionally()
 
     fun wrongReferenceInfo(element: PsiElement, message: String): HighlightInfo =
-            wrongReferenceInfo(element.textRange, message)
+        wrongReferenceInfo(element.textRange, message)
 
     fun wrongReferenceInfo(range: TextRange, message: String): HighlightInfo =
-            highlightInfo(
-                textRange = range,
-                severity = HighlightSeverity.ERROR,
-                type = HighlightInfoType.WRONG_REF,
-                message = message
-            )
+        highlightInfo(
+            textRange = range,
+            severity = HighlightSeverity.ERROR,
+            type = HighlightInfoType.WRONG_REF,
+            message = message
+        )
 
     fun errorInfo(element: PsiElement, message: String?): HighlightInfo =
-            errorInfo(element.textRange, message)
+        errorInfo(element.textRange, message)
 
     fun errorInfo(range: TextRange, message: String?): HighlightInfo =
-            highlightInfo(
-                textRange = range,
-                severity = HighlightSeverity.ERROR,
-                type = HighlightInfoType.ERROR,
-                message = message
-            )
+        highlightInfo(
+            textRange = range,
+            severity = HighlightSeverity.ERROR,
+            type = HighlightInfoType.ERROR,
+            message = message
+        )
 
 }
 

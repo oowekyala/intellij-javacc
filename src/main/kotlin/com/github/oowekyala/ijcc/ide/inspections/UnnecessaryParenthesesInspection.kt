@@ -55,19 +55,19 @@ class UnnecessaryParenthesesInspection : JccInspectionBase(InspectionName) {
     )
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
-            object : JccVisitor() {
-                private val config = getConfig()
-                override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
-                    if (o.isUnnecessary(config)) {
-                        holder.registerProblem(
-                            o,
-                            ProblemDescription,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            MyQuickFix
-                        )
-                    }
+        object : JccVisitor() {
+            private val config = getConfig()
+            override fun visitParenthesizedExpansionUnit(o: JccParenthesizedExpansionUnit) {
+                if (o.isUnnecessary(config)) {
+                    holder.registerProblem(
+                        o,
+                        ProblemDescription,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        MyQuickFix
+                    )
                 }
             }
+        }
 
     companion object {
 

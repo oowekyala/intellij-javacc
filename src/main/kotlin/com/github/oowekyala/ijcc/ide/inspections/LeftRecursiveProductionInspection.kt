@@ -117,7 +117,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
         @TestOnly
         fun makeMessageImpl(loopPath: List<String>) =
-                "Left-recursion detected: " + loopPath.joinToString(separator = " -> ")
+            "Left-recursion detected: " + loopPath.joinToString(separator = " -> ")
 
         fun cyclePartMessage() = "Part of a left-recursive cycle"
     }

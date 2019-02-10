@@ -14,20 +14,20 @@ import com.intellij.psi.tree.IElementType
 
 
 fun grammarTraverser(root: PsiElement): SyntaxTraverser<PsiElement> =
-        psiTraverser().withRoot(root)
-            .forceDisregardTypes(Conditions.equalTo<IElementType>(GeneratedParserUtilBase.DUMMY_BLOCK))
-            .filter(Conditions.instanceOf<PsiElement>(JccPsiElement::class.java))
+    psiTraverser().withRoot(root)
+        .forceDisregardTypes(Conditions.equalTo<IElementType>(GeneratedParserUtilBase.DUMMY_BLOCK))
+        .filter(Conditions.instanceOf<PsiElement>(JccPsiElement::class.java))
 
 fun grammarTraverserNoJava(root: PsiElement): SyntaxTraverser<PsiElement> =
-        grammarTraverser(root)
-            .forceIgnore {
-                when (it) {
-                    is JccJavaCompilationUnit, is JccJavaBlock, is JccJavaExpression -> true
-                    else                                                             -> false
-                }
+    grammarTraverser(root)
+        .forceIgnore {
+            when (it) {
+                is JccJavaCompilationUnit, is JccJavaBlock, is JccJavaExpression -> true
+                else                                                             -> false
             }
+        }
 
 fun grammarTraverserOnlyBnf(root: PsiElement): SyntaxTraverser<PsiElement> =
-        grammarTraverserNoJava(root)
-            .forceIgnore(Conditions.instanceOf(JccOptionSection::class.java))
-            .forceIgnore(Conditions.instanceOf(JccRegexProduction::class.java))
+    grammarTraverserNoJava(root)
+        .forceIgnore(Conditions.instanceOf(JccOptionSection::class.java))
+        .forceIgnore(Conditions.instanceOf(JccRegexProduction::class.java))

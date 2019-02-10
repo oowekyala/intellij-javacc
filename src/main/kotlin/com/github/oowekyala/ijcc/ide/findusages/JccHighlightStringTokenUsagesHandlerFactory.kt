@@ -44,7 +44,7 @@ class JccHighlightStringTokenUsagesHandler(editor: Editor,
 
     override fun selectTargets(targets: List<JccLiteralRegexUnit>,
                                selectionConsumer: Consumer<List<JccLiteralRegexUnit>>) =
-            selectionConsumer.consume(targets)
+        selectionConsumer.consume(targets)
 
     override fun computeUsages(targets: List<JccLiteralRegexUnit>) {
         myFile as JccFile

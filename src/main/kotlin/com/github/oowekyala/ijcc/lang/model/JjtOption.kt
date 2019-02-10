@@ -42,13 +42,13 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      */
     object NODE_FACTORY : JjtOption<String>(STRING, "") {
         override fun getValue(optionBinding: JccOptionBinding?, config: GrammarOptions): String =
-                if (optionBinding == null
-                    || optionBinding.matchesType(INTEGER)
-                    || optionBinding.matchesType(BOOLEAN)
-                    || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
-                ) {
-                    config.nodePackage + ".SimpleNode" // the actual default
-                } else optionBinding.stringValue
+            if (optionBinding == null
+                || optionBinding.matchesType(INTEGER)
+                || optionBinding.matchesType(BOOLEAN)
+                || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
+            ) {
+                config.nodePackage + ".SimpleNode" // the actual default
+            } else optionBinding.stringValue
     }
 
     /**
