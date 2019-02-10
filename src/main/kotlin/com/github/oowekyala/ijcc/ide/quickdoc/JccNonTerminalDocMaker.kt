@@ -118,7 +118,7 @@ object JccNonTerminalDocMaker {
         }
 
         override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
-            val reffed: Token? = o.typedReference.resolveToken(exact = true)
+            val reffed: Token? = o.typedReference?.resolveToken(exact = true)
 
             if (reffed != null) {
                 DocumentationManager.createHyperlink(

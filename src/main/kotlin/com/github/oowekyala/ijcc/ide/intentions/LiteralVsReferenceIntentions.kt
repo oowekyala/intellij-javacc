@@ -45,15 +45,16 @@ class ReplaceLiteralWithReferenceIntention :
     ) {
 
     override fun isApplicableTo(element: JccLiteralRegexUnit): Boolean =
-        element.typedReference.resolveToken(exact = true)
+        element.typedReference?.resolveToken(exact = true)
             ?.let { it.isExplicit && it.name != null } == true
 
 
     override fun run(project: Project, editor: Editor, element: JccLiteralRegexUnit): () -> Unit {
-        val newRegexUnit: JccTokenReferenceRegexUnit = element.typedReference
-            .resolveToken(exact = true)!!
-            .name!!
-            .let { createRegexElement(project, "<$it>") }
+        val newRegexUnit: JccTokenReferenceRegexUnit =
+            element.typedReference!!
+                .resolveToken(exact = true)!!
+                .name!!
+                .let { createRegexElement(project, "<$it>") }
 
         return {
             element.safeReplace(newRegexUnit)

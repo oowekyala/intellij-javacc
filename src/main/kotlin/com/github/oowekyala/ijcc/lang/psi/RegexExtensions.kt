@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
@@ -275,6 +274,14 @@ val JccRegexSpec.nameTextRange: TextRange?
  */
 val JccRepetitionRange.first: Int?
     get() = childrenSequence().firstOrNull { it.isOfType(JccTypes.JCC_INTEGER_LITERAL) }?.text?.toInt()
+
+/**
+ * Returns true if this literal regex unit is eligible to be a string
+ * token, in which case a [typedReference] is available. The opposite of [asSingleLiteral].
+ */
+val JccLiteralRegexUnit.isStringToken: Boolean
+    get() = parent is JccLiteralRegularExpression // common case
+        || firstAncestorOrNull<JccRegularExpression>()?.asSingleLiteral(followReferences = false) == this
 
 
 /**

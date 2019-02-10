@@ -14,7 +14,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 
 /**
- * Reference to a [JccRegexSpec].
+ * Reference to a named [Token].
  *
  * @author Clément Fournier
  * @since 1.0

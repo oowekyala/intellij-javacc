@@ -43,7 +43,7 @@ abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), Jc
     override fun getReference(): PsiReference? = when (this) {
         is JccTokenReferenceRegexUnit  -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
-        is JccLiteralRegexUnit         -> JccBnfStringLiteralReference(this)
+        is JccLiteralRegexUnit         -> if (isStringToken) JccBnfStringLiteralReference(this) else null
         // Having it here breaks the Find Usages function
         // see ReferenceExtensions.typedReference
         // is JccNodeClassOwner        -> JjtNodePolyReference(this).takeIf { isNotVoid }

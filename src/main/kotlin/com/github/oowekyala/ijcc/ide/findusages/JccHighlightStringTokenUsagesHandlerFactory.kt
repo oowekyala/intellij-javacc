@@ -26,7 +26,7 @@ class JccHighlightStringTokenUsagesHandlerFactory : HighlightUsagesHandlerFactor
             .filterIsInstance<JccLiteralRegularExpression>()
             .firstOrNull()
             ?.let {
-                JccHighlightStringTokenUsagesHandler(editor, file, it.unit)
+                JccHighlightStringTokenUsagesHandler(editor, file, it)
             }
     }
 
@@ -35,28 +35,25 @@ class JccHighlightStringTokenUsagesHandlerFactory : HighlightUsagesHandlerFactor
 
 class JccHighlightStringTokenUsagesHandler(editor: Editor,
                                            file: PsiFile,
-                                           private val literal: JccLiteralRegexUnit)
+                                           private val literal: JccLiteralRegularExpression)
 
-    : HighlightUsagesHandlerBase<JccLiteralRegexUnit>(editor, file) {
+    : HighlightUsagesHandlerBase<JccLiteralRegularExpression>(editor, file) {
 
 
-    override fun getTargets(): List<JccLiteralRegexUnit> = listOf(literal)
+    override fun getTargets(): List<JccLiteralRegularExpression> = listOf(literal)
 
-    override fun selectTargets(targets: List<JccLiteralRegexUnit>,
-                               selectionConsumer: Consumer<List<JccLiteralRegexUnit>>) =
+    override fun selectTargets(targets: List<JccLiteralRegularExpression>,
+                               selectionConsumer: Consumer<List<JccLiteralRegularExpression>>) =
         selectionConsumer.consume(targets)
 
-    override fun computeUsages(targets: List<JccLiteralRegexUnit>) {
+    override fun computeUsages(targets: List<JccLiteralRegularExpression>) {
         myFile as JccFile
 
         val token = targets[0].typedReference.resolveToken(exact = true) ?: return
 
-
         myFile.nonTerminalProductions
             .filterIsInstance<JccBnfProduction>()
             .flatMap { it.expansion?.descendantSequence(includeSelf = true) ?: emptySequence() }
-            .filterIsInstance<JccRegexExpansionUnit>()
-            .map { it.regularExpression }
             .filterIsInstance<JccLiteralRegularExpression>()
             .filter {
                 it.typedReference.resolveToken(exact = true) == token

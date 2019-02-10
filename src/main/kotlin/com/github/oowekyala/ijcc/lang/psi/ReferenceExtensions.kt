@@ -14,12 +14,12 @@ import com.github.oowekyala.ijcc.lang.model.Token
  */
 
 
-val JccLiteralRegexUnit.typedReference: JccBnfStringLiteralReference
-    get() = reference as JccBnfStringLiteralReference
+val JccLiteralRegexUnit.typedReference: JccBnfStringLiteralReference?
+    get() = reference as JccBnfStringLiteralReference?
 
 
 val JccLiteralRegularExpression.typedReference: JccBnfStringLiteralReference
-    get() = unit.typedReference
+    get() = unit.typedReference!!
 
 val JccTokenReferenceRegexUnit.typedReference: JccTerminalReference
     get() = reference as JccTerminalReference
@@ -44,7 +44,7 @@ val JccRegexExpansionUnit.referencedToken: Token?
             is JccRefRegularExpression -> regex.typedReference.resolveToken()
             else                       -> when (val unit = regex.asSingleLiteral(followReferences = false)) {
                 null -> SyntheticToken(this) // everything else is synthesized
-                else -> unit.typedReference.resolveToken(exact = true)
+                else -> unit.typedReference!!.resolveToken(exact = true)
             }
         }
     }
