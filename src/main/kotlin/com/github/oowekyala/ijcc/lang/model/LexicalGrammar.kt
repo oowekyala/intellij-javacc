@@ -165,9 +165,6 @@ class LexicalGrammar(file: JccFile) {
             return builders.mapValues { (_, v) -> v.build() }
         }
 
-        private fun JccFile.allProductions(): Sequence<JccProduction> =
-            grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
-
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens
          * are reduced, but this is only done within [buildStatesMap]. This is only

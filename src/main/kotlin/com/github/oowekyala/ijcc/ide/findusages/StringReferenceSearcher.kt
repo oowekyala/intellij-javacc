@@ -1,12 +1,9 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
-import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.QueryExecutorBase
 import com.intellij.psi.PsiReference
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.SearchRequestCollector
-import com.intellij.psi.search.UsageSearchContext
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.util.Processor
 
@@ -20,29 +17,25 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
 
         val toSearch = queryParameters.elementToSearch as? JccRegularExpressionOwner ?: return
 
-        val token = toSearch.definedToken
+        findReferencesTo(toSearch).all {
+            // "all" stops on the first "false" result
+            consumer.process(it)
+        }
 
-        val unit = token.asStringToken ?: return
-
-//        JccHighlightStringTokenUsagesHandler.findReferencesTo(token, toSearch.containingFile) {
-//            consumer.process(it.typedReference)
-//        }
-
-        addStringReferencesUsages(token, unit, toSearch.containingFile, queryParameters.optimizer)
     }
 
-    private fun addStringReferencesUsages(token: Token,
-                                          unit: JccLiteralRegexUnit,
-                                          file: JccFile,
-                                          collector: SearchRequestCollector) {
+    /*
+        FIXME
+            this is probably very inefficient, build index in LexicalGrammar
+            we can't use the optimised word scan because it doesn't pick up on non-alphanumeric characters
 
-        collector.searchWord(
-            unit.text, // search for the string token
-            GlobalSearchScope.fileScope(file),
-            UsageSearchContext.ANY,
-            true, // caseSensitive
-            token.psiElement!!
-        )
-    }
+    */
+    private fun findReferencesTo(target: JccRegularExpressionOwner): Sequence<JccBnfStringLiteralReference> =
+        target.containingFile
+            .allProductions()
+            .flatMap { it.descendantSequence(includeSelf = true) }
+            .filterIsInstance<JccRegularExpressionOwner>()
+            .mapNotNull { it.regularExpression.asSingleLiteral()?.typedReference }
+            .filter { it.isReferenceTo(target) }
 
 }

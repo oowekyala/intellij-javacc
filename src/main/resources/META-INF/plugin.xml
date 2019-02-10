@@ -108,8 +108,8 @@
                 implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
         <findUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
-        <highlightUsagesHandlerFactory
-                implementation="com.github.oowekyala.ijcc.ide.findusages.JccHighlightStringTokenUsagesHandlerFactory"/>
+        <!--<highlightUsagesHandlerFactory-->
+                <!--implementation="com.github.oowekyala.ijcc.ide.findusages.JccHighlightStringTokenUsagesHandlerFactory"/>-->
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 

@@ -257,6 +257,46 @@ class JccFindUsagesTest : JccTestBase() {
             void MyFour() #Four:{}
             {
                 <four> $Token
+                "foo"
+            }
+
+        """
+    )
+
+
+    fun `test not alphanum `() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <fortyFive : <four> "5"> $Token
+            }
+
+            void Four():{}
+            {
+                <four: ","> $Token
+                 //^
+            }
+
+            void Foo():{}
+            {
+                Hello() "," #Four $Token
+            }
+
+            void Hello():{}
+            {
+                "," #Four $Token
+
+                "foo" // not matched
+            }
+
+
+
+
+            void MyFour() #Four:{}
+            {
+                <four> $Token
             }
 
         """
@@ -274,18 +314,16 @@ class JccFindUsagesTest : JccTestBase() {
         actual shouldContainExactlyInAnyOrder expected
     }
 
-    private fun markersActual(source: JccPsiElement): Set<Pair<Int, String>> =
+    private fun markersActual(source: JccPsiElement) =
         myFixture.findUsages(source)
             .filter { it.element != null }
             .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
-            .toSet()
 
-    private fun markersFrom(text: String): Set<Pair<Int, String>> =
+    private fun markersFrom(text: String) =
         text.split('\n')
             .withIndex()
             .filter { it.value.contains(MARKER) }
             .map { Pair(it.index, it.value.substring(it.value.indexOf(MARKER) + MARKER.length).trim()) }
-            .toSet()
 
     private companion object {
         const val MARKER = "// - "
