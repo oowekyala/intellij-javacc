@@ -16,11 +16,11 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     /** Terminal regex.  */
     TOKEN(AllIcons.Nodes.Variable),
     /** BNF production.  */
-    BNF_PRODUCTION(AllIcons.Nodes.Pointcut),
+    BNF_PRODUCTION(AllIcons.Nodes.Method),
     /** Javacc option. */
     JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
     /** Javacode production.  */
-    JAVACODE_PRODUCTION(AllIcons.Nodes.DisabledPointcut),
+    JAVACODE_PRODUCTION(AllIcons.Nodes.AbstractMethod),
     TOKEN_MGR_DECLS(PlatformIcons.CLASS_ICON),
     PARSER_DECLARATION(PlatformIcons.CLASS_ICON),
 
