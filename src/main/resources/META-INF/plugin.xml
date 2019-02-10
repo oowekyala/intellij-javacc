@@ -15,8 +15,8 @@
         <ul>
             <li><b>JavaCC support:</b> Jump to declaration and find usages, structure view, quick documentation, etc.</li>
             <li><b>JJTree support:</b> Jump to node class, some tooling to detect common errors, etc.</li>
+            <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc.</li>
             <li><b>Inspections and intentions:</b>Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
-            <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc. This feature is <b>experimental</b> and is disabled by default. You can enable it in the plugin settings.</li>
         </ul>
 
         Visit the <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a> README for more details.

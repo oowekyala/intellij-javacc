@@ -70,10 +70,8 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
         private val injectionLabelText = """
         <html>
             Tune the level of sophistication of the Java injection in Java code fragments embedded in a grammar.
-            This is an <b>experimental</b> feature since 1.1, since it significantly impacts responsiveness of
-            e.g. inspections. Because of that, it's disabled by default. You can still enable it if you want, which I
-            recommend anyway if you're only editing Java fragments. The level <b>${InjectionSupportLevel.CONSERVATIVE.displayName}</b>
-            already offers great code insight features. The level <b>${InjectionSupportLevel.FULL.displayName}</b>
+            By default this is set to <b>${JavaccProjectSettingsService.defaultInjectionSupportLevel.displayName}</b>,
+            which offers great code insight for a reasonable performance trade-off. The level <b>${InjectionSupportLevel.FULL.displayName}</b>
             works correctly, but highlighting usually lags behind code edits, which may be annoying. For more info
             about each level see the tooltips.
         </html>

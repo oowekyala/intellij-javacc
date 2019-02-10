@@ -25,12 +25,6 @@ Offers comprehensive language support for the [JavaCC](https://github.com/javacc
   * Jump to partial declarations when they exist
 
 ##### Java language injection
-  * Disclaimer: since version 1.1, Java injection is considered an **experimental feature**. The
-    current implementation is very resource-intensive, and it may cause significant delays in
-    e.g. inspection highlight refresh. That undermines the responsiveness and usefulness of many
-    other features so it's disabled by default. You can still enable it by setting the injection
-    level in the plugin settings (described below). I'll try to work on a better implementation
-    soon enough.
   * Java is injected in the embedded code fragments across the language, like parser actions
   * Code completion, quick documentation, usage resolution, and many other Java IDE features are available on the most basic level of injection
   * Compilation error checking (including type checking) and rich syntax highlighting can optionally be enabled in the plugin settings

@@ -41,7 +41,7 @@ interface JavaccProjectSettingsService {
     }
 
     companion object {
-        val defaultInjectionSupportLevel: InjectionSupportLevel = InjectionSupportLevel.DISABLED
+        val defaultInjectionSupportLevel: InjectionSupportLevel = InjectionSupportLevel.CONSERVATIVE
     }
 }
 
