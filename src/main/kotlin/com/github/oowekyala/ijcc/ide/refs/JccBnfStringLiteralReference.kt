@@ -14,7 +14,6 @@ import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import java.util.*
 
 /**
  * Reference from a literal regex written in BNF to its [Token]. Regexes in BNF are always in the
@@ -36,16 +35,11 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
      * string literals will be returned (meaning [Token.asStringToken] is non-null).
      * Otherwise full regex will be used.
      */
-    fun resolveToken(exact: Boolean): Token? {
-        val file = element.containingFile
-        val grammar = file.lexicalGrammar
-
-        return grammar.defaultState.matchLiteral(
-            element,
-            exact,
-            consideredRegexKinds = EnumSet.allOf(RegexKind::class.java)
-        )
-    }
+    fun resolveToken(exact: Boolean): Token? =
+        element.containingFile
+            .lexicalGrammar
+            .defaultState
+            .matchLiteral(element, exact, RegexKind.All)
 
     override fun resolve(): PsiElement? = resolveToken(exact = true)?.psiElement
 

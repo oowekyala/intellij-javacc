@@ -167,7 +167,7 @@ class LexicalGrammar(file: JccFile) {
 
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens
-         * are reduced, but this is only done within [buildStatesMap]. This is only
+         * should be reduced, but this is only done within [buildStatesMap]. This is only
          * provided to have a quick and dirty way to build a cache of named tokens,
          * which won't be reduced.
          */
