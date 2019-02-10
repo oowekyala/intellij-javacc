@@ -19,11 +19,12 @@ import com.intellij.psi.PsiReferenceBase
  * But since all named tokens are preserved (no filtering by superseding
  * match is needed like for string tokens), [LexicalGrammar] stores an
  * index of tokens by their name, which is eagerly built on initialisation,
- * and allows this reference to resolve its result very fast.
+ * and allows this reference to resolve its result very fast ([LexicalGrammar.getTokenByName]).
  *
  * This is a *major* performance optimisation that alone lets the plugin
- * open files like PlDocAst.jjt quickly instead of hanging. Compare 61d4d0a
- * with 
+ * open files like PlDocAst.jjt quickly instead of hanging.
+ *
+ * Compare 61d4d0a with e71558c.
  *
  * @author Clément Fournier
  * @since 1.0
@@ -43,7 +44,8 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     }
 
     override fun getVariants(): Array<Any> =
-        element.containingFile.lexicalGrammar
+        element.containingFile
+            .lexicalGrammar
             .allTokens
             .filter { canReferencePrivate || !it.isPrivate }
             .mapNotNull { token ->

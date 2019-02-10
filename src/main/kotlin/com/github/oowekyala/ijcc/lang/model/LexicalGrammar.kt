@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.DefaultStateName
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.LexicalStateBuilder
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -13,17 +14,15 @@ import com.github.oowekyala.ijcc.util.runIt
  */
 class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
-    private val namedTokensMap: Map<String, Token>
-
-    init {
-
-        namedTokensMap = grammarFileRoot.allProductions()
-            .flatMap { it.tokensUnfiltered() }
-            // references can't declare themselves
+    /**
+     * Index of named tokens by their name. This is used by [JccTerminalReference]
+     * to resolve references quickly, which is crucial to performance on some
+     * large grammars.
+     */
+    private val namedTokensMap: Map<String, Token> =
+        grammarFileRoot.tokensUnfiltered()
             .filter { it.regularExpression is JccNamedRegularExpression }
             .associateBy { it.name!! }
-
-    }
 
 
     /** All the defined lexical states. */
@@ -41,8 +40,16 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
     val lexicalStates: Collection<LexicalState> = lexicalStatesMap.values
 
+    /**
+     * Returns the token that has the given name. They're unique in well-formed
+     * grammars, any other result is a JavaCC error.
+     */
     fun getTokenByName(name: String): Token? = namedTokensMap[name]
 
+    /**
+     * Returns the lexical state that goes by this name. [defaultState] is
+     * a shortcut to get the default lexical state, which is always present.
+     */
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
     fun getLexicalStates(namesOrEmptyForAll: Set<String>): Collection<LexicalState> =
@@ -133,22 +140,31 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             return builders.mapValues { (_, v) -> v.build() }
         }
 
-        private fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
-            this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+        /**
+         * Returns a stream of all "potential" tokens in a grammar. String tokens
+         * are reduced, but this is only done within [buildStatesMap]. This is only
+         * provided to have a quick and dirty way to build a cache of named tokens,
+         * which won't be reduced.
+         */
+        private fun JccGrammarFileRoot?.tokensUnfiltered(): Sequence<Token> {
+            fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
+                this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
 
-        private fun JccProduction.tokensUnfiltered(): Sequence<Token> {
-            return when (this) {
-                is JccRegexProduction -> regexSpecList.asSequence().map(::ExplicitToken)
+            fun JccProduction.tokensUnfiltered(): Sequence<Token> {
+                return when (this) {
+                    is JccRegexProduction -> regexSpecList.asSequence().map(::ExplicitToken)
 
-                is JccBnfProduction   ->
-                    expansion
-                        ?.descendantSequence(includeSelf = true)
-                        ?.filterIsInstance<JccRegexExpansionUnit>()
-                        .orEmpty()
-                        .map(::SyntheticToken)
+                    is JccBnfProduction   ->
+                        expansion
+                            ?.descendantSequence(includeSelf = true)
+                            ?.filterIsInstance<JccRegexExpansionUnit>()
+                            .orEmpty()
+                            .map(::SyntheticToken)
 
-                else                  -> emptySequence()
+                    else                  -> emptySequence()
+                }
             }
+            return this?.allProductions()?.flatMap { it.tokensUnfiltered() }.orEmpty()
         }
 
 
