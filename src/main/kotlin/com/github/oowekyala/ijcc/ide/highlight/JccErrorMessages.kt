@@ -51,6 +51,20 @@ object JccErrorMessages {
         "String is matched by an IGNORE_CASE regular expression and should refer to the token by name " +
             (supersedingName?.let { "(<$it>)" } ?: "(unnamed!)")
 
+    fun stringLiteralWithIgnoreCaseIsPartiallySuperceded(superseding: Token): String =
+        stringLiteralWithIgnoreCaseIsPartiallySupercededImpl(
+            supersedingName = superseding.name,
+            supersedingText = superseding.asStringToken!!.text,
+            supersedingLine = superseding.line!!
+        )
+
+    @TestOnly
+    fun stringLiteralWithIgnoreCaseIsPartiallySupercededImpl(supersedingName: String?,
+                                                             supersedingText: String,
+                                                             supersedingLine: Int): String =
+        "String with IGNORE_CASE is partially superseded by token${supersedingName?.let { " <$it>" }.orEmpty()} ($supersedingText) at line $supersedingLine. "
+
+
     fun stringLiteralIsNotToken(regexText: String, actualRegexKind: RegexKind): String =
         "String token $regexText has been defined as a $actualRegexKind token"
 

@@ -41,6 +41,14 @@ object JccHighlightUtil {
             message = message
         )
 
+    fun warningInfo(element: PsiElement, message: String): HighlightInfo =
+        highlightInfo(
+            textRange = element.textRange,
+            severity = HighlightSeverity.WARNING,
+            type = HighlightInfoType.WARNING,
+            message = message
+        )
+
     fun errorInfo(element: PsiElement, message: String?): HighlightInfo =
         errorInfo(element.textRange, message)
 

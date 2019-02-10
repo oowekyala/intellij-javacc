@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.highlight
 import com.github.oowekyala.ijcc.ide.highlight.JavaccHighlightingColors.*
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
+import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.warningInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
@@ -20,8 +21,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
-import com.intellij.util.containers.MostlySingularMultiMap
-import gnu.trove.THashMap
 import org.apache.commons.lang3.StringEscapeUtils
 
 /**
@@ -237,15 +236,15 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitRegexExpansionUnit(o: JccRegexExpansionUnit) {
 
-        o.regularExpression.runIt {
-            if (it is JccNamedRegularExpression && it.isPrivate) {
+        o.regularExpression.runIt { r ->
+            if (r is JccNamedRegularExpression && r.isPrivate) {
                 myHolder += errorInfo(
-                    it.nameTextRange,
+                    r.nameTextRange,
                     "Private (with a #) regular expression cannot be defined within grammar productions"
                 )
             }
 
-            it.asSingleLiteral()?.let { literalUnit ->
+            r.asSingleLiteral()?.let { literalUnit ->
 
                 val ref: Token = o.referencedToken!!
 
@@ -414,13 +413,21 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                     st.matchLiteral(regex, exact = true)
                         ?.takeUnless {
                             // this follows references
+                            // the first occurrence is considered ok, others are
+                            // reported as duplicates unless they're ignore case
                             it.asStringToken == regex
                         }
                         ?.let { Pair(st, it) }
                 }
-                // TODO reduce, foreach makes no sense
                 .forEach { (state, token) ->
-                    myHolder += errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
+
+                    myHolder +=
+                        if (!token.isIgnoreCase && spec.isIgnoreCase)
+                            // TODO implement as an inspection if we want to add quickfixes
+                            warningInfo(spec, JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token))
+                        else
+                            errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
+
                 }
         }
 

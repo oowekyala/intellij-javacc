@@ -216,6 +216,44 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
         """
     )
 
+    fun `test ignore case duplication POS`() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN [IGNORE_CASE]: {
+              "foo"
+
+            }
+
+
+
+            TOKEN [IGNORE_CASE]: {
+
+               ${"<FOO: \"foo\">".warn(tokenName = null)}
+
+            }
+
+        """
+    )
+    fun `test ignore case duplication with case variant POS`() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN [IGNORE_CASE]: {
+              "foo"
+
+            }
+
+
+
+            TOKEN [IGNORE_CASE]: {
+
+               ${"<FOO: \"FoO\">".warn(tokenName = null, regexText = "\"FoO\"")}
+
+            }
+
+        """
+    )
 
     private fun String.warn(regexText: String = "\"foo\"",
                             stateName: String = LexicalState.DefaultStateName,

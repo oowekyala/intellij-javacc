@@ -53,7 +53,115 @@ class JccIgnoreCasePrecedenceTest : JccAnnotationTestBase() {
     )
 
 
-    fun String.usageWarn(supersedingName: String?) =
+    fun `test partial IGNORE_CASE supercedence POS`() = checkByText(
+        """
+            $DummyHeader
+
+            void Foo(): {} {
+            "foo"
+            }
+
+            TOKEN [IGNORE_CASE]: {
+
+                 ${"<FOO: \"foo\">".partialWarn(supersedingLine = 14)}
+
+            }
+        """
+    )
+
+    fun `test partial IGNORE_CASE supercedence with spec POS`() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN: {
+              "foo"
+
+            }
+
+
+            TOKEN [IGNORE_CASE]: {
+
+                 ${"<FOO: \"foo\">".partialWarn(supersedingLine = 14)}
+
+            }
+
+        """
+    )
+
+
+    fun `test partial IGNORE_CASE supercedence with rename POS`() = checkByText(
+        """
+            $DummyHeader
+
+            TOKEN: {
+              <FLAB: "foo">
+            }
+
+
+            TOKEN [IGNORE_CASE]: {
+
+               ${"<FOO: \"foo\">".partialWarn(supersedingName = "FLAB", supersedingLine = 14)}
+
+            }
+
+        """
+    )
+
+    fun `test partial IGNORE_CASE supercedence in BNF with container POS`() = checkByText(
+        """
+            $DummyHeader
+
+            void Fff(): {} {
+              < "foo">
+
+            }
+
+
+            TOKEN [IGNORE_CASE]: {
+
+               ${"<FOO: \"foo\">".partialWarn(supersedingLine = 14)}
+
+            }
+
+        """
+    )
+
+    fun `test partial IGNORE_CASE supercedence in BNF with ref NEG`() = checkByText(
+        """
+            $DummyHeader
+
+            void Fff():
+            {}
+            {
+              <FOO>
+
+            }
+
+
+            TOKEN [IGNORE_CASE]: {
+
+               <FOO: "foo">
+
+            }
+
+        """
+    )
+
+
+    private fun String.usageWarn(supersedingName: String?) =
         errorAnnot(this, JccErrorMessages.stringLiteralMatchedbyIgnoreCaseCannotBeUsedInBnf(supersedingName))
+
+
+    private fun String.partialWarn(supersedingName: String? = null,
+                                   supersedingText: String = "\"foo\"",
+                                   supersedingLine: Int) =
+        warningAnnot(
+            this,
+            JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySupercededImpl(
+                supersedingName,
+                supersedingText,
+                supersedingLine
+            )
+        )
 
 }
