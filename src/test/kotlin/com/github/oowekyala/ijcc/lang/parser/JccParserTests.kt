@@ -11,7 +11,7 @@ import com.intellij.testFramework.ParsingTestCase
  */
 class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition, JavaParserDefinition()) {
 
-    private val checkIt = false
+    private val checkIt = true
 
     fun testProductions() = doTest(checkIt)
     fun testTokens() = doTest(checkIt)

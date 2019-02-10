@@ -1,15 +1,13 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
-import com.github.oowekyala.ijcc.lang.psi.nextSiblingNoWhitespace
-import com.github.oowekyala.ijcc.lang.psi.siblingRangeTo
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.codeInspection.ex.ProblemDescriptorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.SmartPointerManager
@@ -33,6 +31,8 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
         object : JccVisitor() {
             override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
+                if (o.prevSiblingNoWhitespace is JccParserActionsUnit) return // the leftmost one will bear the warning
+
                 var rightEdge: JccParserActionsUnit? = o.nextSiblingNoWhitespace as? JccParserActionsUnit
                 if (rightEdge != null) {
 
@@ -49,10 +49,21 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
                     }
 
                     holder.registerProblem(
-                        o.parent,
-                        ProblemDescription,
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        MyQuickFix(SmartPointerManager.createPointer(o), SmartPointerManager.createPointer(last))
+                        ProblemDescriptorImpl(
+                            o,
+                            last,
+                            ProblemDescription,
+                            arrayOf(
+                                MyQuickFix(
+                                    SmartPointerManager.createPointer(o),
+                                    SmartPointerManager.createPointer(last)
+                                )
+                            ),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            false,
+                            null,
+                            isOnTheFly
+                        )
                     )
                 }
             }
