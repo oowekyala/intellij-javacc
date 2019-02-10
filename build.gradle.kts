@@ -190,8 +190,12 @@ tasks {
 
                 <p>What's fixed:
                 <ul>
-                    <li>Match JavaCC's errors more closely, in particular with string token definitions, which it treats very specially.</li>
+                    <li>Many misunderstandings of the JavaCC spec, in particular regarding string token definitions, which it treats very specially.</li>
                     <li>Countless false positives of "token name has not been defined"</li>
+                    <li>False positives with "Token can never be matched" inspection</li>
+                    <li>"Consecutive parser actions unit" inspection reporting on all siblings</li>
+                    <li>Significant performance issues in files with many tokens</li>
+                    <li>Caching issues, which caused changes to not be refreshed often enough</li>
                 </ul>
             """.trimIndent()
         )
