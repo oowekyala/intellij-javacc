@@ -35,20 +35,21 @@ interface ParseUtilsMixin {
 
     @Language("JavaCC")
     fun String.inGrammarCtx(): String =
-            """
+        """
                 $DummyHeader
 
                 $this
             """
+
     fun String.asExpansion(): JccExpansion = createExpansion(getProject(), this)
 
     fun String.asProduction(): JccProductionLike =
-            asJccGrammar().grammarFileRoot!!.childrenSequence().filterIsInstance<JccProductionLike>().first()
+        asJccGrammar().grammarFileRoot!!.childrenSequence().filterIsInstance<JccProductionLike>().first()
 
     fun String.asJccFile(): JccFile = JccElementFactory.createFile(getProject(), this)
 
     fun String.asJccGrammar(): JccFile =
-            JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
+        JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
 
     companion object {
         @Language("JavaCC")

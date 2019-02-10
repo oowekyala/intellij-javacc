@@ -60,8 +60,6 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     )
 
 
-
-
     fun `test duplicate lexical name NEG`() = checkByText(
         """
             <FLIP, FLOP> TOKEN: {
@@ -131,7 +129,6 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
 
         """
     )
-
 
 
     fun `test undefined token backward reference token to bnf NEG`() = checkByText(
@@ -261,17 +258,17 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     )
 
     private fun String.undefinedStringToken() =
-            errorAnnot(
-                this,
-                JccErrorMessages.undefinedTokenName(name = this)
-            )
+        errorAnnot(
+            this,
+            JccErrorMessages.undefinedTokenName(name = this)
+        )
 
 
     private fun String.stringTokenHasWrongKind(literalText: String = this, actualKind: RegexKind) =
-            errorAnnot(
-                this,
-                JccErrorMessages.stringLiteralIsNotToken(regexText = literalText, actualRegexKind = actualKind)
-            )
+        errorAnnot(
+            this,
+            JccErrorMessages.stringLiteralIsNotToken(regexText = literalText, actualRegexKind = actualKind)
+        )
 
 
 }

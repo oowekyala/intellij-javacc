@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
-import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
 /**
@@ -55,6 +54,6 @@ class JccIgnoreCasePrecedenceTest : JccAnnotationTestBase() {
 
 
     fun String.usageWarn(supersedingName: String?) =
-            errorAnnot(this, JccErrorMessages.stringLiteralMatchedbyIgnoreCaseCannotBeUsedInBnf(supersedingName))
+        errorAnnot(this, JccErrorMessages.stringLiteralMatchedbyIgnoreCaseCannotBeUsedInBnf(supersedingName))
 
 }

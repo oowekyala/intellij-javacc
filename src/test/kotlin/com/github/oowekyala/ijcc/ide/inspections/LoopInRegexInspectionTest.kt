@@ -10,7 +10,7 @@ class LoopInRegexInspectionTest : JccInspectionTestBase(LoopInRegexInspection())
 
 
     private fun String.warning(vararg path: String) =
-            errorAnnot(trimIndent(), makeMessageImpl(path.toList()))
+        errorAnnot(trimIndent(), makeMessageImpl(path.toList()))
 
 
     fun testSelfRecursion() = checkByText(

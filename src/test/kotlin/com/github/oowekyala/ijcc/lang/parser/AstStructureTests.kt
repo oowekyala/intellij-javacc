@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.parser
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccParenthesizedExpansionUnitImpl
 import com.github.oowekyala.ijcc.lang.util.matchPsi
 import io.kotlintest.should
 import io.kotlintest.shouldBe

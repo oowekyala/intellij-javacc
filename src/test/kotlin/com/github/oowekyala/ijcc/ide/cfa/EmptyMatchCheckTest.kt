@@ -2,12 +2,7 @@ package com.github.oowekyala.ijcc.ide.cfa
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
-import io.kotlintest.matchers.collections.contain
-import io.kotlintest.matchers.collections.containExactly
-import io.kotlintest.matchers.collections.shouldContainAll
 import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.containAll
-import io.kotlintest.should
 import io.kotlintest.shouldBe
 
 /**

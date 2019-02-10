@@ -1,10 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.model.RegexKind
-import com.github.oowekyala.ijcc.lang.parser.JccParserTests
 import com.github.oowekyala.ijcc.lang.parser.ParserTestDsl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexSpec
-import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import io.kotlintest.shouldBe
 
 /**

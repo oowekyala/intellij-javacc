@@ -10,7 +10,7 @@ class TokenCanNeverBeMatchedInspectionTest : JccInspectionTestBase(TokenCanNever
 
 
     private fun warning(content: String, realMatchName: String?) =
-            warningAnnot(content, problemDescription(realMatchName))
+        warningAnnot(content, problemDescription(realMatchName))
 
     fun testUnnamed() = checkByText(
         """

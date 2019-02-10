@@ -11,7 +11,7 @@ class RegexMayMatchEmptyStringInspectionTest : JccInspectionTestBase(RegexMayMat
 
     private fun String.warning(name: String? = "FOO",
                                states: List<String> = LexicalState.JustDefaultState) =
-            warningAnnot(trimIndent(), makeMessage(name, states))
+        warningAnnot(trimIndent(), makeMessage(name, states))
 
 
     fun testEasyNoName() = checkByText(

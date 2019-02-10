@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.settings.javaccSettings
 import org.intellij.lang.annotations.Language
 
 /**
- * Ripped from intellij-rust.
+ * Inspired from intellij-rust.
  *
  * @author Clément Fournier
  * @since 1.0

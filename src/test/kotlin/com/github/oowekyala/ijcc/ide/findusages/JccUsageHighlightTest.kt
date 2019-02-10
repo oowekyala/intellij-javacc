@@ -66,6 +66,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             }
          """
     )
+
     fun `test token usages from decl`() = doTest(
         """
             $DummyHeader
@@ -82,7 +83,6 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             }
          """
     )
-
 
 
     fun `test implicit token usages from decl`() = doTest(

@@ -10,7 +10,7 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
 
 
     private fun String.warning(missedMatchName: String?, realMatchName: String?, literalText: String = this) =
-            warningAnnot(this, problemDescription(literalText, missedMatchName, realMatchName))
+        warningAnnot(this, problemDescription(literalText, missedMatchName, realMatchName))
 
     fun `test neg`() = checkByText(
         """

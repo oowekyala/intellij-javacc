@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
-import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.ijcc.util.JccAnnotationTestBase
 
@@ -60,7 +59,7 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
             }
 
             <A> TOKEN: {
-             ${"<Foo: \"foo\" >".warn( stateName = "A", tokenName = null)}
+             ${"<Foo: \"foo\" >".warn(stateName = "A", tokenName = null)}
             }
 
             void Foo() :{}{
@@ -223,16 +222,16 @@ class JccDuplicateStringTokenTest : JccAnnotationTestBase() {
                             tokenLine: Int? = null,
                             tokenName: String? = "FOO",
                             tokenIsIgnoreCase: Boolean = false): String =
-            errorAnnot(
-                this,
-                JccErrorMessages.duplicateStringTokenImpl(
-                    regexText = regexText,
-                    stateName = stateName,
-                    tokenIsExplicit = tokenLine == null,
-                    tokenLine = tokenLine,
-                    tokenName = tokenName,
-                    tokenIsIgnoreCase = tokenIsIgnoreCase
-                )
+        errorAnnot(
+            this,
+            JccErrorMessages.duplicateStringTokenImpl(
+                regexText = regexText,
+                stateName = stateName,
+                tokenIsExplicit = tokenLine == null,
+                tokenLine = tokenLine,
+                tokenName = tokenName,
+                tokenIsIgnoreCase = tokenIsIgnoreCase
             )
+        )
 
 }

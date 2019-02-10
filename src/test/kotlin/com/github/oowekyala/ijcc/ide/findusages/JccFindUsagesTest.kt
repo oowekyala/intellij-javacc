@@ -74,15 +74,15 @@ class JccFindUsagesTest : JccTestBase() {
     }
 
     private fun markersActual(source: JccPsiElement) =
-            myFixture.findUsages(source)
-                .filter { it.element != null }
-                .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
+        myFixture.findUsages(source)
+            .filter { it.element != null }
+            .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
 
     private fun markersFrom(text: String) =
-            text.split('\n')
-                .withIndex()
-                .filter { it.value.contains(MARKER) }
-                .map { Pair(it.index, it.value.substring(it.value.indexOf(MARKER) + MARKER.length).trim()) }
+        text.split('\n')
+            .withIndex()
+            .filter { it.value.contains(MARKER) }
+            .map { Pair(it.index, it.value.substring(it.value.indexOf(MARKER) + MARKER.length).trim()) }
 
     private companion object {
         const val MARKER = "// - "

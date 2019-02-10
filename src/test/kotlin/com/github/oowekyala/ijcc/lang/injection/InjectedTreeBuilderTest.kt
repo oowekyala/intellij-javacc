@@ -19,16 +19,15 @@ import io.kotlintest.shouldBe
 class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
 
 
-
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
                                                                              noinline nodeSpec: InjectedNodeSpec<N>): AssertionMatcher<String> =
-            {
-                createExpansion<JccExpansion>(project, it)
-                    .let { InjectedTreeBuilderVisitor.getInjectedSubtreeFor(it) }
-                    .let {
-                        it should matchInjectionTree(ignoreChildren, nodeSpec)
-                    }
-            }
+        {
+            createExpansion<JccExpansion>(project, it)
+                .let { InjectedTreeBuilderVisitor.getInjectedSubtreeFor(it) }
+                .let {
+                    it should matchInjectionTree(ignoreChildren, nodeSpec)
+                }
+        }
 
 
     fun testExpansionSequences() {

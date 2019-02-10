@@ -11,7 +11,7 @@ class LeftRecursiveProductionInspectionTest : JccInspectionTestBase(LeftRecursiv
 
 
     private fun String.warning(vararg path: String) =
-            errorAnnot(trimIndent(), makeMessageImpl(path.toList()))
+        errorAnnot(trimIndent(), makeMessageImpl(path.toList()))
 
 
     private fun String.cyclePart() = errorAnnot(trimIndent(), cyclePartMessage())

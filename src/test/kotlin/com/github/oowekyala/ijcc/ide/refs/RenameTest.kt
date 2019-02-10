@@ -11,7 +11,7 @@ class RenameTest : JccTestBase() {
 
     @Language("JavaCC")
     private val jjtreeNodeAndProductionTests =
-            """
+        """
             $DummyHeader
 
             void Four/*caret[def]*/():{}
@@ -35,7 +35,7 @@ class RenameTest : JccTestBase() {
                 "4" Four/*caret[ref]*/()
             }
         """
-    
+
     private fun jjtreeNodeRenameTest(caretId: String) {
 
 
@@ -87,7 +87,7 @@ class RenameTest : JccTestBase() {
     fun `test rename JJTree node from production reference`() {
         jjtreeNodeRenameTest("ref")
     }
-    
+
     fun `test rename production with node descriptor`() {
 
 

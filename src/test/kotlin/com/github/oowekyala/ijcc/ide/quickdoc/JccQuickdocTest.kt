@@ -1,7 +1,5 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
-import com.github.oowekyala.ijcc.lang.model.LexicalState
-import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
@@ -9,6 +7,8 @@ import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.JJTreeSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccTerminalDocMaker.makeDocImpl
+import com.github.oowekyala.ijcc.lang.model.LexicalState
+import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiElement
@@ -321,7 +321,8 @@ class JccQuickdocTest : JccTestBase() {
             "hey" ( "i" | <foo> )
                 //^
         }
-    """)
+    """
+    )
 
     fun `test caret in uninteresting place 2`() = expectNothing(
         """
@@ -336,7 +337,8 @@ class JccQuickdocTest : JccTestBase() {
         {
             "hey" ( "i" | <foo> )
         }
-    """)
+    """
+    )
 
     fun `test caret on unresolved`() = expectNothing(
         """
@@ -351,7 +353,8 @@ class JccQuickdocTest : JccTestBase() {
             "hey" ( "i" | <foo> )
                           //^
         }
-    """)
+    """
+    )
 
     private fun expectNothing(@Language("JavaCC") code: String) = doTest(code, null)
 
@@ -374,12 +377,12 @@ class JccQuickdocTest : JccTestBase() {
     }
 
     private fun makeSyntheticDoc(name: String?, expansion: String) =
-            makeDocImpl(
-                name = name,
-                kind = RegexKind.TOKEN,
-                isExplicit = false,
-                isIgnoreCase = false,
-                states = LexicalState.JustDefaultState
-            ) { it.append(expansion) }
+        makeDocImpl(
+            name = name,
+            kind = RegexKind.TOKEN,
+            isExplicit = false,
+            isIgnoreCase = false,
+            states = LexicalState.JustDefaultState
+        ) { it.append(expansion) }
 
 }
