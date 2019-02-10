@@ -155,5 +155,9 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.ide.intentions.RemoveNameFromRegexIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>
