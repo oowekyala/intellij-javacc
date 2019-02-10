@@ -13,25 +13,22 @@ object JccStringTokenFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
             is JccLiteralRegexUnit ->
                 element.typedReference!!
                     .resolveToken(exact = true)
-                    ?.let { JccStringTokenFindUsagesHandler(it, element) }
+                    ?.let { JccTokenFindUsagesHandler(it) }
             is JccIdentifier       -> {
                 val token = element.namedTokenDef!!.definedToken
-                JccStringTokenFindUsagesHandler(token, null)
+                JccTokenFindUsagesHandler(token)
             }
             else                   -> null
         }
 
 
     override fun canFindUsages(element: PsiElement): Boolean =
-        element is JccLiteralRegexUnit && element.typedReference != null
+        element is JccLiteralRegexUnit && element.typedReference != null // a non-null typed refere
             || element is JccIdentifier && element.namedTokenDef != null
 
 }
 
-class JccStringTokenFindUsagesHandler(val token: Token, private val unit: JccLiteralRegexUnit?)
-    : FindUsagesHandler(token.psiElement!!) {
-
-
-    override fun getPrimaryElements(): Array<PsiElement> = listOfNotNull(token.psiElement, unit).toTypedArray()
+class JccTokenFindUsagesHandler(val token: Token) : FindUsagesHandler(token.psiElement!!) {
+    override fun getPrimaryElements(): Array<PsiElement> = listOfNotNull(token.psiElement).toTypedArray()
 
 }

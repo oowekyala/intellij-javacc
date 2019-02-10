@@ -3,11 +3,8 @@ package com.github.oowekyala.ijcc.ide.refs
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.psi.JccRegularExpressionOwner
-import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
-import com.github.oowekyala.ijcc.lang.psi.canReferencePrivate
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
@@ -36,6 +33,12 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     PsiReferenceBase<JccTokenReferenceRegexUnit>(referenceUnit) {
 
     private val canReferencePrivate = referenceUnit.canReferencePrivate
+
+    override fun isReferenceTo(target: PsiElement): Boolean =
+        target is JccRegexSpec && target.name == element.name
+            || target is JccRegexExpansionUnit
+            && target.regularExpression.let { it is JccNamedRegularExpression && it.name == element.name }
+        
 
     override fun resolve(): JccRegularExpressionOwner? = resolveToken()?.psiElement
 

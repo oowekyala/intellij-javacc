@@ -13,7 +13,13 @@ import com.github.oowekyala.ijcc.lang.model.Token
  * @since 1.0
  */
 
+// those are mostly implemented in JccPsiElementImpl
 
+/**
+ * Returns a reference able to resolve usages of this string in BNF.
+ * This property is null if this literal regex unit doesn't identify
+ * a string token (as defined by [JccLiteralRegexUnit.isStringToken]).
+ */
 val JccLiteralRegexUnit.typedReference: JccBnfStringLiteralReference?
     get() = reference as JccBnfStringLiteralReference?
 

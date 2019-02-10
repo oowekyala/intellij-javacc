@@ -55,7 +55,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             $DummyHeader
 
             TOKEN: {
-              < ${h("Foo")} : "foo" >
+              < ${h("Foo")} : ${h("\"foo\"")} >
             | <BAR : ("bar") >
             }
 
