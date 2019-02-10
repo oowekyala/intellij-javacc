@@ -99,8 +99,6 @@
 
   implements("(bnf|javacode)_production|.*production_header|regex_spec|jjtree_node_descriptor|named_regular_expression|token_reference_regex_unit|ref_regular_expression|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
 
-  implements("regex_expansion_unit|literal_regular_expression")="com.intellij.psi.PsiNamedElement"
-
   methods(".*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_regex_unit|non_terminal_expansion_unit|option_binding") = [
     nameIdentifier="identifier"
   ]
