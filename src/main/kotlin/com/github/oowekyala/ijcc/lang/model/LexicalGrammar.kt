@@ -14,6 +14,24 @@ import com.github.oowekyala.ijcc.util.runIt
  */
 class LexicalGrammar(file: JccFile) {
 
+    // Initialization order of this object is fragile
+
+    // The initialization routine of buildStatesMap indirectly uses
+    // JccTerminalReference (through matchesLiteral), which itself relies
+    // on the LexicalGrammar of the file to resolve token names quickly
+    // with the index below.
+
+    // So by the time buildStatesMap is invoked, the constructor must have
+    // returned, otherwise JccFileImpl never assigns its LexicalGrammar
+    // and will ask for a new one (infinite recursion).
+
+    // So we must be careful with laziness and delegated properties. In particular,
+    // do take care of not using property initializers that call the lazy
+    // properties! That would force their evaluation
+
+    // Though it's error-prone, the rest apart from JccTerminalReference and this
+    // object the rest of the app need not care, which is nice.
+
     /**
      * Index of named tokens by their name. This is used by [JccTerminalReference]
      * to resolve references quickly, which is crucial to performance on some
@@ -36,7 +54,12 @@ class LexicalGrammar(file: JccFile) {
         lexicalStates.flatMap { it.tokens }.asSequence()
     }
 
-    val lexicalStates: Collection<LexicalState> = lexicalStatesMap.values
+    val lexicalStates: Collection<LexicalState>
+        get() = lexicalStatesMap.values
+
+
+    val defaultState: LexicalState
+        get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
 
     /**
      * Returns the token that has the given name. They're unique in well-formed
@@ -55,10 +78,6 @@ class LexicalGrammar(file: JccFile) {
             namesOrEmptyForAll.isEmpty() -> lexicalStates
             else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
         }
-
-    val defaultState: LexicalState
-        get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
-
 
     companion object {
 
