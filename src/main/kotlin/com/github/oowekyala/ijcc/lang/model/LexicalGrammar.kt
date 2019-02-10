@@ -13,6 +13,19 @@ import com.github.oowekyala.ijcc.util.runIt
  */
 class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
 
+    private val namedTokensMap: Map<String, Token>
+
+    init {
+
+        namedTokensMap = grammarFileRoot.allProductions()
+            .flatMap { it.tokensUnfiltered() }
+            // references can't declare themselves
+            .filter { it.regularExpression is JccNamedRegularExpression }
+            .associateBy { it.name!! }
+
+    }
+
+
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> by lazy {
         buildStatesMap {
@@ -27,6 +40,8 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
     }
 
     val lexicalStates: Collection<LexicalState> = lexicalStatesMap.values
+
+    fun getTokenByName(name: String): Token? = namedTokensMap[name]
 
     fun getLexicalState(name: String): LexicalState? = lexicalStatesMap[name]
 
@@ -116,6 +131,24 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             }
 
             return builders.mapValues { (_, v) -> v.build() }
+        }
+
+        private fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
+            this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+
+        private fun JccProduction.tokensUnfiltered(): Sequence<Token> {
+            return when (this) {
+                is JccRegexProduction -> regexSpecList.asSequence().map(::ExplicitToken)
+
+                is JccBnfProduction   ->
+                    expansion
+                        ?.descendantSequence(includeSelf = true)
+                        ?.filterIsInstance<JccRegexExpansionUnit>()
+                        .orEmpty()
+                        .map(::SyntheticToken)
+
+                else                  -> emptySequence()
+            }
         }
 
 

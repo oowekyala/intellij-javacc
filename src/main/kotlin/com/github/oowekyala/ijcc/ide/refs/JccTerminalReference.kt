@@ -1,8 +1,7 @@
 package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
-import com.github.oowekyala.ijcc.lang.model.ExplicitToken
-import com.github.oowekyala.ijcc.lang.model.SyntheticToken
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
@@ -14,7 +13,17 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 
 /**
- * Reference to a named [Token].
+ * Reference to a named [Token]. Used internally by [LexicalGrammar]
+ * when building lexical states so this implementation *cannot use
+ * lexical states directly*!! Otherwise we fall into bottomless recursion.
+ * But since all named tokens are preserved (no filtering by superseding
+ * match is needed like for string tokens), [LexicalGrammar] stores an
+ * index of tokens by their name, which is eagerly built on initialisation,
+ * and allows this reference to resolve its result very fast.
+ *
+ * This is a *major* performance optimisation that alone lets the plugin
+ * open files like PlDocAst.jjt quickly instead of hanging. Compare 61d4d0a
+ * with 
  *
  * @author Clément Fournier
  * @since 1.0
@@ -30,35 +39,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     fun resolveToken(): Token? {
         val searchedName = element.name ?: return null
 
-        // This can't use the lexical grammar directly,
-        // because the lexical grammar uses references of this type
-        // to resolve string tokens
-        // TODO you should optimise that, split lexical grammar initialisation in 2
-
-        return element.containingFile
-            .grammarFileRoot.allProductions()
-            .flatMap { it.tokensUnfiltered() }
-            // references can't declare themselves
-            .filter { it.regularExpression !is JccRefRegularExpression }
-            .firstOrNull { it.name == searchedName }
-    }
-
-    private fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
-        this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
-
-    private fun JccProduction.tokensUnfiltered(): Sequence<Token> {
-        return when (this) {
-            is JccRegexProduction -> regexSpecList.asSequence().map(::ExplicitToken)
-
-            is JccBnfProduction   ->
-                expansion
-                    ?.descendantSequence(includeSelf = true)
-                    ?.filterIsInstance<JccRegexExpansionUnit>()
-                    .orEmpty()
-                    .map(::SyntheticToken)
-
-            else                  -> emptySequence()
-        }
+        return element.containingFile.lexicalGrammar.getTokenByName(searchedName)
     }
 
     override fun getVariants(): Array<Any> =
