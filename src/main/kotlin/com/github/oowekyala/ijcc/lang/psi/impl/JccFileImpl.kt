@@ -3,19 +3,15 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
-import com.github.oowekyala.ijcc.ide.refs.NonTerminalScopeProcessor
-import com.github.oowekyala.ijcc.ide.refs.TerminalScopeProcessor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.ResolveState
-import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.util.IncorrectOperationException
 
 
@@ -68,7 +64,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      * routine of [JccHighlightVisitor]).
      */
     internal fun invalidateCachedStructures() {
-        myLexGrammarImpl = LexicalGrammar(grammarFileRoot)
+        myLexGrammarImpl = LexicalGrammar(this)
+        mySyntaxGrammarImpl = SyntaxGrammar(this)
         myGrammarOptionsImpl = GrammarOptions(options, parserDeclaration)
     }
 
@@ -77,6 +74,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val lexicalGrammar: LexicalGrammar
         get() = myLexGrammarImpl ?: let { invalidateCachedStructures(); myLexGrammarImpl!! }
 
+    private var mySyntaxGrammarImpl: SyntaxGrammar? = null
+
+    override val syntaxGrammar: SyntaxGrammar
+        get() = mySyntaxGrammarImpl ?: let { invalidateCachedStructures(); mySyntaxGrammarImpl!! }
 
     private var myGrammarOptionsImpl: GrammarOptions? = null
 
@@ -92,6 +93,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         throw IncorrectOperationException("Cannot set the package of the parser that way")
     }
 
+    /**
+     * This is important for access resolution to be done properly in injected
+     * fragments. Otherwise package-private declarations are deemed inaccessible.
+     */
     override fun getClasses(): Array<PsiClass> {
 
         val injected =
@@ -100,25 +105,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
                 ?: return emptyArray()
 
         return injected.mapNotNull {
-            it.first.descendantSequence().map { it as? PsiClass }.firstOrNull { it != null }
+            it.first.descendantSequence().filterIsInstance<PsiClass>().firstOrNull()
         }.toTypedArray()
     }
 
-    override fun processDeclarations(processor: PsiScopeProcessor,
-                                     state: ResolveState,
-                                     lastParent: PsiElement?,
-                                     place: PsiElement): Boolean {
-        return when (processor) {
-            is NonTerminalScopeProcessor -> processor.executeUntilFound(nonTerminalProductions, state)
-            is TerminalScopeProcessor    -> processor.executeUntilFound(globalTokenSpecs, state)
-            else                         -> true
-        }
-    }
-
-    private fun PsiScopeProcessor.executeUntilFound(list: Sequence<PsiElement>, state: ResolveState): Boolean {
-        for (spec in list) {
-            if (!execute(spec, state)) return false
-        }
-        return true
-    }
 }

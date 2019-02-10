@@ -12,7 +12,7 @@ import com.github.oowekyala.ijcc.util.runIt
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
+class LexicalGrammar(file: JccFile) {
 
     /**
      * Index of named tokens by their name. This is used by [JccTerminalReference]
@@ -20,16 +20,14 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
      * large grammars.
      */
     private val namedTokensMap: Map<String, Token> =
-        grammarFileRoot.tokensUnfiltered()
+        file.tokensUnfiltered()
             .filter { it.regularExpression is JccNamedRegularExpression }
             .associateBy { it.name!! }
 
 
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> by lazy {
-        buildStatesMap {
-            grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>() ?: emptySequence()
-        }
+        buildStatesMap { file.allProductions() }
     }
 
 
@@ -140,15 +138,16 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
             return builders.mapValues { (_, v) -> v.build() }
         }
 
+        private fun JccFile.allProductions(): Sequence<JccProduction> =
+            grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens
          * are reduced, but this is only done within [buildStatesMap]. This is only
          * provided to have a quick and dirty way to build a cache of named tokens,
          * which won't be reduced.
          */
-        private fun JccGrammarFileRoot?.tokensUnfiltered(): Sequence<Token> {
-            fun JccGrammarFileRoot?.allProductions(): Sequence<JccProduction> =
-                this?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+        private fun JccFile.tokensUnfiltered(): Sequence<Token> {
 
             fun JccProduction.tokensUnfiltered(): Sequence<Token> {
                 return when (this) {
@@ -164,7 +163,7 @@ class LexicalGrammar(grammarFileRoot: JccGrammarFileRoot?) {
                     else                  -> emptySequence()
                 }
             }
-            return this?.allProductions()?.flatMap { it.tokensUnfiltered() }.orEmpty()
+            return allProductions().flatMap { it.tokensUnfiltered() }
         }
 
 

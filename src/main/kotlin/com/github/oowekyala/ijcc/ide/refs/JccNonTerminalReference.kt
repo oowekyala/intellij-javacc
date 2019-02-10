@@ -30,10 +30,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
     fun resolveProduction(): JccNonTerminalProduction? {
         val searchedName = element.name ?: return null
 
-        val processor = NonTerminalScopeProcessor(searchedName)
-        val file = element.containingFile
-        file.processDeclarations(processor, ResolveState.initial(), element, element)
-        return processor.result
+        return element.containingFile.syntaxGrammar.getProductionByName(searchedName)
     }
 
 

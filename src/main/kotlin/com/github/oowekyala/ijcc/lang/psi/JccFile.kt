@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
@@ -27,7 +27,10 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
     /** The injectable file root. */
     val grammarFileRoot: JccGrammarFileRoot?
 
+    /** Information about lexical states and defined tokens. */
     val lexicalGrammar: LexicalGrammar
+    /** Information about defined productions. */
+    val syntaxGrammar: SyntaxGrammar
 
     /**
      * Named regexes of the TOKEN kind defined globally in the file.
@@ -40,8 +43,6 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 
     /** Options section. */
     val options: JccOptionSection?
-
-    override val grammarOptions: GrammarOptions
 
 
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>
