@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.util
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.util.containers.ContainerUtil
+import com.intellij.util.containers.MostlySingularMultiMap
 import org.jetbrains.annotations.Contract
 import java.util.*
 
@@ -124,3 +125,10 @@ public inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: 
         else operation(r, t)
     }
 
+fun <T, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K): MostlySingularMultiMap<K, T> {
+    val multiMap = MostlySingularMultiMap<K, T>()
+    for (element in this) {
+        multiMap.add(keySelector(element), element)
+    }
+    return multiMap
+}

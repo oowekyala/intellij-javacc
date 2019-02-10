@@ -38,7 +38,6 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
      */
     abstract val lexicalStatesOrEmptyForAll: List<String>
     abstract val lexicalStateTransition: String?
-    abstract val name: String?
     abstract val regexKind: RegexKind
     abstract val isPrivate: Boolean
     abstract val isIgnoreCase: Boolean
@@ -50,13 +49,15 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val prefixPattern: Regex? get() = regularExpression?.prefixPattern
     val textOffset: Int? get() = psiElement?.textOffset
     val line: Int? get() = psiElement?.lineNumber
+    val nameIdentifier = regularExpression?.let { it as? JccNamedRegularExpression }?.nameIdentifier
+    val name: String? = regularExpression?.name
 
     /** Returns true if this is a single literal token. */
     fun getAsStringToken(): JccLiteralRegexUnit? =
     // this relies on the fact that the reference doesn't use the lexical grammar
         regularExpression?.asSingleLiteral(followReferences = true) // TODO should we unwrap unnecessary parentheses?
 
-    val psiElement: JccRegularExpressionOwner? get () = psiPointer.element
+    val psiElement: JccRegularExpressionOwner? get() = psiPointer.element
 
 
     /**
@@ -126,7 +127,6 @@ data class ExplicitToken(override val psiPointer: SmartPsiElementPointer<JccRege
     override val lexicalStateTransition: String? get() = spec?.lexicalStateTransition?.name
     override val regexKind: RegexKind get() = spec?.regexKind ?: RegexKind.TOKEN
     override val isPrivate: Boolean get() = spec?.isPrivate == true
-    override val name: String? get() = spec?.name
     override val isIgnoreCase: Boolean get() = spec?.isIgnoreCase == true
     override val lexicalStatesOrEmptyForAll: List<String>
         get() = spec?.lexicalStatesOrEmptyForAll ?: JustDefaultState // default?
@@ -145,14 +145,11 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
 
     val declUnit: JccRegexExpansionUnit? get() = psiPointer.element
 
-
     // constants for all synthetic tokens
     override val regexKind: RegexKind = RegexKind.TOKEN
     override val isPrivate: Boolean = false
     override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
     override val lexicalStateTransition: String? = null
     override val isIgnoreCase: Boolean = false
-
-    override val name: String? get() = regularExpression?.name
 
 }

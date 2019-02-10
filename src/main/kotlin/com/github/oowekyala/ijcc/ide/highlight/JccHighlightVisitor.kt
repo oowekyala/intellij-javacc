@@ -10,7 +10,6 @@ import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.github.oowekyala.ijcc.util.ifTrue
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
@@ -47,18 +46,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         get() = myFileImpl!!.element!!
 
 
-    private val myDuplicateMethods =
-        THashMap<JccFile, MostlySingularMultiMap<String, JccNonTerminalProduction>>().withDefault { file ->
-            // get the duplicate prods for the file
-            val signatures = MostlySingularMultiMap<String, JccNonTerminalProduction>()
-
-            for (prod in file.nonTerminalProductions) {
-                signatures.add(prod.name, prod)
-            }
-
-            signatures
-        }
-
     override fun analyze(file: PsiFile,
                          updateWholeFile: Boolean,
                          holder: HighlightInfoHolder,
@@ -72,7 +59,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             // cleanup
             myFileImpl = null
             myHolderImpl = null
-            myDuplicateMethods.clear()
         }
         return true
     }
@@ -188,7 +174,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        myDuplicateMethods.getValue(o.containingFile)[o.name].runIt { dups ->
+        myFile.syntaxGrammar.getProductionByNameMulti(o.name).runIt { dups ->
             if (dups.count() > 1) {
                 myHolder += errorInfo(
                     o.nameIdentifier,
@@ -370,14 +356,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitNamedRegularExpression(element: JccNamedRegularExpression) {
-        myFile
-            .descendantSequence()
-            .filterIsInstance<JccNamedRegularExpression>()
-            .filter { element !== it && it.name == element.name }
-            .any()
-            .ifTrue {
-                // there was at least one duplicate
-                myHolder += errorInfo(element, "Multiply defined lexical token name \"${element.name}\"")
+        myFile.lexicalGrammar
+            .getTokenByNameMulti(element.name!!)
+            .takeIf { it.size > 1 }
+            ?.forEach { token ->
+                myHolder += errorInfo(element, "Multiply defined lexical token name \"${token.nameIdentifier}\"")
             }
     }
 
@@ -479,9 +462,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         spec.name?.runIt { name ->
 
             if (myFile.lexicalGrammar.lexicalStates.map { it.name }.contains(name)) {
-                val id = spec.regularExpression.let { it as JccNamedRegularExpression }.nameIdentifier
                 myHolder += JccHighlightUtil.wrongReferenceInfo(
-                    id,
+                    spec.nameIdentifier!!,
                     "Lexical token name \"$name\" is the same as that of a lexical state"
                 )
             }

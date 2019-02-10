@@ -3,8 +3,10 @@ package com.github.oowekyala.ijcc.lang.model
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
  * Some counterpart to [LexicalGrammar] to get global insight about the productions
@@ -20,9 +22,23 @@ class SyntaxGrammar(file: JccFile) {
      * to resolve references quickly, which is probably nice for performance for
      * many large grammars.
      */
-    private val namedTokensMap: Map<String, SmartPsiElementPointer<out JccNonTerminalProduction>> =
-        file.nonTerminalProductions.associate { Pair(it.name, SmartPointerManager.createPointer(it)) }
+    private val namedTokensMap: MostlySingularMultiMap<String, ModelProduction> =
+        file.nonTerminalProductions
+            .map(::ModelProduction)
+            .associateByToMostlySingular { it.name }
 
-    fun getProductionByName(name: String): JccNonTerminalProduction? = namedTokensMap[name]?.element
 
+    fun getProductionByName(name: String): JccNonTerminalProduction? =
+        namedTokensMap.get(name).firstOrNull()?.nonTerminal
+
+    fun getProductionByNameMulti(name: String): List<ModelProduction> = namedTokensMap.get(name).toList()
+
+
+    data class ModelProduction(val name: String, val pointer: SmartPsiElementPointer<out JccNonTerminalProduction>) {
+
+        constructor(production: JccNonTerminalProduction)
+            : this(production.name, SmartPointerManager.createPointer(production))
+
+        val nonTerminal: JccNonTerminalProduction? = pointer.element
+    }
 }

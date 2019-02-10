@@ -4,7 +4,9 @@ import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.DefaultStateName
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.LexicalStateBuilder
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
  * Represents the set of [LexicalState]s defined in a grammar file.
@@ -37,10 +39,10 @@ class LexicalGrammar(file: JccFile) {
      * to resolve references quickly, which is crucial to performance on some
      * large grammars.
      */
-    private val namedTokensMap: Map<String, Token> =
+    private val namedTokensMap: MostlySingularMultiMap<String, Token> =
         file.tokensUnfiltered()
             .filter { it.regularExpression is JccNamedRegularExpression }
-            .associateBy { it.name!! }
+            .associateByToMostlySingular { it.name!! }
 
 
     /** All the defined lexical states. */
@@ -62,10 +64,16 @@ class LexicalGrammar(file: JccFile) {
         get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
 
     /**
-     * Returns the token that has the given name. They're unique in well-formed
-     * grammars, any other result is a JavaCC error.
+     * Returns the first token that has the given name. It's unique in well-formed
+     * grammars, but malformed ones may contain duplicates.
      */
-    fun getTokenByName(name: String): Token? = namedTokensMap[name]
+    fun getTokenByName(name: String): Token? = namedTokensMap.get(name).firstOrNull()
+
+    /**
+     * Returns the tokens that have the given name. It's unique in well-formed
+     * grammars, but malformed ones may contain duplicates.
+     */
+    fun getTokenByNameMulti(name: String): List<Token> = namedTokensMap.get(name).toList()
 
     /**
      * Returns the lexical state that goes by this name. [defaultState] is
@@ -184,7 +192,6 @@ class LexicalGrammar(file: JccFile) {
             }
             return allProductions().flatMap { it.tokensUnfiltered() }
         }
-
 
     }
 
