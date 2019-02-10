@@ -180,14 +180,8 @@ tasks {
                     <li>Usage of string tokens that would be matched as another token now trigger a warning.
                     "Token can never be matched" inspection has been toned down because it triggered false positives.
                     </li>
-                    <li><b>Java injection support has been downgraded to experimental status.</b> The
-                    current implementation is very resource-intensive, and it has been observed to cause
-                    significant delays in e.g. inspection highlight refresh. That undermines the responsiveness
-                    and usefulness of many other features so it's now disabled by default. You can still use
-                    it of course by setting the injection level in the plugin settings (Settings | Languages & Frameworks | JavaCC).
-                    </li>
                 </ul>
-
+                
                 <p>What's fixed:
                 <ul>
                     <li>Many misunderstandings of the JavaCC spec, in particular regarding string token definitions, which it treats very specially.</li>
