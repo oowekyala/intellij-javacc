@@ -29,6 +29,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     GUTTER_NODE_CLASS(AllIcons.Gutter.OverridenMethod),
     /** For [com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider]. */
     GUTTER_PARTIAL_DECL(AllIcons.General.Locate),
+
+    GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
     JAVACC_FILE("JJmono.png");
 

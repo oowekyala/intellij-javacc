@@ -90,9 +90,18 @@ fun String.deleteWhitespace(): String = replace(Regex("\\s"), "")
 
 fun <T : Any> MutableCollection<T>.addIfNotNull(t: T?) = ContainerUtil.addIfNotNull(this, t)
 
-fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeWhile { it != t }.plus(t)
 /**
- * Needs a sequence that is iterable multiple times.
+ * Like the other overload. The returned sequence contains [t] (the stop element)
+ * if [this] sequence contains it.
+ */
+fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeUntil { it == t }
+
+/**
+ * Returns a sequence containing all the elements of this sequence
+ * that are before the first element that matches the predicate, and
+ * includes that last element.
+ *
+ * @receiver Must be iterable multiple times.
  */
 fun <T> Sequence<T>.takeUntil(pred: (T) -> Boolean): Sequence<T> {
     val fst = indexOfFirst { pred(it) }

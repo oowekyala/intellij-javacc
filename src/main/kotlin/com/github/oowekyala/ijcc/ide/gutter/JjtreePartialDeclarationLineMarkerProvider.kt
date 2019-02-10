@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-class JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider(), DumbAware {
+object JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvider(), DumbAware {
 
     override fun collectNavigationMarkers(elements: List<PsiElement>,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,

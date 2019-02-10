@@ -75,6 +75,8 @@ val PsiElement.lastChildNoWhitespace: PsiElement?
 fun PsiElement.ancestors(includeSelf: Boolean) =
         generateSequence(if (includeSelf) this else parent) { it.parent }.takeWhile { it !is PsiDirectory }
 
+inline fun <reified T : PsiElement> PsiElement.firstAncestorOrNull(includeSelf: Boolean = false): T? =
+        ancestors(includeSelf).filterIsInstance<T>().firstOrNull()
 
 val PsiElement.textRangeInParent: TextRange
     get() {

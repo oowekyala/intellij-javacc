@@ -117,6 +117,9 @@
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider"/>
 
+        <codeInsight.lineMarkerProvider language="JavaCC"
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccRecursiveProductionLineMarkerProvider"/>
+
         <lang.inspectionSuppressor language="JavaCC"
                                    implementationClass="com.github.oowekyala.ijcc.ide.inspections.JccInspectionSuppressor"/>
 
