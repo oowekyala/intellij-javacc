@@ -34,12 +34,16 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
 
     private val canReferencePrivate = referenceUnit.canReferencePrivate
 
+    // doesn't need to query the lexical grammar
+    // used by find usages
     override fun isReferenceTo(target: PsiElement): Boolean =
         target is JccRegexSpec && target.name == element.name
             || target is JccRegexExpansionUnit
             && target.regularExpression.let { it is JccNamedRegularExpression && it.name == element.name }
-        
 
+    /**
+     * Returns the element underlying the [Token] returned by [resolveToken].
+     */
     override fun resolve(): JccRegularExpressionOwner? = resolveToken()?.psiElement
 
     fun resolveToken(): Token? {

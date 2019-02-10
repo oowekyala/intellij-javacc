@@ -108,6 +108,8 @@ tasks {
 
         doLast {
 
+            val deletedNames = listOf("JccRegularExpressionOwnerImpl.java")
+
             fun getPsiFiles(root: String): FileCollection {
 
                 val psiInterfaces = "$root$PathToPsiRoot"
@@ -121,7 +123,7 @@ tasks {
 
             val genPsiFileDups = getPsiFiles("$buildDir/gen").filter { genFile ->
                 // in this source tree they're .java
-                genFile.isFile && userPsiFiles.any { it == genFile.nameWithoutExtension }
+                genFile.isFile && (userPsiFiles.any { it == genFile.nameWithoutExtension } || genFile.name in deletedNames)
             }
             logger.info("Detected ${genPsiFileDups.count()} generated PSI files overridden by sources in the main source tree:")
             genPsiFileDups.sorted().forEach { logger.info(it.name) }

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.findusages
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.psi.PsiElement
+import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.intellij.lang.annotations.Language
 
 /**
@@ -226,6 +227,41 @@ class JccFindUsagesTest : JccTestBase() {
         """
     )
 
+    fun `test string usage of bnf named regex`() = doTestByText(
+        """
+
+            $DummyHeader
+
+            TOKEN: {
+                <fortyFive : <four> "5"> $Token
+            }
+
+            void Four():{}
+            {
+                <four: "4"> $Token
+                 //^
+            }
+
+            void Foo():{}
+            {
+                Hello() "4" #Four $Token
+            }
+
+            void Hello():{}
+            {
+                "4" #Four $Token
+            }
+
+
+
+            void MyFour() #Four:{}
+            {
+                <four> $Token
+            }
+
+        """
+    )
+
     // this is taken from the kotlin plugin i think
     private fun doTestByText(@Language("JavaCC") code: String) {
         configureByText(code)
@@ -234,19 +270,22 @@ class JccFindUsagesTest : JccTestBase() {
 
         val actual = markersActual(source)
         val expected = markersFrom(code)
-        assertEquals(expected.joinToString(COMPARE_SEPARATOR), actual.joinToString(COMPARE_SEPARATOR))
+
+        actual shouldContainExactlyInAnyOrder expected
     }
 
-    private fun markersActual(source: JccPsiElement) =
+    private fun markersActual(source: JccPsiElement): Set<Pair<Int, String>> =
         myFixture.findUsages(source)
             .filter { it.element != null }
             .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
+            .toSet()
 
-    private fun markersFrom(text: String) =
+    private fun markersFrom(text: String): Set<Pair<Int, String>> =
         text.split('\n')
             .withIndex()
             .filter { it.value.contains(MARKER) }
             .map { Pair(it.index, it.value.substring(it.value.indexOf(MARKER) + MARKER.length).trim()) }
+            .toSet()
 
     private companion object {
         const val MARKER = "// - "
