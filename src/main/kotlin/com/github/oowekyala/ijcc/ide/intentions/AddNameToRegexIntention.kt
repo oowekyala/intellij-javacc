@@ -17,7 +17,7 @@ import com.intellij.psi.PsiDocumentManager
 class AddNameToRegexIntention :
     JccSelfTargetingEditorIntentionBase<JccRegularExpression>(
         JccRegularExpression::class.java,
-        "Add name to regular expression"
+        "Add name to regex (may change semantics)"
     ), LowPriorityAction {
 
     override fun run(project: Project, editor: Editor, element: JccRegularExpression): () -> Unit {

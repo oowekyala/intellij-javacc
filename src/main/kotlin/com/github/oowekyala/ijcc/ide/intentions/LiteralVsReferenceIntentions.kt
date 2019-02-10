@@ -16,7 +16,7 @@ import com.intellij.psi.PsiDocumentManager
 class TokenInliningIntention
     : JccSelfTargetingEditorIntentionBase<JccTokenReferenceRegexUnit>(
     JccTokenReferenceRegexUnit::class.java,
-    "Inline literal reference"
+    "Inline literal reference (may change semantics)"
 ) {
 
     override fun isApplicableTo(element: JccTokenReferenceRegexUnit): Boolean =

@@ -15,7 +15,7 @@ import com.intellij.openapi.project.Project
 class RemoveNameFromRegexIntention
     : SelfTargetingOffsetIndependentIntention<JccNamedRegularExpression>(
     JccNamedRegularExpression::class.java,
-    "Remove name from regex"
+    "Remove name from regex (may change semantics)"
 ), LowPriorityAction {
     override fun applyTo(project: Project, editor: Editor?, element: JccNamedRegularExpression) {
         element.safeReplace(element.regexElement!!.promoteToRegex())
