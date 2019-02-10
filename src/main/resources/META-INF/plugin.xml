@@ -6,17 +6,17 @@
 
         <p>
             Offers comprehensive language support for the JavaCC parser generator and its JJTree preprocessor.
-            Do you like it? Give it a star on <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a>. Rate it at <a href="https://plugins.jetbrains.com/plugin/11431-javacc">plugins.jetbrains.com</a>. Thanks!
+            Do you like it? Give it a star on <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a>,
+            and rate it at <a href="https://plugins.jetbrains.com/plugin/11431-javacc">plugins.jetbrains.com</a>. Thanks!
         </p>
 
         <h4>Main features</h4>
 
         <ul>
-            <li><b>JavaCC support:</b> Jump to declaration and find usages, structure view, quick documentation, etc.
-            </li>
+            <li><b>JavaCC support:</b> Jump to declaration and find usages, structure view, quick documentation, etc.</li>
             <li><b>JJTree support:</b> Jump to node class, some tooling to detect common errors, etc.</li>
-            <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc.</li>
             <li><b>Inspections and intentions:</b>Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
+            <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc. This feature is <b>experimental</b> and is disabled by default. You can enable it in the plugin settings.</li>
         </ul>
 
         Visit the <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a> README for more details.
