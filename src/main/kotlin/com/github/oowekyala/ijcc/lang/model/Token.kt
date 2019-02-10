@@ -45,12 +45,13 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
     val isExplicit: Boolean = this is ExplicitToken
     val isSynthetic: Boolean = !isExplicit
 
+    // these all need to be delegated!
     val regularExpression: JccRegularExpression? get() = psiPointer.element?.regularExpression
     val prefixPattern: Regex? get() = regularExpression?.prefixPattern
     val textOffset: Int? get() = psiElement?.textOffset
     val line: Int? get() = psiElement?.lineNumber
-    val nameIdentifier = regularExpression?.let { it as? JccNamedRegularExpression }?.nameIdentifier
-    val name: String? = regularExpression?.name
+    val nameIdentifier get() = regularExpression?.let { it as? JccNamedRegularExpression }?.nameIdentifier
+    val name: String? get() = regularExpression?.name
 
     /** Returns true if this is a single literal token. */
     fun getAsStringToken(): JccLiteralRegexUnit? =

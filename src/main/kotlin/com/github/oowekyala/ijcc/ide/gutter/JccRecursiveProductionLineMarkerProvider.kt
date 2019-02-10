@@ -42,7 +42,8 @@ object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor()
 
     private class JccRecursiveProductionLineMarkerInfo(element: JccNonTerminalExpansionUnit) :
         LineMarkerInfo<PsiElement>(
-            element.nameIdentifier,
+            // it needs a leaf element otherwise it complains with assertion errors
+            element.nameIdentifier.leaf,
             element.nameIdentifier.textRange,
             JavaccIcons.GUTTER_RECURSION,
             Pass.LINE_MARKERS,

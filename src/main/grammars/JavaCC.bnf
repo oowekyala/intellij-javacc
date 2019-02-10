@@ -521,7 +521,7 @@ fake production                 ::=
 
 // Some java grammar
 
-identifier                      ::=    IDENT                {name="identifier"}
+identifier                      ::=    IDENT                {name="identifier" methods=[leaf="IDENT"]}
 private string_literal          ::=    STRING_LITERAL       {name="string literal"}
 
 boolean_literal                 ::=    "true" | "false"     {name="boolean literal"}
