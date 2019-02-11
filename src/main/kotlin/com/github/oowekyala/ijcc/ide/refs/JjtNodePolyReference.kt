@@ -2,10 +2,12 @@ package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
+import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.util.asMap
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReferenceBase
-import com.intellij.psi.ResolveResult
 
 
 /**
@@ -17,8 +19,6 @@ import com.intellij.psi.ResolveResult
 class JjtNodePolyReference(psiElement: JccNodeClassOwner)
     : PsiPolyVariantReferenceBase<JccNodeClassOwner>(psiElement) {
 
-    override fun getVariants(): Array<Any> = emptyArray()
-
     override fun isReferenceTo(otherElt: PsiElement?): Boolean =
         otherElt is JccNodeClassOwner
             && otherElt.containingFile === element.containingFile
@@ -28,12 +28,13 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
         val myName = element.nodeSimpleName ?: return emptyArray()
 
         return element.containingFile
-            .nonTerminalProductions
-            .flatMap { it.descendantSequence(includeSelf = true) }
-            .filterIsInstance<JccNodeClassOwner>()
-            .filter { it.nodeSimpleName == myName }
+            .syntaxGrammar
+            .getJjtreeDeclsFor(myName)
+            .asSequence()
+            .mapNotNull { it.declarator }
             .map { PsiEltResolveResult(it) }
-            .toList().toTypedArray()
+            .toList()
+            .toTypedArray()
     }
 
     override fun getRangeInElement(): TextRange = element.nodeIdentifier!!.textRange.relativize(element.textRange)!!
@@ -41,10 +42,22 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
     override fun handleElementRename(newElementName: String): PsiElement =
         JccIdentifierManipulator().handleContentChange(element.nodeIdentifier!!, newElementName)!!
 
+    override fun getVariants(): Array<Any> =
+        element.containingFile
+            .syntaxGrammar
+            .jjtreeNodes
+            .asMap()
+            .asSequence()
+            .sortedBy { it.value.size }
+            .mapNotNull { it.value.mapNotNull { it.declarator }.firstOrNull() }
+            .mapNotNull { spec ->
+                val nodeName = spec.rawName ?: return@mapNotNull null
+                LookupElementBuilder.create(nodeName)
+                    .withPresentableText("#$nodeName")
+                    .withPsiElement(spec)
+                    .withIcon(JavaccIcons.JJTREE_NODE)
+            }
+            .toList()
+            .toTypedArray()
 }
 
-data class PsiEltResolveResult<out T : PsiElement>(private val myElt: T) : ResolveResult {
-    override fun getElement(): T = myElt
-
-    override fun isValidResult(): Boolean = true
-}

@@ -17,19 +17,17 @@ import com.intellij.psi.PsiElement
 class PartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
 
 
-    override fun getElementText(element: PsiElement?): String {
-
-        return element?.let { it as JccNodeClassOwner }.let { owner ->
+    override fun getElementText(element: PsiElement): String =
+        (element as? JccNodeClassOwner).let { owner ->
             when (owner) {
                 is JccScopedExpansionUnit   -> "#${owner.name}"
                 is JccNonTerminalProduction -> "${owner.name}()"
                 else                        -> super.getElementText(element)
             }
         }
-    }
 
-    override fun getContainerText(element: PsiElement?, name: String?): String? {
-        return when (element) {
+    override fun getContainerText(element: PsiElement?, name: String?): String? =
+        when (element) {
             is JccScopedExpansionUnit   ->
                 element.ancestors(includeSelf = false)
                     .filterIsInstance<JccNonTerminalProduction>()
@@ -42,5 +40,4 @@ class PartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
                 }
             else                        -> ""
         }
-    }
 }

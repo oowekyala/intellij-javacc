@@ -45,6 +45,9 @@ val JccNodeClassOwner.nodeQualifiedName: String?
 val JccNodeClassOwner.nodeSimpleName: String?
     get() = nodeIdentifier?.let { grammarOptions.nodePrefix + it.name }
 
+/** Name without the prefixes. */
+val JccNodeClassOwner.rawName: String?
+    get() = nodeIdentifier?.name
 
 /**
  * Returns the identifier giving its name to the JJTree node.

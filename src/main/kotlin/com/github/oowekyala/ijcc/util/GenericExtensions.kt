@@ -123,14 +123,56 @@ inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -
         else operation(r, t)
     }
 
-fun <T, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K): MostlySingularMultiMap<K, T> =
+// null keys will not be added.
+// values must be checked to be not null by client
+
+fun <T : Any, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?): MostlySingularMultiMap<K, T> =
     associateByToMostlySingular(keySelector) { it }
 
-fun <T, K, V> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K,
-                                                      valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
+fun <T, K, V : Any> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?,
+                                                            valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
     val multiMap = MostlySingularMultiMap<K, V>()
     for (element in this) {
-        multiMap.add(keySelector(element), valueTransform(element))
+        val k = keySelector(element)
+        if (k != null) {
+            multiMap.add(k, valueTransform(element))
+        }
     }
     return multiMap
+}
+
+fun <K, V> MostlySingularMultiMap<K, V>.firstValues(): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+
+    for (k in keySet()) {
+        val v = get(k).firstOrNull()
+        if (v != null) map[k] = v
+    }
+
+    return map
+}
+
+fun <K, V> MostlySingularMultiMap<K, V>.asMap(): Map<K, List<V>> {
+
+    val wrapped = this
+
+    return object : Map<K, List<V>> {
+        override val entries: Set<Map.Entry<K, List<V>>>
+            get() = keys.mapTo(mutableSetOf()) { AbstractMap.SimpleImmutableEntry(it, this[it]!!) }
+        override val keys: Set<K>
+            get() = wrapped.keySet()
+        override val size: Int
+            get() = wrapped.size()
+        override val values: List<List<V>>
+            get() = keys.map { this[it]!! }
+
+        override fun containsKey(key: K): Boolean = wrapped.containsKey(key)
+
+        override fun containsValue(value: List<V>): Boolean = keys.any { get(it) == value }
+
+        override fun get(key: K): List<V>? = wrapped.get(key).toList().takeIf { containsKey(key) }
+
+        override fun isEmpty(): Boolean = wrapped.isEmpty
+
+    }
 }

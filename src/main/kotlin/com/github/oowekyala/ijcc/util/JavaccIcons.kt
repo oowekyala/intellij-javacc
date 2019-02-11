@@ -24,6 +24,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     TOKEN_MGR_DECLS(PlatformIcons.CLASS_ICON),
     PARSER_DECLARATION(PlatformIcons.CLASS_ICON),
 
+    JJTREE_NODE(PlatformIcons.INTERFACE_ICON),
+
     // other
     /** For [com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider]. */
     GUTTER_NODE_CLASS(AllIcons.Gutter.OverridenMethod),

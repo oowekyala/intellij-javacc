@@ -65,8 +65,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      */
     internal fun invalidateCachedStructures() {
         myLexGrammarImpl = LexicalGrammar(this)
-        mySyntaxGrammarImpl = SyntaxGrammar(this)
         myGrammarOptionsImpl = GrammarOptions(options, parserDeclaration)
+        mySyntaxGrammarImpl = SyntaxGrammar(this)
     }
 
     private var myLexGrammarImpl: LexicalGrammar? = null
