@@ -35,7 +35,7 @@ class SyntaxGrammar(file: JccFile) {
             .filterIsInstance<JccNodeClassOwner>()
             .filter { it.isNotVoid }
             .map(::JjtreeNodeSpec)
-            .associateByToMostlySingular { it.nodeSimpleName }
+            .associateByToMostlySingular { it.nodeRawName }
 
 
     fun getProductionByName(name: String): JccNonTerminalProduction? =
@@ -45,9 +45,9 @@ class SyntaxGrammar(file: JccFile) {
 
     /**
      * Gets the partial declarations of the jjtree node with this name declared in this file.
-     * The name has to be the [JccNodeClassOwner.nodeSimpleName].
+     * The name has to be the [JccNodeClassOwner.rawName].
      */
-    fun getJjtreeDeclsFor(name: String): List<JjtreeNodeSpec> = jjtreeNodesByName.get(name).toList()
+    fun getJjtreeDeclsForRawName(name: String): List<JjtreeNodeSpec> = jjtreeNodesByName.get(name).toList()
 
     val jjtreeNodes: MostlySingularMultiMap<String, JjtreeNodeSpec> = jjtreeNodesByName
 }
@@ -59,6 +59,7 @@ data class JjtreeNodeSpec(val pointer: SmartPsiElementPointer<out JccNodeClassOw
 
     val declarator: JccNodeClassOwner? = pointer.element
     val nodeSimpleName: String? get() = declarator?.nodeSimpleName
+    val nodeRawName: String? get() = declarator?.rawName
 }
 
 data class ModelProduction(val name: String, val pointer: SmartPsiElementPointer<out JccNonTerminalProduction>) {

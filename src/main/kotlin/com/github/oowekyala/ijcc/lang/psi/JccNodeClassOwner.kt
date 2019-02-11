@@ -67,6 +67,13 @@ val JccNodeClassOwner.nodeIdentifier: JccIdentifier?
         else                        -> throw IllegalStateException()
     }
 
+val JccIdentifier.isJjtreeNodeIdentifier: Boolean
+    get() = parent is JccJjtreeNodeDescriptor
+        || (parent as? JccJavaNonTerminalProductionHeader)
+        ?.let { it.parent as JccNonTerminalProduction }
+        ?.let { it.nameIdentifier == it.nodeIdentifier } == true
+
+
 fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? {
 
     // this is mostly a hack... Idk how to search in all places

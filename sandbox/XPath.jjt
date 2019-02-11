@@ -885,10 +885,14 @@ void SimpleTypeName() #void:
    EQName()
 }
 
+void Name():{} {
+""
+}
+
 String WildcardName() #void:
 {}
 {
-   <NCNAME> { return getToken(0).getImage(); }
+   Name() <NCNAME> { return getToken(0).getImage(); }
 }
 
 String BracedUriLiteral() #void:

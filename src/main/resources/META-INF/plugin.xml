@@ -109,6 +109,8 @@
         <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
 
         <referencesSearch
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JjtreeNodeReferenceSearcher"/>
+        <referencesSearch
                 implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
         <findUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>

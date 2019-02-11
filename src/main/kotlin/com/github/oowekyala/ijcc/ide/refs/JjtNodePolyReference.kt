@@ -22,14 +22,15 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
     override fun isReferenceTo(otherElt: PsiElement?): Boolean =
         otherElt is JccNodeClassOwner
             && otherElt.containingFile === element.containingFile
-            && otherElt.nodeSimpleName == element.nodeSimpleName
+            && otherElt.isNotVoid
+            && otherElt.rawName == element.rawName
 
     override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JccNodeClassOwner>> {
-        val myName = element.nodeSimpleName ?: return emptyArray()
+        val myName = element.rawName ?: return emptyArray()
 
         return element.containingFile
             .syntaxGrammar
-            .getJjtreeDeclsFor(myName)
+            .getJjtreeDeclsForRawName(myName)
             .asSequence()
             .mapNotNull { it.declarator }
             .map { PsiEltResolveResult(it) }
@@ -42,22 +43,28 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
     override fun handleElementRename(newElementName: String): PsiElement =
         JccIdentifierManipulator().handleContentChange(element.nodeIdentifier!!, newElementName)!!
 
-    override fun getVariants(): Array<Any> =
-        element.containingFile
-            .syntaxGrammar
-            .jjtreeNodes
-            .asMap()
-            .asSequence()
-            .sortedBy { it.value.size }
-            .mapNotNull { it.value.mapNotNull { it.declarator }.firstOrNull() }
-            .mapNotNull { spec ->
-                val nodeName = spec.rawName ?: return@mapNotNull null
-                LookupElementBuilder.create(nodeName)
-                    .withPresentableText("#$nodeName")
-                    .withPsiElement(spec)
-                    .withIcon(JavaccIcons.JJTREE_NODE)
-            }
-            .toList()
-            .toTypedArray()
+    // reference completion is not used for those
+    override fun getVariants(): Array<Any> = emptyArray()
+
+
+    companion object {
+
+        fun variantsForFile(jccFile: JccFile) =
+            jccFile.syntaxGrammar
+                .jjtreeNodes
+                .asMap()
+                .asSequence()
+                .sortedBy { it.value.size }
+                .mapNotNull { it.value.mapNotNull { it.declarator }.firstOrNull() }
+                .mapNotNull { spec ->
+                    val nodeName = spec.rawName ?: return@mapNotNull null
+                    LookupElementBuilder.create(nodeName)
+                        .withPresentableText("#$nodeName")
+                        .withPsiElement(spec)
+                        .withIcon(JavaccIcons.JJTREE_NODE)
+                }
+                .toList()
+                .toTypedArray()
+    }
 }
 

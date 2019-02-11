@@ -4,6 +4,9 @@ import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.QueryExecutorBase
 import com.intellij.psi.PsiReference
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.SearchRequestCollector
+import com.intellij.psi.search.UsageSearchContext
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.util.Processor
 
@@ -26,7 +29,7 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
 
     /*
         FIXME
-            this is probably very inefficient, build index in LexicalGrammar
+            this is probably very inefficient, build index in LexicalGrammar (or stubs!)
             we can't use the optimised word scan because it doesn't pick up on non-alphanumeric characters
 
     */
