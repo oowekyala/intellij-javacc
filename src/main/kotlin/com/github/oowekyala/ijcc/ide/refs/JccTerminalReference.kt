@@ -1,13 +1,12 @@
 package com.github.oowekyala.ijcc.ide.refs
 
+import com.github.oowekyala.ijcc.ide.completion.withTail
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -62,16 +61,10 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
                     LookupElementBuilder
                         .create(name)
                         .withIcon(token.psiElement?.getPresentationIcon())
+                        .withTail("> ")
 
                 }
-            }
-            .map {
-                TailTypeDecorator.withTail(it, TailType.createSimpleTailType('>'))
-            }
-            .map {
-                TailTypeDecorator.withTail(it, TailType.SPACE)
-            }
-            .toList()
+            }.toList()
             .toTypedArray()
 
 

@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.refs
 
+import com.github.oowekyala.ijcc.ide.completion.withTail
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
@@ -8,9 +9,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.util.JavaccIcons
-import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -79,11 +78,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
                         }
                     }
                 }, true)
-        }.map {
-            TailTypeDecorator.withTail(
-                it, TailType.createSimpleTailType('"')
-            )
-        }
-        .toList().toTypedArray()
+                .withTail("\" ")
+        }.toList().toTypedArray()
 
 }

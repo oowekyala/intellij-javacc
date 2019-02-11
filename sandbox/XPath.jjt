@@ -185,6 +185,7 @@ TOKEN :
 | < TEXT: "text" >
 | < COMMENT: "comment" >
 | < NAMESPACE_NODE: "namespace-node" >
+| < DOCUMENT_NODE: "document-node" >
 | < PROCESSING_INSTRUCTION: "processing-instruction" >
 | < SCHEMA_ATTRIBUTE: "schema-attribute" >
 | < ELEMENT: "element" >
@@ -282,7 +283,7 @@ void QuantifiedExpr():
 {}
 {
   (<SOME> { jjtThis.setUniversallyQuantified(false); }| <EVERY> {jjtThis.setUniversallyQuantified(true);})
-  VarBindingList(false)
+  VarBindingList(false) { foo(); }
   <SATISFIES> ExprSingle()
 }
 
@@ -422,7 +423,7 @@ void IntersectExceptOperator():
 void InstanceofExpr() #InstanceofExpr(>1):
 {}
 {
-  TreatExpr() ( <INSTANCE> <OF> SequenceType() )?
+  TreatExpr() ( "instance" <OF> SequenceType() )?
 }
 
 void TreatExpr() #TreatExpr(>1):
@@ -832,7 +833,7 @@ void EQNameOrKWord() #Name:
   | <NE> | <EQ> | <LT> | <LE> | <GT> | <GE>
 
   | <SOME> | <IN> | <SATISFIES> | <AS> | <IS> | <FOR> | <EVERY> | <CAST> | <CASTABLE>
-  | <TREAT> | <INSTANCE> | <OF> | <TO> | <IF> | <THEN> | <ELSE> | <RETURN> | <LET>
+  | "treat" | <INSTANCE> | <OF> | <TO> | <IF> | <THEN> | <ELSE> | <RETURN> | <LET>
   | <EMPTY_SEQUENCE> | <ITEM>
 
   | <NODE> | <DOCUMENT_NODE> | <TEXT> | <COMMENT> | <NAMESPACE_NODE>

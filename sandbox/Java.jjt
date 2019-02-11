@@ -200,6 +200,9 @@ options {
   TRACK_TOKENS = true;
   NODE_PACKAGE="net.sourceforge.pmd.lang.java.ast";
 
+
+
+  
   //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
 }
@@ -1926,13 +1929,14 @@ void TypeArguments():
 
 void TypeArgument():
 {}
-{
+{   TypeAnnotation() AdditiveExpression()
    (TypeAnnotation())* (ReferenceType() | "?" [ WildcardBounds() ])
 }
 
 void WildcardBounds():
 {}
 {
+    "extends" "static" "false"  AdditiveExpression()
    ("extends" | "super") (TypeAnnotation())* ReferenceType()
 }
 

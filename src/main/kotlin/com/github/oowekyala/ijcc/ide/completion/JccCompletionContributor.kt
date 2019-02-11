@@ -1,13 +1,14 @@
 package com.github.oowekyala.ijcc.ide.completion
 
 import com.github.oowekyala.ijcc.lang.JccTypes
+import com.github.oowekyala.ijcc.lang.JccTypes.JCC_IDENT
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.completion.CompletionInitializationContext.START_OFFSET
 import com.intellij.codeInsight.completion.impl.CamelHumpMatcher
 import com.intellij.codeInsight.completion.simple.BracesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -37,18 +38,15 @@ class JccCompletionContributor : CompletionContributor() {
 
 
         val optionValuePattern =
-                psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
-                    .afterSibling(
-                        psiElement(JccTypes.JCC_EQ)
-                    )
+            psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
+                .afterSibling(
+                    psiElement(JccTypes.JCC_EQ)
+                )
 
         val optionNamePattern =
-                psiElement(JccTypes.JCC_IDENT).withAncestor(
-                    2,
-                    psiElement(JccOptionBinding::class.java)
-                )
-                    .andNot(psiElement().inside(PsiComment::class.java))
-                    .andNot(optionValuePattern)
+            psiElement().atStartOf(psiElement(JccOptionBinding::class.java))
+                .andNot(psiElement().inside(PsiComment::class.java))
+                .andNot(optionValuePattern)
 
         // Option names
         extend(
@@ -116,37 +114,36 @@ class JccCompletionContributor : CompletionContributor() {
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         super.fillCompletionVariants(parameters, result)
     }
+//
+//    override fun duringCompletion(context: CompletionInitializationContext) {
+//        val psiFile = context.file as? JccFile ?: return
+//
+//        val element = psiFile.findElementAt(context.startOffset)
+//        if (element?.isOfType(JCC_IDENT) == true) {
+//            context.dummyIdentifier = "x"
+//            context.offsetMap.addOffset(START_OFFSET, element.textOffset-1)// = element.textOffset - 1
+//        }
+//    }
 
-    override fun beforeCompletion(context: CompletionInitializationContext) {
-        val psiFile = context.file as? JccFile ?: return
-
-        //        context.dummyIdentifier = ""
-
-        psiFile.findElementAt((context.startOffset - 1).coerceAtLeast(0))
-            ?.takeIf { it.isOfType(JccTypes.JCC_IDENT) }
-            ?.runIt { context.offsetMap.addOffset(CompletionInitializationContext.START_OFFSET, it.textOffset) }
-
-
-    }
 
     companion object {
 
         val OptionVariants: List<TailTypeDecorator<LookupElementBuilder>> =
-                GrammarOptions.knownOptions.map { (name, opt) ->
-                    LookupElementBuilder.create(name)
-                        .withBoldness(true)
-                        .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.present()}", true)
-                }.map { TailTypeDecorator.withTail(it, TailType.EQ) }
+            GrammarOptions.knownOptions.map { (name, opt) ->
+                LookupElementBuilder.create(name)
+                    .withBoldness(true)
+                    .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentable()}", true)
+            }.map { TailTypeDecorator.withTail(it, TailType.EQ) }
 
-        private fun Any?.present(): String = when (this) {
+        private fun Any?.presentable(): String = when (this) {
             is String -> "\"${this}\""
             else      -> toString()
         }
 
         val BoolOptionValueVariants =
-                listOf("true", "false")
-                    .map { LookupElementBuilder.create(it).withBoldness(true) }
-                    .map { TailTypeDecorator.withTail(it, TailType.SEMICOLON) }
+            listOf("true", "false")
+                .map { LookupElementBuilder.create(it).withBoldness(true) }
+                .map { TailTypeDecorator.withTail(it, TailType.SEMICOLON) }
 
     }
 

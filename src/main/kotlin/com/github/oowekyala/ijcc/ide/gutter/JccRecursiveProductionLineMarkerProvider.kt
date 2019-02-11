@@ -10,6 +10,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.util.FunctionUtil
 import javax.swing.Icon
@@ -21,7 +22,7 @@ import javax.swing.Icon
  * @author Clément Fournier
  * @since 1.1
  */
-object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor() {
+object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor(), DumbAware {
     override fun getName(): String? = null
 
     override fun getIcon(): Icon = JavaccIcons.GUTTER_RECURSION
