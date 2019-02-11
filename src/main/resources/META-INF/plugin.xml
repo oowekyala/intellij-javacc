@@ -63,11 +63,65 @@
         <projectService serviceInterface="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService"
                         serviceImplementation="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsServiceImpl"/>
 
+        <!-- HIGHLIGHT -->
+
         <additionalTextAttributes scheme="Darcula" file="com/github/oowekyala/ijcc/colorSchemes/Darcula_Javacc.xml"/>
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
-        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.ide.highlight.JavaccColorSettingsPage"/>
+
+        <lang.syntaxHighlighterFactory
+                language="JavaCC"
+                implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
+
+        <!-- LANGUAGE -->
+        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+        <lang.parserDefinition
+                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
+
+        <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
+
+        <lang.documentationProvider language="JavaCC"
+                                    implementationClass="com.github.oowekyala.ijcc.ide.quickdoc.JccDocumentationProvider"/>
+        <lang.ast.factory language="JavaCC"
+                          implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
+        <lang.commenter language="JavaCC"
+                        implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
+
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit"
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
+        <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
+
+
+
+        <!-- LIVE TEMPLATES -->
+
+        <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
+        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
+
+        <!-- FIND USAGES -->
+
+        <lang.findUsagesProvider language="JavaCC"
+                                 implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
+        <usageTypeProvider implementation="com.github.oowekyala.ijcc.ide.findusages.JccUsageTypeProvider"/>
+
+        <referencesSearch
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JjtreeNodeReferenceSearcher"/>
+        <referencesSearch
+                implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
+        <findUsagesHandlerFactory
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
+
+
+        <!-- MISC -->
 
         <completion.contributor
                 language="JavaCC"
@@ -77,48 +131,13 @@
         <lang.namesValidator language="JavaCC"
                              implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
 
-        <lang.parserDefinition
-                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
-        <lang.syntaxHighlighterFactory
-                language="JavaCC"
-                implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
-        <lang.commenter language="JavaCC"
-                        implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
-
-        <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
-
-        <lang.documentationProvider language="JavaCC"
-                                    implementationClass="com.github.oowekyala.ijcc.ide.quickdoc.JccDocumentationProvider"/>
-        <lang.ast.factory language="JavaCC"
-                          implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
-
-        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit"
-                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
-        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
-                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
-        <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
-
-        <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
-
-        <lang.findUsagesProvider language="JavaCC"
-                                 implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
-
-        <referencesSearch
-                implementation="com.github.oowekyala.ijcc.ide.findusages.JjtreeNodeReferenceSearcher"/>
-        <referencesSearch
-                implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
-        <findUsagesHandlerFactory
-                implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
 
         <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
+
+        <!-- GUTTER -->
 
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider"/>
@@ -129,14 +148,13 @@
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccRecursiveProductionLineMarkerProvider"/>
 
+        <!-- INSPECTIONS & INTENTIONS -->
+
         <lang.inspectionSuppressor language="JavaCC"
                                    implementationClass="com.github.oowekyala.ijcc.ide.inspections.JccInspectionSuppressor"/>
 
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.ide.inspections.JccInspectionsProvider"/>
-
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.ide.intentions.TokenInliningIntention</className>
