@@ -195,12 +195,14 @@ parser_end        ::=
 
 private production_impl  ::=
         javacode_production
-    |   error_unnamed_javacode_production
-    |   error_just_javacode
     | 	bnf_production
-    |   error_bnf_production
 	| 	regex_production
 	| 	token_manager_decls
+	//  errors rules are tried last
+    |   error_unnamed_javacode_production
+    |   error_just_javacode
+    |   error_bnf_production
+	|   error_just_lexical_states
 
 javacode_production ::=
         "JAVACODE"
@@ -243,6 +245,16 @@ error_just_javacode  ::=
     "JAVACODE" javacode_nothing_error_tail
     {pin=1}
 
+
+error_just_lexical_states ::=
+    lexical_state_list regex_error_tail
+    {pin=1}
+
+private regex_error_tail ::=
+    error_production_tail
+    {name="regex kind"}
+
+
 private javacode_nothing_error_tail ::=
     error_production_tail
     {name="access modifier or return type"}
@@ -270,8 +282,8 @@ token_manager_decls ::=
 
 
 lexical_state_list 	::=
-        "<" "*" ">"
-	| 	"<" identifier ( "," identifier )* ">"
+        "<" ( "*" | identifier ( "," identifier )* ) ">"
+	    {pin=1}
 
 regex_kind 	    ::=
         "TOKEN"
@@ -283,7 +295,7 @@ regex_production 	::=
         [ lexical_state_list ]
 		regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
 		"{" regex_spec_list "}"
-		{pin="regex_kind" recoverWhile="#auto"}
+		{pin="regex_kind"}
 
 private regex_spec_list   ::=
     regex_spec ( "|" regex_spec )*
