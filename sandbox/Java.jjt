@@ -2015,7 +2015,6 @@ void Expression() :
 }
 
 
-
 void AssignmentOperator() :
 {}
 {
@@ -2033,9 +2032,13 @@ void AssignmentOperator() :
     | "|="    {jjtThis.setImage("|="); jjtThis.setCompound();}
 }
 
+
+f
+
+
 // TODO Setting isTernary is unnecessary, since the node is only pushed on the stack if there is at least one child,
 // ie if it's a ternary
-void ConditionalExpression() #ConditionalExpression(>1) :
+String ConditionalExpression() #ConditionalExpression(>1) :
 {}
 {
   ConditionalOrExpression() [ LOOKAHEAD(2) "?" Expression() ":" ConditionalExpression() ]

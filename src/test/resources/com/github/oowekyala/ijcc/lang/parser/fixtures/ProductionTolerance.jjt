@@ -1,0 +1,182 @@
+options {
+    LOOKAHEAD = 4;
+    MULTI = true;
+}
+
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+      void jjtreeOpenNodeScope(Node n) {
+        ((JJTreeNode)n).setFirstToken(getToken(1));
+      }
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+
+JAVACODE
+void () { // should not prevent the rest of the file to be parsed
+
+}
+
+fooo StringConcatExpr() #StringConcatExpr(>1):
+{}
+{
+  RangeExpr() ( "||" RangeExpr() )*
+}
+
+
+JAVACODE s// should not prevent the rest of the file to be parsed
+
+
+String RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+
+JAVACODE void f// should not prevent the rest of the file to be parsed
+
+
+string RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+
+JAVACODE a f// should not prevent the rest of the file to be parsed
+
+
+void RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+JAVACODE a f()// should not prevent the rest of the file to be parsed
+
+
+void RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+// In the following, we use nodes to represent the operators because there may be several expressions chained.
+// e.g. E1 + E2 - E3 ~> E1 PlusOperator E2 MinusOperator E3
+
+a // should not prevent the rest of the file to be parsed
+
+void AdditiveExpr() #AdditiveExpr(>1):
+{}
+{
+  MultiplicativeExpr() (AdditiveOperator() MultiplicativeExpr() )*
+}
+
+a // should not prevent the rest of the file to be parsed
+
+String AdditiveOperator():
+{}
+{
+    ( "+" | "-" ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+< // should not prevent the rest of the file to be parsed
+
+void MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+f g // should not prevent the rest of the file to be parsed
+
+void MultiplicativeOperator():
+{}
+{
+    (   <STAR>
+      | <DIV>
+      | <IDIV>
+      | <MOD>
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+f g // should not prevent the rest of the file to be parsed
+
+String UnionExpr() #UnionExpr(>1):
+{}
+{
+  IntersectExceptExpr() ( UnionOperator() IntersectExceptExpr() )*
+}
+
+f g() // should not prevent the rest of the file to be parsed
+
+
+void UnionOperator():
+{}
+{
+    ( <UNION>
+    | "|" { jjtThis.setShorthand(true); }
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+f g() // should not prevent the rest of the file to be parsed
+
+
+foo UnionOperator():
+{}
+{
+    ( <UNION>
+    | "|" { jjtThis.setShorthand(true); }
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+
+<a // should not prevent the rest of the file to be parsed
+
+void MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+<a // should not prevent the rest of the file to be parsed
+
+foo MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+TOKEN // should not prevent the rest of the file to be parsed
+
+foo MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+< MORE // should not prevent the rest of the file to be parsed
+
+foo MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+foo(): // should not prevent the rest of the file to be parsed
+
+foo MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}

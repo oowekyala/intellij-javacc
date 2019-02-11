@@ -199,22 +199,21 @@ private production_impl  ::=
 	| 	regex_production
 	| 	token_manager_decls
 	//  errors rules are tried last
-    |   error_unnamed_javacode_production
-    |   error_just_javacode
-    |   error_bnf_production
-	|   error_just_lexical_states
+	|   error_production
+    {recoverWhile="#auto"}
+
 
 javacode_production ::=
         "JAVACODE"
 		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
-		{pin=2 recoverWhile="#auto"}
+		{pin=2}
 
 bnf_production 	    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
-		"{" expansion_choices "}"
-		{pin=1 recoverWhile="#auto"}
+		<<in_block expansion_choices>>
+		{pin=1}
 
 
 java_non_terminal_production_header  ::=  // TODO inject java here
@@ -223,46 +222,41 @@ java_non_terminal_production_header  ::=  // TODO inject java here
         identifier
         java_parameter_list
         [ java_throws_list ]
-        {pin=3 recoverWhile="#auto"}
+        {pin=4 recoverWhile="#auto"}
 
-// single identifiers occurring in a production context
-// or incomplete JAVACODE productions fall down into one
-// of these productions
+// incomplete productions fall down one of these productions.
 // This is to be able to pin on the name of a production
 // so that a valid production always has a name.
-// This also allows single identifiers to not break the
-// rest of the grammar.
+// The pin is actually on the parameter list so that there is no
+// conflict with following return type (which itself can't be followed by parentheses)
+// This allows incomplete code to not break the rest of the grammar file.
+// See test file ProductionTolerance.jjt
+
+error_production ::=
+       error_just_javacode
+   |   error_unnamed_or_no_params_production
+   |   error_just_lexical_states
 
 // catches single identifiers
-error_bnf_production ::=
-    java_return_type error_production_tail {pin=1}
+private error_unnamed_or_no_params_production ::=
+    ["JAVACODE"] java_return_type identifier error_production_tail
+    {pin=java_return_type}
 
-error_unnamed_javacode_production       ::=
-     "JAVACODE" java_return_type error_production_tail
-     {pin=2}
-
-error_just_javacode  ::=
+private error_just_javacode  ::=
     "JAVACODE" javacode_nothing_error_tail
     {pin=1}
 
-
-error_just_lexical_states ::=
+private error_just_lexical_states ::=
     lexical_state_list regex_error_tail
     {pin=1}
 
-private regex_error_tail ::=
-    error_production_tail
-    {name="regex kind"}
 
-
-private javacode_nothing_error_tail ::=
-    error_production_tail
-    {name="access modifier or return type"}
-
-// improbable, unsatisfiable production
-private error_production_tail   ::=
-    "#" "#" "catch" "#" "throws" "#" "void" "#" "try" // never pin!
-    {name="production name"}
+// improbable, unsatisfiable production, used to insert an error
+// never pin!
+private error_production_tail   ::= "#" "#" "catch" "#" "throws" "#" "void" "#" "try" {name="parameter list"}
+// these just rename it
+private regex_error_tail            ::= error_production_tail {name="regex kind"}
+private javacode_nothing_error_tail ::= error_production_tail {name="method header"}
 
 java_throws_list ::=
         "throws" java_name ("," java_name)*
@@ -271,7 +265,7 @@ java_throws_list ::=
 jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
     [ jjtree_node_descriptor_expr ]
-    {pin=2 recoverWhile="#auto"}
+    {pin=2}
 
 // The expr is integer valued for definite nodes, is boolean valued for conditional nodes
 jjtree_node_descriptor_expr ::=
@@ -294,7 +288,7 @@ regex_kind 	    ::=
 regex_production 	::=
         [ lexical_state_list ]
 		regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
-		"{" regex_spec_list "}"
+		<<in_block regex_spec_list>>
 		{pin="regex_kind"}
 
 private regex_spec_list   ::=
@@ -538,6 +532,18 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 
 // Meta and fake rules
 
+// in_block is extremely important for incomplete code tolerance
+// (in fact it's just important to isolate the prefix and
+// suffix into another rule, but in_block allows to declutter the grammar)
+// Why? because it modifies the pin behaviour. E.g. bnf productions
+// are pinned on their header. If the ":" is not present, it will try to
+// match the expansion block anyway. Then
+// * If the expansion is written "{" expansion_choices "}", the pin behaviour
+//   will try to match expansion_choices even if there is no "{". Then the
+//   recoverWhile of expansion_unit will take effect and swallow the whole file.
+// * If the expansion is isolated in another rule (<<in_block expansion_choices>>),
+//   the expansion_choices will not be tried unless there is a "{".
+private meta in_block                   ::= "{" <<param>> "}"
 private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
 
 fake identifier_owner           ::= identifier {
