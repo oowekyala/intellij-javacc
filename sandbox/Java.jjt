@@ -200,8 +200,6 @@ options {
   TRACK_TOKENS = true;
   NODE_PACKAGE="net.sourceforge.pmd.lang.java.ast";
 
-
-
   
   //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
