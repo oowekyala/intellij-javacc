@@ -17,7 +17,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.1"
+version = "1.2"
 
 
 ext {
@@ -170,26 +170,17 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Main topic: improved support for the lexer generator.
+                Main topic: improved code completion.
                 <p>What's new:
                 <ul>
-                    <li>Completion of string literals with known string tokens!</li>
-                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
-                    <li>100% coverage of JavaCC semantic errors</li>
-                    <li>Left-recursive production detection, and regex loop detection</li>
-                    <li>Usage of string tokens that would be matched as another token now trigger a warning.
-                    "Token can never be matched" inspection has been toned down because it triggered false positives.
-                    </li>
+                    <li>Completion suggestions for productions, TODO</li>
+                    <li>Improved parser tolerance to incomplete code. Starting to type a new
+                    production should now not break the rest of the grammar</li>
                 </ul>
                 
                 <p>What's fixed:
                 <ul>
-                    <li>Many misunderstandings of the JavaCC spec, in particular regarding string token definitions, which it treats very specially.</li>
-                    <li>Countless false positives of "token name has not been defined"</li>
-                    <li>False positives with "Token can never be matched" inspection</li>
-                    <li>"Consecutive parser actions unit" inspection reporting on all siblings</li>
-                    <li>Significant performance issues in files with many tokens</li>
-                    <li>Caching issues, which caused changes to not be refreshed often enough</li>
+                    <li>Completion result insertion making a mess when the tail characters are already present</li>
                 </ul>
             """.trimIndent()
         )
