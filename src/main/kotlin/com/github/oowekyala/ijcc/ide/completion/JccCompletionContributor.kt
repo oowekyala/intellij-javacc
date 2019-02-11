@@ -127,6 +127,8 @@ class JccCompletionContributor : CompletionContributor() {
         val RegexProdVariants: List<TailTypeDecorator<LookupElementBuilder>> =
             RegexKind.values().map {
                 LookupElementBuilder.create(it.name + " : ")
+                    .withPresentableText(it.name)
+                    .withTailText(" : { ... }", true)
                     .withBoldness(true)
                     .withTail(BracesTailType())
             }
