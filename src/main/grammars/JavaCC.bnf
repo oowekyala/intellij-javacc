@@ -195,7 +195,10 @@ parser_end        ::=
 
 private production_impl  ::=
         javacode_production
+    |   error_unnamed_javacode_production
+    |   error_just_javacode
     | 	bnf_production
+    |   error_bnf_production
 	| 	regex_production
 	| 	token_manager_decls
 
@@ -216,10 +219,38 @@ java_non_terminal_production_header  ::=  // TODO inject java here
         java_access_modifier
         java_return_type
         identifier
-        "(" java_parameter_list ")"
+        java_parameter_list
         [ java_throws_list ]
         {pin=3 recoverWhile="#auto"}
 
+// single identifiers occurring in a production context
+// or incomplete JAVACODE productions fall down into one
+// of these productions
+// This is to be able to pin on the name of a production
+// so that a valid production always has a name.
+// This also allows single identifiers to not break the
+// rest of the grammar.
+
+// catches single identifiers
+error_bnf_production ::=
+    java_return_type error_production_tail {pin=1}
+
+error_unnamed_javacode_production       ::=
+     "JAVACODE" java_return_type error_production_tail
+     {pin=2}
+
+error_just_javacode  ::=
+    "JAVACODE" javacode_nothing_error_tail
+    {pin=1}
+
+private javacode_nothing_error_tail ::=
+    error_production_tail
+    {name="access modifier or return type"}
+
+// improbable, unsatisfiable production
+private error_production_tail   ::=
+    "#" "#" "catch" "#" "throws" "#" "void" "#" "try" // never pin!
+    {name="production name"}
 
 java_throws_list ::=
         "throws" java_name ("," java_name)*
@@ -537,7 +568,7 @@ private java_coi_type           ::=    java_name  // FIXME generics
 java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
-private java_parameter_list     ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+private java_parameter_list     ::=   "(" [ java_formal_parameter [ ("," java_formal_parameter)* ] ] ")" {name = "parameter list"}
 java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")* {pin=1 recoverWhile="#auto"}
 
 // externals
