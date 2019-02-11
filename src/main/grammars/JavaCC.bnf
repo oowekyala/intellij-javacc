@@ -145,10 +145,10 @@
 //   Here, expansion alternatives and sequences are only pushed on the tree if they have at
 //   least two children. That makes ASTs easier to navigate and query, but also harder to modify.
 
-javacc_input 	::=
+javacc_input 	    ::=
     grammar_file_root
 
-grammar_file_root ::=
+grammar_file_root   ::=
     option_section?
 	parser_declaration
 	( production_impl )*
@@ -176,7 +176,7 @@ parser_begin        ::=
     "PARSER_BEGIN" "(" identifier ")"
     {pin=1 name="PARSER_BEGIN"}
 
-parser_end        ::=
+parser_end          ::=
     "PARSER_END" "(" identifier ")"
 
 /* Productions. */
@@ -193,7 +193,7 @@ parser_end        ::=
          |- JccJavacodeProduction
  */
 
-private production_impl  ::=
+private production_impl             ::=
         javacode_production
     | 	bnf_production
 	| 	regex_production
@@ -203,20 +203,20 @@ private production_impl  ::=
     {recoverWhile="#auto"}
 
 
-javacode_production ::=
+javacode_production                 ::=
         "JAVACODE"
 		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
 		{pin=2}
 
-bnf_production 	    ::=
+bnf_production 	                    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
 		<<in_block expansion_choices>>
 		{pin=1}
 
 
-java_non_terminal_production_header  ::=  // TODO inject java here
+java_non_terminal_production_header ::=  // TODO inject java here
         java_access_modifier
         java_return_type
         identifier
@@ -232,31 +232,31 @@ java_non_terminal_production_header  ::=  // TODO inject java here
 // This allows incomplete code to not break the rest of the grammar file.
 // See test file ProductionTolerance.jjt
 
-error_production ::=
+error_production                    ::=
        error_just_javacode
    |   error_unnamed_or_no_params_production
    |   error_just_lexical_states
 
 // catches single identifiers
 private error_unnamed_or_no_params_production ::=
-    ["JAVACODE"] java_return_type identifier error_production_tail
+    ["JAVACODE"] java_return_type identifier no_params_error
     {pin=java_return_type}
 
-private error_just_javacode  ::=
-    "JAVACODE" javacode_nothing_error_tail
+private error_just_javacode         ::=
+    "JAVACODE" no_header_error
     {pin=1}
 
-private error_just_lexical_states ::=
-    lexical_state_list regex_error_tail
+private error_just_lexical_states   ::=
+    lexical_state_list no_regex_kind_error
     {pin=1}
 
 
 // improbable, unsatisfiable production, used to insert an error
 // never pin!
-private error_production_tail   ::= "#" "#" "catch" "#" "throws" "#" "void" "#" "try" {name="parameter list"}
+private no_params_error         ::= "#" "#" "catch" "#" "throws" "#" "void" "#" "try" {name="parameter list"}
 // these just rename it
-private regex_error_tail            ::= error_production_tail {name="regex kind"}
-private javacode_nothing_error_tail ::= error_production_tail {name="method header"}
+private no_regex_kind_error     ::= no_params_error {name="regex kind"}
+private no_header_error         ::= no_params_error {name="method header"}
 
 java_throws_list ::=
         "throws" java_name ("," java_name)*
@@ -279,7 +279,7 @@ lexical_state_list 	::=
         "<" ( "*" | identifier ( "," identifier )* ) ">"
 	    {pin=1}
 
-regex_kind 	    ::=
+regex_kind 	        ::=
         "TOKEN"
 	| 	"SPECIAL_TOKEN"
 	| 	"SKIP"
@@ -300,7 +300,7 @@ private regex_spec_list_recover   ::= // exclude ident, most important is the rb
     !( 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '}')
 
 
-regex_spec 	    ::=
+regex_spec 	        ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
         methods=[
@@ -311,7 +311,7 @@ regex_spec 	    ::=
     }
 
 
-private regex_spec_recover        ::= // exclude ident, most important is the pipe
+private regex_spec_recover      ::= // exclude ident, most important is the pipe
     !('<' | 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | 'private' | 'protected' | 'public' | 'void' | '|' | '}' | PRIMITIVE_TYPE)
 
 /* Expansions */
@@ -336,7 +336,7 @@ private regex_spec_recover        ::= // exclude ident, most important is the pi
  */
 
 
-private expansion_choices 	        ::=
+private expansion_choices 	    ::=
         expansion_alternative
     |   expansion_sequence
 
@@ -411,7 +411,7 @@ try_catch_expansion_unit        ::=
     finally_clause?
     {pin="try"}
 
-catch_clause                     ::=
+catch_clause                    ::=
     "catch" "(" java_name identifier ")" java_block
 
 finally_clause                  ::=
@@ -432,7 +432,7 @@ finally_clause                  ::=
 */
 
 
-regular_expression	::=
+regular_expression	            ::=
         literal_regular_expression
     |   eof_regular_expression
     // Pins try to match these in order to allow autocompletion
@@ -454,11 +454,11 @@ named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regex_choices ">"
     {pin=4}
 
-ref_regular_expression    ::=
+ref_regular_expression          ::=
     token_reference_regex_unit
     {methods=[unit="token_reference_regex_unit" nameIdentifier="token_reference_regex_unit/identifier"]}
 
-container_regular_expression       ::=
+container_regular_expression    ::=
 	"<" complex_regex_choices ">"
 	{pin=1}
 
