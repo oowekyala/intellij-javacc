@@ -4,9 +4,6 @@ import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.QueryExecutorBase
 import com.intellij.psi.PsiReference
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.SearchRequestCollector
-import com.intellij.psi.search.UsageSearchContext
 import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.util.Processor
 
@@ -38,7 +35,10 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
             .allProductions()
             .flatMap { it.descendantSequence(includeSelf = true) }
             .filterIsInstance<JccRegularExpressionOwner>()
-            .mapNotNull { it.regularExpression.asSingleLiteral()?.typedReference }
+            .mapNotNull { it.regularExpression.asSingleLiteral() }
+            // filter out declaration
+            .filter { it != target.definedToken.asStringToken }
+            .mapNotNull { it.typedReference }
             .filter { it.isReferenceTo(target) }
 
 }
