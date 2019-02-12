@@ -24,17 +24,16 @@ object JccStringTokenFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
         element is JccLiteralRegexUnit && element.typedReference != null
             || element is JccIdentifier && element.namedTokenDef != null
 
-}
+    class JccTokenFindUsagesHandler(regexOwner: JccRegularExpressionOwner) : FindUsagesHandler(regexOwner) {
 
-class JccTokenFindUsagesHandler(regexOwner: JccRegularExpressionOwner) : FindUsagesHandler(regexOwner) {
+        override fun findReferencesToHighlight(target: PsiElement,
+                                               searchScope: SearchScope): MutableCollection<PsiReference> {
+            val realTarget = when (target) {
+                is JccIdentifier -> target.namedTokenDef!!
+                else             -> target
+            }
 
-    override fun findReferencesToHighlight(target: PsiElement,
-                                           searchScope: SearchScope): MutableCollection<PsiReference> {
-        val realTarget = when (target) {
-            is JccIdentifier -> target.namedTokenDef!!
-            else             -> target
+            return super.findReferencesToHighlight(realTarget, searchScope)
         }
-
-        return super.findReferencesToHighlight(realTarget, searchScope)
     }
 }

@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-class JccFindUsagesProvider : FindUsagesProvider {
+object JccFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? = DefaultWordsScanner(
         JavaccLexerAdapter(),
         JccTypesExt.IdentifierTypeSet,
