@@ -268,11 +268,11 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                         final public Token getNextToken() {}
 
                         /** Get the specific Token. */
-                        final public Token getToken(int index) {}
+                        final public Token getToken(int indices) {}
 
                         /** Generate ParseException. */
                         public ParseException generateParseException() {}
-                        private void jj_save(int index, int xla) {}
+                        private void jj_save(int indices, int xla) {}
                         private void jj_rescan_token() {}
                         private int trace_indent = 0;
                         private boolean trace_enabled;

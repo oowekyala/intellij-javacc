@@ -155,7 +155,7 @@ class HostSpec(val prefix: String?, val suffix: String?,
     }
 
     companion object {
-        /** Global index of leaves to actual injection hosts. */
+        /** Global indices of leaves to actual injection hosts. */
         private val HostIndex: MutableMap<HostSpec, SmartPsiElementPointer<PsiLanguageInjectionHost>> =
             HashMap()
 

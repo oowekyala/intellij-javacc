@@ -7,6 +7,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.modelConstant
 import com.github.oowekyala.ijcc.lang.psi.nodeQualifiedName
+import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccJjtreeNameStubIndex
 import com.intellij.psi.stubs.*
 import com.intellij.util.io.DataInputOutputUtil
 import com.intellij.util.io.java.AccessModifier
@@ -70,7 +71,10 @@ sealed class NonTerminalStubElementType
     override fun getExternalId(): String = "javacc.nonterminal"
 
     override fun indexStub(stub: NonTerminalStub, sink: IndexSink) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val qname = stub.jjtreeNodeQname
+        if (qname != null) {
+            sink.occurrence(JccJjtreeNameStubIndex.key, qname)
+        }
     }
 }
 

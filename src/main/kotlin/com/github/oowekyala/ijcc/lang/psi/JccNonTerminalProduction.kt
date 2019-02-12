@@ -16,6 +16,10 @@ interface JccNonTerminalProduction
 
     override fun getNameIdentifier(): JccIdentifier
 
-    override fun getName(): String = nameIdentifier.name
+    override fun getName(): String = stub?.methodName ?: nameIdentifier.name
+
+    @JvmDefault
+    val isBnf: Boolean
+        get() = stub?.isBnf == true || this is JccBnfProduction
 
 }

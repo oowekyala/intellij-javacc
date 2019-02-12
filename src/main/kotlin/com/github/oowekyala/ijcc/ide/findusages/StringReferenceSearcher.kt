@@ -26,7 +26,7 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
 
     /*
         FIXME
-            this is probably very inefficient, build index in LexicalGrammar (or stubs!)
+            this is probably very inefficient, build indices in LexicalGrammar (or stubs!)
             we can't use the optimised word scan because it doesn't pick up on non-alphanumeric characters
 
     */

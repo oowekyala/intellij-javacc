@@ -17,7 +17,7 @@ import com.intellij.psi.PsiReferenceBase
  * lexical states directly*!! Otherwise we fall into bottomless recursion.
  * But since all named tokens are preserved (no filtering by superseding
  * match is needed like for string tokens), [LexicalGrammar] stores an
- * index of tokens by their name, which is eagerly built on initialisation,
+ * indices of tokens by their name, which is eagerly built on initialisation,
  * and allows this reference to resolve its result very fast ([LexicalGrammar.getTokenByName]).
  *
  * This is a *major* performance optimisation that alone lets the plugin

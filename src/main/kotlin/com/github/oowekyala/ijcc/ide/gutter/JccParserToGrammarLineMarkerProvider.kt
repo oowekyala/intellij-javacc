@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.icons.JccIcons
-import com.github.oowekyala.ijcc.lang.index.JccParserQnameIndexer
+import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo

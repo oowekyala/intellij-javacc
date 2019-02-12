@@ -123,8 +123,9 @@
 
         <!-- INDEX -->
 
-        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.index.JccGrammarNatureFileIndex"/>
-        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.index.JccParserQnameIndexer"/>
+        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccGrammarNatureFileIndex"/>
+        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
+        <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccJjtreeNameStubIndex"/>
 
         <!-- MISC -->
 

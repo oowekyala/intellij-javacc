@@ -1922,7 +1922,7 @@ ASTDeleteStatement DeleteStatement() :
     { return jjtThis; }
 }
 
-/** Scope rule: the loop index only exists within the Loop */
+/** Scope rule: the loop indices only exists within the Loop */
 ASTForStatement ForStatement()  :
 {}
 {
@@ -1947,7 +1947,7 @@ ASTIfStatement IfStatement()  :
       { return jjtThis ; }
 }
 
-/** Scope rule: the loop index only exists within the statement */
+/** Scope rule: the loop indices only exists within the statement */
 /**
 ForIndex is declared implicitly, unlike most variables or constants.
 */

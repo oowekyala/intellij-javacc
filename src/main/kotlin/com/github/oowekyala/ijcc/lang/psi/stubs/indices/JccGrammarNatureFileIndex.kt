@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.lang.index
+package com.github.oowekyala.ijcc.lang.psi.stubs.indices
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.lang.psi.JccFile
@@ -11,8 +11,8 @@ import com.intellij.util.io.KeyDescriptor
  * @author Clément Fournier
  * @since 1.2
  */
-object JccParserQnameIndexer : ScalarIndexExtension<String>() {
-    val NAME = ID.create<String, Void>("jccParserQname")
+object JccGrammarNatureFileIndex : ScalarIndexExtension<String>() {
+    val NAME = ID.create<String, Void>("jccGrammarNature")
 
     override fun getName(): ID<String, Void> = NAME
 
@@ -32,7 +32,7 @@ object JccParserQnameIndexer : ScalarIndexExtension<String>() {
 
             val file = inputData.psiFile as? JccFile ?: return emptyMap()
 
-            return mapOf(file.grammarOptions.parserQualifiedName to null)
+            return mapOf(file.grammarNature.name to null)
         }
     }
 

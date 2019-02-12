@@ -22,7 +22,7 @@ class LexicalGrammar(file: JccFile) {
     // The initialization routine of buildStatesMap indirectly uses
     // JccTerminalReference (through matchesLiteral), which itself relies
     // on the LexicalGrammar of the file to resolve token names quickly
-    // with the index below.
+    // with the indices below.
 
     // So by the time buildStatesMap is invoked, the constructor must have
     // returned, otherwise JccFileImpl never assigns its LexicalGrammar
@@ -52,7 +52,7 @@ class LexicalGrammar(file: JccFile) {
     }
 
 
-    /** All the tokens. Their index in this list acts as an id for the doc generator. */
+    /** All the tokens. Their indices in this list acts as an id for the doc generator. */
     val allTokens: List<Token> by lazy {
         lexicalStates.flatMap { it.tokens }
     }
