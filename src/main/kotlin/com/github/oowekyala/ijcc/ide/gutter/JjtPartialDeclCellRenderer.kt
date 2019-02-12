@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.icons.JccIcons
-import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
+import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.ancestors
@@ -16,13 +16,13 @@ import javax.swing.Icon
  * @author Clément Fournier
  * @since 1.0
  */
-class PartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
+object JjtPartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
 
 
     override fun getIcon(element: PsiElement?): Icon = JccIcons.JJTREE_NODE
 
     override fun getElementText(element: PsiElement): String =
-        (element as? JccNodeClassOwner).let { owner ->
+        (element as? JjtNodeClassOwner).let { owner ->
             when (owner) {
                 is JccScopedExpansionUnit   -> "#${owner.name}"
                 is JccNonTerminalProduction -> "${owner.name}()"

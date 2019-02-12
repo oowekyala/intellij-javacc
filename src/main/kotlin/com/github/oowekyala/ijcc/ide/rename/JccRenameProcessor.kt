@@ -97,7 +97,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         // TODO also rename the Java PsiClass (but probably needs a ui agreement)
         // finds all node class owners with the same node class
         element.parent.parent
-            .let { it as? JccNodeClassOwner }
+            .let { it as? JjtNodeClassOwner }
             // only continue if the renamed element is the ident of the node
             // can be different for productions with an annotation
             ?.takeIf { it.nodeIdentifier == element }

@@ -19,7 +19,7 @@ import com.intellij.util.io.java.AccessModifier
  */
 sealed class NonTerminalStubElementType(private val id: String)
     : IStubElementType<NonTerminalStub, JccNonTerminalProduction>("NON_TERMINAL", JavaccLanguage) {
-    
+
     override fun getExternalId(): String = id
 
     override fun createPsi(stub: NonTerminalStub): JccNonTerminalProduction {

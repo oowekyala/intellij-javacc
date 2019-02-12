@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
+import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
@@ -44,7 +44,7 @@ class ReferenceTest : JccTestBase() {
         """.trimIndent().asJccFile()
 
 
-        val owner = file.descendantSequence().filterIsInstance<JccNodeClassOwner>().first()
+        val owner = file.descendantSequence().filterIsInstance<JjtNodeClassOwner>().first()
 
         owner.typedReference!!.multiResolve(false).toList() should haveSize(4)
     }

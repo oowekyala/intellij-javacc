@@ -21,7 +21,7 @@ object JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvide
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,
                                           forNavigation: Boolean) {
         val partialDeclarations = elements
-            .mapNotNull { (it as? JccNodeClassOwner)?.typedReference?.multiResolve(false) }
+            .mapNotNull { (it as? JjtNodeClassOwner)?.typedReference?.multiResolve(false) }
             .filter { it.size > 1 }
             .map { it.map { it.element }.toList() }
             .associateBy { it[0].nodeSimpleName }
@@ -33,7 +33,7 @@ object JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvide
             val builder =
                 NavigationGutterIconBuilder.create(JccIcons.GUTTER_PARTIAL_DECL)
                     .setTargets(group)
-                    .setCellRenderer(PartialDeclCellRenderer())
+                    .setCellRenderer(JjtPartialDeclCellRenderer)
                     .setTooltipText("Click to navigate to other declarations of $name")
                     .setPopupTitle("Select partial declaration for $name")
 

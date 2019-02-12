@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub
 import com.intellij.psi.StubBasedPsiElement
 
 interface JccNonTerminalProduction
-    : JccIdentifierOwner, JccNodeClassOwner, JccProduction,
+    : JccIdentifierOwner, JjtNodeClassOwner, JccProduction,
     StubBasedPsiElement<NonTerminalStub> {
 
     val javaBlock: JccJavaBlock?

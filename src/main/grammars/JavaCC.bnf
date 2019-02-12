@@ -129,7 +129,7 @@
 
   implements("production|token_manager_decls")="production_like"
   implements("non_terminal_production|regex_production")="production"
-  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
+  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner"
   implements("regex_spec|regex_expansion_unit")="regular_expression_owner"
 
 

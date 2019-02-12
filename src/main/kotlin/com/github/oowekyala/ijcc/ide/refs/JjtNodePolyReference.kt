@@ -16,16 +16,16 @@ import com.intellij.psi.PsiPolyVariantReferenceBase
  * @author Clément Fournier
  * @since 1.0
  */
-class JjtNodePolyReference(psiElement: JccNodeClassOwner)
-    : PsiPolyVariantReferenceBase<JccNodeClassOwner>(psiElement) {
+class JjtNodePolyReference(psiElement: JjtNodeClassOwner)
+    : PsiPolyVariantReferenceBase<JjtNodeClassOwner>(psiElement) {
 
     override fun isReferenceTo(otherElt: PsiElement?): Boolean =
-        otherElt is JccNodeClassOwner
+        otherElt is JjtNodeClassOwner
             && otherElt.containingFile === element.containingFile
             && otherElt.isNotVoid
             && otherElt.rawName == element.rawName
 
-    override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JccNodeClassOwner>> {
+    override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JjtNodeClassOwner>> {
         val myName = element.rawName ?: return emptyArray()
 
         return element.containingFile

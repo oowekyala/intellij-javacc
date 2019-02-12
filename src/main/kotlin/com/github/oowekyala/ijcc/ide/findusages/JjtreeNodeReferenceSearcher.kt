@@ -20,7 +20,7 @@ object JjtreeNodeReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesS
 
         if (!toSearch.isJjtreeNodeIdentifier) return
 
-        val owner = toSearch.firstAncestorOrNull<JccNodeClassOwner>() ?: return
+        val owner = toSearch.firstAncestorOrNull<JjtNodeClassOwner>() ?: return
 
         findReferencesTo(owner, toSearch.name).all {
             // "all" stops on the first "false" result
@@ -28,7 +28,7 @@ object JjtreeNodeReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesS
         }
     }
 
-    private fun findReferencesTo(origin: JccNodeClassOwner,
+    private fun findReferencesTo(origin: JjtNodeClassOwner,
                                  rawName: String): Sequence<JjtNodePolyReference> =
         origin.containingFile
             .syntaxGrammar

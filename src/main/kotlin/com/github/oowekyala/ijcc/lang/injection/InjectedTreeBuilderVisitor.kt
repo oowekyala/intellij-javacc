@@ -164,8 +164,8 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         surroundTop("if /*lookahead*/ (", ");") //fixme?
     }
 
-    private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-        jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
+    private fun jjtThisDecl(jjtNodeClassOwner: JjtNodeClassOwner): String =
+        jjtNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
     override fun visitJjtreeNodeDescriptorExpr(o: JccJjtreeNodeDescriptorExpr) {
         visitJavaExpression(o.javaExpression)

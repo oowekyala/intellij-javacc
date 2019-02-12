@@ -17,7 +17,7 @@ object JccUsageTypeProvider : UsageTypeProviderEx {
         element is JccLiteralRegexUnit                             -> JccUsageTypes.IMPLICIT_STRING_TOKEN_REFERENCE
         element is JccTokenReferenceRegexUnit                      -> JccUsageTypes.EXPLICIT_TOKEN_REFERENCE
         element is JccIdentifier && element.isJjtreeNodeIdentifier -> JccUsageTypes.JJTREE_NODE_PARTIAL_DECLARATION
-        element is JccNodeClassOwner                               -> JccUsageTypes.JJTREE_NODE_PARTIAL_DECLARATION
+        element is JjtNodeClassOwner                               -> JccUsageTypes.JJTREE_NODE_PARTIAL_DECLARATION
         else                                                       -> null
     }
 

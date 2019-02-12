@@ -33,7 +33,7 @@ class SyntaxGrammar(file: JccFile) {
     private val jjtreeNodesByName: MostlySingularMultiMap<String, JjtreeNodeSpec> =
         file.nonTerminalProductions
             .flatMap { it.descendantSequence(includeSelf = true) }
-            .filterIsInstance<JccNodeClassOwner>()
+            .filterIsInstance<JjtNodeClassOwner>()
             .filter { it.isNotVoid }
             .map(::JjtreeNodeSpec)
             .associateByToMostlySingular { it.nodeRawName }
@@ -46,7 +46,7 @@ class SyntaxGrammar(file: JccFile) {
 
     /**
      * Gets the partial declarations of the jjtree node with this name declared in this file.
-     * The name has to be the [JccNodeClassOwner.rawName].
+     * The name has to be the [JjtNodeClassOwner.rawName].
      */
     fun getJjtreeDeclsForRawName(name: String): List<JjtreeNodeSpec> = jjtreeNodesByName.get(name).toList()
 
@@ -63,11 +63,11 @@ class SyntaxGrammar(file: JccFile) {
 }
 
 
-data class JjtreeNodeSpec(val pointer: SmartPsiElementPointer<out JccNodeClassOwner>) {
+data class JjtreeNodeSpec(val pointer: SmartPsiElementPointer<out JjtNodeClassOwner>) {
 
-    constructor(decl: JccNodeClassOwner) : this(SmartPointerManager.createPointer(decl))
+    constructor(decl: JjtNodeClassOwner) : this(SmartPointerManager.createPointer(decl))
 
-    val declarator: JccNodeClassOwner? = pointer.element
+    val declarator: JjtNodeClassOwner? = pointer.element
     val nodeSimpleName: String? get() = declarator?.nodeSimpleName
     val nodeRawName: String? get() = declarator?.rawName
 }

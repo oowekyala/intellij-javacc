@@ -186,7 +186,7 @@ object JccNonTerminalDocMaker {
 }
 
 
-internal fun SectionsBuilder.jjtreeSection(owner: JccNodeClassOwner) {
+internal fun SectionsBuilder.jjtreeSection(owner: JjtNodeClassOwner) {
     buildSection(JccNonTerminalDocMaker.JJTreeSectionName) {
 
         owner.nodeQualifiedName?.let { qname ->

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
-import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
+import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.nodeClass
@@ -26,7 +26,7 @@ object JjtreeNodeClassLineMarkerProvider : RelatedItemLineMarkerProvider() {
         // prunes duplicates when collecting for nav
         val visited = if (forNavigation) THashSet<PsiElement>() else null
         for (element in elements) {
-            val elt = element as? JccNodeClassOwner ?: continue
+            val elt = element as? JjtNodeClassOwner ?: continue
             if (forNavigation && !visited!!.add(elt)) continue
 
 
