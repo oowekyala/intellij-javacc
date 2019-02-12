@@ -45,8 +45,8 @@ abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), Jc
         is JccTokenReferenceRegexUnit  -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
         is JccLiteralRegexUnit         -> if (isStringToken) JccBnfStringLiteralReference(this) else null
-        is JccIdentifier               ->
-            if (isJjtreeNodeIdentifier) JjtNodePolyReference(this.firstAncestorOrNull()!!) else null
+        // overridden for JccIdentifier
+
         // Having it here breaks the Find Usages function
         // see ReferenceExtensions.typedReference
         // is JccNodeClassOwner        -> JjtNodePolyReference(this).takeIf { isNotVoid }

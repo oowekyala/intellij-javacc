@@ -38,7 +38,11 @@ object JccFindUsagesProvider : FindUsagesProvider {
             is JccRegexElement,
             is JccRegularExpression,
             is JccRegularExpressionOwner   -> "token"
-            is JccIdentifier               -> if (element.isJjtreeNodeIdentifier) "JJTree node" else null
+            is JccIdentifier               -> when {
+                element.isJjtreeNodeIdentifier -> "JJTree node"
+                element.isLexicalStateName     -> "Lexical state"
+                else                           -> null
+            }
             else                           -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }

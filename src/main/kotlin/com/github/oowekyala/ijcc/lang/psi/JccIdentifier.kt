@@ -16,3 +16,13 @@ val JccIdentifier.owner: JccIdentifierOwner?
             .takeWhile { it is JccIdentifierOwner }
             .filterIsInstance<JccIdentifierOwner>()
             .lastOrNull { it.nameIdentifier == this }
+
+
+val JccIdentifier.isJjtreeNodeIdentifier: Boolean
+    get() = parent is JccJjtreeNodeDescriptor
+        || (parent as? JccJavaNonTerminalProductionHeader)
+        ?.let { it.parent as JccNonTerminalProduction }
+        ?.let { it.nameIdentifier == it.nodeIdentifier } == true
+
+val JccIdentifier.isLexicalStateName: Boolean
+    get() = parent is JccLexicalStateList || parent is JccRegexSpec

@@ -15,6 +15,7 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     TOKEN_HEADER("terminal.png"),
     /** Terminal regex.  */
     TOKEN(AllIcons.Nodes.Variable),
+    LEXICAL_STATE(TOKEN),
     /** BNF production.  */
     BNF_PRODUCTION(AllIcons.Nodes.Method),
     /** Javacc option. */
