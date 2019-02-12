@@ -2,12 +2,13 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
+import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.linkRefToLexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foreachAndBetween
-import com.intellij.codeInsight.documentation.DocumentationManager
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
 
@@ -50,9 +51,13 @@ object JccTerminalDocMaker {
                 expansion(this)
             }
             section("Case-sensitive") { if (isIgnoreCase) "false" else "true" }
-            section("Lexical states") {
+            buildSection("Lexical states") {
                 states.let {
-                    if (it.isEmpty()) "All" else it.joinToString(separator = ", ")
+                    if (it.isEmpty()) append("All")
+                    else it.joinTo(this) { name ->
+                        val ref = linkRefToLexicalState(name)
+                        psiLink(linkTarget = ref, linkText = name)
+                    }
                 }
             }
         }
@@ -87,12 +92,7 @@ object JccTerminalDocMaker {
             // make the linktext be the literal if needed.
             val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
 
-            DocumentationManager.createHyperlink(
-                sb,
-                reffed?.let { JccDocUtil.getLinkRefTo(it) },
-                linkText,
-                false
-            )
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.getLinkRefTo(it) }, linkText = linkText)
         }
 
         override fun visitRefRegularExpression(o: JccRefRegularExpression) {

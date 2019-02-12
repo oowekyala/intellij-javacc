@@ -24,6 +24,9 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
     /** All terminal productions. */
     val regexProductions: Sequence<JccRegexProduction>
 
+    /** First mention of a lexical state name, conventionally treated as its declaration. */
+    val lexicalStatesFirstMention: Sequence<JccIdentifier>
+
     /** The injectable file root. */
     val grammarFileRoot: JccGrammarFileRoot?
 

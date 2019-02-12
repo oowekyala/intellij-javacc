@@ -27,7 +27,8 @@ import java.util.regex.Matcher
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalState private constructor(val name: String,
+class LexicalState private constructor(val lexicalGrammar: LexicalGrammar,
+                                       val name: String,
                                        val tokens: List<Token>,
                                        private val declarator: SmartPsiElementPointer<JccIdentifier>?) {
 
@@ -88,6 +89,18 @@ class LexicalState private constructor(val name: String,
                      exact: Boolean,
                      consideredRegexKinds: Set<RegexKind> = RegexKind.JustToken): Token? =
         matchLiteral(literal.match, exact, consideredRegexKinds)
+
+
+    val successors: Set<LexicalState> by lazy {
+        tokens.asSequence()
+            .mapNotNull { it.lexicalStateTransition }
+            .mapNotNull { lexicalGrammar.getLexicalState(it) }
+            .toSet()
+    }
+
+    val predecessors: Set<LexicalState> by lazy {
+        lexicalGrammar.lexicalStates.filter { this in it.successors }.toSet()
+    }
 
 
     override fun equals(other: Any?): Boolean {
@@ -154,7 +167,7 @@ class LexicalState private constructor(val name: String,
             val currentSpecs: List<Token>
                 get() = mySpecs
 
-            fun build() = LexicalState(name, mySpecs, declarator)
+            fun build(lexicalGrammar: LexicalGrammar) = LexicalState(lexicalGrammar, name, mySpecs, declarator)
         }
     }
 }

@@ -36,7 +36,7 @@ class JccQuickdocTest : JccTestBase() {
         sections {
             section(BnfSectionName, sectionDelim = " ::=") {
 
-                psiLink("null", angles("foo"))
+                psiLink(, "null", angles("foo"))
                     .let {
                         "\"hey\" ( \"i\" | $it )"
                     }
@@ -44,7 +44,7 @@ class JccQuickdocTest : JccTestBase() {
             }
             section(JJTreeSectionName) {
                 if (noJjtreeSection) "none"
-                else psiLink("$myDummyPackage.ASTFoo", "ASTFoo")
+                else psiLink(, "$myDummyPackage.ASTFoo", "ASTFoo")
             }
         }
     }
@@ -141,7 +141,7 @@ class JccQuickdocTest : JccTestBase() {
         buildQuickDoc {
             definition { "TOKEN\t" + bold(angles("BAR")) }
             sections {
-                section(header = "Expansion") { "( \"bar\" ) | " + psiLink("token/FOO", "\"foo\"") }
+                section(header = "Expansion") { "( \"bar\" ) | " + psiLink(, "token/FOO", "\"foo\"") }
                 section("Case-sensitive") { "true" }
                 section(header = "Lexical states") { "DEFAULT" }
             }
@@ -174,7 +174,7 @@ class JccQuickdocTest : JccTestBase() {
                     "\"hey\"" // test that the doc doesn't include the "foo"
                 }
                 section(JJTreeSectionName) {
-                    psiLink("$myDummyPackage.ASTHey", "ASTHey")
+                    psiLink(, "$myDummyPackage.ASTHey", "ASTHey")
                 }
             }
         }
@@ -201,7 +201,7 @@ class JccQuickdocTest : JccTestBase() {
                     "\"hey\""
                 }
                 section(JJTreeSectionName) {
-                    psiLink("$myDummyPackage.ASTHey", "ASTHey")
+                    psiLink(, "$myDummyPackage.ASTHey", "ASTHey")
                 }
             }
         }
@@ -303,7 +303,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        makeSyntheticDoc("ab", "\"a\" | " + psiLink("token/BAR", "&lt;BAR&gt;"))
+        makeSyntheticDoc("ab", "\"a\" | " + psiLink(, "token/BAR", "&lt;BAR&gt;"))
     )
 
 

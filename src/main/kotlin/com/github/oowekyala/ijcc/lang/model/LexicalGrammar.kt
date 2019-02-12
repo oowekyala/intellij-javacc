@@ -88,78 +88,79 @@ class LexicalGrammar(file: JccFile) {
             else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
         }
 
-    companion object {
 
+    private fun buildStatesMap(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalState> {
 
-        private fun buildStatesMap(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalState> {
+        // JavaCC collects all lexical state names during parser execution,
+        // and only builds "lexical states" during the semanticise phase.
+        // hence why we need two traversals here.
 
-            // JavaCC collects all lexical state names during parser execution,
-            // and only builds "lexical states" during the semanticise phase.
-            // hence why we need two traversals here.
+        // state name to builder
+        val builders = initBuilders(allProductions)
 
-            // state name to builder
-            val builders = initBuilders(allProductions)
+        val defaultBuilder = builders.getValue(DefaultStateName)
 
-            val defaultBuilder = builders.getValue(DefaultStateName)
+        for (production in allProductions()) {
 
-            for (production in allProductions()) {
+            when (production) {
+                is JccRegexProduction -> {
+                    val rstates = production.lexicalStatesNameOrEmptyForAll
 
-                when (production) {
-                    is JccRegexProduction -> {
-                        val rstates = production.lexicalStatesNameOrEmptyForAll
-
-                        val relevantBuilders = when {
-                            rstates.isEmpty()/* <*> */ -> builders.values
-                            else                       -> rstates.map { builders.getValue(it) }
-                        }
-
-                        for (spec in production.regexSpecList) {
-                            relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
-                        }
+                    val relevantBuilders = when {
+                        rstates.isEmpty()/* <*> */ -> builders.values
+                        else                       -> rstates.map { builders.getValue(it) }
                     }
 
-                    is JccBnfProduction   -> {
+                    for (spec in production.regexSpecList) {
+                        relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
+                    }
+                }
 
-                        // all of those are put in the default state
+                is JccBnfProduction   -> {
 
-
-                        val regexExpansions =
-                            production.expansion
-                                ?.descendantSequence(includeSelf = true)
-                                ?.filterIsInstance<JccRegexExpansionUnit>()
-                                ?: emptySequence()
-
-                        val currentSpecs = defaultBuilder.currentSpecs
+                    // all of those are put in the default state
 
 
-                        for (regexExpansion in regexExpansions) {
+                    val regexExpansions =
+                        production.expansion
+                            ?.descendantSequence(includeSelf = true)
+                            ?.filterIsInstance<JccRegexExpansionUnit>()
+                            ?: emptySequence()
 
-                            val regex = regexExpansion.regularExpression
+                    val currentSpecs = defaultBuilder.currentSpecs
 
-                            if (regex is JccEofRegularExpression) continue // doesn't generate a token
 
-                            val token = when (val r = regex.getRootRegexElement(false)) {
+                    for (regexExpansion in regexExpansions) {
 
-                                is JccLiteralRegexUnit        ->  // if the string isn't covered by an explicit token, it's synthesized
-                                    currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
+                        val regex = regexExpansion.regularExpression
 
-                                // necessarily references an explicit token
-                                is JccTokenReferenceRegexUnit -> null
+                        if (regex is JccEofRegularExpression) continue // doesn't generate a token
 
-                                // everything else is synthesized
-                                else                          -> SyntheticToken(regexExpansion)
-                            } as? SyntheticToken
+                        val token = when (val r = regex.getRootRegexElement(false)) {
 
-                            token?.runIt {
-                                defaultBuilder.addToken(it)
-                            }
+                            is JccLiteralRegexUnit        ->  // if the string isn't covered by an explicit token, it's synthesized
+                                currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
+
+                            // necessarily references an explicit token
+                            is JccTokenReferenceRegexUnit -> null
+
+                            // everything else is synthesized
+                            else                          -> SyntheticToken(regexExpansion)
+                        } as? SyntheticToken
+
+                        token?.runIt {
+                            defaultBuilder.addToken(it)
                         }
                     }
                 }
             }
-
-            return builders.mapValues { (_, v) -> v.build() }
         }
+
+        return builders.mapValues { (_, v) -> v.build(this) }
+    }
+
+    companion object {
+
 
         private fun initBuilders(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalStateBuilder> =
             allProductions().filterIsInstance<JccRegexProduction>()

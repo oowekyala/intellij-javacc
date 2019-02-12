@@ -34,6 +34,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val regexProductions: Sequence<JccRegexProduction>
         get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccRegexProduction>() ?: emptySequence()
 
+    override val lexicalStatesFirstMention: Sequence<JccIdentifier>
+        get() = regexProductions.flatMap { it.lexicalStatesIdents.asSequence() }.distinctBy { it.name }
+
+
     override val parserDeclaration: JccParserDeclaration?
         get() = grammarFileRoot?.parserDeclaration
 

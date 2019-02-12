@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.refs
 
+import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -12,11 +13,12 @@ import com.intellij.psi.PsiReferenceBase
  */
 class JccLexicalStateReference(element: JccIdentifier) : PsiReferenceBase<JccIdentifier>(element) {
 
-    override fun resolve(): PsiElement? =
+    override fun resolve(): PsiElement? = resolveState()?.declarationIdent
+
+    fun resolveState(): LexicalState? =
         element.containingFile
             .lexicalGrammar
             .getLexicalState(element.name)
-            ?.declarationIdent
 
 
     override fun getVariants(): Array<Any> =
