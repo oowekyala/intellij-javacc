@@ -12,7 +12,6 @@ options {
   NODE_USES_PARSER = true;
   TRACK_TOKENS = true;
   NODE_PACKAGE = "net.sourceforge.pmd.lang.xpath.ast";
-
 //   DEBUG_PARSER = true;
 //   DEBUG_LOOKAHEAD = true;
 }

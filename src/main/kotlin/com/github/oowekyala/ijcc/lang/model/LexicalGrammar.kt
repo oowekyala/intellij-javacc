@@ -48,7 +48,7 @@ class LexicalGrammar(file: JccFile) {
 
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> by lazy {
-        buildStatesMap { file.allProductions() }
+        buildStatesMap(file)
     }
 
 
@@ -89,18 +89,18 @@ class LexicalGrammar(file: JccFile) {
         }
 
 
-    private fun buildStatesMap(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalState> {
+    private fun buildStatesMap(file: JccFile): Map<String, LexicalState> {
 
         // JavaCC collects all lexical state names during parser execution,
         // and only builds "lexical states" during the semanticise phase.
         // hence why we need two traversals here.
 
         // state name to builder
-        val builders = initBuilders(allProductions)
+        val builders = file.initBuilders()
 
         val defaultBuilder = builders.getValue(DefaultStateName)
 
-        for (production in allProductions()) {
+        for (production in file.allProductions()) {
 
             when (production) {
                 is JccRegexProduction -> {
@@ -162,11 +162,8 @@ class LexicalGrammar(file: JccFile) {
     companion object {
 
 
-        private fun initBuilders(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalStateBuilder> =
-            allProductions().filterIsInstance<JccRegexProduction>()
-                .flatMap { it.lexicalStatesIdents.asSequence() }
-                .distinct()
-                .toList()
+        private fun JccFile.initBuilders(): Map<String, LexicalStateBuilder> =
+            lexicalStatesFirstMention
                 .associateTo(mutableMapOf()) { id ->
                     Pair(id.name, LexicalStateBuilder(id.name, SmartPointerManager.createPointer(id)))
                 }

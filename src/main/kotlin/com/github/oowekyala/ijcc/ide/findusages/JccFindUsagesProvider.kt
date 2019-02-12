@@ -39,9 +39,11 @@ object JccFindUsagesProvider : FindUsagesProvider {
             is JccRegularExpression,
             is JccRegularExpressionOwner   -> "token"
             is JccIdentifier               -> when {
-                element.isJjtreeNodeIdentifier -> "JJTree node"
-                element.isLexicalStateName     -> "Lexical state"
-                else                           -> null
+                element.owner is JccNonTerminalProduction
+                    || element.owner is JccNonTerminalExpansionUnit -> "non-terminal"
+                element.isJjtreeNodeIdentifier            -> "JJTree node"
+                element.isLexicalStateName                -> "lexical state"
+                else                                      -> null
             }
             else                           -> null
         } ?: "name".also {

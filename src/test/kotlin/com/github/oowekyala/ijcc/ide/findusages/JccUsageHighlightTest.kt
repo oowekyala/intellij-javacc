@@ -100,7 +100,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
 
     private fun h(content: String) = infoAnnot(content, "null")
 
-
+    // We can't use the //^ caret placer because it doesn't play well with the ${h()} shorthand
     private fun doTest(@Language("JavaCC") code: String) {
         configureByText(code)
         val document = myFixture.editor.document
