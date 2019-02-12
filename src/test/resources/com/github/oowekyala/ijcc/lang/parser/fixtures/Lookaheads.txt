@@ -149,21 +149,27 @@ JCC_FILE
             PsiElement())(')')
             PsiElement(;)(';')
           PsiElement(})('}')
-          PsiErrorElement:')' expected, got ','
+          PsiErrorElement:',' unexpected
+            PsiElement(,)(',')
+          PsiElement({)('{')
+          PsiElement(IDENT)('getToken')
+          PsiElement(()('(')
+          PsiElement(INTEGER_LITERAL)('1')
+          PsiElement())(')')
+          PsiErrorElement:'.' unexpected
+            PsiElement(.)('.')
+        JccNonTerminalExpansionUnitImpl(JCC_NON_TERMINAL_EXPANSION_UNIT)
+          JccIdentifierImpl(JCC_IDENTIFIER)
+            PsiElement(IDENT)('kind')
+          PsiErrorElement:'(', '.' or '=' expected, got '!='
+            PsiElement(NE)('!=')
+        JccNonTerminalExpansionUnitImpl(JCC_NON_TERMINAL_EXPANSION_UNIT)
+          JccIdentifierImpl(JCC_IDENTIFIER)
+            PsiElement(IDENT)('NATURAL')
+          PsiErrorElement:'(', '.' or '=' expected, got '}'
             <empty list>
-      PsiElement(,)(',')
-      PsiElement({)('{')
-  PsiErrorElement:<regex production> or TOKEN_MGR_DECLS expected, got 'getToken'
-    PsiElement(IDENT)('getToken')
-  PsiElement(DUMMY_BLOCK)
-    PsiElement(()('(')
-    PsiElement(INTEGER_LITERAL)('1')
-    PsiElement())(')')
-    PsiElement(.)('.')
-    PsiElement(IDENT)('kind')
-    PsiElement(NE)('!=')
-    PsiElement(IDENT)('NATURAL')
-    PsiElement(})('}')
-    PsiElement())(')')
+      PsiElement(})('}')
+    PsiErrorElement:')' unexpected
+      PsiElement())(')')
     PsiComment(END_OF_LINE_COMMENT)('// invalid parse')
     PsiElement(})('}')

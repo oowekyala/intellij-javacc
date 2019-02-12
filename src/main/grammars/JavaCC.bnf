@@ -353,7 +353,7 @@ expansion_alternative           ::=
     expansion_sequence ( "|" expansion_sequence )+ {pin="|" methods=[expansionList="expansion_sequence_or_unit"]}
 
 expansion_sequence 	            ::=
-    ( expansion_unit )+ {recoverWhile="#auto"}
+    ( expansion_unit )+ {pin=1 recoverWhile="#auto"}
 
 
 
@@ -390,7 +390,7 @@ regex_expansion_unit            ::=
     regular_expression
 
 local_lookahead_unit 	        ::=
-    "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
+    "LOOKAHEAD" <<in_parens local_lookahead_tail>> {pin=1 recoverWhile="#auto"}
 
 
 private local_lookahead_tail    ::=
@@ -400,12 +400,14 @@ private local_lookahead_tail    ::=
       INTEGER_LITERAL [ "," !("{") expansion_choices ]  [ "," braced_expression ]
     | !("{") expansion_choices  [ "," braced_expression ]
     | braced_expression
+    {recoverWhile="#auto"}
+
 
 private braced_expression       ::=
     "{" java_expression "}"
 
 non_terminal_expansion_unit     ::=
-    identifier "(" java_expression_list ")" {pin=1}
+    identifier <<in_parens java_expression_list>> {pin=1 recoverWhile="#auto"}
 
 parenthesized_expansion_unit    ::=
     "(" expansion_choices ")" occurrence_indicator?  {pin=1}
@@ -553,6 +555,7 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 // * If the expansion is isolated in another rule (<<in_block expansion_choices>>),
 //   the expansion_choices will not be tried unless there is a "{".
 private meta in_block                   ::= "{" <<param>> "}"
+private meta in_parens                  ::= "(" <<param>> ")"
 private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
 
 fake identifier_owner           ::= identifier {
