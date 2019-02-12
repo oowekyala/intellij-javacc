@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.JjtOption
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -59,6 +60,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val options: JccOptionSection?
         get() = grammarFileRoot?.optionSection
+
+
+    override val hasJjtreeNature: Boolean
+        get() = name.endsWith(".jjt")
+            || grammarOptions.allOptionsBindings.any { it.modelOption is JjtOption }
+            || syntaxGrammar.usesJjtreeDescriptors
+
 
     /**
      * Some structures are lazily cached to reduce the number of times

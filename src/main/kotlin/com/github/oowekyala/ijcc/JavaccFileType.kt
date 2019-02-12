@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileTypes.FileTypeConsumer
 import com.intellij.openapi.fileTypes.FileTypeFactory
 import com.intellij.openapi.fileTypes.LanguageFileType

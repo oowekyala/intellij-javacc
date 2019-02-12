@@ -2,6 +2,8 @@ package com.github.oowekyala.ijcc.util
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
+import com.intellij.openapi.util.IconPathPatcher
+import com.intellij.ui.RowIcon
 import com.intellij.util.PlatformIcons
 import javax.swing.Icon
 
@@ -35,7 +37,8 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
 
     GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
-    JAVACC_FILE("JJmono.png");
+    JAVACC_FILE("jccFile.png"),
+    ;
 
     constructor(fname: String) : this(IconLoader.getIcon("../icons/$fname"))
 }

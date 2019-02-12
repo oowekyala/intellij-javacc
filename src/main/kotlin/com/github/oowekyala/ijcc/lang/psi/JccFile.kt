@@ -50,6 +50,12 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>
 
+    /**
+     * Returns true if the file is conventionally named *.jjt,
+     * or it uses JJTree options or node descriptors in the code.
+     */
+    val hasJjtreeNature: Boolean
+
     companion object {
         /** Element type. */
         val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)

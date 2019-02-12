@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -50,6 +51,15 @@ class SyntaxGrammar(file: JccFile) {
     fun getJjtreeDeclsForRawName(name: String): List<JjtreeNodeSpec> = jjtreeNodesByName.get(name).toList()
 
     val jjtreeNodes: MostlySingularMultiMap<String, JjtreeNodeSpec> = jjtreeNodesByName
+
+
+    val usesJjtreeDescriptors: Boolean by lazy {
+        jjtreeNodes
+            .asMap()
+            .values
+            .asSequence()
+            .flatten().any { it.declarator?.nodeIdentifier?.parent is JccJjtreeNodeDescriptor }
+    }
 }
 
 

@@ -1,8 +1,7 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
-import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration
-import com.github.oowekyala.ijcc.lang.psi.getBindingFor
+import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.asMap
 
 /**
  * Toplevel model object representing the options bundle
@@ -11,7 +10,9 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  * @author Clément Fournier
  * @since 1.0
  */
-class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration?) {
+class GrammarOptions(private val options: JccOptionSection?,
+                     private val parserDeclaration: JccParserDeclaration?) {
+
 
     val parserQualifiedName: String
         get() {
@@ -37,6 +38,8 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
     val nodePrefix: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PREFIX) }
 
     val lookahead: Int by lazy { getOptionValueOrDefault(JccOption.LOOKAHEAD) }
+
+    val allOptionsBindings: List<JccOptionBinding> = options?.optionBindingList ?: emptyList()
 
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
         genericOption.getValue(options?.getBindingFor(genericOption), this)
