@@ -17,8 +17,10 @@ import com.intellij.util.io.java.AccessModifier
  * @author Clément Fournier
  * @since 1.2
  */
-sealed class NonTerminalStubElementType
+sealed class NonTerminalStubElementType(private val id: String)
     : IStubElementType<NonTerminalStub, JccNonTerminalProduction>("NON_TERMINAL", JavaccLanguage) {
+    
+    override fun getExternalId(): String = id
 
     override fun createPsi(stub: NonTerminalStub): JccNonTerminalProduction {
         return when {
@@ -68,8 +70,6 @@ sealed class NonTerminalStubElementType
     }
 
 
-    override fun getExternalId(): String = "javacc.nonterminal"
-
     override fun indexStub(stub: NonTerminalStub, sink: IndexSink) {
         val qname = stub.jjtreeNodeQname
         if (qname != null) {
@@ -78,5 +78,5 @@ sealed class NonTerminalStubElementType
     }
 }
 
-object BnfStubElementType : NonTerminalStubElementType()
-object JavacodeStubElementType : NonTerminalStubElementType()
+object BnfStubElementType : NonTerminalStubElementType("ijcc.nonterminal.bnf")
+object JavacodeStubElementType : NonTerminalStubElementType("ijcc.nonterminal.javacode")

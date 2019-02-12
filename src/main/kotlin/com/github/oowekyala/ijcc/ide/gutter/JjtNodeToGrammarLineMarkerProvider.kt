@@ -32,12 +32,12 @@ object JjtNodeToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
             val elt = element as? PsiClass ?: continue
             if (forNavigation && !visited!!.add(elt)) continue
 
-            val qname = elt.qualifiedName ?: return
+            val qname = elt.qualifiedName ?: continue
 
             val jjtreeNodes = JjtreeQNameStubIndex.get(qname, elt.project, GlobalSearchScope.allScope(elt.project))
 
 
-            if (jjtreeNodes.isEmpty()) return
+            if (jjtreeNodes.isEmpty()) continue
 
             val builder =
                 NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)

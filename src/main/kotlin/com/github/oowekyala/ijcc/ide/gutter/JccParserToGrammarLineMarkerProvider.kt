@@ -30,7 +30,7 @@ object JccParserToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
             val elt = element as? PsiClass ?: continue
             if (forNavigation && !visited!!.add(elt)) continue
 
-            val qnames = listOfNotNull(elt.qualifiedName).toSet().takeIf { it.isNotEmpty() } ?: return
+            val qnames = listOfNotNull(elt.qualifiedName).toSet().takeIf { it.isNotEmpty() } ?: continue
 
             val file: VirtualFile = let {
                 var f: VirtualFile? = null
@@ -44,7 +44,7 @@ object JccParserToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
                 f
             } ?: return
 
-            val jccFile = PsiManager.getInstance(elt.project).findFile(file)  as? JccFile ?: return
+            val jccFile = PsiManager.getInstance(elt.project).findFile(file)  as? JccFile ?: continue
 
 
             val builder =
