@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.intellij.psi.PsiClassOwner
@@ -54,7 +55,7 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
      * Returns true if the file is conventionally named *.jjt,
      * or it uses JJTree options or node descriptors in the code.
      */
-    val hasJjtreeNature: Boolean
+    val grammarNature: GrammarNature
 
     companion object {
         /** Element type. */

@@ -121,6 +121,11 @@
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
 
 
+        <!-- INDEX -->
+
+        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.index.JccGrammarNatureFileIndex"/>
+        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.index.JccParserQnameIndexer"/>
+
         <!-- MISC -->
 
 
