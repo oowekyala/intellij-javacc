@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
+import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
@@ -25,17 +26,19 @@ object JccFindUsagesProvider : FindUsagesProvider {
 
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
-        (element as JccPsiElement).name ?: "<default name>"
+        (element as? JccPsiElement)?.getPresentableText() ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
     override fun getType(element: PsiElement): String {
 
         return when (element) {
+            is JccNonTerminalProduction,
             is JccNonTerminalExpansionUnit -> "non-terminal"
-            is JccRegexElement, // TODO should we be more specific?
+            is JccRegexElement,
             is JccRegularExpression,
             is JccRegularExpressionOwner   -> "token"
+            is JccIdentifier               -> if (element.isJjtreeNodeIdentifier) "JJTree node" else null
             else                           -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }

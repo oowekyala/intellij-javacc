@@ -14,7 +14,7 @@ import org.intellij.lang.annotations.Language
 class JccFindUsagesTest : JccTestBase() {
 
 
-    fun `test nonterminal usages`() = doTestByText(
+    fun `test nonterminal usages from decl`() = doTestByText(
         """
                 $DummyHeader
 
@@ -32,6 +32,25 @@ class JccFindUsagesTest : JccTestBase() {
 
             """
     )
+
+//    fun `test nonterminal usages`() = doTestByText(
+//        """
+//                $DummyHeader
+//
+//                void Foo():
+//                {}
+//                {
+//                    bar() "foo" "zlatan" Foo() $Nonterminal
+//                                        //^
+//                }
+//
+//                void bar(): {}
+//                {
+//                    "f" Foo() $Nonterminal
+//                }
+//
+//            """
+//    )
 
 
     fun `test token ref`() = doTestByText(

@@ -9,3 +9,10 @@ interface JccIdentifier : JccPsiElement, PsiNamedElement {
 
     val leaf: PsiElement
 }
+
+val JccIdentifier.owner: JccIdentifierOwner?
+    get() =
+        ancestors(includeSelf = false)
+            .takeWhile { it is JccIdentifierOwner }
+            .filterIsInstance<JccIdentifierOwner>()
+            .lastOrNull { it.nameIdentifier == this }

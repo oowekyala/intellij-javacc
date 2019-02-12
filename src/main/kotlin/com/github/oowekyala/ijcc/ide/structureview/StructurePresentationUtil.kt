@@ -41,7 +41,10 @@ fun JccPsiElement.getPresentableText(): String {
         is JccNonTerminalProduction -> getPresentableText()
 
         is JccFile                  -> name
-        else                        -> "" + this
+        is JccIdentifier            -> owner?.getPresentableText() ?: name
+        is JccJjtreeNodeDescriptor  -> "#" + namingLeaf.text
+
+        else                        -> toString()
     }
 }
 
