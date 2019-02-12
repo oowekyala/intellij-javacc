@@ -183,6 +183,7 @@ tasks {
                 <p>What's fixed:
                 <ul>
                     <li>Completion result insertion making a mess when the tail characters are already present</li>
+                    <li>Unnecessary parentheses inspection wasn't initialised correctly</li>
                 </ul>
             """.trimIndent()
         )
