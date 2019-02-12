@@ -20,8 +20,8 @@
 
     </g>
 
-
-    <path fill="#7F8B91" fill-opacity=".9" fill-rule="evenodd"
+    <!-- The arrow -->
+    <path fill="#AFB1B3" fill-opacity=".9" fill-rule="evenodd"
           transform="translate(7,7)scale(.9)"
           d="M8.09788148,7.09788148 L4.95208153,10.2436814 L3.75,9.04159991 L6.89579995,5.89579995 L5,4 L10,4 L10,9 L8.09788148,7.09788148 Z"/>
 

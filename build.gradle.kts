@@ -27,8 +27,6 @@ ext {
     apply(from = "secrets.properties")
 }
 
-
-
 repositories {
     mavenCentral()
     jcenter()
@@ -82,7 +80,7 @@ tasks {
 
 
         source = "src/main/grammars/JavaCC.bnf"
-        targetRoot = "${buildDir}/gen"
+        targetRoot = "$buildDir/gen"
         pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
         pathToPsiRoot = PathToPsiRoot
         purgeOldFiles = true
@@ -94,7 +92,7 @@ tasks {
         description = "Generate the JFlex lexer used by the parser"
 
         source = "src/main/grammars/JavaCC.flex"
-        targetDir = "${buildDir}/gen/com/github/oowekyala/ijcc/lang/lexer"
+        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
         targetClass = "JavaccLexer"
         purgeOldFiles = true
     }
@@ -133,6 +131,26 @@ tasks {
         }
     }
 
+    // compresses the icons and replaces them in the copied resource directory
+    // the icons in the source dir are "optimised for maintainability", which means
+    // much bigger than needed
+    // you need svgo on your path (npm install -g svgo)
+    val compressIcons by creating(Exec::class.java) {
+        dependsOn("processResources")
+
+        val iconsDir = "${buildDir.absolutePath}/resources/main$PackageRoot/icons"
+
+        commandLine(
+            "svgo",
+            "-f",
+            iconsDir
+        )
+    }
+
+    val assemble by existing {
+        dependsOn(compressIcons)
+    }
+
     compileJava {
         dependsOn(overrideDefaultPsi, generateLexer)
         sourceCompatibility = "1.8"
@@ -154,7 +172,6 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
-
 
     runIde {
         jvmArgs = listOf("-Xmx2G")
