@@ -187,12 +187,15 @@ tasks {
         //language=HTML
         changeNotes(
             """
-                Main topic: improved code completion.
                 <p>What's new:
                 <ul>
-                    <li>Prettier file icons</li>
+                    <li>Links to JJTree node declarations from their corresponding Java node class
+                    if it can be found in the project.</li>
+                    <li>Link from the parser file to the grammar.</li>
                     <li>Completion suggestions for productions, lexical states, TODO</li>
-                    <li>Significantly improved parser tolerance to incomplete code. Starting to type a new production should now not break the rest of the grammar</li>
+                    <li>Prettier file icons</li>
+                    <li>Significantly improved parser tolerance to incomplete code. Starting to type a new production should 
+                    now not break the rest of the grammar</li>
                     <li>Find usages for lexical states</li>
                     <li>Implicit tokens are now linked to in the bnf</li>
                     <li>Some performance optimisations</li>
