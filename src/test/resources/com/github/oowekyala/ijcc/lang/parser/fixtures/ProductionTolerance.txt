@@ -86,7 +86,7 @@ JCC_FILE
     PsiElement({)('{')
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     PsiElement(})('}')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(StringConcatExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -194,8 +194,6 @@ JCC_FILE
         JccIdentifierImpl(JCC_IDENTIFIER)
           PsiElement(IDENT)('TO')
         PsiElement(>)('>')
-      PsiErrorElement:<regex kind> expected, got 'AdditiveExpr'
-        <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
       JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
@@ -220,7 +218,7 @@ JCC_FILE
       PsiErrorElement:<parameter list> expected, got 'string'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(RangeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -290,7 +288,7 @@ JCC_FILE
       PsiErrorElement:<parameter list> expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(RangeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -344,7 +342,7 @@ JCC_FILE
           JccZeroOrOneImpl(JCC_ZERO_OR_ONE)
             PsiElement(?)('?')
       PsiElement(})('}')
-    JccJavacodeProductionImpl(JCC_JAVACODE_PRODUCTION)
+    JccJavacodeProductionImpl(f)
       PsiElement(JAVACODE)('JAVACODE')
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
@@ -360,7 +358,7 @@ JCC_FILE
       PsiErrorElement:'#' or '{' expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(RangeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -424,7 +422,7 @@ JCC_FILE
       PsiErrorElement:'.', <identifier> or '[' expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(AdditiveExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -549,7 +547,7 @@ JCC_FILE
         PsiErrorElement:'*', <identifier>, <regex kind> or '>' expected, got 'void'
           <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -613,7 +611,7 @@ JCC_FILE
       PsiErrorElement:<parameter list> expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeOperator)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -693,7 +691,7 @@ JCC_FILE
       PsiErrorElement:<parameter list> expected, got 'String'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(UnionExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -749,7 +747,7 @@ JCC_FILE
           JccZeroOrMoreImpl(JCC_ZERO_OR_MORE)
             PsiElement(*)('*')
       PsiElement(})('}')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(g)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -764,7 +762,7 @@ JCC_FILE
       PsiErrorElement:'#' or ':' expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(UnionOperator)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -827,7 +825,7 @@ JCC_FILE
             PsiElement(;)(';')
             PsiElement(})('}')
       PsiElement(})('}')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(g)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -842,7 +840,7 @@ JCC_FILE
       PsiErrorElement:'#' or ':' expected, got 'foo'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(UnionOperator)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -915,7 +913,7 @@ JCC_FILE
         PsiErrorElement:',', <regex kind> or '>' expected, got 'void'
           <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -977,7 +975,7 @@ JCC_FILE
         PsiErrorElement:',', <regex kind> or '>' expected, got 'foo'
           <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -1039,7 +1037,7 @@ JCC_FILE
       PsiErrorElement:':' or '[' expected, got 'foo'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -1105,7 +1103,7 @@ JCC_FILE
       PsiErrorElement:':' or '[' expected, got 'foo'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
@@ -1172,7 +1170,7 @@ JCC_FILE
     PsiElement())(')')
     PsiElement(:)(':')
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
-    JccBnfProductionImpl(JCC_BNF_PRODUCTION)
+    JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>

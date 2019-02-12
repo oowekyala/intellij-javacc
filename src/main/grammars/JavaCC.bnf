@@ -1,6 +1,9 @@
 {
   parserClass="com.github.oowekyala.ijcc.lang.parser.JavaccParser"
   parserUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
+  parserImports=[
+    "com.github.oowekyala.ijcc.lang.psi.JccTypesExt.*"
+  ]
 
   implements="com.github.oowekyala.ijcc.lang.psi.JccPsiElement"
   extends="com.github.oowekyala.ijcc.lang.psi.impl.JccPsiElementImpl"
@@ -9,6 +12,7 @@
   elementTypePrefix="JCC_"
   elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccElementType"
   tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccTokenType"
+  elementTypeFactory="com.github.oowekyala.ijcc.lang.psi.JccTypesExt.getUserType"
 
   psiClassPrefix="Jcc"
   psiImplClassSuffix="Impl"
@@ -127,6 +131,11 @@
   implements("non_terminal_production|regex_production")="production"
   implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
   implements("regex_spec|regex_expansion_unit")="regular_expression_owner"
+
+
+  stubClass("bnf_production|javacode_production")="com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub"
+
+
 }
 
 // Grammar for the JavaCC language

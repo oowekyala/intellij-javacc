@@ -201,7 +201,7 @@ JCC_FILE
             JccLiteralRegexUnitImpl(JCC_LITERAL_REGEX_UNIT)
               PsiElement(STRING_LITERAL)('";"')
       PsiElement(})('}')
-    JccJavacodeProduction(node_descriptor_expression)
+    JccJavacodeProductionImpl(node_descriptor_expression)
       PsiElement(JAVACODE)('JAVACODE')
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)

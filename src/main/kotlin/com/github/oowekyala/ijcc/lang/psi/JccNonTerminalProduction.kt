@@ -1,7 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner, JccProduction {
+import com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub
+import com.intellij.psi.StubBasedPsiElement
+
+interface JccNonTerminalProduction
+    : JccIdentifierOwner, JccNodeClassOwner, JccProduction,
+    StubBasedPsiElement<NonTerminalStub> {
 
     val javaBlock: JccJavaBlock?
 
