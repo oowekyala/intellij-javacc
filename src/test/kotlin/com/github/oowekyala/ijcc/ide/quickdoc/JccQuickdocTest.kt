@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.bold
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.linkRefToLexicalState
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.JJTreeSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccTerminalDocMaker.makeDocImpl
@@ -36,7 +37,7 @@ class JccQuickdocTest : JccTestBase() {
         sections {
             section(BnfSectionName, sectionDelim = " ::=") {
 
-                psiLink(, "null", angles("foo"))
+                psiLink("null", angles("foo"))
                     .let {
                         "\"hey\" ( \"i\" | $it )"
                     }
@@ -44,7 +45,7 @@ class JccQuickdocTest : JccTestBase() {
             }
             section(JJTreeSectionName) {
                 if (noJjtreeSection) "none"
-                else psiLink(, "$myDummyPackage.ASTFoo", "ASTFoo")
+                else psiLink("$myDummyPackage.ASTFoo", "ASTFoo")
             }
         }
     }
@@ -54,7 +55,12 @@ class JccQuickdocTest : JccTestBase() {
         sections {
             section("Expansion") { "\"foo\"" }
             section("Case-sensitive") { "true" }
-            section("Lexical states") { "DEFAULT" }
+            section(header = "Lexical states") {
+                psiLink(
+                    linkTarget = linkRefToLexicalState("DEFAULT"),
+                    linkText = "DEFAULT"
+                )
+            }
         }
     }
 
@@ -141,9 +147,9 @@ class JccQuickdocTest : JccTestBase() {
         buildQuickDoc {
             definition { "TOKEN\t" + bold(angles("BAR")) }
             sections {
-                section(header = "Expansion") { "( \"bar\" ) | " + psiLink(, "token/FOO", "\"foo\"") }
+                section(header = "Expansion") { "( \"bar\" ) | " + psiLink("token/FOO", "\"foo\"") }
                 section("Case-sensitive") { "true" }
-                section(header = "Lexical states") { "DEFAULT" }
+                section(header = "Lexical states") { psiLink(linkRefToLexicalState("DEFAULT"), "DEFAULT") }
             }
         }
     )
@@ -174,7 +180,7 @@ class JccQuickdocTest : JccTestBase() {
                     "\"hey\"" // test that the doc doesn't include the "foo"
                 }
                 section(JJTreeSectionName) {
-                    psiLink(, "$myDummyPackage.ASTHey", "ASTHey")
+                    psiLink("$myDummyPackage.ASTHey", "ASTHey")
                 }
             }
         }
@@ -201,7 +207,7 @@ class JccQuickdocTest : JccTestBase() {
                     "\"hey\""
                 }
                 section(JJTreeSectionName) {
-                    psiLink(, "$myDummyPackage.ASTHey", "ASTHey")
+                    psiLink("$myDummyPackage.ASTHey", "ASTHey")
                 }
             }
         }
@@ -303,7 +309,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        makeSyntheticDoc("ab", "\"a\" | " + psiLink(, "token/BAR", "&lt;BAR&gt;"))
+        makeSyntheticDoc("ab", "\"a\" | " + psiLink("token/BAR", "&lt;BAR&gt;"))
     )
 
 

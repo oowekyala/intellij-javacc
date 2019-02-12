@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.intellij.codeInsight.documentation.DocumentationManager
+import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.javadoc.JavaDocUtil
 import com.intellij.lang.documentation.DocumentationMarkup.*
 import com.intellij.openapi.util.Key
@@ -143,7 +144,27 @@ object HtmlUtil {
                 linkTarget: String?,
                 @Language("HTML") linkText: String,
                 isCodeLink: Boolean = true) {
-        DocumentationManager.createHyperlink(builder, linkTarget, linkText, !isCodeLink)
+        createHyperlinkImpl(buffer = builder, label = linkText, refText = linkTarget, plainLink = !isCodeLink)
+    }
+
+    // copy pasted from DocumentationManagerUtil because the component service cannot be
+    // created during tests..
+    private fun createHyperlinkImpl(buffer: StringBuilder,
+                                    refText: String?,
+                                    label: String,
+                                    plainLink: Boolean) {
+        buffer.append("<a href=\"")
+        buffer.append(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL) // :-)
+        buffer.append(refText)
+        buffer.append("\">")
+        if (!plainLink) {
+            buffer.append("<code>")
+        }
+        buffer.append(label)
+        if (!plainLink) {
+            buffer.append("</code>")
+        }
+        buffer.append("</a>")
     }
 
     @Language("HTML")
@@ -152,7 +173,6 @@ object HtmlUtil {
                 isCodeLink: Boolean = true): String =
         StringBuilder().also { psiLink(it, linkTarget, linkText, isCodeLink) }.toString()
 }
-
 
 
 private val FakeDefaultStateEltKey = Key.create<PsiElement>("jcc.fake.default.state")
