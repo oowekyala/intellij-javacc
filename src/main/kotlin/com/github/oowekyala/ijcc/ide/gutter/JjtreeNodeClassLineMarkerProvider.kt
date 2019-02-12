@@ -23,6 +23,7 @@ object JjtreeNodeClassLineMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun collectNavigationMarkers(elements: List<PsiElement>,
                                           result: MutableCollection<in RelatedItemLineMarkerInfo<*>>,
                                           forNavigation: Boolean) {
+        // prunes duplicates when collecting for nav
         val visited = if (forNavigation) THashSet<PsiElement>() else null
         for (element in elements) {
             val elt = element as? JccNodeClassOwner ?: continue

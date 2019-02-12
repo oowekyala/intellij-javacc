@@ -1,3 +1,4 @@
+<!-- @formatter:off -->
 <idea-plugin>
     <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
@@ -97,7 +98,6 @@
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
 
 
-
         <!-- LIVE TEMPLATES -->
 
         <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
@@ -146,6 +146,9 @@
                                       implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
 
         <!-- GUTTER -->
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccParserToGrammarLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider"/>

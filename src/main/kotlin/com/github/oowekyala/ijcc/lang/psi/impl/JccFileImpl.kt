@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.icons.JccIconProvider
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -11,6 +12,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
 import com.intellij.util.IncorrectOperationException
+import javax.swing.Icon
 
 
 /**
@@ -107,6 +109,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override fun setPackageName(packageName: String?) {
         throw IncorrectOperationException("Cannot set the package of the parser that way")
     }
+
+
+    override fun getIcon(flags: Int): Icon? = JccIconProvider.getIcon(this, flags)
 
     /**
      * This is important for access resolution to be done properly in injected
