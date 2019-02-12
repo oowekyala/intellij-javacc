@@ -34,6 +34,7 @@ enum class JccIcons(icon: Icon) : Icon by icon {
     /** For [com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider]. */
     GUTTER_PARTIAL_DECL("jjtreeNodeLocate.svg"),
     GUTTER_NAVIGATE_TO_GRAMMAR("jccNavigateToGrammar.svg"),
+    GUTTER_NAVIGATE_TO_JJTREE_NODE("jccNavigateToNode.svg"),
     GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
     JAVACC_FILE("jccFile.svg"),

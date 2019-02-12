@@ -7,7 +7,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.modelConstant
 import com.github.oowekyala.ijcc.lang.psi.nodeQualifiedName
-import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccJjtreeNameStubIndex
+import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
 import com.intellij.psi.stubs.*
 import com.intellij.util.io.DataInputOutputUtil
 import com.intellij.util.io.java.AccessModifier
@@ -73,7 +73,7 @@ sealed class NonTerminalStubElementType
     override fun indexStub(stub: NonTerminalStub, sink: IndexSink) {
         val qname = stub.jjtreeNodeQname
         if (qname != null) {
-            sink.occurrence(JccJjtreeNameStubIndex.key, qname)
+            sink.occurrence(JjtreeQNameStubIndex.key, qname)
         }
     }
 }

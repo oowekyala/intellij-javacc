@@ -8,7 +8,7 @@ import com.intellij.psi.stubs.StubIndexKey
  * @author Clément Fournier
  * @since 1.2
  */
-object JccJjtreeNameStubIndex : StringStubIndexExtension<JccNonTerminalProduction>() {
+object JjtreeQNameStubIndex : StringStubIndexExtension<JccNonTerminalProduction>() {
 
 
     private val Key = StubIndexKey.createIndexKey<String, JccNonTerminalProduction>("jcc.prods.by.jjtree.qname")
