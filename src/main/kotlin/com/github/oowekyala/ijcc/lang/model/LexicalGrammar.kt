@@ -32,7 +32,7 @@ class LexicalGrammar(file: JccFile) {
     // do take care of not using property initializers that call the lazy
     // properties! That would force their evaluation
 
-    // Though it's error-prone, the rest apart from JccTerminalReference and this
+    // Though it's error-prone, apart from JccTerminalReference and this
     // object the rest of the app need not care, which is nice.
 
     /**
@@ -52,9 +52,9 @@ class LexicalGrammar(file: JccFile) {
     }
 
 
-    /** All the tokens. */
-    val allTokens: Sequence<Token> by lazy {
-        lexicalStates.flatMap { it.tokens }.asSequence()
+    /** All the tokens. Their index in this list acts as an id for the doc generator. */
+    val allTokens: List<Token> by lazy {
+        lexicalStates.flatMap { it.tokens }
     }
 
     val lexicalStates: Collection<LexicalState>

@@ -37,11 +37,12 @@ class JccQuickdocTest : JccTestBase() {
         sections {
             section(BnfSectionName, sectionDelim = " ::=") {
 
-                psiLink("null", angles("foo"))
-                    .let {
-                        "\"hey\" ( \"i\" | $it )"
-                    }
+                val foo = psiLink("null", angles("foo"))
 
+                val hey = "\"hey\"".unnamedTokenLink(0)
+                val i = "\"i\"".unnamedTokenLink(1)
+
+                "$hey ( $i | $foo )"
             }
             section(JJTreeSectionName) {
                 if (noJjtreeSection) "none"
@@ -177,7 +178,7 @@ class JccQuickdocTest : JccTestBase() {
             definition { "#Hey" }
             sections {
                 section(header = "BNF", sectionDelim = " ::=") {
-                    "\"hey\"" // test that the doc doesn't include the "foo"
+                    "\"hey\"".unnamedTokenLink(1) // test that the doc doesn't include the "foo"
                 }
                 section(JJTreeSectionName) {
                     psiLink("$myDummyPackage.ASTHey", "ASTHey")
@@ -204,7 +205,7 @@ class JccQuickdocTest : JccTestBase() {
             definition { "#Hey" }
             sections {
                 section(header = "BNF", sectionDelim = " ::=") {
-                    "\"hey\""
+                    "\"hey\"".unnamedTokenLink(1)
                 }
                 section(JJTreeSectionName) {
                     psiLink("$myDummyPackage.ASTHey", "ASTHey")
@@ -264,7 +265,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        makeSyntheticDoc(null, "\"hey\"")
+        makeSyntheticDoc(null, "\"hey\"".unnamedTokenLink(0))
     )
 
 
@@ -390,5 +391,12 @@ class JccQuickdocTest : JccTestBase() {
             isIgnoreCase = false,
             states = LexicalState.JustDefaultState
         ) { it.append(expansion) }
+
+
+    private fun String.unnamedTokenLink(i: Int) =
+        psiLink(
+            linkTarget = JccDocUtil.linkRefToStringToken(i),
+            linkText = this
+        )
 
 }

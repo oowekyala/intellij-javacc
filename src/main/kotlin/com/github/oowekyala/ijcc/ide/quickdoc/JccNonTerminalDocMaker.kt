@@ -123,7 +123,7 @@ object JccNonTerminalDocMaker {
             if (reffed != null) {
                 psiLink(
                     builder = sb,
-                    linkTarget = JccDocUtil.getLinkRefTo(reffed),
+                    linkTarget = JccDocUtil.linkRefToToken(reffed),
                     linkText = o.text,
                     isCodeLink = true
                 )
@@ -153,7 +153,7 @@ object JccNonTerminalDocMaker {
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
             val reffed = o.typedReference.resolveProduction()
 
-            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.getLinkRefTo(it) }, linkText = "${o.name}()")
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToProd(it) }, linkText = "${o.name}()")
         }
 
         override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {

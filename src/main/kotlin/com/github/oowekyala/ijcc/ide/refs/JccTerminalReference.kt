@@ -45,16 +45,15 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
      */
     override fun resolve(): JccRegularExpressionOwner? = resolveToken()?.psiElement
 
-    fun resolveToken(): Token? {
-        val searchedName = element.name ?: return null
-
-        return element.containingFile.lexicalGrammar.getTokenByName(searchedName)
+    fun resolveToken(): Token? = element.name?.let {
+        element.containingFile.lexicalGrammar.getTokenByName(it)
     }
 
     override fun getVariants(): Array<Any> =
         element.containingFile
             .lexicalGrammar
             .allTokens
+            .asSequence()
             .filter { canReferencePrivate || !it.isPrivate }
             .mapNotNull { token ->
                 token.name?.let { name ->

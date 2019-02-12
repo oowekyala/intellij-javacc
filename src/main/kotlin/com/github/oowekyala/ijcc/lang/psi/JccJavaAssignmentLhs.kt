@@ -21,7 +21,6 @@ interface JccJavaAssignmentLhs : JccPsiElement, PsiLanguageInjectionHost {
 
 
     @JvmDefault
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return MultilineTextEscaper(this)
-    }
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        MultilineTextEscaper(this)
 }

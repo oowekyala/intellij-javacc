@@ -75,7 +75,12 @@ object JccTerminalDocMaker {
         }
 
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
-            o.unit.accept(this)
+            val reffed = o.typedReference.resolveToken(exact = true)?.let { JccDocUtil.linkRefToToken(it) }
+            if (reffed != null) {
+                psiLink(builder = sb, linkTarget = reffed, linkText = o.text)
+            } else {
+                o.unit.accept(this)
+            }
         }
 
         override fun visitNamedRegularExpression(o: JccNamedRegularExpression) {
@@ -92,7 +97,7 @@ object JccTerminalDocMaker {
             // make the linktext be the literal if needed.
             val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
 
-            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.getLinkRefTo(it) }, linkText = linkText)
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToToken(it) }, linkText = linkText)
         }
 
         override fun visitRefRegularExpression(o: JccRefRegularExpression) {

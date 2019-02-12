@@ -359,7 +359,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             .getTokenByNameMulti(element.name!!)
             .takeIf { it.size > 1 }
             ?.forEach { token ->
-                myHolder += errorInfo(element, "Multiply defined lexical token name \"${token.nameIdentifier}\"")
+                myHolder += errorInfo(element, "Multiply defined lexical token name \"${token.name}\"")
             }
     }
 

@@ -35,7 +35,7 @@ class JccUnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return null
         if (SuppressionUtil.inspectionResultSuppressed(file, this)) return null
-        val tokens = file.lexicalGrammar.allTokens.toList()
+        val tokens = file.lexicalGrammar.allTokens
         if (tokens.isEmpty()) return null
 
         val holder = ProblemsHolder(manager, file, isOnTheFly)
