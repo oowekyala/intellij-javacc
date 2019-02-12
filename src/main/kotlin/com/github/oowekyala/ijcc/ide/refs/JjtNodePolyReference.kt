@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.github.oowekyala.ijcc.util.asMap
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange

@@ -8,7 +8,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.github.oowekyala.ijcc.lang.psi.innerRange
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement

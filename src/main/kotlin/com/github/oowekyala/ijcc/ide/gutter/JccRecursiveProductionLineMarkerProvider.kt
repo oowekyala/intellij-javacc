@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.gutter
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.firstAncestorOrNull
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeHighlighting.Pass
 import com.intellij.codeInsight.daemon.LineMarkerInfo

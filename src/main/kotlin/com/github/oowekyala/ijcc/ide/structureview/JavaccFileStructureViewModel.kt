@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement

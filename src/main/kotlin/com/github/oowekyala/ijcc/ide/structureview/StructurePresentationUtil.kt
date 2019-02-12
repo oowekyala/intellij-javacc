@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.navigation.ItemPresentation

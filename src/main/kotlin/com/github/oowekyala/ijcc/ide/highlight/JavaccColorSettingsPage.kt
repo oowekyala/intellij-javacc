@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey

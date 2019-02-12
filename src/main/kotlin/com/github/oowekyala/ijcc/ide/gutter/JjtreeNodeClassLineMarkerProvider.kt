@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.nodeClass
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JavaccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider

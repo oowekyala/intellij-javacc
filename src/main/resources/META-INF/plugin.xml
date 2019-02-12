@@ -123,6 +123,9 @@
 
         <!-- MISC -->
 
+
+        <iconProvider implementation="com.github.oowekyala.ijcc.icons.JccIconProvider"/>
+
         <completion.contributor
                 language="JavaCC"
                 implementationClass="com.github.oowekyala.ijcc.ide.completion.JccCompletionContributor"/>
