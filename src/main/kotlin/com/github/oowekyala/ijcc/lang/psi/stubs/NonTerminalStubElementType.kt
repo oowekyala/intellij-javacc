@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.modelConstant
-import com.github.oowekyala.ijcc.lang.psi.nodeQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
 import com.intellij.psi.stubs.*
 import com.intellij.util.io.DataInputOutputUtil

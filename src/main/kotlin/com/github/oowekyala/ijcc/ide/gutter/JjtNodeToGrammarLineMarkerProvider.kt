@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.icons.JccIcons
-import com.github.oowekyala.ijcc.lang.psi.rawName
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder

@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
 
@@ -150,13 +151,10 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         myFixture.launchAction(action)
     }
 
-    protected open fun configureByText(text: String, fileName: String = "dummy.jjt") {
+    protected open fun configureByText(text: String, fileName: String = "dummy.jjt"): PsiFile =
         myFixture.configureByText(fileName, text)
-    }
 
-    protected open fun configureByText(text: String) {
-        myFixture.configureByText(fileName, text)
-    }
+    protected open fun configureByText(text: String): PsiFile = myFixture.configureByText(fileName, text)
 
 
     inline fun <reified R : JccExpansion> String.asExpansionOfType(): R =
