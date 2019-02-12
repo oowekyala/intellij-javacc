@@ -46,9 +46,9 @@ object JccParserToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
 
             val builder =
-                NavigationGutterIconBuilder.create(JavaccIcons.JAVACC_FILE).setTarget(jccFile)
-                    .setTooltipText("Click to navigate to grammar file ${jccFile.name}")
-                    .setPopupTitle("Grammar ${jccFile.name}")
+                NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_NAVIGATE_TO_GRAMMAR).setTarget(jccFile)
+                    .setTooltipText("Navigate to grammar file ${jccFile.name}")
+                    .setPopupTitle("JavaCC grammar ${jccFile.name}")
 
 
             elt.nameIdentifier?.let { builder.createLineMarkerInfo(it) }?.runIt { result.add(it) }
