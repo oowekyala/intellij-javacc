@@ -41,7 +41,7 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
     JAVACC_FILE("jccFile.svg"),
-    JJTREE_FILE("jjtFile.svg"),
+    JJTREE_FILE("jjtFile_compressed.svg"),
     ;
 
     constructor(fname: String) : this(IjccIconUtil.getIjccIcon(fname))
