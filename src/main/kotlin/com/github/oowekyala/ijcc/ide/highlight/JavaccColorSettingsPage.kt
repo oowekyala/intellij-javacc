@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -17,7 +17,7 @@ class JavaccColorSettingsPage : ColorSettingsPage {
 
     override fun getDisplayName(): String = "JavaCC"
 
-    override fun getIcon(): Icon = JavaccIcons.JAVACC_FILE
+    override fun getIcon(): Icon = JccIcons.JAVACC_FILE
 
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = attributes
 

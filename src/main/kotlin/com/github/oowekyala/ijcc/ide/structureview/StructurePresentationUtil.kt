@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.navigation.ItemPresentation
@@ -135,18 +135,18 @@ fun JccPsiElement.getLocationString(): String? {
 }
 
 fun JccPsiElement.getPresentationIcon(): Icon? = when (this) {
-    is JccOptionSection      -> JavaccIcons.JAVACC_OPTION
-    is JccOptionBinding      -> JavaccIcons.JAVACC_OPTION
+    is JccOptionSection      -> JccIcons.JAVACC_OPTION
+    is JccOptionBinding      -> JccIcons.JAVACC_OPTION
 
-    is JccTokenManagerDecls  -> JavaccIcons.TOKEN_MGR_DECLS
-    is JccParserDeclaration  -> JavaccIcons.PARSER_DECLARATION
+    is JccTokenManagerDecls  -> JccIcons.TOKEN_MGR_DECLS
+    is JccParserDeclaration  -> JccIcons.PARSER_DECLARATION
 
-    is JccRegexProduction    -> JavaccIcons.TOKEN
-    is JccRegexSpec          -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
-    is JccRegexExpansionUnit -> JavaccIcons.TOKEN.append(visibilityIcon(regularExpression))
+    is JccRegexProduction    -> JccIcons.TOKEN
+    is JccRegexSpec          -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
+    is JccRegexExpansionUnit -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
 
-    is JccBnfProduction      -> JavaccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
-    is JccJavacodeProduction -> JavaccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
+    is JccBnfProduction      -> JccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
+    is JccJavacodeProduction -> JccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
     else                     -> getIcon(0) // this isn't implemented by our classes
 }
 

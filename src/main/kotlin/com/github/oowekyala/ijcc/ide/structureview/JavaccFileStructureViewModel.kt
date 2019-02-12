@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement
@@ -73,7 +73,7 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
                 ActionPresentationData(
                     "Show JavaCC Options",
                     "Show the options for code generation",
-                    JavaccIcons.JAVACC_OPTION
+                    JccIcons.JAVACC_OPTION
                 )
 
             override fun getName(): String = "OptionFilter"
@@ -98,7 +98,7 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
                 ActionPresentationData(
                     "Show Lexical Structure",
                     "Show tokens specifications.",
-                    JavaccIcons.TOKEN_HEADER
+                    JccIcons.TOKEN_HEADER
                 )
 
             override fun getName(): String = "TerminalFilter"

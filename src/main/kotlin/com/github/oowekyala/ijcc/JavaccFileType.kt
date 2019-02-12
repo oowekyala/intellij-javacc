@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.openapi.fileTypes.FileTypeConsumer
 import com.intellij.openapi.fileTypes.FileTypeFactory
 import com.intellij.openapi.fileTypes.LanguageFileType
@@ -13,7 +13,7 @@ import javax.swing.Icon
  * @since 1.0
  */
 object JavaccFileType : LanguageFileType(JavaccLanguage) {
-    override fun getIcon(): Icon = JavaccIcons.JAVACC_FILE
+    override fun getIcon(): Icon = JccIcons.JAVACC_FILE
 
     override fun getName(): String = "JavaCC grammar"
 

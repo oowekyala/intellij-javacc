@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.asMap
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
@@ -61,7 +61,7 @@ class JjtNodePolyReference(psiElement: JccNodeClassOwner)
                     LookupElementBuilder.create(nodeName)
                         .withPresentableText("#$nodeName")
                         .withPsiElement(spec)
-                        .withIcon(JavaccIcons.JJTREE_NODE)
+                        .withIcon(JccIcons.JJTREE_NODE)
                 }
                 .toList()
                 .toTypedArray()

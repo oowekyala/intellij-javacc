@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.intellij.ide.IconProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
-import com.intellij.util.indexing.FileBasedIndex
 import javax.swing.Icon
 
 /**
@@ -19,8 +18,8 @@ object JccIconProvider : IconProvider(), DumbAware {
     }
 
     private fun getFileIcon(file: JccFile): Icon? = when (file.grammarNature) {
-        GrammarNature.JJTREE -> JavaccIcons.JJTREE_FILE
-        GrammarNature.JAVACC -> JavaccIcons.JAVACC_FILE
+        GrammarNature.JJTREE -> JccIcons.JJTREE_FILE
+        GrammarNature.JAVACC -> JccIcons.JAVACC_FILE
     }
 
 }

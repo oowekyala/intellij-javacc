@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.nodeClass
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
@@ -32,7 +32,7 @@ object JjtreeNodeClassLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
             val psiClass = elt.nodeClass ?: continue
 
-            val builder = NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_NODE_CLASS).setTarget(psiClass)
+            val builder = NavigationGutterIconBuilder.create(JccIcons.GUTTER_NODE_CLASS).setTarget(psiClass)
                 .setTooltipText("Click to navigate to class ${psiClass.name}")
                 .setPopupTitle("Class ${psiClass.name}")
 

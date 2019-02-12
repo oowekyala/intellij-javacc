@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -29,7 +29,7 @@ class JccLexicalStateReference(element: JccIdentifier) : PsiReferenceBase<JccIde
             .mapNotNull {
                 LookupElementBuilder.create(it.name)
                     .withPsiElement(it.declarationIdent)
-                    .withIcon(JavaccIcons.LEXICAL_STATE)
+                    .withIcon(JccIcons.LEXICAL_STATE)
             }
             .toList()
             .toTypedArray()

@@ -8,7 +8,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.github.oowekyala.ijcc.lang.psi.innerRange
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -60,7 +60,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
                 .create(asString.text.removeSuffix("\""))
                 .withPsiElement(token.psiElement)
                 .withPresentableText(asString.text)
-                .withIcon(JavaccIcons.TOKEN)
+                .withIcon(JccIcons.TOKEN)
                 .withTypeText(token.let {
                     buildString {
                         if (it.lexicalStatesOrEmptyForAll != LexicalState.JustDefaultState) {

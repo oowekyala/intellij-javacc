@@ -1,19 +1,14 @@
 package com.github.oowekyala.ijcc.icons
 
-import com.github.oowekyala.ijcc.icons.JavaccIcons.JAVACC_FILE
-import com.github.oowekyala.ijcc.icons.JavaccIcons.JJTREE_NODE
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
-import com.intellij.ui.LayeredIcon
-import com.intellij.util.IconUtil
 import com.intellij.util.PlatformIcons
 import javax.swing.Icon
-import javax.swing.SwingConstants
 
 /**
  * Provides icons for the plugin.
  */
-enum class JavaccIcons(icon: Icon) : Icon by icon {
+enum class JccIcons(icon: Icon) : Icon by icon {
     // Structure view
 
     /** Terminal (for headers).  */
@@ -37,17 +32,14 @@ enum class JavaccIcons(icon: Icon) : Icon by icon {
     /** For [com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider]. */
     GUTTER_NODE_CLASS(AllIcons.Gutter.OverridenMethod),
     /** For [com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider]. */
-    GUTTER_PARTIAL_DECL(AllIcons.General.Locate),
-    GUTTER_NAVIGATE_TO_GRAMMAR("jccNavigateToGrammar_compressed.svg"),
+    GUTTER_PARTIAL_DECL("jjtreeNodeLocate.svg"),
+    GUTTER_NAVIGATE_TO_GRAMMAR("jccNavigateToGrammar.svg"),
     GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
     JAVACC_FILE("jccFile.svg"),
-    JJTREE_FILE("jjtFile_compressed.svg"),
+    JJTREE_FILE("jjtreeFile.svg"),
     ;
 
-    constructor(fname: String) : this(IjccIconUtil.getIjccIcon(fname))
+    constructor(fname: String) : this(IconLoader.getIcon(fname))
 }
 
-private object IjccIconUtil {
-    fun getIjccIcon(fname: String): Icon = IconLoader.getIcon(fname)
-}

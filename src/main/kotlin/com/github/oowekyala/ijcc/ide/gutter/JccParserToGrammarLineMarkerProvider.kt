@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.lang.index.JccParserQnameIndexer
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.runIt
@@ -30,10 +30,12 @@ object JccParserToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
             val elt = element as? PsiClass ?: continue
             if (forNavigation && !visited!!.add(elt)) continue
 
+            val qnames = listOfNotNull(elt.qualifiedName).toSet().takeIf { it.isNotEmpty() } ?: return
+
             val file: VirtualFile = let {
                 var f: VirtualFile? = null
                 FileBasedIndex.getInstance().getFilesWithKey(
-                    JccParserQnameIndexer.NAME, setOf(elt.qualifiedName), {
+                    JccParserQnameIndexer.NAME, qnames, {
                         f = it
                         true
                     },
@@ -46,7 +48,7 @@ object JccParserToGrammarLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
 
             val builder =
-                NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_NAVIGATE_TO_GRAMMAR).setTarget(jccFile)
+                NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_GRAMMAR).setTarget(jccFile)
                     .setTooltipText("Navigate to grammar file ${jccFile.name}")
                     .setPopupTitle("JavaCC grammar ${jccFile.name}")
 

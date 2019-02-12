@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.icons.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
@@ -31,7 +31,7 @@ object JjtreePartialDeclarationLineMarkerProvider : RelatedItemLineMarkerProvide
             if (name == null) continue
 
             val builder =
-                NavigationGutterIconBuilder.create(JavaccIcons.GUTTER_PARTIAL_DECL)
+                NavigationGutterIconBuilder.create(JccIcons.GUTTER_PARTIAL_DECL)
                     .setTargets(group)
                     .setCellRenderer(PartialDeclCellRenderer())
                     .setTooltipText("Click to navigate to other declarations of $name")

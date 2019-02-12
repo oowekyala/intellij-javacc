@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
 
-    <mask id="outerMask">
+    <mask id="modifierClip">
         <!--
           Everything outside the circle will be
           clipped and therefore invisible.
@@ -10,7 +10,7 @@
         <!--<circle cx="8" cy="8" r="15" fill="black"/>-->
     </mask>
 
-    <g fill="#FFB600" fill-opacity=".6" fill-rule="evenodd" mask="url(#outerMask)">
+    <g fill="#FFB600" fill-opacity=".6" fill-rule="evenodd" mask="url(#modifierClip)">
 
         <rect width="12" height="3" transform="translate(2 2)"/>
 
