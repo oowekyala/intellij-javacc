@@ -96,6 +96,12 @@ val JccRegexSpec.regexKind: RegexKind
 val JccRegexProduction.lexicalStatesNameOrEmptyForAll: List<String>
     get() = lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
 
+/**
+ * Lexical states explicitly declared on this regex production.
+ * Empty list if it's defaulted to DEFAULT or if it's for all states.
+ */
+val JccRegexProduction.lexicalStatesIdents: List<JccIdentifier>
+    get() = lexicalStateList?.identifierList ?: emptyList()
 
 val JccRegexSpec.isIgnoreCase: Boolean
     get() = production.isIgnoreCase

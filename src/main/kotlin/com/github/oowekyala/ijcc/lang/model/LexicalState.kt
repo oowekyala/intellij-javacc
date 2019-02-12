@@ -1,8 +1,10 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRefRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.match
+import com.intellij.psi.SmartPsiElementPointer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.regex.Matcher
@@ -25,7 +27,12 @@ import java.util.regex.Matcher
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalState private constructor(val name: String, val tokens: List<Token>) {
+class LexicalState private constructor(val name: String,
+                                       val tokens: List<Token>,
+                                       private val declarator: SmartPsiElementPointer<JccIdentifier>?) {
+
+    val declarationIdent: JccIdentifier?
+        get() = declarator?.element
 
     // Grammars often have big number of tokens in the default state, which makes
     // match computation suboptimal without caching.
@@ -126,7 +133,8 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
         /**
          * Builds a lexical state, used by [LexicalGrammar].
          */
-        internal class LexicalStateBuilder(val name: String) {
+        internal class LexicalStateBuilder(val name: String,
+                                           private val declarator: SmartPsiElementPointer<JccIdentifier>?) {
 
             private val mySpecs = mutableListOf<Token>()
 
@@ -146,7 +154,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
             val currentSpecs: List<Token>
                 get() = mySpecs
 
-            fun build() = LexicalState(name, mySpecs)
+            fun build() = LexicalState(name, mySpecs, declarator)
         }
     }
 }

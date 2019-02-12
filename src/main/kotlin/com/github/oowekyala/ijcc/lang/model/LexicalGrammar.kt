@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.LexicalStateB
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.psi.SmartPointerManager
 import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
@@ -89,20 +90,15 @@ class LexicalGrammar(file: JccFile) {
 
     companion object {
 
+
         private fun buildStatesMap(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalState> {
 
             // JavaCC collects all lexical state names during parser execution,
             // and only builds "lexical states" during the semanticise phase.
             // hence why we need two traversals here.
-            val allLexicalStatesNames =
-                allProductions().filterIsInstance<JccRegexProduction>()
-                    .flatMap { it.lexicalStatesNameOrEmptyForAll.asSequence() }
-                    .plus(DefaultStateName) // always there
-                    .distinct()
-                    .toList()
 
             // state name to builder
-            val builders = allLexicalStatesNames.associateWith { name -> LexicalStateBuilder(name) }
+            val builders = initBuilders(allProductions)
 
             val defaultBuilder = builders.getValue(DefaultStateName)
 
@@ -164,6 +160,16 @@ class LexicalGrammar(file: JccFile) {
 
             return builders.mapValues { (_, v) -> v.build() }
         }
+
+        private fun initBuilders(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalStateBuilder> =
+            allProductions().filterIsInstance<JccRegexProduction>()
+                .flatMap { it.lexicalStatesIdents.asSequence() }
+                .distinct()
+                .toList()
+                .associateTo(mutableMapOf()) { id ->
+                    Pair(id.name, LexicalStateBuilder(id.name, SmartPointerManager.createPointer(id)))
+                }
+                .also { it.computeIfAbsent(DefaultStateName) { name -> LexicalStateBuilder(name, null) } }
 
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens
