@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.findusages
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.psi.PsiElement
+import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.intellij.lang.annotations.Language
 
@@ -125,7 +126,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
             }
 
             void Four():{}
@@ -161,7 +162,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
                 //^
             }
 
@@ -197,7 +198,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
                       //^
 
             }
@@ -308,10 +309,10 @@ class JccFindUsagesTest : JccTestBase() {
 
         val source = findElementInEditor<JccPsiElement>()
 
-        val actual = markersActual(source)
-        val expected = markersFrom(code)
+        val actual = markersActual(source).sortedBy { it.first }
+        val expected = markersFrom(code).sortedBy { it.first }
 
-        actual shouldContainExactlyInAnyOrder expected
+        actual shouldContainExactly expected
     }
 
     private fun markersActual(source: JccPsiElement) =

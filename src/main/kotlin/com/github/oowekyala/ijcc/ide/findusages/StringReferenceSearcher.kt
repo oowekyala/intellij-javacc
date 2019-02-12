@@ -37,7 +37,7 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
             .filterIsInstance<JccRegularExpressionOwner>()
             .mapNotNull { it.regularExpression.asSingleLiteral() }
             // filter out declaration
-            .filter { it != target.definedToken.asStringToken }
+            .filter { it != target.definedToken.takeIf { it.isExplicit }?.asStringToken }
             .mapNotNull { it.typedReference }
             .filter { it.isReferenceTo(target) }
 

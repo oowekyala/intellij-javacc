@@ -55,7 +55,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             $DummyHeader
 
             TOKEN: {
-              < ${h("Foo")} : ${h("\"foo\"")} >
+              < ${h("Foo")} : "foo" >
             | <BAR : ("bar") >
             }
 
@@ -118,8 +118,8 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             var startOffset = highlighter.startOffset
             var endOffset = highlighter.endOffset
 
-            if (startOffset > caret) startOffset += CARET_TAG.length
-            if (endOffset > caret) endOffset += CARET_TAG.length
+            if (startOffset >= caret) startOffset += CARET_TAG.length
+            if (endOffset >= caret) endOffset += CARET_TAG.length
 
             HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION).range(startOffset, endOffset).create()
         }
