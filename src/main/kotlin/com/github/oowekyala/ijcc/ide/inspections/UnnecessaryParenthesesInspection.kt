@@ -11,7 +11,6 @@ import com.intellij.codeInspection.ui.MultipleCheckboxOptionsPanel
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.util.IncorrectOperationException
-import com.siyeh.InspectionGadgetsBundle
 import org.intellij.lang.annotations.Language
 import javax.swing.JComponent
 
@@ -72,9 +71,9 @@ class UnnecessaryParenthesesInspection : JccInspectionBase(InspectionName) {
     companion object {
 
 
-        val InspectionName = InspectionGadgetsBundle.message("unnecessary.parentheses.display.name")
-        val ProblemDescription = InspectionName
-        val QuickFixName = InspectionGadgetsBundle.message("unnecessary.parentheses.remove.quickfix")
+        const val InspectionName = "Unnecessary parentheses"
+        const val ProblemDescription = InspectionName
+        const val QuickFixName = "Remove unnecessary parentheses"
 
 
         private object LOG : EnclosedLogger()

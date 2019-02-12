@@ -366,7 +366,8 @@ void AdditiveExpr() #AdditiveExpr(>1):
 void AdditiveOperator():
 {}
 {
-    ( "+" | "-" ) { jjtThis.setImage(getToken(0).getImage()); }
+
+    (("+" "-")) ( "+" | "-" ) { jjtThis.setImage(getToken(0).getImage()); }
 }
 
 

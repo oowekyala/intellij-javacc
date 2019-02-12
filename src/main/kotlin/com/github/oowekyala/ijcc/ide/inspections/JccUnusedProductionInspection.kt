@@ -21,8 +21,6 @@ import org.intellij.lang.annotations.Language
  */
 class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
 
-    override fun getID(): String = "JavaCCUnusedProduction"
-
     @Language("HTML")
     override fun getStaticDescription() = """
         Detects productions that can't be reached from the root production.

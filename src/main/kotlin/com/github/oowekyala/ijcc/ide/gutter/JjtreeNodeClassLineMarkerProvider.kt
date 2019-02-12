@@ -39,7 +39,7 @@ object JjtreeNodeClassLineMarkerProvider : RelatedItemLineMarkerProvider() {
                 is JccNonTerminalProduction -> elt.nameIdentifier
                 is JccScopedExpansionUnit   -> elt.jjtreeNodeDescriptor.nameIdentifier
                 else                        -> null
-            }
+            }?.leaf
 
             markerBearer?.let { builder.createLineMarkerInfo(it) }?.runIt { result.add(it) }
         }
