@@ -173,6 +173,7 @@ tasks {
                 Main topic: improved code completion.
                 <p>What's new:
                 <ul>
+                    <li>Prettier file icons</li>
                     <li>Completion suggestions for productions, lexical states, TODO</li>
                     <li>Significantly improved parser tolerance to incomplete code. Starting to type a new production should now not break the rest of the grammar</li>
                     <li>Find usages for lexical states</li>
