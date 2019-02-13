@@ -51,7 +51,7 @@ class JccFileStub(val file: JccFile?,
                     jjtreeNodeNamePrefix = file.grammarOptions.nodePrefix,
                     jjtreeNodePackage = file.grammarOptions.nodePackage,
                     jccParserFileQname = file.grammarOptions.parserQualifiedName
-                    )
+                )
         }
 
         override fun serialize(stub: JccFileStub, dataStream: StubOutputStream) {
@@ -85,14 +85,17 @@ fun factory(id: String): IElementType = when (id) {
 }
 
 
-interface JjtNodeClassOwnerStub<T : JjtNodeClassOwner> : JccStub<T> {
-    // name of the node without prefix or package
-    val jjtNodeRawName: String?
+abstract class JjtNodeClassOwnerStub<T : JjtNodeClassOwner>(parent: StubElement<*>?,
+                                                            elementType: IStubElementType<out StubElement<*>, *>?,
+                                                            val jjtNodeRawName: String?)
+    : StubBase<T>(parent, elementType), JccStub<T> {
 
     val jjtNodeQualifiedName: String?
-        get() = jjtNodeRawName?.let { raw ->
-            fileStub.let {
-                it.jjtreeNodePackage + "." + it.jjtreeNodeNamePrefix + raw
+        by lazy {
+            jjtNodeRawName?.let { raw ->
+                fileStub.let {
+                    it.jjtreeNodePackage + "." + it.jjtreeNodeNamePrefix + raw
+                }
             }
         }
 
@@ -126,9 +129,9 @@ abstract class NodeClassOwnerStubElementType<TStub : JjtNodeClassOwnerStub<TPsi>
 
 class JccScopedExpansionUnitStub(parent: StubElement<*>?,
                                  elementType: IStubElementType<out StubElement<*>, *>?,
-                                 override val jjtNodeRawName: String?)
+                                 jjtNodeRawName: String?)
 
-    : StubBase<JccScopedExpansionUnit>(parent, elementType), JjtNodeClassOwnerStub<JccScopedExpansionUnit> {
+    : JjtNodeClassOwnerStub<JccScopedExpansionUnit>(parent, elementType, jjtNodeRawName) {
 
 
     object Type :
@@ -149,11 +152,13 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
 }
 
 
-interface NonTerminalStub<T : JccNonTerminalProduction> : JjtNodeClassOwnerStub<T> {
+abstract class NonTerminalStub<T : JccNonTerminalProduction>(parent: StubElement<*>?,
+                                                             elementType: IStubElementType<out StubElement<*>, *>?,
+                                                             jjtNodeRawName: String?,
+                                                             val methodName: String,
+                                                             val accessModifier: AccessModifier)
+    : JjtNodeClassOwnerStub<T>(parent, elementType, jjtNodeRawName)
 
-    val methodName: String
-    val accessModifier: AccessModifier
-}
 
 abstract class NonTerminalStubElementType<TStub : NonTerminalStub<TPsi>, TPsi : JccNonTerminalProduction>(id: String)
     : NodeClassOwnerStubElementType<TStub, TPsi>(id) {
@@ -184,10 +189,10 @@ abstract class NonTerminalStubElementType<TStub : NonTerminalStub<TPsi>, TPsi : 
 
 class BnfProductionStubImpl(parent: StubElement<*>?,
                             elementType: IStubElementType<out StubElement<*>, *>?,
-                            override val methodName: String,
-                            override val accessModifier: AccessModifier,
-                            override val jjtNodeRawName: String?)
-    : StubBase<JccBnfProduction>(parent, elementType), NonTerminalStub<JccBnfProduction> {
+                            methodName: String,
+                            accessModifier: AccessModifier,
+                            jjtNodeRawName: String?)
+    : NonTerminalStub<JccBnfProduction>(parent, elementType, jjtNodeRawName, methodName, accessModifier) {
 
 
     object TYPE : NonTerminalStubElementType<BnfProductionStubImpl, JccBnfProduction>("BNF_PRODUCTION") {
@@ -223,10 +228,10 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
 
 class JavacodeProductionStubImpl(parent: StubElement<*>?,
                                  elementType: IStubElementType<out StubElement<*>, *>?,
-                                 override val methodName: String,
-                                 override val accessModifier: AccessModifier,
-                                 override val jjtNodeRawName: String?)
-    : StubBase<JccJavacodeProduction>(parent, elementType), NonTerminalStub<JccJavacodeProduction> {
+                                 methodName: String,
+                                 accessModifier: AccessModifier,
+                                 jjtNodeRawName: String?)
+    : NonTerminalStub<JccJavacodeProduction>(parent, elementType, jjtNodeRawName, methodName, accessModifier) {
 
 
     object TYPE : NonTerminalStubElementType<JavacodeProductionStubImpl, JccJavacodeProduction>("JAVACODE_PRODUCTION") {
