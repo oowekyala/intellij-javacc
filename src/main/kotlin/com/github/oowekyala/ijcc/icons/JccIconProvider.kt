@@ -20,7 +20,7 @@ object JccIconProvider : IconProvider(), DumbAware {
     }
 
     private fun getFileIcon(file: JccFile): Icon? =
-        when (file.grammarNature) {
+        when (file.grammarNature) { // the nature is stubbed
             GrammarNature.JJTREE -> JccIcons.JJTREE_FILE
             GrammarNature.JAVACC -> JccIcons.JAVACC_FILE
         }

@@ -22,5 +22,7 @@ abstract class JjtNodeClassOwnerImpl<TStub : JjtNodeClassOwnerStub<*>>
             it.takeLastWhile { it != '.' }
         } ?: super.nodeSimpleName
 
+    override val rawName: String?
+        get() = stub?.jjtNodeRawName ?: super.rawName
 
 }
