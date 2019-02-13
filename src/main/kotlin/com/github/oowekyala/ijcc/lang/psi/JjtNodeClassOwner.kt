@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
-import com.intellij.psi.StubBasedPsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 
 /**
@@ -76,4 +77,13 @@ val JjtNodeClassOwner.nodeIdentifier: JccIdentifier?
 
 
 fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? =
-    JavaPsiFacade.getInstance(context.project).findClass(fqcn, GlobalSearchScope.allScope(context.project))
+    JavaPsiFacade.getInstance(context.project).findClass(fqcn, context.grammarSearchScope)
+
+
+/**
+ * Scope in which a grammar file will be searched for a matching
+ * JJTree declaration. This is also used to search for java files
+ * from the grammar file.
+ */
+val PsiFile.grammarSearchScope: GlobalSearchScope
+    get() = GlobalSearchScope.projectScope(project)

@@ -20,8 +20,12 @@ import writeEnum
 import writeNullable
 
 
-/**
+/*
  * TODO stub doc?
+ */
+
+/*
+    DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
  */
 
 
