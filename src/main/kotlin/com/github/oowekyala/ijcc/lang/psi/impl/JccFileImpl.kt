@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.icons.JccIconProvider
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
@@ -62,8 +63,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     // TODO use file gists for those
 
+    override fun getStub(): JccFileStub? = super.getStub() as JccFileStub?
+
     override val grammarNature: GrammarNature
-        get() = when {
+        get() = stub?.nature ?: when {
             hasJjtreeNature -> GrammarNature.JJTREE
             else            -> GrammarNature.JAVACC
         }

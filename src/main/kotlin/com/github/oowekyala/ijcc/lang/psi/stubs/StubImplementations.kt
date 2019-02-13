@@ -7,6 +7,9 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccScopedExpansionUnitImpl
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
+import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.psi.PsiFile
+import com.intellij.psi.StubBuilder
 import com.intellij.psi.stubs.*
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IStubFileElementType
@@ -21,39 +24,56 @@ import writeNullable
  * TODO stub doc?
  */
 
-class JccFileStub(val file: JccFile) : PsiFileStubImpl<JccFile>(file) {
 
-    val nature: GrammarNature get() = file.grammarNature
+interface JccStub<T : JccPsiElement> : StubElement<T> {
 
-    //    val jjtreeNodeNamePrefix: String get() = file.grammarOptions.nodePrefix
-    //    val jjtreeNodePackage: String get() = file.grammarOptions.nodePackage
-    //    val jccParserFileQname: String get() = file.grammarOptions.parserQualifiedName
+    val fileStub: JccFileStub
+        get() = ancestors(includeSelf = true).first { it is JccFileStub } as JccFileStub
+
+}
+
+class JccFileStub(val file: JccFile?,
+                  val nature: GrammarNature,
+                  val jjtreeNodeNamePrefix: String,
+                  val jjtreeNodePackage: String,
+                  val jccParserFileQname: String)
+    : PsiFileStubImpl<JccFile>(file), JccStub<JccFile> {
 
     object Type : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
 
-        //        override fun serialize(stub: JccFileStub, dataStream: StubOutputStream) {
-        //            super.serialize(stub, dataStream)
-        //            with(dataStream) {
-        //                writeEnum(stub.nature)
-        //                writeUTFFast(stub.jjtreeNodeNamePrefix)
-        //                writeUTFFast(stub.jjtreeNodePackage)
-        //                writeUTFFast(stub.jccParserFileQname)
-        //            }
-        //        }
-        //
-        //        override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): JccFileStub {
-        //            with(dataStream) {
-        //                val nature = readEnum<GrammarNature>()
-        //                val prefix = readUTFFast()
-        //                val pack = readUTFFast()
-        //                val qname = readUTFFast()
-        //                return
-        //            }
-        //        }
+        override fun getStubVersion(): Int = 2
 
+        override fun getBuilder(): StubBuilder = object : DefaultStubBuilder() {
+            override fun createStubForFile(file: PsiFile): StubElement<*> =
+                JccFileStub(
+                    file = file as JccFile,
+                    nature = file.grammarNature,
+                    jjtreeNodeNamePrefix = file.grammarOptions.nodePrefix,
+                    jjtreeNodePackage = file.grammarOptions.nodePackage,
+                    jccParserFileQname = file.grammarOptions.parserQualifiedName
+                    )
+        }
 
+        override fun serialize(stub: JccFileStub, dataStream: StubOutputStream) {
+            super.serialize(stub, dataStream)
+            with(dataStream) {
+                writeEnum(stub.nature)
+                writeUTFFast(stub.jjtreeNodeNamePrefix)
+                writeUTFFast(stub.jjtreeNodePackage)
+                writeUTFFast(stub.jccParserFileQname)
+            }
+        }
+
+        override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): JccFileStub {
+            with(dataStream) {
+                val nature = readEnum<GrammarNature>()
+                val prefix = readUTFFast()
+                val pack = readUTFFast()
+                val qname = readUTFFast()
+                return JccFileStub(null, nature, prefix, pack, qname)
+            }
+        }
     }
-
 }
 
 
@@ -65,9 +85,18 @@ fun factory(id: String): IElementType = when (id) {
 }
 
 
-interface JjtNodeClassOwnerStub<T : JjtNodeClassOwner> : StubElement<T> {
+interface JjtNodeClassOwnerStub<T : JjtNodeClassOwner> : JccStub<T> {
+    // name of the node without prefix or package
+    val jjtNodeRawName: String?
+
     val jjtNodeQualifiedName: String?
-    val isVoid: Boolean get() = jjtNodeQualifiedName == null
+        get() = jjtNodeRawName?.let { raw ->
+            fileStub.let {
+                it.jjtreeNodePackage + "." + it.jjtreeNodeNamePrefix + raw
+            }
+        }
+
+    val isVoid: Boolean get() = jjtNodeRawName == null
 }
 
 
@@ -78,27 +107,26 @@ abstract class NodeClassOwnerStubElementType<TStub : JjtNodeClassOwnerStub<TPsi>
      * DONT FORGET TO CALL super.serialize when overriding
      */
     override fun serialize(stub: TStub, dataStream: StubOutputStream) {
-        dataStream.writeNullable(stub.jjtNodeQualifiedName) { writeUTF(it) }
+        dataStream.writeNullable(stub.jjtNodeRawName) { writeUTF(it) }
     }
 
     final override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>): TStub {
         val rawName = dataStream.readNullable { readUTF() }
-        return deserializeImpl(dataStream, parentStub, nodeQname = rawName)
+        return deserializeImpl(dataStream, parentStub, rawName = rawName)
     }
 
-    abstract fun deserializeImpl(dataStream: StubInputStream, parentStub: StubElement<*>, nodeQname: String?): TStub
+    abstract fun deserializeImpl(dataStream: StubInputStream, parentStub: StubElement<*>, rawName: String?): TStub
 
     override fun indexStub(stub: TStub, sink: IndexSink) {
-        val qname = stub.jjtNodeQualifiedName
-        if (qname != null) {
-            sink.occurrence(JjtreeQNameStubIndex.key, qname)
+        stub.jjtNodeQualifiedName?.runIt {
+            sink.occurrence(JjtreeQNameStubIndex.key, it)
         }
     }
 }
 
 class JccScopedExpansionUnitStub(parent: StubElement<*>?,
                                  elementType: IStubElementType<out StubElement<*>, *>?,
-                                 override val jjtNodeQualifiedName: String?)
+                                 override val jjtNodeRawName: String?)
 
     : StubBase<JccScopedExpansionUnit>(parent, elementType), JjtNodeClassOwnerStub<JccScopedExpansionUnit> {
 
@@ -111,11 +139,11 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
 
         override fun deserializeImpl(dataStream: StubInputStream,
                                      parentStub: StubElement<*>,
-                                     nodeQname: String?): JccScopedExpansionUnitStub =
-            JccScopedExpansionUnitStub(parentStub, this, nodeQname)
+                                     rawName: String?): JccScopedExpansionUnitStub =
+            JccScopedExpansionUnitStub(parentStub, this, rawName)
 
         override fun createStub(psi: JccScopedExpansionUnit, parentStub: StubElement<*>?): JccScopedExpansionUnitStub =
-            JccScopedExpansionUnitStub(parentStub, this, psi.nodeQualifiedName)
+            JccScopedExpansionUnitStub(parentStub, this, psi.rawName)
 
     }
 }
@@ -138,16 +166,16 @@ abstract class NonTerminalStubElementType<TStub : NonTerminalStub<TPsi>, TPsi : 
         }
     }
 
-    override fun deserializeImpl(dataStream: StubInputStream, parentStub: StubElement<*>, nodeQname: String?): TStub {
+    override fun deserializeImpl(dataStream: StubInputStream, parentStub: StubElement<*>, rawName: String?): TStub {
         val name = dataStream.readUTFFast()
         val accessMod = dataStream.readEnum<AccessModifier>()
 
-        return deserializeImpl(dataStream, parentStub, nodeQname, name, accessMod)
+        return deserializeImpl(dataStream, parentStub, rawName, name, accessMod)
     }
 
     abstract fun deserializeImpl(dataStream: StubInputStream,
                                  parentStub: StubElement<*>?,
-                                 jjtNodeQualifiedName: String?,
+                                 rawName: String?,
                                  methodName: String,
                                  accessModifier: AccessModifier): TStub
 
@@ -158,7 +186,7 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
                             elementType: IStubElementType<out StubElement<*>, *>?,
                             override val methodName: String,
                             override val accessModifier: AccessModifier,
-                            override val jjtNodeQualifiedName: String?)
+                            override val jjtNodeRawName: String?)
     : StubBase<JccBnfProduction>(parent, elementType), NonTerminalStub<JccBnfProduction> {
 
 
@@ -171,20 +199,20 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
                 parentStub,
                 elementType = this,
                 accessModifier = psi.header.javaAccessModifier.modelConstant,
-                jjtNodeQualifiedName = psi.nodeQualifiedName,
+                jjtNodeRawName = psi.rawName,
                 methodName = psi.name
             )
 
         override fun deserializeImpl(dataStream: StubInputStream,
                                      parentStub: StubElement<*>?,
-                                     jjtNodeQualifiedName: String?,
+                                     rawName: String?,
                                      methodName: String,
                                      accessModifier: AccessModifier): BnfProductionStubImpl =
             BnfProductionStubImpl(
                 parent = parentStub,
                 elementType = this,
                 methodName = methodName,
-                jjtNodeQualifiedName = jjtNodeQualifiedName,
+                jjtNodeRawName = rawName,
                 accessModifier = accessModifier
             )
 
@@ -197,7 +225,7 @@ class JavacodeProductionStubImpl(parent: StubElement<*>?,
                                  elementType: IStubElementType<out StubElement<*>, *>?,
                                  override val methodName: String,
                                  override val accessModifier: AccessModifier,
-                                 override val jjtNodeQualifiedName: String?)
+                                 override val jjtNodeRawName: String?)
     : StubBase<JccJavacodeProduction>(parent, elementType), NonTerminalStub<JccJavacodeProduction> {
 
 
@@ -210,20 +238,20 @@ class JavacodeProductionStubImpl(parent: StubElement<*>?,
                 parentStub,
                 elementType = this,
                 accessModifier = psi.header.javaAccessModifier.modelConstant,
-                jjtNodeQualifiedName = psi.nodeQualifiedName,
+                jjtNodeRawName = psi.rawName,
                 methodName = psi.name
             )
 
         override fun deserializeImpl(dataStream: StubInputStream,
                                      parentStub: StubElement<*>?,
-                                     jjtNodeQualifiedName: String?,
+                                     rawName: String?,
                                      methodName: String,
                                      accessModifier: AccessModifier): JavacodeProductionStubImpl =
             JavacodeProductionStubImpl(
                 parent = parentStub,
                 elementType = this,
                 methodName = methodName,
-                jjtNodeQualifiedName = jjtNodeQualifiedName,
+                jjtNodeRawName = rawName,
                 accessModifier = accessModifier
             )
     }
