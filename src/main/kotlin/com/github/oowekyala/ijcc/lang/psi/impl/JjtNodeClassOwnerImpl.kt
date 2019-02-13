@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.stubs.JjtNodeClassOwnerStub
 import com.intellij.lang.ASTNode
@@ -22,7 +23,10 @@ abstract class JjtNodeClassOwnerImpl<TStub : JjtNodeClassOwnerStub<*>>
             it.takeLastWhile { it != '.' }
         } ?: super.nodeSimpleName
 
-    override val rawName: String?
-        get() = stub?.jjtNodeRawName ?: super.rawName
+    override val nodeRawName: String?
+        get() = stub?.jjtNodeRawName ?: super.nodeRawName?.takeIf {
+            // nothing generates nodes in jj files
+            containingFile.grammarNature == GrammarNature.JJTREE
+        }
 
 }

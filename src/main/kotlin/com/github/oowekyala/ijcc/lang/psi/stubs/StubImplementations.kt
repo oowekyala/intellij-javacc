@@ -45,7 +45,7 @@ class JccFileStub(val file: JccFile?,
 
     object Type : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
 
-        override fun getStubVersion(): Int = 2
+        override fun getStubVersion(): Int = 3
 
         override fun getBuilder(): StubBuilder = object : DefaultStubBuilder() {
             override fun createStubForFile(file: PsiFile): StubElement<*> =
@@ -150,7 +150,7 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
             JccScopedExpansionUnitStub(parentStub, this, rawName)
 
         override fun createStub(psi: JccScopedExpansionUnit, parentStub: StubElement<*>?): JccScopedExpansionUnitStub =
-            JccScopedExpansionUnitStub(parentStub, this, psi.rawName)
+            JccScopedExpansionUnitStub(parentStub, this, psi.nodeRawName)
 
     }
 }
@@ -208,7 +208,7 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
                 parentStub,
                 elementType = this,
                 accessModifier = psi.header.javaAccessModifier.modelConstant,
-                jjtNodeRawName = psi.rawName,
+                jjtNodeRawName = psi.nodeRawName,
                 methodName = psi.name
             )
 
@@ -247,7 +247,7 @@ class JavacodeProductionStubImpl(parent: StubElement<*>?,
                 parentStub,
                 elementType = this,
                 accessModifier = psi.header.javaAccessModifier.modelConstant,
-                jjtNodeRawName = psi.rawName,
+                jjtNodeRawName = psi.nodeRawName,
                 methodName = psi.name
             )
 

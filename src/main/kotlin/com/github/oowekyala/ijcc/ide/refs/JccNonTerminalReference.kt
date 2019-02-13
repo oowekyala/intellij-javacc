@@ -3,15 +3,13 @@ package com.github.oowekyala.ijcc.ide.refs
 import com.github.oowekyala.ijcc.ide.completion.withTail
 import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.impl.source.resolve.ResolveCache
 
 
 /**
@@ -28,7 +26,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
     fun resolveProduction(): JccNonTerminalProduction? {
         val searchedName = element.name ?: return null
 
-        return element.containingFile.syntaxGrammar.getProductionByName(searchedName)
+        return element.containingFile.getProductionByName(searchedName)
     }
 
 

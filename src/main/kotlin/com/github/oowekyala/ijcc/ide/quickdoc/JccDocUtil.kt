@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.lang.psi.getProductionByName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.intellij.codeInsight.documentation.DocumentationManager
@@ -28,7 +29,6 @@ object JccDocUtil {
     private const val NonterminalRef = "nonterminal"
 
     /** Finds the target of a link created by [linkRefToLexicalState]. */
-    @Suppress("UNUSED_PARAMETER")
     fun findLinkTarget(psiManager: PsiManager?, ref: String?, context: PsiElement?): PsiElement? {
         ref ?: return null
 
@@ -44,7 +44,7 @@ object JccDocUtil {
                     psiFile.lexicalGrammar.getLexicalState(name)?.declarationIdent ?: psiFile.fakeDefaultStateDecl
                 StringTokenRef -> psiFile.lexicalGrammar.allTokens.getOrNull(name.toInt())?.psiElement
                 TerminalRef    -> psiFile.lexicalGrammar.getTokenByName(name)?.psiElement
-                NonterminalRef -> psiFile.syntaxGrammar.getProductionByName(name)
+                NonterminalRef -> psiFile.getProductionByName(name)
                 else           -> null
             }
         } else {

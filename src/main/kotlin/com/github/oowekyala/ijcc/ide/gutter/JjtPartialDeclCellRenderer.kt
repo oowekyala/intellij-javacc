@@ -29,7 +29,7 @@ object JjtPartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
     override fun getElementText(element: PsiElement): String =
         (element as? JjtNodeClassOwner).let { owner ->
             when (owner) {
-                is JccScopedExpansionUnit   -> "#${owner.rawName}"
+                is JccScopedExpansionUnit   -> "#${owner.nodeRawName}"
                 is JccNonTerminalProduction -> "${owner.name}()"
                 else                        -> super.getElementText(element)
             }
@@ -56,7 +56,7 @@ object JjtPartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
             }
 
             is JccNonTerminalProduction -> {
-                val raw = element.rawName
+                val raw = element.nodeRawName
                 val method = element.name
                 if (raw != method) {
                     "#$raw"

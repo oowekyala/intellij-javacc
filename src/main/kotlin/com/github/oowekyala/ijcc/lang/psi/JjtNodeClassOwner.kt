@@ -36,11 +36,11 @@ interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
     /** Gets the node's simple name, accounting for the node prefix, etc. */
     @JvmDefault
     val nodeSimpleName: String?
-        get() = nodeIdentifier?.let { grammarOptions.nodePrefix + it.name }
+        get() = nodeRawName?.let { grammarOptions.nodePrefix + it }
 
     /** Name without the prefixes. */
     @JvmDefault
-    val rawName: String?
+    val nodeRawName: String?
         get() = nodeIdentifier?.name
 
 

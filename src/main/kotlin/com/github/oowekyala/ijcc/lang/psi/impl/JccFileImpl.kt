@@ -4,7 +4,10 @@ import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.icons.JccIconProvider
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
-import com.github.oowekyala.ijcc.lang.model.*
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
@@ -67,14 +70,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val grammarNature: GrammarNature
         get() = stub?.nature ?: when {
-            hasJjtreeNature -> GrammarNature.JJTREE
-            else            -> GrammarNature.JAVACC
+            name.endsWith(".jjt") -> GrammarNature.JJTREE
+            else                  -> GrammarNature.JAVACC
         }
 
-    private val hasJjtreeNature: Boolean
-        get() = name.endsWith(".jjt")
-            || grammarOptions.allOptionsBindings.any { it.modelOption is JjtOption }
-            || syntaxGrammar.usesJjtreeDescriptors
+    // private fun computeJjtreeNature(): Boolean = name.endsWith(".jjt")
+    //        || options?.optionBindingList?.any { it.modelOption is JjtOption } == true
+    //        || TODO find out usages of JJTree descriptors
 
     /**
      * Some structures are lazily cached to reduce the number of times
@@ -89,20 +91,25 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         mySyntaxGrammarImpl = SyntaxGrammar(this)
     }
 
+    // TODO find a better fucking way to cache that
+
     private var myLexGrammarImpl: LexicalGrammar? = null
 
     override val lexicalGrammar: LexicalGrammar
-        get() = myLexGrammarImpl ?: let { invalidateCachedStructures(); myLexGrammarImpl!! }
+        get() = myLexGrammarImpl ?: let { myLexGrammarImpl = LexicalGrammar(this);myLexGrammarImpl!! }
 
     private var mySyntaxGrammarImpl: SyntaxGrammar? = null
 
-    override val syntaxGrammar: SyntaxGrammar
-        get() = mySyntaxGrammarImpl ?: let { invalidateCachedStructures(); mySyntaxGrammarImpl!! }
+    val syntaxGrammar: SyntaxGrammar
+        get() = mySyntaxGrammarImpl ?: let { mySyntaxGrammarImpl = SyntaxGrammar(this); mySyntaxGrammarImpl!! }
 
     private var myGrammarOptionsImpl: GrammarOptions? = null
 
     override val grammarOptions: GrammarOptions
-        get() = myGrammarOptionsImpl ?: let { invalidateCachedStructures(); myGrammarOptionsImpl!! }
+        get() = myGrammarOptionsImpl ?: let {
+            myGrammarOptionsImpl = GrammarOptions(options, parserDeclaration)
+            myGrammarOptionsImpl!!
+        }
 
 
     override fun getContainingFile(): JccFile = this

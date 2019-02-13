@@ -9,6 +9,7 @@ import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.lang.psi.getProductionByNameMulti
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.runIt
@@ -173,7 +174,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        myFile.syntaxGrammar.getProductionByNameMulti(o.name).runIt { dups ->
+        myFile.getProductionByNameMulti(o.name).runIt { dups ->
             if (dups.count() > 1) {
                 myHolder += errorInfo(
                     o.nameIdentifier,

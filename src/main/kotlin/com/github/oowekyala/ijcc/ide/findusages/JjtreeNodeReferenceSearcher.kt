@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
 import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
+import com.github.oowekyala.ijcc.lang.psi.getJjtreeDeclsForRawName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.QueryExecutorBase
 import com.intellij.psi.PsiReference
@@ -31,10 +32,8 @@ object JjtreeNodeReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesS
     private fun findReferencesTo(origin: JjtNodeClassOwner,
                                  rawName: String): Sequence<JjtNodePolyReference> =
         origin.containingFile
-            .syntaxGrammar
             .getJjtreeDeclsForRawName(rawName)
             .asSequence()
-            .mapNotNull { it.declarator }
             .filter { it != origin }
             .mapNotNull { it.typedReference }
 
