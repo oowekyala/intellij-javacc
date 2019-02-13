@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiFile

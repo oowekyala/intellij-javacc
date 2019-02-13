@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.icons.JccIcons
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
@@ -19,19 +20,25 @@ object JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiC
                 JjtreeQNameStubIndex.get(qname, elt.project, GlobalSearchScope.allScope(elt.project))
             }
             ?.takeIf { it.isNotEmpty() }
-            ?.let { jjtreeNodes ->
+            ?.groupBy { it.containingFile }
+            ?.mapValues { (grammar, nodes) ->
 
-                val grammarName = jjtreeNodes.first().containingFile.name
-
-                NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)
-                    .setTargets(jjtreeNodes)
-                    .setCellRenderer(JjtPartialDeclCellRenderer)
-                    .setTooltipText("Navigate to JJTree node in $grammarName")
-                    .setPopupTitle("Select partial declaration in $grammarName")
+                if (grammar.grammarNature != GrammarNature.JJTREE) null
+                else {
+                    elt.nameIdentifier?.let { ident ->
+                        NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)
+                            .setTargets(nodes)
+                            .setCellRenderer(JjtPartialDeclCellRenderer)
+                            .setTooltipText("Navigate to JJTree node in ${grammar.name}")
+                            .setPopupTitle("Select partial declaration in ${grammar.name}")
+                            .createLineMarkerInfo(ident)
+                    }
+                }
 
             }
-            ?.let { builder -> elt.nameIdentifier?.let { builder.createLineMarkerInfo(it) } }
-            ?.let { sequenceOf(it) }
+            ?.values
+            ?.asSequence()
+            ?.filterNotNull()
             .orEmpty()
 
 

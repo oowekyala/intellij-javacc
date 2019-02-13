@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.gutter
 
 import com.github.oowekyala.ijcc.icons.JccIcons
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccScopedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
@@ -19,6 +20,8 @@ object JjtreeNodeClassLineMarkerProvider :
     BaseTargetingLineMarkerProvider<JjtNodeClassOwner>(JjtNodeClassOwner::class.java) {
 
     override fun processElt(elt: JjtNodeClassOwner): Sequence<RelatedItemLineMarkerInfo<PsiElement>> {
+        if (elt.containingFile.grammarNature != GrammarNature.JJTREE) return emptySequence()
+
         val psiClass = elt.nodeClass ?: return emptySequence()
 
         val builder = NavigationGutterIconBuilder.create(JccIcons.GUTTER_NODE_CLASS).setTarget(psiClass)
