@@ -21,11 +21,13 @@ object JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiC
             ?.takeIf { it.isNotEmpty() }
             ?.let { jjtreeNodes ->
 
+                val grammarName = jjtreeNodes.first().containingFile.name
+
                 NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)
                     .setTargets(jjtreeNodes)
                     .setCellRenderer(JjtPartialDeclCellRenderer)
-                    .setTooltipText("Navigate to JJTree node in ${jjtreeNodes.first().containingFile.name}")
-                    .setPopupTitle("Select partial declaration for ${jjtreeNodes.first().rawName}")
+                    .setTooltipText("Navigate to JJTree node in $grammarName")
+                    .setPopupTitle("Select partial declaration in $grammarName")
 
             }
             ?.let { builder -> elt.nameIdentifier?.let { builder.createLineMarkerInfo(it) } }

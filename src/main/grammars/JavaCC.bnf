@@ -12,7 +12,8 @@
   elementTypePrefix="JCC_"
   elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccElementType"
   tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccTokenType"
-  elementTypeFactory="com.github.oowekyala.ijcc.lang.psi.JccTypesExt.getUserType"
+  // factory for stub types
+  elementTypeFactory="com.github.oowekyala.ijcc.lang.psi.stubs.StubImplementationsKt.factory"
 
   psiClassPrefix="Jcc"
   psiImplClassSuffix="Impl"
@@ -98,7 +99,10 @@
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 
-  extends("(bnf|javacode)_production") = non_terminal_production
+  extends("bnf_production") = "com.github.oowekyala.ijcc.lang.psi.impl.JccNonTerminalProductionImpl<com.github.oowekyala.ijcc.lang.psi.stubs.BnfProductionStubImpl>"
+  extends("javacode_production") = "com.github.oowekyala.ijcc.lang.psi.impl.JccNonTerminalProductionImpl<com.github.oowekyala.ijcc.lang.psi.stubs.JavacodeProductionStubImpl>"
+  implements("(bnf|javacode)_production") = non_terminal_production
+
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
   implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_regex_unit|ref_regular_expression|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
@@ -114,6 +118,17 @@
   // Use implements for fake rules
   // Use extends for real rules
 
+  // we override here the class hierarchy for scoped_expansion_unit
+  // so that it may be stub_based without stubbing all expansions (which
+  // may one day come I guess).
+  extends("scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.impl.JjtNodeClassOwnerImpl<com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub>"
+  implements("scoped_expansion_unit")="expansion_unit"
+
+  methods("expansion_unit")=[
+    scoped_expansion_unit=""
+    expansion_unit=""
+  ]
+
   extends(".+_regex_unit")=regex_unit
   extends("regex_sequence_elt|regex_unit|regex_alternative_elt")=regex_element
   extends(".+_regular_expression")=regular_expression
@@ -124,6 +139,7 @@
   extends("expansion_(sequence|unit)")=expansion_sequence_or_unit
   extends("expansion_(alternative|sequence_or_unit)")=expansion
 
+
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
 
@@ -133,7 +149,9 @@
   implements("regex_spec|regex_expansion_unit")="regular_expression_owner"
 
 
-  stubClass("bnf_production|javacode_production")="com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub"
+  stubClass("bnf_production")="com.github.oowekyala.ijcc.lang.psi.stubs.BnfProductionStubImpl"
+  stubClass("javacode_production")="com.github.oowekyala.ijcc.lang.psi.stubs.JavacodeProductionStubImpl"
+  stubClass("scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub"
 
 
 }

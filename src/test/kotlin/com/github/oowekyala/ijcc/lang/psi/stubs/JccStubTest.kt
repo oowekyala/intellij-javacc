@@ -20,13 +20,14 @@ class JccStubTest : JccTestBase() {
            $DummyHeader
 
             void foo() :{}{
-                "foo"
+                "foo" #f
             }
 
         """,
         """
             PsiFileStubImpl
-              NON_TERMINAL:NonTerminalStubImpl
+              BNF_PRODUCTION:BnfProductionStubImpl
+                SCOPED_EXPANSION_UNIT:JccScopedExpansionUnitStub
         """.trimIndent()
     )
 

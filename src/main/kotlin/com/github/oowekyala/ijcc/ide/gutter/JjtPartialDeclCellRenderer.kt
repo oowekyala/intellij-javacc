@@ -33,6 +33,7 @@ object JjtPartialDeclCellRenderer : DefaultPsiElementCellRenderer() {
     override fun getContainerText(element: PsiElement?, name: String?): String? =
         when (element) {
             is JccScopedExpansionUnit   ->
+                // TODO this causes reparse, should use the stubs!
                 element.ancestors(includeSelf = false)
                     .filterIsInstance<JccNonTerminalProduction>()
                     .firstOrNull()

@@ -2,11 +2,10 @@ package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.parser.JavaccParser
-import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStubElementType
+import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser
@@ -29,7 +28,7 @@ object JavaccParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project): PsiParser = JavaccParser()
 
-    override fun getFileNodeType(): IFileElementType = JccFileStubElementType
+    override fun getFileNodeType(): IFileElementType = JccFileStub.Type
 
     override fun getWhitespaceTokens(): TokenSet = JccTypesExt.WhitespaceTypeSet
 

@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
+import com.intellij.psi.StubBasedPsiElement
 import com.intellij.psi.search.GlobalSearchScope
 
 /**

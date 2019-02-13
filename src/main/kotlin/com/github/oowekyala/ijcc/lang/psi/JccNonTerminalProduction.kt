@@ -1,12 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub
-import com.intellij.psi.StubBasedPsiElement
-
 interface JccNonTerminalProduction
-    : JccIdentifierOwner, JjtNodeClassOwner, JccProduction,
-    StubBasedPsiElement<NonTerminalStub> {
+    : JccIdentifierOwner, JjtNodeClassOwner, JccProduction {
 
     val javaBlock: JccJavaBlock?
 
@@ -16,10 +12,6 @@ interface JccNonTerminalProduction
 
     override fun getNameIdentifier(): JccIdentifier
 
-    override fun getName(): String = stub?.methodName ?: nameIdentifier.name
-
-    @JvmDefault
-    val isBnf: Boolean
-        get() = stub?.isBnf == true || this is JccBnfProduction
+    override fun getName(): String
 
 }

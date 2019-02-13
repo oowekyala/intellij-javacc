@@ -8,15 +8,17 @@ import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 
-abstract class JccNonTerminalProductionImpl : JccStubBasedPsiElementImpl<NonTerminalStub>, JccNonTerminalProduction {
+abstract class JccNonTerminalProductionImpl<TStub : NonTerminalStub<*>>
+    : JjtNodeClassOwnerImpl<TStub>, JccNonTerminalProduction {
 
 
     constructor(node: ASTNode) : super(node)
 
-    constructor(stub: NonTerminalStub, stubType: IStubElementType<NonTerminalStub, *>) : super(stub, stubType)
+    constructor(stub: TStub, stubType: IStubElementType<TStub, *>) : super(stub, stubType)
 
 
-    override fun getName(): String = super<JccNonTerminalProduction>.getName()
+    override fun getName(): String = stub?.methodName ?: nameIdentifier.name
+
 
     override val javaBlock: JccJavaBlock?
         get() = PsiTreeUtil.getChildOfType(this, JccJavaBlock::class.java)

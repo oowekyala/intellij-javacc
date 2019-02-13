@@ -8,6 +8,8 @@ import com.intellij.psi.PsiElement
 import javax.swing.Icon
 
 /**
+ * TODO port other icons here?
+ *
  * @author Clément Fournier
  * @since 1.2
  */
@@ -17,9 +19,10 @@ object JccIconProvider : IconProvider(), DumbAware {
         else       -> null
     }
 
-    private fun getFileIcon(file: JccFile): Icon? = when (file.grammarNature) {
-        GrammarNature.JJTREE -> JccIcons.JJTREE_FILE
-        GrammarNature.JAVACC -> JccIcons.JAVACC_FILE
-    }
+    private fun getFileIcon(file: JccFile): Icon? =
+        when (file.grammarNature) {
+            GrammarNature.JJTREE -> JccIcons.JJTREE_FILE
+            GrammarNature.JAVACC -> JccIcons.JAVACC_FILE
+        }
 
 }
