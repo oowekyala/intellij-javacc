@@ -3,13 +3,13 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.icons.JccIconProvider
+import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
-import com.github.oowekyala.ijcc.lang.psi.stubs.gists.JccGists
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
@@ -78,15 +78,35 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     //        || options?.optionBindingList?.any { it.modelOption is JjtOption } == true
     //        || TODO find out usages of JJTree descriptors
 
+    /**
+     * Some structures are lazily cached to reduce the number of times
+     * they must be constructed. These include the [LexicalGrammar], the
+     * [GrammarOptions] and stuff. They're rebuilt when text changes, a
+     * heuristic for that is the highlight passes (it's done in the init
+     * routine of [JccHighlightVisitor]).
+     */
+    internal fun invalidateCachedStructures() {
+        myLexGrammarImpl = LexicalGrammar(this)
+        myGrammarOptionsImpl = GrammarOptions(this)
+        mySyntaxGrammarImpl = SyntaxGrammar(this)
+    }
+
+    // TODO find a better fucking way to cache that
+
+    private var myLexGrammarImpl: LexicalGrammar? = null
 
     override val lexicalGrammar: LexicalGrammar
-        get() = JccGists.getLexicalGrammar(this)
+        get() = myLexGrammarImpl ?: let { myLexGrammarImpl = LexicalGrammar(this);myLexGrammarImpl!! }
+
+    private var mySyntaxGrammarImpl: SyntaxGrammar? = null
 
     val syntaxGrammar: SyntaxGrammar
-        get() = JccGists.getSyntaxGrammar(this)
+        get() = mySyntaxGrammarImpl ?: let { mySyntaxGrammarImpl = SyntaxGrammar(this); mySyntaxGrammarImpl!! }
+
+    private var myGrammarOptionsImpl: GrammarOptions? = null
 
     override val grammarOptions: GrammarOptions
-        get() = JccGists.getGrammarOptions(this)
+        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = GrammarOptions(this); myGrammarOptionsImpl!! }
 
 
     override fun getContainingFile(): JccFile = this
@@ -96,6 +116,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override fun setPackageName(packageName: String?) {
         throw IncorrectOperationException("Cannot set the package of the parser that way")
     }
+
 
     override fun getIcon(flags: Int): Icon? = JccIconProvider.getIcon(this, flags)
 

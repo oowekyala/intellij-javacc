@@ -68,6 +68,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     private fun prepare(holder: HighlightInfoHolder, file: JccFile) {
         myHolderImpl = holder
         myFileImpl = SmartPointerManager.createPointer(file)
+        (file as JccFileImpl).invalidateCachedStructures() // update lex grammar cache and stuff
     }
 
     override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
