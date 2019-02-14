@@ -11,10 +11,10 @@ import com.intellij.codeInsight.completion.impl.CamelHumpMatcher
 import com.intellij.codeInsight.completion.simple.BracesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
+import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.patterns.PsiElementPattern
-import com.intellij.patterns.StandardPatterns
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -35,7 +35,6 @@ class JccCompletionContributor : CompletionContributor() {
             .inFile(PlatformPatterns.instanceOf(JccFile::class.java))
             .andNot(psiElement().inside(PsiComment::class.java))
 
-        StandardPatterns.string()
         val optionValuePattern =
             psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
                 .afterSibling(
@@ -47,69 +46,46 @@ class JccCompletionContributor : CompletionContributor() {
                 .andNot(psiElement().inside(PsiComment::class.java))
                 .andNot(optionValuePattern)
 
-        // Option names
-        extend(
-            CompletionType.BASIC,
-            optionNamePattern,
-            object : CompletionProvider<CompletionParameters>() {
-                override fun addCompletions(parameters: CompletionParameters,
-                                            context: ProcessingContext?,
-                                            result: CompletionResultSet) {
+        val bnfColonPattern =
+            psiElement(JccTypes.JCC_COLON).withParent(JccBnfProduction::class.java)
 
-                    result.withPrefixMatcher(CamelHumpMatcher("")).addAllElements(OptionVariants)
-                }
-            })
-        // Option values
-        extend(
-            CompletionType.BASIC,
-            optionValuePattern,
-            object : CompletionProvider<CompletionParameters>() {
-                override fun addCompletions(parameters: CompletionParameters,
-                                            context: ProcessingContext?,
-                                            result: CompletionResultSet) {
+        optionNamePattern.completeWith {
+            result.withPrefixMatcher(CamelHumpMatcher("")).addAllElements(OptionVariants)
+        }
 
-                    val parent = parameters.position.parent as? JccOptionBinding ?: return
+        optionValuePattern.completeWith {
+            val parent = parameters.position.parent as? JccOptionBinding ?: return@completeWith
 
-                    when (parent.modelOption?.expectedType) {
-                        BOOLEAN -> result.addAllElements(BoolOptionValueVariants)
-                    }
-                }
-            })
-
-        extend(CompletionType.BASIC, placePattern, object : CompletionProvider<CompletionParameters>() {
-            override fun addCompletions(parameters: CompletionParameters,
-                                        context: ProcessingContext,
-                                        result: CompletionResultSet) {
-
-
-                val position = parameters.position
-                val parent = PsiTreeUtil.getParentOfType<PsiElement>(
-                    position,
-                    JccNonTerminalProduction::class.java,
-                    JccGrammarFileRoot::class.java,
-                    JccTokenManagerDecls::class.java,
-                    JccRegexProduction::class.java,
-                    JccOptionSection::class.java,
-                    JccFile::class.java
-                )
-
-                val accepted =
-                    when (parent) {
-                        // could be an unclosed one
-                        is JccNonTerminalProduction -> parent.javaBlock == null
-                        // root
-                        is JccGrammarFileRoot, is JccFile -> true
-                        else -> false
-                    }
-
-                if (accepted) result.addAllElements(RegexProdVariants)
+            when (parent.modelOption?.expectedType) {
+                BOOLEAN -> result.addAllElements(BoolOptionValueVariants)
             }
-        })
+        }
+
+        placePattern.completeWith {
+            val position = parameters.position
+            val parent = PsiTreeUtil.getParentOfType<PsiElement>(
+                position,
+                JccNonTerminalProduction::class.java,
+                JccGrammarFileRoot::class.java,
+                JccTokenManagerDecls::class.java,
+                JccRegexProduction::class.java,
+                JccOptionSection::class.java,
+                JccFile::class.java
+            )
+
+            val accepted =
+                when (parent) {
+                    // could be an unclosed one
+                    is JccNonTerminalProduction       -> parent.javaBlock == null
+                    // root
+                    is JccGrammarFileRoot, is JccFile -> true
+                    else                              -> false
+                }
+
+            if (accepted) result.addAllElements(RegexProdVariants)
+        }
     }
 
-    override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
-        super.fillCompletionVariants(parameters, result)
-    }
     //
     //    override fun duringCompletion(context: CompletionInitializationContext) {
     //        val psiFile = context.file as? JccFile ?: return
@@ -121,6 +97,22 @@ class JccCompletionContributor : CompletionContributor() {
     //        }
     //    }
 
+    private fun ElementPattern<out PsiElement>.completeWith(completionType: CompletionType? = CompletionType.BASIC,
+                                                            provideCompletion: ExtendCtx.() -> Unit) {
+
+        super.extend(completionType, this, object : CompletionProvider<CompletionParameters>() {
+            override fun addCompletions(parameters: CompletionParameters,
+                                        context: ProcessingContext?,
+                                        result: CompletionResultSet) {
+                ExtendCtx(parameters, context, result).provideCompletion()
+            }
+
+        })
+    }
+
+    private data class ExtendCtx(val parameters: CompletionParameters,
+                                 val context: ProcessingContext?,
+                                 val result: CompletionResultSet)
 
     companion object {
 
