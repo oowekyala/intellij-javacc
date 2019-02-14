@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange
@@ -259,10 +260,15 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
             val parserName = file.grammarOptions.parserSimpleName
+            val isJjtree = file.grammarNature == GrammarNature.JJTREE
 
-            return """
-                        /** Only available in JJTree grammars. */
-                        protected JJT${parserName}State jjtree = new JJT${parserName}State();
+            val jjtreeDecls = if (isJjtree) """
+                 /** Only available in JJTree grammars. */
+                 protected JJT${parserName}State jjtree = new JJT${parserName}State();
+            """.trimIndent()
+            else ""
+
+            return  jjtreeDecls + """
 
                         /** Get the next Token. */
                         final public Token getNextToken() {}

@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccScopedExpansionUnitImpl
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
@@ -24,10 +25,6 @@ import writeNullable
  * TODO stub doc?
  */
 
-/*
-    DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
- */
-
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
 
@@ -38,6 +35,7 @@ interface JccStub<T : JccPsiElement> : StubElement<T> {
 
 class JccFileStub(val file: JccFile?,
                   val nature: GrammarNature,
+                  val isUserNature: Boolean,
                   val jjtreeNodeNamePrefix: String,
                   val jjtreeNodePackage: String,
                   val jccParserFileQname: String)
@@ -45,13 +43,17 @@ class JccFileStub(val file: JccFile?,
 
     object Type : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
 
-        override fun getStubVersion(): Int = 3
+        /*
+            DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
+         */
+        override fun getStubVersion(): Int = 4
 
         override fun getBuilder(): StubBuilder = object : DefaultStubBuilder() {
             override fun createStubForFile(file: PsiFile): StubElement<*> =
                 JccFileStub(
                     file = file as JccFile,
                     nature = file.grammarNature,
+                    isUserNature = (file as JccFileImpl).isUserNature,
                     jjtreeNodeNamePrefix = file.grammarOptions.nodePrefix,
                     jjtreeNodePackage = file.grammarOptions.nodePackage,
                     jccParserFileQname = file.grammarOptions.parserQualifiedName
@@ -61,6 +63,7 @@ class JccFileStub(val file: JccFile?,
         override fun serialize(stub: JccFileStub, dataStream: StubOutputStream) {
             super.serialize(stub, dataStream)
             with(dataStream) {
+                writeBoolean(stub.isUserNature)
                 writeEnum(stub.nature)
                 writeUTFFast(stub.jjtreeNodeNamePrefix)
                 writeUTFFast(stub.jjtreeNodePackage)
@@ -70,11 +73,19 @@ class JccFileStub(val file: JccFile?,
 
         override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): JccFileStub {
             with(dataStream) {
+                val isUserNature = readBoolean()
                 val nature = readEnum<GrammarNature>()
                 val prefix = readUTFFast()
                 val pack = readUTFFast()
                 val qname = readUTFFast()
-                return JccFileStub(null, nature, prefix, pack, qname)
+                return JccFileStub(
+                    file = null,
+                    nature = nature,
+                    isUserNature = isUserNature,
+                    jjtreeNodeNamePrefix = prefix,
+                    jjtreeNodePackage = pack,
+                    jccParserFileQname = qname
+                )
             }
         }
     }

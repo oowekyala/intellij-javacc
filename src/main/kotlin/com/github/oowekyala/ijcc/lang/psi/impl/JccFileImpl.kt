@@ -13,6 +13,7 @@ import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.util.Key
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
 import com.intellij.util.IncorrectOperationException
@@ -41,7 +42,6 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val lexicalStatesFirstMention: Sequence<JccIdentifier>
         get() = regexProductions.flatMap { it.lexicalStatesIdents.asSequence() }.distinctBy { it.name }
 
-
     override val parserDeclaration: JccParserDeclaration?
         get() = grammarFileRoot?.parserDeclaration
 
@@ -64,19 +64,23 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = grammarFileRoot?.optionSection
 
-    // TODO use file gists for those
-
     override fun getStub(): JccFileStub? = super.getStub() as? JccFileStub?
 
     override val grammarNature: GrammarNature
-        get() = stub?.nature ?: when {
-            name.endsWith(".jjt") -> GrammarNature.JJTREE
-            else                  -> GrammarNature.JAVACC
-        }
+        get() = stub?.nature?.also { this.putCopyableUserData(natureKey, it) }
+            ?: when {
+                hasJjtreeNature -> GrammarNature.JJTREE
+                else            -> GrammarNature.JAVACC
+            }
 
-    // private fun computeJjtreeNature(): Boolean = name.endsWith(".jjt")
-    //        || options?.optionBindingList?.any { it.modelOption is JjtOption } == true
-    //        || TODO find out usages of JJTree descriptors
+    // the user property takes precedence over the extension
+    private val hasJjtreeNature: Boolean
+        get() = getCopyableUserData(natureKey)
+            ?.let { it == GrammarNature.JJTREE }
+            ?: name.endsWith(".jjt")
+
+    val isUserNature: Boolean
+        get() = stub?.isUserNature ?: getCopyableUserData(natureKey) != null
 
     /**
      * Some structures are lazily cached to reduce the number of times
@@ -91,7 +95,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         mySyntaxGrammarImpl = SyntaxGrammar(this)
     }
 
-    // TODO find a better fucking way to cache that
+    /* TODO
+        find a better fucking way to cache that
+        * I tried PsiFileGist but got 100% cache miss so there's that
+     */
 
     private var myLexGrammarImpl: LexicalGrammar? = null
 
@@ -134,6 +141,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         return injected.mapNotNull {
             it.first.descendantSequence().filterIsInstance<PsiClass>().firstOrNull()
         }.toTypedArray()
+    }
+
+    companion object {
+        val natureKey = Key.create<GrammarNature>("ijcc.grammarNature")
     }
 
 }

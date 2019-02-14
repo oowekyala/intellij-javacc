@@ -23,25 +23,13 @@ interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 
 
     /** Gets the node's class qualified name. */
-    @JvmDefault
     val nodeQualifiedName: String?
-        get() = nodeSimpleName?.let {
-            val packageName = grammarOptions.nodePackage
-
-            if (packageName.isEmpty()) nodeSimpleName
-            else "$packageName.$it"
-        }
 
     /** Gets the node's simple name, accounting for the node prefix, etc. */
-    @JvmDefault
     val nodeSimpleName: String?
-        get() = nodeRawName?.let { grammarOptions.nodePrefix + it }
 
     /** Name without the prefixes. */
-    @JvmDefault
     val nodeRawName: String?
-        get() = nodeIdentifier?.name
-
 
 }
 

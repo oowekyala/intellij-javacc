@@ -1834,13 +1834,13 @@ void MethodDeclarator() :
 }
 
 
-void FormalParameters() :
+void FormalParameters():
 {}
 {
   "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
 }
 
-void FormalParameter() :
+void FormalParameter():
 {
 }
 {
@@ -2591,19 +2591,17 @@ void AssertStatement() :
 void RUNSIGNEDSHIFT(): // TODO 7.0.0 make #void
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
+  LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
-  )
 }
 
 void RSIGNEDSHIFT(): // TODO 7.0.0 make #void
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
+  LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
   ">" ">"
-  )
 }
 
 /* Annotation syntax follows. */
