@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
     <g fill-rule="evenodd" fill="#6E6E6E">
         <!-- Center node -->
-        <circle cx="8" cy="2" r="2" />
+        <circle cx="8" cy="2" r="2"/>
         <!-- right node -->
         <circle cx="13" cy="8" r="2"/>
         <!-- top left node -->
