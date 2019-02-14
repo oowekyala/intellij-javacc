@@ -1,12 +1,12 @@
 package com.github.oowekyala.ijcc.lang
 
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class JccCodeInsightTests : LightCodeInsightFixtureTestCase() {
+class JccFoldingBuilderTest : JccTestBase() {
 
 
     override fun getTestDataPath(): String = TestResourcesPath
@@ -14,6 +14,11 @@ class JccCodeInsightTests : LightCodeInsightFixtureTestCase() {
     fun testFolding() {
         myFixture.configureByFiles()
         myFixture.testFoldingWithCollapseStatus("$FoldingTestDataPath/ParserActions.jjt")
+    }
+
+    fun testFoldingJjtreeGen() {
+        myFixture.configureByFiles()
+        myFixture.testFoldingWithCollapseStatus("$FoldingTestDataPath/JjtreeGen.jj")
     }
 
 }

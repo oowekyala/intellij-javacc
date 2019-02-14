@@ -66,7 +66,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     // TODO use file gists for those
 
-    override fun getStub(): JccFileStub? = super.getStub() as JccFileStub?
+    override fun getStub(): JccFileStub? = super.getStub() as? JccFileStub?
 
     override val grammarNature: GrammarNature
         get() = stub?.nature ?: when {

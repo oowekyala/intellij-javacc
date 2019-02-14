@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 
@@ -19,7 +20,7 @@ import com.intellij.psi.TokenType
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccFoldingBuilder : CustomFoldingBuilder() {
+class JccFoldingBuilder : CustomFoldingBuilder() {
 
     override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
                                           root: PsiElement,
@@ -47,6 +48,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
+            is PsiComment                 -> node.text // start comment of a generated section
             is JccTokenReferenceRegexUnit -> literalRegexForRef(psi)!!.stringLiteral.text
             is JccParserDeclaration       -> "/PARSER DECLARATION/"
             is JccTokenManagerDecls       -> "/TOKEN MANAGER DECLARATIONS/"
@@ -69,7 +71,7 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
 
     companion object {
 
-        private val LOG = Logger.getInstance(JavaccFoldingBuilder::class.java)
+        private val LOG = Logger.getInstance(JccFoldingBuilder::class.java)
 
 
         private fun literalRegexForRef(regexRef: JccTokenReferenceRegexUnit): JccLiteralRegexUnit? =
@@ -93,10 +95,22 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
             // all regex productions belong in the same group
             private val regexProductionsGroup = FoldingGroup.newGroup("terminals")
 
+            private val jjtreeGenGroup = FoldingGroup.newGroup("jjtreeGen")
+
+
             override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
                 val ref = literalRegexForRef(o)
                 if (ref != null) {
                     result += FoldingDescriptor(o, o.textRange)
+                }
+            }
+
+            override fun visitComment(comment: PsiComment) {
+                if (comment.text.matches(BEGEN_PATTERN)) {
+                    val startOffset = comment.textOffset
+                    val end = comment.containingFile.text.indexOf(EGEN, startIndex = startOffset + comment.textLength)
+                    val endOffset = end + EGEN.length
+                    result += FoldingDescriptor(comment.node, TextRange(startOffset, endOffset), jjtreeGenGroup)
                 }
             }
 
@@ -169,6 +183,12 @@ class JavaccFoldingBuilder : CustomFoldingBuilder() {
                     else
                         FoldingDescriptor(elt, trimWhitespace(elt))
                 }
+            }
+
+            companion object {
+                private val BEGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
+                private const val EGEN = "/*@egen*/"
+
             }
         }
     }

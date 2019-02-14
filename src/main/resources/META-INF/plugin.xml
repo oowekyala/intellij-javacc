@@ -159,7 +159,7 @@
                              implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
 
 
-        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
+        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
