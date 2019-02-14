@@ -97,6 +97,7 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
 
             private val jjtreeGenGroup = FoldingGroup.newGroup("jjtreeGen")
 
+            private var inGenSection: Boolean = false
 
             override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
                 val ref = literalRegexForRef(o)
@@ -111,7 +112,11 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                     val end = comment.containingFile.text.indexOf(EGEN, startIndex = startOffset + comment.textLength)
                     val endOffset = end + EGEN.length
                     result += FoldingDescriptor(comment.node, TextRange(startOffset, endOffset), jjtreeGenGroup)
+                    inGenSection = true
+                } else if (comment.text == EGEN) {
+                    inGenSection = false
                 }
+
             }
 
             override fun visitRegexProduction(o: JccRegexProduction) {
@@ -178,10 +183,12 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
 
             private fun visitJavaBlockLike(elt: JccPsiElement) {
                 if (elt.textLength > 2) { // not just "{}"
-                    result += if (currentJBlockGroup != null)
-                        FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
-                    else
-                        FoldingDescriptor(elt, trimWhitespace(elt))
+                    result +=
+                        when {
+                            inGenSection               -> FoldingDescriptor(elt.node, trimWhitespace(elt), jjtreeGenGroup)
+                            currentJBlockGroup != null -> FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
+                            else                       -> FoldingDescriptor(elt, trimWhitespace(elt))
+                        }
                 }
             }
 
