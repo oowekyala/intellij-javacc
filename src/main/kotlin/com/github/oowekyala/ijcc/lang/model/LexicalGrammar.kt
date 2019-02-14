@@ -15,7 +15,7 @@ import com.intellij.util.containers.MostlySingularMultiMap
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalGrammar(file: JccFile) {
+class LexicalGrammar(file: JccFile) : BaseCachedModelObject(file) {
 
     // Initialization order of this object is fragile
 

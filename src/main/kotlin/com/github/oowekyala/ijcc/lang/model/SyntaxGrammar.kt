@@ -14,7 +14,7 @@ import com.intellij.util.containers.MostlySingularMultiMap
  * @author Clément Fournier
  * @since 1.1
  */
-class SyntaxGrammar(file: JccFile) {
+class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
 
     // TODO indexing like that is supposed to be done by stub indices
 

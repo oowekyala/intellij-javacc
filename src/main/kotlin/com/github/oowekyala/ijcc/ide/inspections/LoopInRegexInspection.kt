@@ -41,7 +41,6 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return emptyArray()
 
-        (file as JccFileImpl).invalidateCachedStructures()
         val grammar = file.lexicalGrammar
 
         val allTokens = grammar.allTokens
