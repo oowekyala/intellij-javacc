@@ -192,6 +192,7 @@ JCC_FILE
     PsiErrorElement:<regex kind> expected, got '|'
       PsiElement(|)('|')
     PsiElement(STRING_LITERAL)('"fk"')
+    PsiComment(END_OF_LINE_COMMENT)('// FIXME shouldn't be affected')
     PsiElement(})('}')
     PsiComment(END_OF_LINE_COMMENT)('// shouldn't be affected by the failed lookahead above')
     JccBnfProductionImpl(foo)
