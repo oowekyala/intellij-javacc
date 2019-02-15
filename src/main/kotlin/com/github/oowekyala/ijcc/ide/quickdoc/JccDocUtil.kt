@@ -185,6 +185,11 @@ object HtmlUtil {
 
 private val FakeDefaultStateEltKey = Key.create<PsiElement>("jcc.fake.default.state")
 
+/**
+ * When the default state is not mentioned anywhere (eg in a <DEFAULT, FOO> lex
+ * state declaration), we need a psi element for documentation links to resolve
+ * to something (their target may only be a psi element).
+ */
 val JccFile.fakeDefaultStateDecl: PsiElement
     get() = getUserData(FakeDefaultStateEltKey)
         ?: let {
