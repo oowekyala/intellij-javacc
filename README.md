@@ -20,7 +20,7 @@ Offers comprehensive language support for the [JavaCC](https://github.com/javacc
   * Detection of all JavaCC errors as you type
 
 ##### JJTree code insight
-  * Link productions and JJTree node descriptors to their corresponding node class
+  * Link JJTree node descriptors to their corresponding node class, and vice-versa
   * Highlighting of the node scope of a node annotation
   * Jump to partial declarations when they exist
 
@@ -42,6 +42,6 @@ Many JavaCC warnings are also implemented as inspections. Inspections can be sup
 ## Usage notes
 
 * I recommend to define an easy shortcut for fold/unfold region from the start if you don't have any
-* Code ide in Java fragments works best when the token manager and other supporting files have already been generated.
+* Code insight in Java fragments works best when the token manager and other supporting files have already been generated.
 * Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any.
   The Java injection support in particular is still quite fragile. Contributions are most welcome as well!
