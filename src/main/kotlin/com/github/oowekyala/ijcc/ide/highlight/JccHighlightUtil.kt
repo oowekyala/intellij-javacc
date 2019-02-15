@@ -18,59 +18,69 @@ object JccHighlightUtil {
     fun highlightInfo(element: PsiElement,
                       type: HighlightInfoType,
                       severity: HighlightSeverity = type.getSeverity(null),
-                      message: String? = null,
-                      vararg quickFixes: IntentionAction): HighlightInfo =
-        highlightInfo(element.textRange, type, severity, message, *quickFixes)
+                      message: String? = null): HighlightInfo =
+        highlightInfo(element.textRange, type, severity, message)
 
     fun highlightInfo(textRange: TextRange,
                       type: HighlightInfoType,
                       severity: HighlightSeverity = type.getSeverity(null), // hack
-                      message: String? = null,
-                      vararg quickFixes: IntentionAction): HighlightInfo =
+                      message: String? = null): HighlightInfo =
 
         HighlightInfo.newHighlightInfo(type)
             .range(textRange)
             .severity(severity)
             .also { if (message != null) it.descriptionAndTooltip(message) }
             .createUnconditionally()
-            .also { info ->
-                quickFixes.forEach { fix -> QuickFixAction.registerQuickFixAction(info, fix) }
-            }
 
-    fun wrongReferenceInfo(element: PsiElement, message: String, vararg quickFixes: IntentionAction): HighlightInfo =
-        wrongReferenceInfo(element.textRange, message, *quickFixes)
+    fun wrongReferenceInfo(element: PsiElement,
+                           message: String): HighlightInfo =
+        wrongReferenceInfo(element.textRange, message)
 
-    fun wrongReferenceInfo(range: TextRange, message: String, vararg quickFixes: IntentionAction): HighlightInfo =
+    fun wrongReferenceInfo(range: TextRange,
+                           message: String): HighlightInfo =
         highlightInfo(
             textRange = range,
             severity = HighlightSeverity.ERROR,
             type = HighlightInfoType.WRONG_REF,
-            message = message,
-            quickFixes = *quickFixes
+            message = message
         )
 
-    fun warningInfo(element: PsiElement, message: String, vararg quickFixes: IntentionAction): HighlightInfo =
+    fun warningInfo(element: PsiElement,
+                    message: String): HighlightInfo =
         highlightInfo(
             textRange = element.textRange,
             severity = HighlightSeverity.WARNING,
             type = HighlightInfoType.WARNING,
-            message = message,
-            quickFixes = *quickFixes
+            message = message
         )
 
-    fun errorInfo(element: PsiElement, message: String?, vararg quickFixes: IntentionAction): HighlightInfo =
-        errorInfo(element.textRange, message, *quickFixes)
+    fun errorInfo(element: PsiElement,
+                  message: String?): HighlightInfo =
+        errorInfo(element.textRange, message)
 
-    fun errorInfo(range: TextRange, message: String?, vararg quickFixes: IntentionAction): HighlightInfo =
+    fun errorInfo(range: TextRange,
+                  message: String?): HighlightInfo =
         highlightInfo(
             textRange = range,
             severity = HighlightSeverity.ERROR,
             type = HighlightInfoType.ERROR,
-            message = message,
-            quickFixes = *quickFixes
+            message = message
         )
 
 }
+
+fun HighlightInfo.withQuickFix(range: TextRange = TextRange(startOffset, endOffset), vararg fixes: IntentionAction) =
+    this.also {
+        QuickFixAction.registerQuickFixActions(this, range, fixes.toList())
+    }
+
+
+fun HighlightInfo.withQuickFix(vararg fixes: IntentionAction) =
+    this.also {
+        fixes.forEach {
+            QuickFixAction.registerQuickFixAction(this, it)
+        }
+    }
 
 internal operator fun HighlightInfoHolder.plusAssign(highlightInfo: HighlightInfo) {
     add(highlightInfo)

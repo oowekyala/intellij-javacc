@@ -5,6 +5,8 @@ import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.warningInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.ide.intentions.ReplaceLiteralWithReferenceIntention
+import com.github.oowekyala.ijcc.ide.intentions.ReplaceSupersedingUsageWithReferenceIntentionFix
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.RegexKind
@@ -141,9 +143,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         if (myFile.grammarNature < GrammarNature.JJTREE) {
             myHolder += JccHighlightUtil.errorInfo(
                 nodeDescriptor,
-                JccErrorMessages.unexpectedJjtreeConstruct(),
-                *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE)
-            )
+                JccErrorMessages.unexpectedJjtreeConstruct()
+            ).withQuickFix(fixes = *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
         }
 
         // extracts the range of the "#" + the range of the ident or "void" kword
@@ -172,9 +173,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         } else if (myFile.grammarNature < GrammarNature.JJTREE && opt.supportedNature < GrammarNature.JJTREE) {
             myHolder += warningInfo(
                 binding.namingLeaf,
-                JccErrorMessages.unexpectedJjtreeOption(),
-                *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE)
-            )
+                JccErrorMessages.unexpectedJjtreeOption()
+            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
 
         } else {
             myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)
@@ -439,7 +439,13 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                     myHolder +=
                         if (!token.isIgnoreCase && spec.isIgnoreCase)
-                            warningInfo(spec, JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token))
+                            warningInfo(
+                                spec,
+                                JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token)
+                            ).let {
+                                if (spec.name == null) it
+                                else it.withQuickFix(ReplaceSupersedingUsageWithReferenceIntentionFix(token.asStringToken!!, spec.name!!))
+                            }
                         else
                             errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
 
