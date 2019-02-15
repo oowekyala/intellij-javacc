@@ -45,17 +45,16 @@ class JavaccColorSettingsPage : ColorSettingsPage {
         "unknown" to CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES,
         "knownprod" to JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys,
         "pdecl" to JavaccHighlightingColors.NONTERMINAL_DECLARATION.keys,
-        "lexstate" to JavaccHighlightingColors.LEXICAL_STATE.keys
+        "lexstate" to JavaccHighlightingColors.LEXICAL_STATE.keys,
+        "option-name" to JavaccHighlightingColors.OPTION_NAME.keys
     )
 
 
     override fun getDemoText(): String = """
 <jcckeyword>options</jcckeyword> {
-    LOOKAHEAD = 1;
-    CHOICE_AMBIGUITY_CHECK = 2;
-    OTHER_AMBIGUITY_CHECK = 1;
-    STATIC = true;
-    FORCE_LA_CHECK = false;
+    <option-name>LOOKAHEAD</option-name> = 1;
+    <option-name>CHOICE_AMBIGUITY_CHECK</option-name> = 2;
+    <option-name>FORCE_LA_CHECK</option-name> = false;
 }
 
 <jcckeyword>PARSER_BEGIN</jcckeyword>(JJTreeParser)
