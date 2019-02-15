@@ -9,7 +9,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.impl.source.resolve.ResolveCache
 
 
 /**
@@ -27,6 +26,14 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
         val searchedName = element.name ?: return null
 
         return element.containingFile.getProductionByName(searchedName)
+    }
+
+    override fun isReferenceTo(elt: PsiElement): Boolean {
+        return when (elt) {
+            is JccNonTerminalProduction -> elt.name == element.name
+            is JccIdentifier            -> elt.owner?.let { isReferenceTo(it) } == true
+            else                        -> false
+        }
     }
 
 
