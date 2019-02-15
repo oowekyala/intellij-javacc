@@ -94,7 +94,7 @@
         STRING_LITERAL      = 'regexp:"([^"\\]|\\.)*"'
         FLOAT_LITERAL       = 'regexp:(0[xb])?[\da-fA-F]*(\.[\da-fA-F]+)?[fF]?'
         LONG_LITERAL        = 'regexp:(0[xb])?[\da-fA-F]+[lL]'
-        CHARACTER_LITERAL   = "regexp:'([^\\\'\r\n]|\\[^\n\r])'"
+        CHARACTER_LITERAL   = "regexp:'([^\\'\r\n]|\\[^\n\r])'"
 
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
@@ -368,7 +368,12 @@ private expansion_choices 	    ::=
     |   expansion_sequence
 
 expansion_alternative           ::=
-    expansion_sequence ( "|" expansion_sequence )+ {pin="|" methods=[expansionList="expansion_sequence_or_unit"]}
+    expansion_sequence ( alternative_tail )+
+    {methods=[expansionList="expansion_sequence_or_unit"]}
+
+private alternative_tail        ::=
+    "|" expansion_sequence
+    {pin=1}
 
 expansion_sequence 	            ::=
     ( expansion_unit )+ {pin=1 recoverWhile="#auto"}

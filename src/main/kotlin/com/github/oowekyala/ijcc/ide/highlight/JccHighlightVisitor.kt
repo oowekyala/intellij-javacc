@@ -93,7 +93,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             tokenManagerDecls.drop(1).forEach {
                 myHolder += errorInfo(
                     it,
-                    "Duplicate token manager declarations, at most one occurrence expected."
+                    "Duplicate token manager declarations, at most one occurrence expected"
                 )
             }
         }
