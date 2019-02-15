@@ -72,6 +72,9 @@ class RenameTest : JccTestBase() {
         myFixture.checkResult(result)
     }
 
+
+
+
     fun `test rename JJTree node from prod definition`() {
         jjtreeNodeRenameTest("def")
     }

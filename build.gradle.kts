@@ -217,6 +217,7 @@ tasks {
                     <li>Parser tolerance to incomplete code has been significantly improved. Starting to type a new production should now not break the rest of the grammar</li>
                     <li>Completion result insertion making a mess when the tail characters are already present</li>
                     <li>Unnecessary parentheses inspection wasn't initialised correctly</li>
+                    <li>Rename refactoring was broken since 1.1. There are still some things to do to make it smarter.</li>
                 </ul>
             """.trimIndent()
         )

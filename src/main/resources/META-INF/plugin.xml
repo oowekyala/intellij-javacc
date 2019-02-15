@@ -123,7 +123,6 @@
 
         <!-- INDEX -->
 
-        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccGrammarNatureFileIndex"/>
         <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
         <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
 
@@ -147,8 +146,6 @@
 
         <!-- MISC -->
 
-
-        <iconProvider implementation="com.github.oowekyala.ijcc.icons.JccIconProvider"/>
 
         <completion.contributor
                 language="JavaCC"

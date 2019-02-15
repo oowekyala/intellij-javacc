@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
@@ -59,9 +60,9 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 // checking the actual file type using virtualfile doesn't play well
 // with the test framework
 val JccFile.grammarNature: GrammarNature
-    get() = when (name.endsWith(".jjt")) {
-        true -> GrammarNature.JJTREE
-        else -> GrammarNature.JAVACC
+    get() = when (fileType) {
+        JjtreeFileType -> GrammarNature.JJTREE
+        else           -> GrammarNature.JAVACC
     }
 
 fun JccFile.getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =

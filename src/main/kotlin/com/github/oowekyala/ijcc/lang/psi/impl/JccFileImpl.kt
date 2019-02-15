@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
@@ -11,6 +10,7 @@ import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
 import com.intellij.util.IncorrectOperationException
@@ -24,7 +24,11 @@ import com.intellij.util.IncorrectOperationException
  */
 class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
 
-    override fun getFileType(): FileType = JavaccFileType
+    private val myType: FileType by lazy {
+        originalFile.virtualFile?.fileType ?: FileTypeRegistry.getInstance().getFileTypeByFileName(name)
+    }
+
+    override fun getFileType(): FileType = myType
 
     override val grammarFileRoot: JccGrammarFileRoot?
         get() = findChildByClass(JccGrammarFileRoot::class.java)
