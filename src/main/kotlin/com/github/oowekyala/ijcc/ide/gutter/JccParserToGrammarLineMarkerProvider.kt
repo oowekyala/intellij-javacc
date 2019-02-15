@@ -20,32 +20,33 @@ import com.intellij.util.indexing.FileBasedIndex
 object JccParserToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiClass>(PsiClass::class.java) {
 
     override fun processElt(elt: PsiClass): Sequence<RelatedItemLineMarkerInfo<PsiElement>> =
-        elt.qualifiedName
-                ?.let { qname ->
-                    var f: VirtualFile? = null
-                    FileBasedIndex.getInstance().getFilesWithKey(
-                        JccParserQnameIndexer.NAME, setOf(qname), {
-                            f = it
-                            true
-                        },
-                        GlobalSearchScope.allScope(elt.project)
-                    )
-                    f
+        elt.takeUnless { InjectedLanguageManager.getInstance(elt.project).isInjectedFragment(elt.containingFile) }
+            ?.qualifiedName
+            ?.let { qname ->
+                var f: VirtualFile? = null
+                FileBasedIndex.getInstance().getFilesWithKey(
+                    JccParserQnameIndexer.NAME, setOf(qname), {
+                        f = it
+                        true
+                    },
+                    GlobalSearchScope.allScope(elt.project)
+                )
+                f
+            }
+            ?.let { vf ->
+                PsiManager.getInstance(elt.project).findFile(vf)  as? JccFile
+            }
+            // filter out the injected compilation unit in PARSER_BEGIN
+            ?.takeUnless { it == InjectedLanguageManager.getInstance(elt.project).getTopLevelFile(elt) }
+            ?.let { jccFile ->
+                elt.nameIdentifier?.let { ident ->
+                    NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_GRAMMAR).setTarget(jccFile)
+                        .setTooltipText("Navigate to grammar file ${jccFile.name}")
+                        .setPopupTitle("JavaCC grammar ${jccFile.name}")
+                        .createLineMarkerInfo(ident)
                 }
-                ?.let { vf ->
-                    PsiManager.getInstance(elt.project).findFile(vf)  as? JccFile
-                }
-                // filter out the injected compilation unit in PARSER_BEGIN
-                ?.takeUnless { it == InjectedLanguageManager.getInstance(elt.project).getTopLevelFile(elt) }
-                ?.let { jccFile ->
-                    elt.nameIdentifier?.let { ident ->
-                        NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_GRAMMAR).setTarget(jccFile)
-                            .setTooltipText("Navigate to grammar file ${jccFile.name}")
-                            .setPopupTitle("JavaCC grammar ${jccFile.name}")
-                            .createLineMarkerInfo(ident)
-                    }
-                }
-                ?.let { sequenceOf(it) }
-                .orEmpty()
+            }
+            ?.let { sequenceOf(it) }
+            .orEmpty()
 
 }
