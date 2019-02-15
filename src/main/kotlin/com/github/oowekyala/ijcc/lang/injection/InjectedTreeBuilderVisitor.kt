@@ -260,7 +260,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
             val parserName = file.grammarOptions.parserSimpleName
-            val isJjtree = file.grammarNature == GrammarNature.JJTREE
+            val isJjtree = file.grammarNature >= GrammarNature.JJTREE
 
             val jjtreeDecls = if (isJjtree) """
                  /** Only available in JJTree grammars. */

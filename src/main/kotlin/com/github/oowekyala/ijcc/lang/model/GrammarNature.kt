@@ -15,7 +15,12 @@ package com.github.oowekyala.ijcc.lang.model
 @Suppress("MemberVisibilityCanBePrivate")
 enum class GrammarNature(val conventionalExtension: String) {
     JAVACC("jj"),
-    JJTREE("jjt");
+    JJTREE("jjt"),
+    /**
+     * Special nature in which all features are enabled,
+     * used in injection. Higher than all features.
+     */
+    UNKNOWN("");
 
 
     val dotAndExtension = ".$conventionalExtension"

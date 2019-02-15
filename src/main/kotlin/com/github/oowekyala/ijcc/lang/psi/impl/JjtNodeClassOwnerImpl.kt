@@ -33,7 +33,7 @@ abstract class JjtNodeClassOwnerImpl<TStub : JjtNodeClassOwnerStub<*>>
     override val nodeRawName: String?
         get() = stub?.jjtNodeRawName ?: nodeIdentifier?.name?.takeIf {
             // nothing generates nodes in jj files
-            containingFile.grammarNature == GrammarNature.JJTREE
+            containingFile.grammarNature >= GrammarNature.JJTREE
         }
 
 }

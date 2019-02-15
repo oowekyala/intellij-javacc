@@ -5,7 +5,9 @@ import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiClassOwner
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 
@@ -57,12 +59,11 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
     }
 }
 
-// checking the actual file type using virtualfile doesn't play well
-// with the test framework
 val JccFile.grammarNature: GrammarNature
-    get() = when (fileType) {
-        JjtreeFileType -> GrammarNature.JJTREE
-        else           -> GrammarNature.JAVACC
+    get() = when {
+        isInInjection              -> GrammarNature.UNKNOWN
+        fileType == JjtreeFileType -> GrammarNature.JJTREE
+        else                       -> GrammarNature.JAVACC
     }
 
 fun JccFile.getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
@@ -75,3 +76,8 @@ fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProductio
     (this as JccFileImpl).syntaxGrammar.getProductionByNameMulti(name)
 
 
+val PsiElement.isInInjection: Boolean
+    get() = when (this) {
+        is PsiFile -> InjectedLanguageManager.getInstance(project).isInjectedFragment(this)
+        else       -> containingFile.isInInjection
+    }
