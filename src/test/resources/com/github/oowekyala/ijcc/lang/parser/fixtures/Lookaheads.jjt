@@ -21,4 +21,11 @@ void lookaheads(): {}
     LOOKAHEAD(1, ("foo" | "bar") )                          // lexical, syntactic
 
     LOOKAHEAD({ doSth(); }, {getToken(1).kind != NATURAL})  // invalid parse
+
+    "f" <f> | "fk" // FIXME shouldn't be affected
+}
+
+// shouldn't be affected by the failed lookahead above
+void foo(): {} {
+    "a" | "b"
 }

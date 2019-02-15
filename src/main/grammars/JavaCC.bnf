@@ -239,8 +239,29 @@ javacode_production                 ::=
 bnf_production 	                    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
-		<<in_block expansion_choices>>
+        curly_then_expansion_choices
+        "}"
 		{pin=1}
+
+// Yeah this is weird, but important to recover from incomplete code.
+// It fixes the pin behaviour. BNF productions are pinned on their header.
+// If the ":" is not present, it will try to match the expansion block anyway.
+// Then
+// * If the expansion is written "{" expansion_choices "}", the pin behaviour
+//   will try to match expansion_choices even if there is no "{". Then the
+//   recoverWhile of expansion_unit will take effect and swallow the whole file.
+// * If the "{" is isolated in another rule (this one), the expansion_choices will
+//   not be tried unless there is a "{".
+//
+// Keeping the "}" up there allows the production to recover from wrong lookahead
+// specs that leave a comma dangling, which would make the failed match for "}"
+// fail the whole expansion_choices (and hence drop it) if it wasn't accepted by
+// the pin.
+// TODO normally, however wrong it may be, a failed expansion unit shouldn't make
+// the whole alternative fail. The comma problem is real though, since expansion_choices
+// may be followed by a comma (just in syntactic lookaheads)
+private curly_then_expansion_choices ::=
+        "{" expansion_choices
 
 
 java_non_terminal_production_header ::=  // TODO inject java here
@@ -412,10 +433,15 @@ parser_actions_unit             ::=
 regex_expansion_unit            ::=
     regular_expression
 
+
 local_lookahead_unit 	        ::=
-    "LOOKAHEAD" <<in_parens local_lookahead_tail>> {pin=1 recoverWhile="#auto"}
+    "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
 
-
+/* TODO error recovery is made considerably harder by this shit
+ * Maybe, if the parser accepted some invalid input (like the extra
+ * commas and/or arguments), and we reported it in the highlight
+ * visitor, we'd fare better.
+ */
 private local_lookahead_tail    ::=
       // java_expression takes precedence over expansion_choices
       // but only if the construct starts with a "{"
@@ -423,14 +449,12 @@ private local_lookahead_tail    ::=
       INTEGER_LITERAL [ "," !("{") expansion_choices ]  [ "," braced_expression ]
     | !("{") expansion_choices  [ "," braced_expression ]
     | braced_expression
-    {recoverWhile="#auto"}
-
 
 private braced_expression       ::=
     "{" java_expression "}"
 
 non_terminal_expansion_unit     ::=
-    identifier <<in_parens java_expression_list>> {pin=1 recoverWhile="#auto"}
+    identifier "(" java_expression_list ")" {pin=1 recoverWhile="#auto"}
 
 parenthesized_expansion_unit    ::=
     "(" expansion_choices ")" occurrence_indicator?  {pin=1}
@@ -566,17 +590,6 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 
 // Meta and fake rules
 
-// in_block is extremely important for incomplete code tolerance
-// (in fact it's just important to isolate the prefix and
-// suffix into another rule, but in_block allows to declutter the grammar)
-// Why? because it modifies the pin behaviour. E.g. bnf productions
-// are pinned on their header. If the ":" is not present, it will try to
-// match the expansion block anyway. Then
-// * If the expansion is written "{" expansion_choices "}", the pin behaviour
-//   will try to match expansion_choices even if there is no "{". Then the
-//   recoverWhile of expansion_unit will take effect and swallow the whole file.
-// * If the expansion is isolated in another rule (<<in_block expansion_choices>>),
-//   the expansion_choices will not be tried unless there is a "{".
 private meta in_block                   ::= "{" <<param>> "}"
 private meta in_parens                  ::= "(" <<param>> ")"
 private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
