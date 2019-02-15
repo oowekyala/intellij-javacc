@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccScopedExpansionUnitImpl
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
@@ -21,10 +20,6 @@ import writeEnum
 import writeNullable
 
 
-/*
- * TODO stub doc?
- */
-
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
 
@@ -34,6 +29,7 @@ interface JccStub<T : JccPsiElement> : StubElement<T> {
 }
 
 class JccFileStub(val file: JccFile?,
+                  /** The nature is stubbed to allow JJTree nodes to be ignored. */
                   val nature: GrammarNature,
                   val jjtreeNodeNamePrefix: String,
                   val jjtreeNodePackage: String,

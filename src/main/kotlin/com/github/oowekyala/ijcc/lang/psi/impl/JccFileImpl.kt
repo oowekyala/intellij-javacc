@@ -2,9 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.icons.JccIconProvider
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
-import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
@@ -13,11 +11,9 @@ import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.util.Key
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
 import com.intellij.util.IncorrectOperationException
-import javax.swing.Icon
 
 
 /**
@@ -66,16 +62,6 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override fun getStub(): JccFileStub? = super.getStub() as? JccFileStub?
 
-    override val grammarNature: GrammarNature
-        get() = when {
-            hasJjtreeNature -> GrammarNature.JJTREE
-            else            -> GrammarNature.JAVACC
-        }
-
-    // the user property takes precedence over the extension
-    private val hasJjtreeNature: Boolean
-        get() = name.endsWith(".jjt")
-
     /**
      * Some structures are lazily cached to reduce the number of times
      * they must be constructed. These include the [LexicalGrammar], the
@@ -118,8 +104,6 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         throw IncorrectOperationException("Cannot set the package of the parser that way")
     }
 
-
-    override fun getIcon(flags: Int): Icon? = JccIconProvider.getIcon(this, flags)
 
     /**
      * This is important for access resolution to be done properly in injected

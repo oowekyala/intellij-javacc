@@ -1,8 +1,10 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
@@ -48,14 +50,27 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
 
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>
 
-    /**
-     * Returns true if the file is conventionally named *.jjt,
-     * or it uses JJTree options or node descriptors in the code.
-     */
-    val grammarNature: GrammarNature
 
     companion object {
         /** Element type. */
         val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)
     }
 }
+
+
+val JccFile.grammarNature: GrammarNature
+    get() = when (virtualFile.fileType) {
+        JjtreeFileType -> GrammarNature.JJTREE
+        else           -> GrammarNature.JAVACC
+    }
+
+fun JccFile.getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
+    (this as JccFileImpl).syntaxGrammar.getJjtreeDeclsForRawName(name)
+
+fun JccFile.getProductionByName(name: String): JccNonTerminalProduction? =
+    getProductionByNameMulti(name).firstOrNull()
+
+fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
+    (this as JccFileImpl).syntaxGrammar.getProductionByNameMulti(name)
+
+
