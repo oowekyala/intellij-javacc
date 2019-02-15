@@ -31,18 +31,16 @@ object JccLexicalStateDocMaker {
 
         sections {
             buildSection("Successors") {
-                successors.forEach {
+                successors.joinTo(this) {
                     psiLink(
-                        builder = this,
                         linkText = it,
                         linkTarget = JccDocUtil.linkRefToLexicalState(it)
                     )
                 }
             }
             buildSection("Predecessors") {
-                predecessors.forEach {
+                predecessors.joinTo(this) {
                     psiLink(
-                        builder = this,
                         linkText = it,
                         linkTarget = JccDocUtil.linkRefToLexicalState(it)
                     )
