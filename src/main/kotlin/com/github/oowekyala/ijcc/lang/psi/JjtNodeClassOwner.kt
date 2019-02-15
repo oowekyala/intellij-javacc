@@ -7,8 +7,10 @@ import com.intellij.psi.search.GlobalSearchScope
 
 /**
  * Node that is tied to a generated node class, assumed to be
- * somewhere in the project. This is mostly used to represent
- * the partial declarations of JJTree nodes.
+ * somewhere in the project. This is used to represent the
+ * partial declarations of JJTree nodes. The methods return
+ * non-null only if this psi element is associated with a
+ * node, i.e. we're in a JJTree file and the node is not void.
  *
  * @author Clément Fournier
  * @since 1.0

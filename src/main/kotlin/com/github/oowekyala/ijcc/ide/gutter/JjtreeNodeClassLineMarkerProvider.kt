@@ -20,12 +20,10 @@ object JjtreeNodeClassLineMarkerProvider :
     BaseTargetingLineMarkerProvider<JjtNodeClassOwner>(JjtNodeClassOwner::class.java) {
 
     override fun processElt(elt: JjtNodeClassOwner): Sequence<RelatedItemLineMarkerInfo<PsiElement>> {
-        if (elt.containingFile.grammarNature != GrammarNature.JJTREE) return emptySequence()
-
         val psiClass = elt.nodeClass ?: return emptySequence()
 
         val builder = NavigationGutterIconBuilder.create(JccIcons.GUTTER_NODE_CLASS).setTarget(psiClass)
-            .setTooltipText("Click to navigate to class ${psiClass.name}")
+            .setTooltipText("Navigate to class ${psiClass.name}")
             .setPopupTitle("Class ${psiClass.name}")
 
         val markerBearer = when (elt) {

@@ -67,20 +67,14 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override fun getStub(): JccFileStub? = super.getStub() as? JccFileStub?
 
     override val grammarNature: GrammarNature
-        get() = stub?.nature?.also { this.putCopyableUserData(natureKey, it) }
-            ?: when {
-                hasJjtreeNature -> GrammarNature.JJTREE
-                else            -> GrammarNature.JAVACC
-            }
+        get() = when {
+            hasJjtreeNature -> GrammarNature.JJTREE
+            else            -> GrammarNature.JAVACC
+        }
 
     // the user property takes precedence over the extension
     private val hasJjtreeNature: Boolean
-        get() = getCopyableUserData(natureKey)
-            ?.let { it == GrammarNature.JJTREE }
-            ?: name.endsWith(".jjt")
-
-    val isUserNature: Boolean
-        get() = stub?.isUserNature ?: getCopyableUserData(natureKey) != null
+        get() = name.endsWith(".jjt")
 
     /**
      * Some structures are lazily cached to reduce the number of times
@@ -142,9 +136,4 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
             it.first.descendantSequence().filterIsInstance<PsiClass>().firstOrNull()
         }.toTypedArray()
     }
-
-    companion object {
-        val natureKey = Key.create<GrammarNature>("ijcc.grammarNature")
-    }
-
 }

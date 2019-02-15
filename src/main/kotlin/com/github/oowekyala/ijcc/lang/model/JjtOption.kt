@@ -13,7 +13,7 @@ import com.github.oowekyala.ijcc.lang.psi.stringValue
  */
 @Suppress("ClassName", "unused")
 sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
-    : GenericOption<T>(type, staticDefaultValue) {
+    : GenericOption<T>(type, staticDefaultValue, GrammarNature.JJTREE) {
 
     // TODO jjtree mod -> allow configuring SimpleNode name
 

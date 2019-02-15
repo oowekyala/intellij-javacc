@@ -23,7 +23,7 @@ object JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiC
             ?.groupBy { it.containingFile }
             ?.mapValues { (grammar, nodes) ->
 
-                if (grammar.grammarNature != GrammarNature.JJTREE) null
+                if (grammar.grammarNature < GrammarNature.JJTREE) null
                 else {
                     elt.nameIdentifier?.let { ident ->
                         NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)

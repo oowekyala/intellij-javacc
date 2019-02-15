@@ -6,7 +6,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.AbstractStubIndex
 
-fun JccFile.getJjtreeDeclsForRawName(name: String): Collection<JjtNodeClassOwner> =
+fun JccFile.getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
     (this as JccFileImpl).syntaxGrammar.getJjtreeDeclsForRawName(name)
 
 fun JccFile.getProductionByName(name: String): JccNonTerminalProduction? =
@@ -16,6 +16,3 @@ fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProductio
     (this as JccFileImpl).syntaxGrammar.getProductionByNameMulti(name)
 
 
-private fun <K, Psi : PsiElement> PsiFile.searchFileLocalStubIndex(index: AbstractStubIndex<K, Psi>,
-                                                                   key: K): Collection<Psi> =
-    index.get(key, this.project, GlobalSearchScope.fileScope(this))

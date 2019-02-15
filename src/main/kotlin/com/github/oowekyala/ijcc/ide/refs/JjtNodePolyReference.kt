@@ -23,16 +23,20 @@ class JjtNodePolyReference(psiElement: JjtNodeClassOwner)
             && otherElt.isNotVoid
             && otherElt.nodeRawName == element.nodeRawName
 
-    override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JjtNodeClassOwner>> {
-        val myName = element.nodeRawName ?: return emptyArray()
+    /**
+     * Like [multiResolve] but doesn't wrap the results in [PsiEltResolveResult]
+     * and an array. Returned elements always have a name.
+     */
+    fun lightMultiResolve(): List<JjtNodeClassOwner> =
+        element.nodeRawName?.let {
+            element.containingFile.getJjtreeDeclsForRawName(it)
+        }.orEmpty()
 
-        return element.containingFile
-            .getJjtreeDeclsForRawName(myName)
-            .asSequence()
+    override fun multiResolve(incompleteCode: Boolean): Array<PsiEltResolveResult<JjtNodeClassOwner>> =
+        lightMultiResolve()
             .map { PsiEltResolveResult(it) }
             .toList()
             .toTypedArray()
-    }
 
     override fun getRangeInElement(): TextRange = element.nodeIdentifier!!.textRange.relativize(element.textRange)!!
 

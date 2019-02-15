@@ -19,7 +19,11 @@ abstract class GenericOption<T : Any>(
      * Static default value used by JavaCC to represent a
      * default. See [getActualValue].
      */
-    val staticDefaultValue: T?) {
+    val staticDefaultValue: T?,
+    /**
+     * Max supported grammar nature.
+     */
+    val supportedNature: GrammarNature) {
 
     // TODO maybe support a "since version" attribute
 

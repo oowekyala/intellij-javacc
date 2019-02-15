@@ -9,7 +9,7 @@ import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
  */
 @Suppress("unused", "ClassName")
 sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
-    GenericOption<T>(type, staticDefaultValue) {
+    GenericOption<T>(type, staticDefaultValue, GrammarNature.JAVACC) {
 
 
     override val name: String = javaClass.simpleName

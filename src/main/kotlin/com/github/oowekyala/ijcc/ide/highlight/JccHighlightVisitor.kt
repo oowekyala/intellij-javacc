@@ -6,10 +6,9 @@ import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.warningInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
 import com.github.oowekyala.ijcc.lang.JccTypes
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.psi.getProductionByNameMulti
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.runIt
@@ -138,6 +137,15 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
+
+        if (myFile.grammarNature < GrammarNature.JJTREE) {
+            myHolder += JccHighlightUtil.errorInfo(
+                nodeDescriptor,
+                JccErrorMessages.unexpectedJjtreeConstruct(),
+                *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE)
+            )
+        }
+
         // extracts the range of the "#" + the range of the ident or "void" kword
         fun rangeOf(element: JccJjtreeNodeDescriptor): TextRange {
             val ident = element.nameIdentifier
@@ -154,13 +162,20 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitOptionBinding(binding: JccOptionBinding) {
-        val opt = GrammarOptions.knownOptions[binding.name]
+        val opt = binding.modelOption
         if (opt == null) {
-            myHolder += wrongReferenceInfo(
-                binding.nameIdentifier!!,
+            myHolder += warningInfo(
+                binding.namingLeaf,
                 "Unknown option: ${binding.name}"
             )
             return
+        } else if (myFile.grammarNature < GrammarNature.JJTREE && opt.supportedNature < GrammarNature.JJTREE) {
+            myHolder += warningInfo(
+                binding.namingLeaf,
+                JccErrorMessages.unexpectedJjtreeOption(),
+                *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE)
+            )
+
         } else {
             myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)
         }
@@ -424,7 +439,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                     myHolder +=
                         if (!token.isIgnoreCase && spec.isIgnoreCase)
-                            // TODO implement as an inspection if we want to add quickfixes
                             warningInfo(spec, JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token))
                         else
                             errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
