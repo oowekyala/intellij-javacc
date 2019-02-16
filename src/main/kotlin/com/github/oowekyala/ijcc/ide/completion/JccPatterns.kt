@@ -5,11 +5,12 @@ import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.intellij.patterns.ElementPattern
+import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PlatformPatterns.instanceOf
 import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 
 /**
  * Patterns for auto completion.
@@ -26,13 +27,13 @@ object JccPatterns {
         .andNot(psiElement().inside(PsiComment::class.java))
 
     val optionValuePattern: ElementPattern<PsiElement> =
-        psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
-            .afterSibling(
-                psiElement(JccTypes.JCC_EQ)
-            )
+        psiElement()
+            .withAncestor(2, psiElement(JccOptionBinding::class.java))
+            .afterLeafSkipping(PlatformPatterns.psiElement(TokenType.ERROR_ELEMENT), psiElement(JccTypes.JCC_EQ))
 
     val optionNamePattern: ElementPattern<PsiElement> =
-        psiElement().atStartOf(psiElement(JccOptionBinding::class.java))
+        psiElement()
+            .atStartOf(psiElement(JccOptionBinding::class.java))
             .andNot(psiElement().inside(PsiComment::class.java))
             .andNot(optionValuePattern)
 

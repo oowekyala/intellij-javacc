@@ -12,6 +12,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.completion.simple.BracesTailType
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.patterns.ElementPattern
@@ -51,15 +52,26 @@ class JccCompletionContributor : CompletionContributor() {
                         .withPsiElement(file.realOrFakeOptionNodeFor(name))
                         .withIcon(opt.supportedNature.icon)
                         // .withBoldness(true)
-                        .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentValue()}", true)
-                        .withTail(TailType.EQ)
+                        .withTypeText("(${opt.expectedType})", true)
+                        .withInsertHandler { ctx, _ ->
+                            val editor = ctx.editor
+                            TailType.EQ.processTail(editor, editor.caretModel.offset)
+                            ctx.setAddCompletionChar(false)
+
+                            TailType.SEMICOLON.processTail(editor, editor.caretModel.offset)
+                            ctx.setAddCompletionChar(false)
+                            ctx.commitDocument()
+
+                            editor.caretModel.moveToOffset(editor.caretModel.offset - 1)
+
+                        }
                 }
                 .let(result::addAllElements)
         }
 
         optionValuePattern.completeWith {
-            val parent = parameters.position.parent as? JccOptionBinding ?: return@completeWith
-
+            val parent = parameters.position.parent.parent as? JccOptionBinding ?: return@completeWith
+            // FIXME doesn't work
             when (parent.modelOption?.expectedType) {
                 BOOLEAN -> result.addAllElements(BoolOptionValueVariants)
             }
@@ -109,7 +121,7 @@ class JccCompletionContributor : CompletionContributor() {
 
     companion object {
 
-        val RegexProdVariants: List<TailTypeDecorator<LookupElementBuilder>> =
+        val RegexProdVariants: List<LookupElement> =
             RegexKind.values().map {
                 LookupElementBuilder.create(it.name + " : ")
                     .withPresentableText(it.name)
@@ -121,7 +133,6 @@ class JccCompletionContributor : CompletionContributor() {
         val BoolOptionValueVariants =
             listOf("true", "false")
                 .map { LookupElementBuilder.create(it).withBoldness(true) }
-                .map { TailTypeDecorator.withTail(it, TailType.SEMICOLON) }
 
     }
 
