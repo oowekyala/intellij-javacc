@@ -1,9 +1,12 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
+import com.github.oowekyala.ijcc.lang.model.GenericOption
+import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.Token
-import com.github.oowekyala.ijcc.lang.psi.getProductionByName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
+import com.github.oowekyala.ijcc.lang.psi.getProductionByName
 import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.codeInsight.javadoc.JavaDocUtil
@@ -27,6 +30,7 @@ object JccDocUtil {
     private const val LexStateRef = "lexstate"
     private const val StringTokenRef = "strToken"
     private const val NonterminalRef = "nonterminal"
+    private const val OptionRef = "option"
 
     /** Finds the target of a link created by [linkRefToLexicalState]. */
     fun findLinkTarget(psiManager: PsiManager?, ref: String?, context: PsiElement?): PsiElement? {
@@ -45,6 +49,7 @@ object JccDocUtil {
                 StringTokenRef -> psiFile.lexicalGrammar.allTokens.getOrNull(name.toInt())?.psiElement
                 TerminalRef    -> psiFile.lexicalGrammar.getTokenByName(name)?.psiElement
                 NonterminalRef -> psiFile.getProductionByName(name)
+                OptionRef      -> psiFile.realOrFakeOptionNodeFor(name)
                 else           -> null
             }
         } else {
@@ -53,6 +58,8 @@ object JccDocUtil {
             return JavaDocUtil.findReferenceTarget(psiManager, ref, context)
         }
     }
+
+    fun linkRefToOption(name: String?) = "$OptionRef/$name"
 
     @TestOnly
     fun linkRefToStringToken(i: Int) = "$StringTokenRef/$i"
@@ -194,6 +201,8 @@ object HtmlUtil {
 
 
 private val FakeDefaultStateEltKey = Key.create<PsiElement>("jcc.fake.default.state")
+// Keys use reference identity so we must use a map within
+private val FakeOptionEltsKey = Key.create<MutableMap<String, PsiElement>>("jcc.fake.option.elts")
 
 /**
  * When the default state is not mentioned anywhere (eg in a <DEFAULT, FOO> lex
@@ -210,3 +219,40 @@ val JccFile.fakeDefaultStateDecl: PsiElement
 
             return fake
         }
+
+/**
+ * Marker for fake option elements. See [realOrFakeOptionNodeFor]
+ */
+interface FakeOptionElt {
+    val genericOption : GenericOption<*>
+}
+
+
+/**
+ * Returns the element corresponding to the given option name.
+ * - If the name is not the name of a know option, returns null
+ * - Else if the option is set explicitly in the file, the
+ *   [JccOptionBinding] is returned
+ * - Else a fake element implementing [FakeOptionElt] is returned
+ */
+fun JccFile.realOrFakeOptionNodeFor(optionName: String): PsiElement? {
+
+    val option = GrammarOptions.knownOptions[optionName] ?: return null
+
+    val real = grammarOptions.allOptionsBindings.firstOrNull { it.name == optionName }
+    if (real != null) return real
+
+    val fakes = getUserData(FakeOptionEltsKey) ?: let {
+        val data = mutableMapOf<String, PsiElement>()
+        putUserData(FakeOptionEltsKey, data)
+        data
+    }
+
+    return fakes.computeIfAbsent(optionName) {
+        object : FakePsiElement(), FakeOptionElt {
+            override fun getParent(): PsiElement = this@realOrFakeOptionNodeFor
+
+            override val genericOption: GenericOption<*> = option
+        }
+    }
+}

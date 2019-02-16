@@ -28,17 +28,21 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
 
         val file = element?.containingFile as? JccFile ?: return null
 
-        if (element == file.fakeDefaultStateDecl) {
-            return JccLexicalStateDocMaker.makeDoc(file.lexicalGrammar.defaultState)
-        } else if (element is JccIdentifier && element.isLexicalStateName) {
-            return JccLexicalStateDocMaker.makeDoc(JccLexicalStateReference(element).resolveState()!!)
+        when {
+            element == file.fakeDefaultStateDecl                   ->
+                return JccLexicalStateDocMaker.makeDoc(file.lexicalGrammar.defaultState)
+            element is FakeOptionElt                               ->
+                return JccOptionDocMaker.makeDoc(null, file.grammarOptions, element.genericOption)
+            element is JccIdentifier && element.isLexicalStateName ->
+                return JccLexicalStateDocMaker.makeDoc(JccLexicalStateReference(element).resolveState()!!)
         }
 
-        val target = (element as? JccIdentifier)?.owner
-            ?: element.ancestors(includeSelf = true).firstOfAnyType(*stopTypes)
+
+        val target =
+            (element as? JccIdentifier)?.owner ?: element.ancestors(includeSelf = true).firstOfAnyType(*stopTypes)
 
         return when (target) {
-            // TODO use fake psi elements for options
+            // not fake
             is JccOptionBinding       -> target.modelOption?.let {
                 JccOptionDocMaker.makeDoc(target, target.grammarOptions, it)
             }
