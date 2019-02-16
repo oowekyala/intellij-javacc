@@ -180,3 +180,12 @@ foo MultiplicativeExpr() #MultiplicativeExpr(>1):
 {
   UnionExpr() (MultiplicativeOperator() UnionExpr())*
 }
+
+
+bar // should not prevent the next production to be parsed
+
+foo MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}

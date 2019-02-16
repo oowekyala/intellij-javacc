@@ -287,8 +287,12 @@ error_production                    ::=
 
 // catches single identifiers
 private error_unnamed_or_no_params_production ::=
-    ["JAVACODE"] java_return_type identifier no_params_error
+    ["JAVACODE"] java_return_type lone_prod_name no_params_error
     {pin=java_return_type}
+
+private lone_prod_name              ::=
+    identifier !(identifier)
+    {name="identifier"}
 
 private error_just_javacode         ::=
     "JAVACODE" no_header_error
@@ -334,10 +338,10 @@ regex_kind 	        ::=
 	| 	"MORE"
 
 regex_production 	::=
-        [ lexical_state_list ]
-		regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
-		<<in_block regex_spec_list>>
-		{pin="regex_kind"}
+    [ lexical_state_list ]
+	regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
+	<<in_block regex_spec_list>>
+	{pin="regex_kind"}
 
 private regex_spec_list   ::=
     regex_spec ( "|" regex_spec )*

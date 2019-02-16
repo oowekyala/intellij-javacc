@@ -7,14 +7,12 @@ import com.github.oowekyala.ijcc.ide.quickdoc.realOrFakeOptionNodeFor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
-import com.github.oowekyala.ijcc.lang.model.presentValue
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.completion.simple.BracesTailType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.patterns.ElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -77,6 +75,7 @@ class JccCompletionContributor : CompletionContributor() {
             }
         }
 
+        // Regex production completion
         placePattern.completeWith {
             val position = parameters.position
             val parent = PsiTreeUtil.getParentOfType<PsiElement>(
