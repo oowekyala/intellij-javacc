@@ -14,8 +14,8 @@
         <h4>Main features</h4>
 
         <ul>
-            <li><b>JavaCC support:</b> Jump to declaration and find usages, structure view, quick documentation, etc.</li>
-            <li><b>JJTree support:</b> Jump to node class, some tooling to detect common errors, etc.</li>
+            <li><b>JavaCC support:</b> Navigate to declaration and find usages, structure view, quick documentation, etc.</li>
+            <li><b>JJTree support:</b> Navigate to/from node class, some tooling to detect common errors, etc.</li>
             <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc.</li>
             <li><b>Inspections and intentions:</b> Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
         </ul>
