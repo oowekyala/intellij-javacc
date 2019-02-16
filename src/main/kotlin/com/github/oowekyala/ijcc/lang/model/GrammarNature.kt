@@ -9,19 +9,21 @@ package com.github.oowekyala.ijcc.lang.model
  * Grammar natures are comparable, their ordering is determined
  * by inclusion relation of the languages.
  *
+ * @property displayName The display name, in lower case. JavaCC and JJTree
+ *                       should always be capitalized.
+ *
  * @author Clément Fournier
  * @since 1.2
  */
 @Suppress("MemberVisibilityCanBePrivate")
-enum class GrammarNature(val conventionalExtension: String) {
-    JAVACC("jj"),
-    JJTREE("jjt"),
+enum class GrammarNature(val displayName: String, val conventionalExtension: String) {
+    JAVACC("JavaCC", "jj"),
+    JJTREE("JJTree", "jjt"),
     /**
      * Special nature in which all features are enabled,
      * used in injection. Higher than all features.
      */
-    UNKNOWN("");
-
+    UNKNOWN("unknown", "");
 
     val dotAndExtension = ".$conventionalExtension"
 }

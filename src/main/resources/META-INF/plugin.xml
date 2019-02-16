@@ -110,7 +110,7 @@
 
         <lang.findUsagesProvider language="JavaCC"
                                  implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.findusages.JccDescriptionProvider"/>
         <usageTypeProvider implementation="com.github.oowekyala.ijcc.ide.findusages.JccUsageTypeProvider"/>
 
         <referencesSearch

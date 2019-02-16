@@ -3,6 +3,8 @@ package com.github.oowekyala.ijcc.lang.model
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.github.oowekyala.ijcc.lang.psi.stringValue
+import com.github.oowekyala.ijcc.util.ResourcePrefix
+import java.io.IOException
 
 /**
  * Generic option for JavaCC or its preprocessors.
@@ -45,13 +47,31 @@ abstract class GenericOption<T : Any>(
      * option, or some other thing.
      */
     open fun getActualValue(overriddenValue: T?, config: GrammarOptions): T = when (overriddenValue) {
-        null, staticDefaultValue -> defaultValueFallback(config)
+        null, staticDefaultValue -> contextualDefaultValue(config)
         else                     -> overriddenValue
     }
 
-    /** Must be implemented if [staticDefaultValue] is null. */
-    protected open fun defaultValueFallback(config: GrammarOptions): T =
+
+    /**
+     * This is the actual default value used by JavaCC, which may depend
+     * on other option bindings.
+     *
+     * Must be implemented if [staticDefaultValue] is null.
+     */
+    open fun contextualDefaultValue(config: GrammarOptions): T =
         staticDefaultValue ?: TODO("Should have been implemented!")
+
+
+    /**
+     * Returns the documentable description of the option if it could be found.
+     */
+    val description: String? by lazy {
+        try {
+            javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/$name.html")?.readText()
+        } catch (e: IOException) {
+            null
+        }
+    }
 
 
 }

@@ -50,3 +50,9 @@ sealed class JccOptionType<T : Any> {
 
 
 }
+
+
+fun Any?.presentValue(): String = when (this) {
+    is String -> "\"${this}\""
+    else      -> toString()
+}

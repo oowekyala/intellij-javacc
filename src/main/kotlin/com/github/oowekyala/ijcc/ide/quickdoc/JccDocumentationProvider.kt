@@ -19,6 +19,7 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
     private val stopTypes = arrayOf(
         JccProduction::class.java,
         JccRegexSpec::class.java,
+        JccOptionBinding::class.java,
         // stop at the first expansion, the interesting ones are filtered in the "when" stmt
         JccExpansion::class.java
     )
@@ -33,15 +34,19 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
             return JccLexicalStateDocMaker.makeDoc(JccLexicalStateReference(element).resolveState()!!)
         }
 
-        val interestingNode = (element as? JccIdentifier)?.owner
+        val target = (element as? JccIdentifier)?.owner
             ?: element.ancestors(includeSelf = true).firstOfAnyType(*stopTypes)
 
-        return when (interestingNode) {
-            is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(interestingNode)
-            is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(interestingNode)
-            is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(interestingNode)
-            is JccRegexSpec           -> JccTerminalDocMaker.makeDoc(ExplicitToken(interestingNode))
-            is JccRegexExpansionUnit  -> interestingNode.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
+        return when (target) {
+            // TODO use fake psi elements for options
+            is JccOptionBinding       -> target.modelOption?.let {
+                JccOptionDocMaker.makeDoc(target, target.grammarOptions, it)
+            }
+            is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(target)
+            is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(target)
+            is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(target)
+            is JccRegexSpec           -> JccTerminalDocMaker.makeDoc(ExplicitToken(target))
+            is JccRegexExpansionUnit  -> target.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
             else                      -> null
         }
     }

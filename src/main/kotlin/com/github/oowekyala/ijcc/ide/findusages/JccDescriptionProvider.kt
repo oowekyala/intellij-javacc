@@ -1,4 +1,4 @@
-package com.github.oowekyala.ijcc.ide.refs
+package com.github.oowekyala.ijcc.ide.findusages
 
 import com.intellij.psi.ElementDescriptionLocation
 import com.intellij.psi.ElementDescriptionProvider

@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
+import com.github.oowekyala.ijcc.lang.model.presentValue
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
@@ -102,18 +103,15 @@ class JccCompletionContributor : CompletionContributor() {
             }
 
 
+        // TODO this doesn't consider the context of option values
+        // nor grammar nature filtering
         val OptionVariants: List<TailTypeDecorator<LookupElementBuilder>> =
             GrammarOptions.knownOptions.map { (name, opt) ->
                 LookupElementBuilder.create(name)
                     // .withBoldness(true)
-                    .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentable()}", true)
+                    .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentValue()}", true)
                     .withTail(TailType.EQ)
             }
-
-        private fun Any?.presentable(): String = when (this) {
-            is String -> "\"${this}\""
-            else      -> toString()
-        }
 
         val BoolOptionValueVariants =
             listOf("true", "false")

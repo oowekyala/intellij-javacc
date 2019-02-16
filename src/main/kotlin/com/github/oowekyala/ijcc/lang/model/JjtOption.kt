@@ -40,7 +40,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  For backwards compatibility, the value false may also be specified,
      *  meaning that SimpleNode will be used as the factory class.
      */
-    object NODE_FACTORY : JjtOption<String>(STRING, "") {
+    object NODE_FACTORY : JjtOption<String>(RefinedOptionType.TYPE, "") {
         override fun getValue(optionBinding: JccOptionBinding?, config: GrammarOptions): String =
             if (optionBinding == null
                 || optionBinding.matchesType(INTEGER)
@@ -56,7 +56,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  this is the parser package.
      */
     object NODE_PACKAGE : JjtOption<String>(PACKAGE, null) {
-        override fun defaultValueFallback(config: GrammarOptions): String = config.parserPackage
+        override fun contextualDefaultValue(config: GrammarOptions): String = config.parserPackage
     }
 
     /**
@@ -135,7 +135,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  files.
      */
     object JJTREE_OUTPUT_DIRECTORY : JjtOption<String>(RefinedOptionType.DIRECTORY, ".") {
-        override fun defaultValueFallback(config: GrammarOptions): String = config.outputDirectory
+        override fun contextualDefaultValue(config: GrammarOptions): String = config.outputDirectory
     }
 
 

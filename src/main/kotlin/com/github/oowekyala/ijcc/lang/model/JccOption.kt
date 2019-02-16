@@ -2,13 +2,15 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
+import org.intellij.lang.annotations.Language
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
 @Suppress("unused", "ClassName")
-sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
+sealed class JccOption<T : Any>(type: JccOptionType<T>,
+                                staticDefaultValue: T) :
     GenericOption<T>(type, staticDefaultValue, GrammarNature.JAVACC) {
 
 
@@ -16,8 +18,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
 
 
     /**
-     * The number of tokens to look ahead before making a decision a
-     *t
+     * The number of tokens to look ahead before making a decision at
      * a choice point during parsing. The default value is 1. The smaller
      * this number, the faster the parser. This number may be overridden
      * for specific productions within the grammar as described later.
@@ -40,7 +41,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
      * Java grammar, increasing this number any further causes the checking
      * to take too much time.
      */
-    object CHOICE_AMBIGUITY_CHECK : JccOption<Int>(INTEGER, 0)
+    object CHOICE_AMBIGUITY_CHECK : JccOption<Int>(INTEGER, 2)
 
     /**
      * This is an integer option whose default value is 1. This is the
@@ -293,7 +294,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
     object GRAMMAR_ENCODING
         : JccOption<String>(STRING, "") {
 
-        override fun defaultValueFallback(config: GrammarOptions): String =
+        override fun contextualDefaultValue(config: GrammarOptions): String =
             System.getProperties().getProperty("file.encoding")
     }
 
@@ -301,19 +302,19 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
 
 
     object PARSER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object PARSER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     // undocumented options...

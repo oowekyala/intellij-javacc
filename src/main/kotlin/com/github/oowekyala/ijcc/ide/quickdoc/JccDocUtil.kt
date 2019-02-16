@@ -99,6 +99,12 @@ object JccDocUtil {
             stringBuilder.append(SECTIONS_END)
         }
 
+        fun freeHtml(text: () -> String) {
+            stringBuilder.append(CONTENT_START)
+            stringBuilder.append(text())
+            stringBuilder.append(CONTENT_END)
+        }
+
     }
 
     class SectionsBuilder(private val stringBuilder: StringBuilder) {
@@ -124,6 +130,10 @@ object JccDocUtil {
 object HtmlUtil {
 
     val br = "<br/>"
+
+
+    @Language("HTML")
+    fun grayed(it: String) = "$GRAYED_START$it$GRAYED_END"
 
     @Language("HTML")
     fun emph(it: String) = "<i>$it</i>"
