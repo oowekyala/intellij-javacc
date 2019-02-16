@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.completion
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionNamePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionValuePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern
+import com.github.oowekyala.ijcc.ide.quickdoc.realOrFakeOptionNodeFor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
@@ -30,13 +31,28 @@ class JccCompletionContributor : CompletionContributor() {
     init {
 
         optionNamePattern.completeWith {
-            parameters
+
+            val file = parameters.originalFile as? JccFile ?: return@completeWith
+
+            val fileNature = file.grammarNature
+
+            val alreadyThere = parameters
                 .position
                 .firstAncestorOrNull<JccOptionSection>()!!
                 .optionBindingList
                 .mapNotNull { it.modelOption?.name }
-                .let { alreadyThere ->
-                    OptionVariants.filter { it.lookupString !in alreadyThere }
+
+
+            GrammarOptions.knownOptions
+                .filterKeys { it !in alreadyThere }
+                .filterValues { it.supportedNature <= fileNature }
+                .map { (name, opt) ->
+                    LookupElementBuilder.create(name)
+                        .withPsiElement(file.realOrFakeOptionNodeFor(name))
+                        .withIcon(opt.supportedNature.icon)
+                        // .withBoldness(true)
+                        .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentValue()}", true)
+                        .withTail(TailType.EQ)
                 }
                 .let(result::addAllElements)
         }
@@ -100,17 +116,6 @@ class JccCompletionContributor : CompletionContributor() {
                     .withTailText(" : { ... }", true)
                     .withBoldness(true)
                     .withTail(BracesTailType())
-            }
-
-
-        // TODO this doesn't consider the context of option values
-        // nor grammar nature filtering
-        val OptionVariants: List<TailTypeDecorator<LookupElementBuilder>> =
-            GrammarOptions.knownOptions.map { (name, opt) ->
-                LookupElementBuilder.create(name)
-                    // .withBoldness(true)
-                    .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentValue()}", true)
-                    .withTail(TailType.EQ)
             }
 
         val BoolOptionValueVariants =

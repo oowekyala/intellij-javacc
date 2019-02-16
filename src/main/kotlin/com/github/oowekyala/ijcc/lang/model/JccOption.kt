@@ -5,6 +5,8 @@ import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
 import org.intellij.lang.annotations.Language
 
 /**
+ * Pay attention, [STATIC] is duplicate with [JjtOption.STATIC]
+ *
  * @author Clément Fournier
  * @since 1.0
  */

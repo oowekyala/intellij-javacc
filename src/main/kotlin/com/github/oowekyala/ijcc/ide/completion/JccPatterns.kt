@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
+import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PlatformPatterns.instanceOf
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.patterns.PsiElementPattern
@@ -20,17 +21,17 @@ import com.intellij.psi.PsiElement
  */
 object JccPatterns {
 
-    val placePattern: PsiElementPattern.Capture<PsiElement> = psiElement()
+    val placePattern: ElementPattern<PsiElement> = psiElement()
         .inFile(instanceOf(JccFile::class.java))
         .andNot(psiElement().inside(PsiComment::class.java))
 
-    val optionValuePattern =
+    val optionValuePattern: ElementPattern<PsiElement> =
         psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
             .afterSibling(
                 psiElement(JccTypes.JCC_EQ)
             )
 
-    val optionNamePattern =
+    val optionNamePattern: ElementPattern<PsiElement> =
         psiElement().atStartOf(psiElement(JccOptionBinding::class.java))
             .andNot(psiElement().inside(PsiComment::class.java))
             .andNot(optionValuePattern)
