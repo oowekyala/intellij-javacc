@@ -139,8 +139,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
     object IGNORE_CASE : JccOption<Boolean>(BOOLEAN, false)
 
     /**
-     * This is a boolean option whose default value is false. The defaul
-     *t
+     * This is a boolean option whose default value is false. The default
      * action is to generate a token manager that works on the specified
      * grammar tokens. If this option is set to true, then the parser
      * is generated to accept tokens from any token manager of type
@@ -150,8 +149,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
     object USER_TOKEN_MANAGER : JccOption<Boolean>(BOOLEAN, false)
 
     /**
-     * This is a boolean option whose default value is false. The defaul
-     *t
+     * This is a boolean option whose default value is false. The default
      * action is to generate a character stream reader as specified
      * by the options JAVA_UNICODE_ESCAPE and UNICODE_INPUT. The generated
      * token manager receives characters from this stream reader. If
@@ -169,13 +167,12 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
      * action is to generate the parser file ("MyParser.java" in the
      * above example). When set to false, the parser file is not generated.
      * Typically, this option is set to false when you wish to generate
-     * only the token manager and use it without the associated parser
-     *.
+     * only the token manager and use it without the associated parser.
      */
     object BUILD_PARSER : JccOption<Boolean>(BOOLEAN, true)
 
     /**
-     *  This is a boolean option whose default value is true. The default
+     * This is a boolean option whose default value is true. The default
      * action is to generate the token manager file ("MyParserTokenManager.java"
      * in the above example). When set to false the token manager file
      * is not generated. The only reason to set this option to false
@@ -318,6 +315,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
     }
 
     // undocumented options...
+    // TODO ask the guys at JavaCC
 
     object KEEP_LINE_COLUMN : JccOption<Boolean>(BOOLEAN, true)
 

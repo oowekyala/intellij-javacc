@@ -1,0 +1,5 @@
+When set to true, the generated token manager will include a field called
+<code>parser</code> that references the instantiating parser instance. The
+main reason for having a parser in a token manager is using some of its
+logic in lexical actions. This option has no effect if the {option_link STATIC} option is set
+to true.
