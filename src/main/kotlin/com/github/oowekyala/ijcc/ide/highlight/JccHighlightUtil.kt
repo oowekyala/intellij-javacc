@@ -69,7 +69,7 @@ object JccHighlightUtil {
 
 }
 
-fun HighlightInfo.withQuickFix(range: TextRange = TextRange(startOffset, endOffset), vararg fixes: IntentionAction) =
+fun HighlightInfo.withQuickFix(range: TextRange, vararg fixes: IntentionAction) =
     this.also {
         QuickFixAction.registerQuickFixActions(this, range, fixes.toList())
     }

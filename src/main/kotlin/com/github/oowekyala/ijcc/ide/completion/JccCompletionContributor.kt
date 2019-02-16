@@ -1,29 +1,25 @@
 package com.github.oowekyala.ijcc.ide.completion
 
-import com.github.oowekyala.ijcc.lang.JccTypes
+import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionNamePattern
+import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionValuePattern
+import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.completion.impl.CamelHumpMatcher
 import com.intellij.codeInsight.completion.simple.BracesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.codeInsight.lookup.TailTypeDecorator
 import com.intellij.patterns.ElementPattern
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.patterns.PlatformPatterns.psiElement
-import com.intellij.patterns.PsiElementPattern
-import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
 
 /**
- *
- * FIXME!!
+ * Custom completions.
  *
  * @author Clément Fournier
  * @since 1.1
@@ -31,26 +27,17 @@ import com.intellij.util.ProcessingContext
 class JccCompletionContributor : CompletionContributor() {
 
     init {
-        val placePattern: PsiElementPattern.Capture<PsiElement> = psiElement()
-            .inFile(PlatformPatterns.instanceOf(JccFile::class.java))
-            .andNot(psiElement().inside(PsiComment::class.java))
-
-        val optionValuePattern =
-            psiElement().withAncestor(2, psiElement(JccOptionBinding::class.java))
-                .afterSibling(
-                    psiElement(JccTypes.JCC_EQ)
-                )
-
-        val optionNamePattern =
-            psiElement().atStartOf(psiElement(JccOptionBinding::class.java))
-                .andNot(psiElement().inside(PsiComment::class.java))
-                .andNot(optionValuePattern)
-
-        val bnfColonPattern =
-            psiElement(JccTypes.JCC_COLON).withParent(JccBnfProduction::class.java)
 
         optionNamePattern.completeWith {
-            result.withPrefixMatcher(CamelHumpMatcher("")).addAllElements(OptionVariants)
+            parameters
+                .position
+                .firstAncestorOrNull<JccOptionSection>()!!
+                .optionBindingList
+                .mapNotNull { it.modelOption?.name }
+                .let { alreadyThere ->
+                    OptionVariants.filter { it.lookupString !in alreadyThere }
+                }
+                .let(result::addAllElements)
         }
 
         optionValuePattern.completeWith {
@@ -86,17 +73,6 @@ class JccCompletionContributor : CompletionContributor() {
         }
     }
 
-    //
-    //    override fun duringCompletion(context: CompletionInitializationContext) {
-    //        val psiFile = context.file as? JccFile ?: return
-    //
-    //        val element = psiFile.findElementAt(context.startOffset)
-    //        if (element?.isOfType(JCC_IDENT) == true) {
-    //            context.dummyIdentifier = "x"
-    //            context.offsetMap.addOffset(START_OFFSET, element.textOffset-1)// = element.textOffset - 1
-    //        }
-    //    }
-
     private fun ElementPattern<out PsiElement>.completeWith(completionType: CompletionType? = CompletionType.BASIC,
                                                             provideCompletion: ExtendCtx.() -> Unit) {
 
@@ -129,7 +105,7 @@ class JccCompletionContributor : CompletionContributor() {
         val OptionVariants: List<TailTypeDecorator<LookupElementBuilder>> =
             GrammarOptions.knownOptions.map { (name, opt) ->
                 LookupElementBuilder.create(name)
-                    .withBoldness(true)
+                    // .withBoldness(true)
                     .withTypeText("(${opt.expectedType}) = ${opt.staticDefaultValue.presentable()}", true)
                     .withTail(TailType.EQ)
             }

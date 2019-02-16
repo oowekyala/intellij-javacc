@@ -5,10 +5,13 @@ import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
 import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
+import com.intellij.codeInsight.completion.simple.ParenthesesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 
 
 /**
@@ -44,13 +47,35 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
                 .withPresentableText(it.getPresentableText())
                 .withIcon(it.getPresentationIcon())
                 .withTail("() ")
-        }.toList().toTypedArray()
+        }
+            .toList()
+            .plus(LookaheadLookupItem)
+            .toTypedArray()
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 
     override fun handleElementRename(newElementName: String?): PsiElement = newElementName.toString().let {
         val id = element.nameIdentifier
         JccIdentifierManipulator().handleContentChange(id, newElementName)!!
+    }
+
+    companion object {
+
+        // TODO move to completion contributor with a proper pattern
+        private val LookaheadLookupItem =
+            LookupElementBuilder.create("LOOKAHEAD")
+                .withBoldness(true)
+                .withPresentableText("LOOKAHEAD")
+                .withTailText("(...)", true)
+                .withTail(object : ParenthesesTailType() {
+                    override fun isSpaceWithinParentheses(styleSettings: CommonCodeStyleSettings?,
+                                                          editor: Editor?,
+                                                          tailOffset: Int): Boolean = false
+
+                    override fun isSpaceBeforeParentheses(styleSettings: CommonCodeStyleSettings?,
+                                                          editor: Editor?,
+                                                          tailOffset: Int): Boolean = false
+                })
     }
 
 }
