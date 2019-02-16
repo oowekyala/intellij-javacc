@@ -67,7 +67,11 @@ abstract class GenericOption<T : Any>(
      */
     val description: String? by lazy {
         try {
-            javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/$name.html")?.readText()
+            // try jjtree first
+            val resource = javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/jjtree/$name.html")
+                ?: javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/$name.html")
+
+            resource?.readText()
         } catch (e: IOException) {
             null
         }
