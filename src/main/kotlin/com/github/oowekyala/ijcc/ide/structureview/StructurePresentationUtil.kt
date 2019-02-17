@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.navigation.ItemPresentation
@@ -19,55 +19,58 @@ import groovyjarjarantlr.build.ANTLR.root
 import javax.swing.Icon
 
 
-fun JccPsiElement.getPresentationForStructure(): ItemPresentation =
-    PresentationData(getPresentableText(), getLocationString(), getPresentationIcon(), null)
+val JccPsiElement.presentationForStructure: ItemPresentation
+    get() = PresentationData(presentableText, locationString, presentationIcon, null)
 
 /**
  * For the structure view.
  */
-fun JccPsiElement.getPresentableText(): String {
-    return when (this) {
-        is JccOptionSection         -> "Options" // TODO add parser class name
-        is JccOptionBinding         -> "$name = $stringValue"
+val JccPsiElement.presentableText: String
+    get() {
+        return when (this) {
+            is JccOptionSection         -> "Options" // TODO add parser class name
+            is JccOptionBinding         -> "$name = $stringValue"
 
-        is JccParserDeclaration     -> "class ${grammarOptions.parserSimpleName}"
-        is JccTokenManagerDecls     -> "TOKEN_MGR_DECLS"
+            is JccParserDeclaration     -> "class ${grammarOptions.parserSimpleName}"
+            is JccTokenManagerDecls     -> "TOKEN_MGR_DECLS"
 
-        is JccRegexProduction       -> regexKind.text
+            is JccRegexProduction       -> regexKind.text
+            is JccScopedExpansionUnit   -> "(...) " + jjtreeNodeDescriptor.presentableText
 
-        is JccRegexSpec             -> regularExpression.getPresentableText()
-        is JccRegexExpansionUnit    -> regularExpression.getPresentableText()
-        is JccRegularExpression     -> getPresentableText()
-        is JccNonTerminalProduction -> getPresentableText()
+            is JccRegexSpec             -> regularExpression.presentableText
+            is JccRegexExpansionUnit    -> regularExpression.presentableText
+            is JccRegularExpression     -> presentableText
+            is JccNonTerminalProduction -> presentableText
 
-        is JccFile                  -> name
-        is JccIdentifier            -> owner?.getPresentableText() ?: name
-        is JccJjtreeNodeDescriptor  -> "#" + namingLeaf.text
+            is JccFile                  -> name
+            is JccIdentifier            -> owner?.presentableText ?: name
+            is JccJjtreeNodeDescriptor  -> "#" + namingLeaf.text
 
-        else                        -> toString()
-    }
-}
-
-
-private fun JccRegularExpression.getPresentableText(): String {
-    if (this is JccEofRegularExpression) return "<EOF>"
-
-    val builder = StringBuilder()
-
-    builder.append('<')
-
-    if (this is JccNamedRegularExpression) {
-        builder.append(name).append(" : ")
+            else                        -> toString()
+        }
     }
 
-    getRootRegexElement(followReferences = false)?.getPresentableText(builder)
 
-    builder.append('>')
-    return builder.toString()
-}
+private val JccRegularExpression.presentableText: String
+    get() {
+        if (this is JccEofRegularExpression) return "<EOF>"
 
-fun JccRegexElement.getPresentableText(): String =
-    StringBuilder().also { getPresentableText(it) }.toString()
+        val builder = StringBuilder()
+
+        builder.append('<')
+
+        if (this is JccNamedRegularExpression) {
+            builder.append(name).append(" : ")
+        }
+
+        getRootRegexElement(followReferences = false)?.getPresentableText(builder)
+
+        builder.append('>')
+        return builder.toString()
+    }
+
+val JccRegexElement.presentableText: String
+    get() = StringBuilder().also { getPresentableText(it) }.toString()
 
 private fun JccRegexElement.getPresentableText(builder: StringBuilder) {
     when (this) {
@@ -91,64 +94,66 @@ private fun JccRegexElement.getPresentableText(builder: StringBuilder) {
     }
 }
 
-private fun JccNonTerminalProduction.getPresentableText(): String {
-    val header = header
+private val JccNonTerminalProduction.presentableText: String
+    get() {
+        val header = header
 
-    val psiMethod = JccElementFactory.createJavaMethodForNonterminal(
-        header.project,
-        header
-    )
+        val psiMethod = JccElementFactory.createJavaMethodForNonterminal(
+            header.project,
+            header
+        )
 
-    val dumb = DumbService.isDumb(psiMethod.project)
-    val method = PsiFormatUtil.formatMethod(
-        psiMethod,
-        PsiSubstitutor.EMPTY,
-        PsiFormatUtilBase.SHOW_NAME or PsiFormatUtilBase.TYPE_AFTER or PsiFormatUtilBase.SHOW_PARAMETERS or if (dumb) 0 else PsiFormatUtilBase.SHOW_TYPE,
-        if (dumb) PsiFormatUtilBase.SHOW_NAME else PsiFormatUtilBase.SHOW_TYPE
-    )
-    return StringUtil.replace(StringUtil.replace(method, ":void", ""), ":", ": ")
-}
+        val dumb = DumbService.isDumb(psiMethod.project)
+        val method = PsiFormatUtil.formatMethod(
+            psiMethod,
+            PsiSubstitutor.EMPTY,
+            PsiFormatUtilBase.SHOW_NAME or PsiFormatUtilBase.TYPE_AFTER or PsiFormatUtilBase.SHOW_PARAMETERS or if (dumb) 0 else PsiFormatUtilBase.SHOW_TYPE,
+            if (dumb) PsiFormatUtilBase.SHOW_NAME else PsiFormatUtilBase.SHOW_TYPE
+        )
+        return StringUtil.replace(StringUtil.replace(method, ":void", ""), ":", ": ")
+    }
 
 
-fun JccPsiElement.getLocationString(): String? {
-    when (this) {
-        is JccRegexSpec       -> {
-            val outboundState = lexicalStateTransition
-            if (outboundState != null) {
-                return "${UIUtil.rightArrow()} ${outboundState.name}"
+val JccPsiElement.locationString: String?
+    get() = when (this) {
+        is JccRegexSpec             ->
+            lexicalStateTransition?.let {
+                "${UIUtil.rightArrow()} ${it.name}"
             }
-        }
-        is JccRegexProduction -> {
-            val states = lexicalStateList
-            if (states != null) {
-                val identList = states.identifierList
+        is JccRegexProduction       ->
+            lexicalStateList?.identifierList?.let { identList ->
 
-                return if (identList.isEmpty()) {
+                if (identList.isEmpty()) {
                     "<*>"
                 } else {
                     identList.joinToString(separator = ", ", prefix = "<", postfix = ">") { it.name }
                 }
             }
-        }
+        is JccNonTerminalProduction ->
+            jjtreeNodeDescriptor
+                ?.takeUnless { it.name?.equals(this.name) == true }
+                ?.presentableText
+        else                        -> null
     }
-    return null
-}
 
-fun JccPsiElement.getPresentationIcon(): Icon? = when (this) {
-    is JccOptionSection      -> JccIcons.JAVACC_OPTION
-    is JccOptionBinding      -> JccIcons.JAVACC_OPTION
+val JccPsiElement.presentationIcon: Icon?
+    get() = when (this) {
+        is JccOptionSection       -> JccIcons.JAVACC_OPTION
+        is JccOptionBinding       -> JccIcons.JAVACC_OPTION
 
-    is JccTokenManagerDecls  -> JccIcons.TOKEN_MGR_DECLS
-    is JccParserDeclaration  -> JccIcons.PARSER_DECLARATION
+        is JccTokenManagerDecls   -> JccIcons.TOKEN_MGR_DECLS
+        is JccParserDeclaration   -> JccIcons.PARSER_DECLARATION
 
-    is JccRegexProduction    -> JccIcons.TOKEN
-    is JccRegexSpec          -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
-    is JccRegexExpansionUnit -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
+        is JccScopedExpansionUnit -> JccIcons.JJTREE_NODE
 
-    is JccBnfProduction      -> JccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
-    is JccJavacodeProduction -> JccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
-    else                     -> getIcon(0) // this isn't implemented by our classes
-}
+        is JccRegexProduction     -> JccIcons.TOKEN
+        is JccRegexSpec           -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
+        is JccRegexExpansionUnit  -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
+
+        is JccBnfProduction       -> JccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
+        is JccJavacodeProduction  -> JccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
+        else                      -> getIcon(0) // this isn't implemented by our classes
+    }
 
 
 private fun visibilityIcon(prod: JccRegularExpression): Icon {

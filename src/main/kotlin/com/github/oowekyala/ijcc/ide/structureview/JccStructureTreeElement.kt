@@ -30,10 +30,10 @@ class JccStructureTreeElement(val element: JccPsiElement,
         is JccParserDeclaration -> "aaaaaaZ"
         is JccTokenManagerDecls -> "aaaaaZZ"
         is JccRegexProduction   -> "aaaaZZZ"
-        else                    -> element.getPresentableText()
+        else                    -> element.presentableText
     }
 
 
-    override fun getPresentation(): ItemPresentation = element.getPresentationForStructure()
+    override fun getPresentation(): ItemPresentation = element.presentationForStructure
 
 }

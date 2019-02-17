@@ -5,11 +5,13 @@ import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.ijcc.util.asMap
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
+import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
  * Root of all Javacc files.
@@ -66,6 +68,10 @@ val JccFile.grammarNature: GrammarNature
         else                       -> GrammarNature.JAVACC
     }
 
+val JccFile.allJjtreeDecls: Map<String, List<JjtNodeClassOwner>>
+    get() = (this as JccFileImpl).syntaxGrammar.allJjtreeNodes
+
+
 fun JccFile.getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
     (this as JccFileImpl).syntaxGrammar.getJjtreeDeclsForRawName(name)
 
@@ -81,3 +87,7 @@ val PsiElement.isInInjection: Boolean
         is PsiFile -> InjectedLanguageManager.getInstance(project).isInjectedFragment(this)
         else       -> containingFile.isInInjection
     }
+
+fun JccFile.allProductions(): Sequence<JccProduction> =
+    grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
+

@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
-import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
+import com.github.oowekyala.ijcc.ide.structureview.presentableText
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
@@ -26,7 +26,7 @@ object JccFindUsagesProvider : FindUsagesProvider {
 
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
-        (element as? JccPsiElement)?.getPresentableText() ?: "<default name>"
+        (element as? JccPsiElement)?.presentableText ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 

@@ -2,6 +2,8 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -38,6 +40,10 @@ class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
             .associateByToMostlySingular({ it.nodeRawName }) {
                 SmartPointerManager.createPointer(it)
             }
+
+    val allJjtreeNodes: Map<String, List<JjtNodeClassOwner>>
+        get() = jjtreeNodesByName.asMap().mapValues { (_, v) -> v.mapNotNull { it.element } }
+
 
     fun getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
         productionsByName.get(name).mapNotNullTo(mutableListOf()) { it.element }

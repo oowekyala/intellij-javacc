@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.ide.completion.withTail
-import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
+import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -59,7 +59,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
                 token.name?.let { name ->
                     LookupElementBuilder
                         .create(name)
-                        .withIcon(token.psiElement?.getPresentationIcon())
+                        .withIcon(token.psiElement?.presentationIcon)
                         .withTail("> ")
 
                 }

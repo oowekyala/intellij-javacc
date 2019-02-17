@@ -1,12 +1,10 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
+import com.github.oowekyala.ijcc.lang.model.GrammarNature.JJTREE
 import com.github.oowekyala.ijcc.lang.model.SyntheticToken
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
-import com.github.oowekyala.ijcc.lang.psi.firstAncestorOrNull
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.ide.structureView.StructureViewTreeElement
-import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.pom.Navigatable
@@ -20,7 +18,7 @@ import com.intellij.pom.Navigatable
 class JccFileStructureTreeElement(private val myFile: JccFile)
     : StructureViewTreeElement, Navigatable by myFile {
 
-    override fun getPresentation(): ItemPresentation = myFile.getPresentationForStructure()
+    override fun getPresentation(): ItemPresentation = myFile.presentationForStructure
 
     override fun getValue(): JccFile = myFile
 
@@ -44,11 +42,28 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
                         it.declUnit!!
                     }
 
+
             val nonTerminalChildren =
                 nonTerminalProductions.map {
+
+                    val jjtNodes =
+                        when {
+                            it is JccBnfProduction && myFile.grammarNature >= JJTREE ->
+                                it.expansion
+                                    ?.descendantSequence(includeSelf = true)
+                                    ?.filterIsInstance<JccScopedExpansionUnit>()
+                                    .orEmpty()
+                            else                                                     -> emptySequence()
+                        }
+
                     JccStructureTreeElement(
                         it,
-                        syntheticTokensByProd[it].map(::JccStructureTreeElement)
+                        jjtNodes
+                            .plus(syntheticTokensByProd[it])
+                            .sortedBy { it.textOffset }
+                            .map(::JccStructureTreeElement)
+                            .toList()
+
                     )
                 }
 
@@ -78,6 +93,5 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
 
 
     }
-
 
 }

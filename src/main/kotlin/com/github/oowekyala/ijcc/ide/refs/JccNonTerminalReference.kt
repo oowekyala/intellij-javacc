@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.ide.completion.withTail
-import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
-import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
+import com.github.oowekyala.ijcc.ide.structureview.presentableText
+import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
 import com.intellij.codeInsight.completion.simple.ParenthesesTailType
@@ -44,8 +44,8 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
         element.containingFile.nonTerminalProductions.map {
             LookupElementBuilder.create(it.name)
                 .withPsiElement(it)
-                .withPresentableText(it.getPresentableText())
-                .withIcon(it.getPresentationIcon())
+                .withPresentableText(it.presentableText)
+                .withIcon(it.presentationIcon)
                 .withTail("() ")
         }
             .toList()

@@ -7,9 +7,6 @@ import com.intellij.util.io.java.AccessModifier
  */
 
 
-fun JccFile.allProductions(): Sequence<JccProduction> =
-    grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
-
 
 val JccJavaAccessModifier.modelConstant: AccessModifier
     get() = when (text) {
