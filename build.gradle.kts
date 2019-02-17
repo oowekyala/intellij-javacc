@@ -147,10 +147,6 @@ tasks {
         )
     }
 
-    val assemble by existing {
-        dependsOn(compressIcons)
-    }
-
     compileJava {
         dependsOn(overrideDefaultPsi, generateLexer)
         sourceCompatibility = "1.8"
@@ -176,6 +172,10 @@ tasks {
     runIde {
         jvmArgs = listOf("-Xmx2G")
         setConfigDirectory(projectDir.resolve("sandbox").resolve("config"))
+    }
+
+    buildPlugin {
+        dependsOn(compressIcons)
     }
 
     publishPlugin {

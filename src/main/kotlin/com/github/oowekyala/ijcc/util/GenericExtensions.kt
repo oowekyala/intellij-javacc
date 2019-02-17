@@ -179,3 +179,14 @@ fun <K, V> MostlySingularMultiMap<K, V>.asMap(): Map<K, List<V>> {
 
     }
 }
+
+fun <K, V> Map<List<K>, V>.spread(): Map<K, V> {
+
+    val res = mutableMapOf<K, V>()
+
+    for ((lst, v) in this)
+        for (k in lst)
+            res[k] = v
+
+    return res
+}
