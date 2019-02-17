@@ -12,7 +12,7 @@
     </mask>
 
     <g mask="url(#modifierClip)">
-        <circle cx="4" cy="6" r="4" fill="#62B543" fill-opacity=".7"/>
+        <circle cx="4" cy="6" r="4" fill="#74bd59" fill-opacity=".7"/>
         <text x="2" y="12" fill="#231f20" opacity="0.7" transform="scale(.7)">n</text>
     </g>
 

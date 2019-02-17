@@ -21,7 +21,7 @@ interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 
     @JvmDefault
     val isVoid: Boolean
-        get() = nodeIdentifier == null
+        get() = nodeRawName == null
 
 
     /** Gets the node's class qualified name. */

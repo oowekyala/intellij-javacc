@@ -35,7 +35,7 @@ val JccPsiElement.presentableText: String
             is JccTokenManagerDecls     -> "TOKEN_MGR_DECLS"
 
             is JccRegexProduction       -> regexKind.text
-            is JccScopedExpansionUnit   -> "(...) " + jjtreeNodeDescriptor.presentableText
+            is JccScopedExpansionUnit   -> jjtreeNodeDescriptor.presentableText
 
             is JccRegexSpec             -> regularExpression.presentableText
             is JccRegexExpansionUnit    -> regularExpression.presentableText
@@ -150,8 +150,12 @@ val JccPsiElement.presentationIcon: Icon?
         is JccRegexSpec           -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
         is JccRegexExpansionUnit  -> JccIcons.TOKEN.append(visibilityIcon(regularExpression))
 
-        is JccBnfProduction       -> JccIcons.BNF_PRODUCTION.append(visibilityIcon(this))
-        is JccJavacodeProduction  -> JccIcons.JAVACODE_PRODUCTION.append(visibilityIcon(this))
+        is JccBnfProduction       ->
+            (if (isVoid) JccIcons.VOID_BNF_PRODUCTION else JccIcons.JJT_BNF_PRODUCTION)
+                .append(visibilityIcon(this))
+        is JccJavacodeProduction  ->
+            (if (isVoid) JccIcons.VOID_JAVACODE_PRODUCTION else JccIcons.JJT_JAVACODE_PRODUCTION)
+                .append(visibilityIcon(this))
         else                      -> getIcon(0) // this isn't implemented by our classes
     }
 

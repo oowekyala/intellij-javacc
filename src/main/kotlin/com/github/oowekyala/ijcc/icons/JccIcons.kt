@@ -11,17 +11,14 @@ import javax.swing.Icon
 enum class JccIcons(icon: Icon) : Icon by icon {
     // Structure view
 
-    /** Terminal (for headers).  */
     TOKEN_HEADER("terminal.svg"),
-    /** Terminal regex.  */
     TOKEN(TOKEN_HEADER),
     LEXICAL_STATE(TOKEN),
-    /** BNF production.  */
-    BNF_PRODUCTION(AllIcons.Nodes.Method),
-    /** Javacc option. */
+    VOID_BNF_PRODUCTION(AllIcons.Nodes.Method),
+    VOID_JAVACODE_PRODUCTION(VOID_BNF_PRODUCTION),
+    JJT_BNF_PRODUCTION("bnfProdAndNode.svg"),
+    JJT_JAVACODE_PRODUCTION(JJT_BNF_PRODUCTION),
     JAVACC_OPTION(PlatformIcons.ANNOTATION_TYPE_ICON),
-    /** Javacode production.  */
-    JAVACODE_PRODUCTION(AllIcons.Nodes.AbstractMethod),
     TOKEN_MGR_DECLS(PlatformIcons.CLASS_ICON),
     PARSER_DECLARATION(PlatformIcons.CLASS_ICON),
 
