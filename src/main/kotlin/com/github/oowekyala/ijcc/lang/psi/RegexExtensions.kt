@@ -6,6 +6,8 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
+import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang.StringUtils
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -73,7 +75,7 @@ val JccContainerRegularExpression.isUnclosed: Boolean
 
 /** The text matched by this literal regex. */
 val JccLiteralRegexUnit.match: String
-    get() = stringLiteral.text.removeSurrounding("\"")
+    get() = StringEscapeUtils.unescapeJava(stringLiteral.text.removeSurrounding("\""))
 
 /** The text matched by this literal regex. */
 val JccLiteralRegularExpression.match: String
@@ -96,6 +98,12 @@ val JccRegexSpec.regexKind: RegexKind
 val JccRegexProduction.lexicalStatesNameOrEmptyForAll: List<String>
     get() = lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
 
+/**
+ * Lexical states explicitly declared on this regex production.
+ * Empty list if it's defaulted to DEFAULT or if it's for all states.
+ */
+val JccRegexProduction.lexicalStatesIdents: List<JccIdentifier>
+    get() = lexicalStateList?.identifierList ?: emptyList()
 
 val JccRegexSpec.isIgnoreCase: Boolean
     get() = production.isIgnoreCase

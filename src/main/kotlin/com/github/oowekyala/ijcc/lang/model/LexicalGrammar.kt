@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.LexicalStateB
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.psi.SmartPointerManager
 import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
@@ -14,14 +15,14 @@ import com.intellij.util.containers.MostlySingularMultiMap
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalGrammar(file: JccFile) {
+class LexicalGrammar(file: JccFile) : BaseCachedModelObject(file) {
 
     // Initialization order of this object is fragile
 
     // The initialization routine of buildStatesMap indirectly uses
     // JccTerminalReference (through matchesLiteral), which itself relies
     // on the LexicalGrammar of the file to resolve token names quickly
-    // with the index below.
+    // with the indices below.
 
     // So by the time buildStatesMap is invoked, the constructor must have
     // returned, otherwise JccFileImpl never assigns its LexicalGrammar
@@ -31,7 +32,7 @@ class LexicalGrammar(file: JccFile) {
     // do take care of not using property initializers that call the lazy
     // properties! That would force their evaluation
 
-    // Though it's error-prone, the rest apart from JccTerminalReference and this
+    // Though it's error-prone, apart from JccTerminalReference and this
     // object the rest of the app need not care, which is nice.
 
     /**
@@ -47,13 +48,13 @@ class LexicalGrammar(file: JccFile) {
 
     /** All the defined lexical states. */
     private val lexicalStatesMap: Map<String, LexicalState> by lazy {
-        buildStatesMap { file.allProductions() }
+        buildStatesMap(file)
     }
 
 
-    /** All the tokens. */
-    val allTokens: Sequence<Token> by lazy {
-        lexicalStates.flatMap { it.tokens }.asSequence()
+    /** All the tokens. Their indices in this list acts as an id for the doc generator. */
+    val allTokens: List<Token> by lazy {
+        lexicalStates.flatMap { it.tokens }
     }
 
     val lexicalStates: Collection<LexicalState>
@@ -87,87 +88,90 @@ class LexicalGrammar(file: JccFile) {
             else                         -> lexicalStates.filter { namesOrEmptyForAll.contains(it.name) }
         }
 
-    companion object {
 
-        private fun buildStatesMap(allProductions: () -> Sequence<JccProduction>): Map<String, LexicalState> {
+    private fun buildStatesMap(file: JccFile): Map<String, LexicalState> {
 
-            // JavaCC collects all lexical state names during parser execution,
-            // and only builds "lexical states" during the semanticise phase.
-            // hence why we need two traversals here.
-            val allLexicalStatesNames =
-                allProductions().filterIsInstance<JccRegexProduction>()
-                    .flatMap { it.lexicalStatesNameOrEmptyForAll.asSequence() }
-                    .plus(DefaultStateName) // always there
-                    .distinct()
-                    .toList()
+        // JavaCC collects all lexical state names during parser execution,
+        // and only builds "lexical states" during the semanticise phase.
+        // hence why we need two traversals here.
 
-            // state name to builder
-            val builders = allLexicalStatesNames.associateWith { name -> LexicalStateBuilder(name) }
+        // state name to builder
+        val builders = file.initBuilders()
 
-            val defaultBuilder = builders.getValue(DefaultStateName)
+        val defaultBuilder = builders.getValue(DefaultStateName)
 
-            for (production in allProductions()) {
+        for (production in file.allProductions()) {
 
-                when (production) {
-                    is JccRegexProduction -> {
-                        val rstates = production.lexicalStatesNameOrEmptyForAll
+            when (production) {
+                is JccRegexProduction -> {
+                    val rstates = production.lexicalStatesNameOrEmptyForAll
 
-                        val relevantBuilders = when {
-                            rstates.isEmpty()/* <*> */ -> builders.values
-                            else                       -> rstates.map { builders.getValue(it) }
-                        }
-
-                        for (spec in production.regexSpecList) {
-                            relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
-                        }
+                    val relevantBuilders = when {
+                        rstates.isEmpty()/* <*> */ -> builders.values
+                        else                       -> rstates.map { builders.getValue(it) }
                     }
 
-                    is JccBnfProduction   -> {
+                    for (spec in production.regexSpecList) {
+                        relevantBuilders.forEach { it.addToken(ExplicitToken(spec)) }
+                    }
+                }
 
-                        // all of those are put in the default state
+                is JccBnfProduction   -> {
 
-
-                        val regexExpansions =
-                            production.expansion
-                                ?.descendantSequence(includeSelf = true)
-                                ?.filterIsInstance<JccRegexExpansionUnit>()
-                                ?: emptySequence()
-
-                        val currentSpecs = defaultBuilder.currentSpecs
+                    // all of those are put in the default state
 
 
-                        for (regexExpansion in regexExpansions) {
+                    val regexExpansions =
+                        production.expansion
+                            ?.descendantSequence(includeSelf = true)
+                            ?.filterIsInstance<JccRegexExpansionUnit>()
+                            ?: emptySequence()
 
-                            val regex = regexExpansion.regularExpression
+                    val currentSpecs = defaultBuilder.currentSpecs
 
-                            if (regex is JccEofRegularExpression) continue // doesn't generate a token
 
-                            val token = when (val r = regex.getRootRegexElement(false)) {
+                    for (regexExpansion in regexExpansions) {
 
-                                is JccLiteralRegexUnit        ->  // if the string isn't covered by an explicit token, it's synthesized
-                                    currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
+                        val regex = regexExpansion.regularExpression
 
-                                // necessarily references an explicit token
-                                is JccTokenReferenceRegexUnit -> null
+                        if (regex is JccEofRegularExpression) continue // doesn't generate a token
 
-                                // everything else is synthesized
-                                else                          -> SyntheticToken(regexExpansion)
-                            } as? SyntheticToken
+                        val token = when (val r = regex.getRootRegexElement(false)) {
 
-                            token?.runIt {
-                                defaultBuilder.addToken(it)
-                            }
+                            is JccLiteralRegexUnit        ->  // if the string isn't covered by an explicit token, it's synthesized
+                                currentSpecs.firstOrNull { it.matchesLiteral(r) } ?: SyntheticToken(regexExpansion)
+
+                            // necessarily references an explicit token
+                            is JccTokenReferenceRegexUnit -> null
+
+                            // everything else is synthesized
+                            else                          -> SyntheticToken(regexExpansion)
+                        } as? SyntheticToken
+
+                        token?.runIt {
+                            defaultBuilder.addToken(it)
                         }
                     }
                 }
             }
-
-            return builders.mapValues { (_, v) -> v.build() }
         }
+
+        return builders.mapValues { (_, v) -> v.build(this) }
+    }
+
+    companion object {
+
+
+        private fun JccFile.initBuilders(): Map<String, LexicalStateBuilder> =
+            lexicalStatesFirstMention
+                .associateTo(mutableMapOf()) { id ->
+                    Pair(id.name, LexicalStateBuilder(id.name, SmartPointerManager.createPointer(id)))
+                }
+                .also { it.computeIfAbsent(DefaultStateName) { name -> LexicalStateBuilder(name, null) } }
 
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens
-         * are reduced, but this is only done within [buildStatesMap]. This is only
+         * should be reduced, but this is only done within [buildStatesMap]. This is only
          * provided to have a quick and dirty way to build a cache of named tokens,
          * which won't be reduced.
          */

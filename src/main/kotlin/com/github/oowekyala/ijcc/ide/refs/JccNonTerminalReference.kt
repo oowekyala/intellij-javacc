@@ -1,19 +1,17 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.github.oowekyala.ijcc.ide.structureview.getPresentableText
-import com.github.oowekyala.ijcc.ide.structureview.getPresentationIcon
-import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.ide.completion.withTail
+import com.github.oowekyala.ijcc.ide.structureview.presentableText
+import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.lang.psi.textRangeInParent
-import com.intellij.codeInsight.TailType
+import com.intellij.codeInsight.completion.simple.ParenthesesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.codeInsight.lookup.TailTypeDecorator
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.ResolveState
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 
 
 /**
@@ -30,34 +28,54 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
     fun resolveProduction(): JccNonTerminalProduction? {
         val searchedName = element.name ?: return null
 
-        return element.containingFile.syntaxGrammar.getProductionByName(searchedName)
+        return element.containingFile.getProductionByName(searchedName)
+    }
+
+    override fun isReferenceTo(elt: PsiElement): Boolean {
+        return when (elt) {
+            is JccNonTerminalProduction -> elt.name == element.name
+            is JccIdentifier            -> elt.owner?.let { isReferenceTo(it) } == true
+            else                        -> false
+        }
     }
 
 
     override fun getVariants(): Array<Any?> =
         element.containingFile.nonTerminalProductions.map {
-            LookupElementBuilder.create(it, it.name)
-                .withPresentableText(it.getPresentableText())
-                .withIcon(it.getPresentationIcon())
-        }.map {
-            TailTypeDecorator.withTail(
-                it, TailType.LPARENTH
-            )
-        }.map {
-            TailTypeDecorator.withTail(
-                it, TailType.createSimpleTailType(')')
-            )
-        }.map {
-            TailTypeDecorator.withTail(
-                it, TailType.SPACE
-            )
-        }.toList().toTypedArray()
+            LookupElementBuilder.create(it.name)
+                .withPsiElement(it)
+                .withPresentableText(it.presentableText)
+                .withIcon(it.presentationIcon)
+                .withTail("() ")
+        }
+            .toList()
+            .plus(LookaheadLookupItem)
+            .toTypedArray()
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 
     override fun handleElementRename(newElementName: String?): PsiElement = newElementName.toString().let {
         val id = element.nameIdentifier
         JccIdentifierManipulator().handleContentChange(id, newElementName)!!
+    }
+
+    companion object {
+
+        // TODO move to completion contributor with a proper pattern
+        private val LookaheadLookupItem =
+            LookupElementBuilder.create("LOOKAHEAD")
+                .withBoldness(true)
+                .withPresentableText("LOOKAHEAD")
+                .withTailText("(...)", true)
+                .withTail(object : ParenthesesTailType() {
+                    override fun isSpaceWithinParentheses(styleSettings: CommonCodeStyleSettings?,
+                                                          editor: Editor?,
+                                                          tailOffset: Int): Boolean = false
+
+                    override fun isSpaceBeforeParentheses(styleSettings: CommonCodeStyleSettings?,
+                                                          editor: Editor?,
+                                                          tailOffset: Int): Boolean = false
+                })
     }
 
 }

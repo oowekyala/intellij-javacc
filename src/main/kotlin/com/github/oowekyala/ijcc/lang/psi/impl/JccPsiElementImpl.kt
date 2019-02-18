@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
+import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement
@@ -44,6 +45,8 @@ abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), Jc
         is JccTokenReferenceRegexUnit  -> JccTerminalReference(this)
         is JccNonTerminalExpansionUnit -> JccNonTerminalReference(this)
         is JccLiteralRegexUnit         -> if (isStringToken) JccBnfStringLiteralReference(this) else null
+        // overridden for JccIdentifier
+
         // Having it here breaks the Find Usages function
         // see ReferenceExtensions.typedReference
         // is JccNodeClassOwner        -> JjtNodePolyReference(this).takeIf { isNotVoid }

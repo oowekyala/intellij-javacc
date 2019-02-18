@@ -200,6 +200,7 @@ options {
   TRACK_TOKENS = true;
   NODE_PACKAGE="net.sourceforge.pmd.lang.java.ast";
 
+  
   //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
 }
@@ -1833,13 +1834,13 @@ void MethodDeclarator() :
 }
 
 
-void FormalParameters() :
+void FormalParameters():
 {}
 {
   "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
 }
 
-void FormalParameter() :
+void FormalParameter():
 {
 }
 {
@@ -1926,13 +1927,14 @@ void TypeArguments():
 
 void TypeArgument():
 {}
-{
+{   TypeAnnotation() AdditiveExpression()
    (TypeAnnotation())* (ReferenceType() | "?" [ WildcardBounds() ])
 }
 
 void WildcardBounds():
 {}
 {
+    "extends" "static" "false"  AdditiveExpression()
    ("extends" | "super") (TypeAnnotation())* ReferenceType()
 }
 
@@ -2012,6 +2014,7 @@ void Expression() :
   ]
 }
 
+
 void AssignmentOperator() :
 {}
 {
@@ -2031,7 +2034,7 @@ void AssignmentOperator() :
 
 // TODO Setting isTernary is unnecessary, since the node is only pushed on the stack if there is at least one child,
 // ie if it's a ternary
-void ConditionalExpression() #ConditionalExpression(>1) :
+String ConditionalExpression() #ConditionalExpression(>1) :
 {}
 {
   ConditionalOrExpression() [ LOOKAHEAD(2) "?" Expression() ":" ConditionalExpression() ]
@@ -2588,19 +2591,17 @@ void AssertStatement() :
 void RUNSIGNEDSHIFT(): // TODO 7.0.0 make #void
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
+  LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RUNSIGNEDSHIFT} )
    ">" ">" ">"
-  )
 }
 
 void RSIGNEDSHIFT(): // TODO 7.0.0 make #void
 {}
 {
-  ( LOOKAHEAD({ getToken(1).kind == GT &&
+  LOOKAHEAD({ getToken(1).kind == GT &&
                 ((Token.GTToken)getToken(1)).realKind == RSIGNEDSHIFT} )
   ">" ">"
-  )
 }
 
 /* Annotation syntax follows. */

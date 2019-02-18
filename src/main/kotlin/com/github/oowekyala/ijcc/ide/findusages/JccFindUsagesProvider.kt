@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
+import com.github.oowekyala.ijcc.ide.structureview.presentableText
 import com.github.oowekyala.ijcc.lang.lexer.JavaccLexerAdapter
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
@@ -15,7 +16,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-class JccFindUsagesProvider : FindUsagesProvider {
+object JccFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? = DefaultWordsScanner(
         JavaccLexerAdapter(),
         JccTypesExt.IdentifierTypeSet,
@@ -25,17 +26,25 @@ class JccFindUsagesProvider : FindUsagesProvider {
 
 
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String =
-        (element as JccPsiElement).name ?: "<default name>"
+        (element as? JccPsiElement)?.presentableText ?: "<default name>"
 
     override fun getDescriptiveName(element: PsiElement): String = getNodeText(element, false)
 
     override fun getType(element: PsiElement): String {
 
         return when (element) {
+            is JccNonTerminalProduction,
             is JccNonTerminalExpansionUnit -> "non-terminal"
-            is JccRegexElement, // TODO should we be more specific?
+            is JccRegexElement,
             is JccRegularExpression,
             is JccRegularExpressionOwner   -> "token"
+            is JccIdentifier               -> when {
+                element.owner is JccNonTerminalProduction
+                    || element.owner is JccNonTerminalExpansionUnit -> "non-terminal"
+                element.isJjtreeNodeIdentifier            -> "JJTree node"
+                element.isLexicalStateName                -> "lexical state"
+                else                                      -> null
+            }
             else                           -> null
         } ?: "name".also {
             Log { debug("Defaulting type description because unhandled ${element.parent.javaClass.simpleName}") }

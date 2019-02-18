@@ -3,13 +3,14 @@ package com.github.oowekyala.ijcc.ide.gutter
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.firstAncestorOrNull
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeHighlighting.Pass
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.util.FunctionUtil
 import javax.swing.Icon
@@ -21,10 +22,10 @@ import javax.swing.Icon
  * @author Clément Fournier
  * @since 1.1
  */
-object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor() {
+object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor(), DumbAware {
     override fun getName(): String? = null
 
-    override fun getIcon(): Icon = JavaccIcons.GUTTER_RECURSION
+    override fun getIcon(): Icon = JccIcons.GUTTER_RECURSION
 
     override fun getLineMarkerInfo(elt: PsiElement): LineMarkerInfo<*>? = null
 
@@ -45,7 +46,7 @@ object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor()
             // it needs a leaf element otherwise it complains with assertion errors
             element.nameIdentifier.leaf,
             element.nameIdentifier.textRange,
-            JavaccIcons.GUTTER_RECURSION,
+            JccIcons.GUTTER_RECURSION,
             Pass.LINE_MARKERS,
             FunctionUtil.constant("Recursive call"),
             null,

@@ -20,12 +20,13 @@ Offers comprehensive language support for the [JavaCC](https://github.com/javacc
   * Detection of all JavaCC errors as you type
 
 ##### JJTree code insight
-  * Link productions and JJTree node descriptors to their corresponding node class
+  * Link JJTree node descriptors to their corresponding node class, and vice-versa
   * Highlighting of the node scope of a node annotation
   * Jump to partial declarations when they exist
+  * Additional structure view information
 
 ##### Java language injection
-  * Java is injected in the embedded code fragments across the language, like parser actions
+  * Java is injected in the code fragments embedded in grammars, like parser actions
   * Code completion, quick documentation, usage resolution, and many other Java IDE features are available on the most basic level of injection
   * Compilation error checking (including type checking) and rich syntax highlighting can optionally be enabled in the plugin settings
   * Control flow analysis of the embedded Java file respects the structure of the grammar, so that control-flow related inspections work properly
@@ -41,7 +42,7 @@ Many JavaCC warnings are also implemented as inspections. Inspections can be sup
 
 ## Usage notes
 
-* I recommend to define an easy shortcut for fold/unfold region from the start if you don't have any
-* Code ide in Java fragments works best when the token manager and other supporting files have already been generated.
+* I recommend to define an easy shortcut to fold/unfold region from the start if you don't have any
+* Code insight in Java fragments works best when the token manager and other supporting files have already been generated.
 * Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any.
   The Java injection support in particular is still quite fragile. Contributions are most welcome as well!

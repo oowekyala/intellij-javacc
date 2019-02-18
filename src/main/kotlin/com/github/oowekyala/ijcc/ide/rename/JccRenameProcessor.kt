@@ -2,11 +2,15 @@ package com.github.oowekyala.ijcc.ide.rename
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.find.findUsages.FindUsagesManager
+import com.intellij.find.findUsages.FindUsagesUtil
 import com.intellij.openapi.util.Comparing
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiReference
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.SearchScope
+import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.refactoring.rename.UnresolvableCollisionUsageInfo
@@ -14,6 +18,16 @@ import com.intellij.usageView.UsageInfo
 
 
 /**
+ * TODO Correct behaviour would be:
+ *   - renaming a production from a usage or from its decl
+ *   changes the usages and adds a #Name decl with the previous
+ *   JJTree name in JJTree grammars
+ *   - renaming a JJTree annotation only changes other JJTree
+ *   annotations and adds a #Name annotation on a production
+ *   named the same if necessary, but doesn't change the name
+ *   of the production nor impact its usages
+ *
+ *
  * @author Clément Fournier
  * @since 1.0
  */
@@ -51,22 +65,12 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
             val file = key.containingFile as JccFileImpl
             if (isTerminal(key) == true) {
 
-                processCollisions(
-                    key,
-                    value,
-                    file.globalNamedTokens,
-                    result
-                ) {
+                processCollisions(key, value, file.globalNamedTokens, result) {
                     "A terminal named \'$it\' is already defined in this file"
                 }
 
             } else {
-                processCollisions(
-                    key,
-                    value,
-                    file.nonTerminalProductions,
-                    result
-                ) {
+                processCollisions(key, value, file.nonTerminalProductions, result) {
                     "A production named \'$it\' is already defined in this file"
                 }
             }
@@ -81,13 +85,14 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         for (spec in sameKind) {
             if (Comparing.strEqual(newName, spec.name)) {
                 result.add(object : UnresolvableCollisionUsageInfo(spec, element) {
-                    override fun getDescription(): String {
-                        return description(newName)
-                    }
+                    override fun getDescription(): String = description(newName)
                 })
             }
         }
     }
+
+    override fun findReferences(element: PsiElement): MutableCollection<PsiReference> =
+        ReferencesSearch.search(element, GlobalSearchScope.fileScope(element.containingFile)).findAll()
 
     override fun prepareRenaming(element: PsiElement, // the JccIdentifier
                                  newName: String,
@@ -96,13 +101,15 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
 
         // TODO also rename the Java PsiClass (but probably needs a ui agreement)
         // finds all node class owners with the same node class
-        element.parent.parent
-            .let { it as? JccNodeClassOwner }
-            // only continue if the renamed element is the ident of the node
-            // can be different for productions with an annotation
-            ?.takeIf { it.nodeIdentifier == element }
-            ?.typedReference
-            ?.multiResolve(incompleteCode = false)
-            ?.runIt { allRenames.putAll(it.associate { Pair(it.element.nodeIdentifier!!, newName) }) }
+
+        // add the non terminal prods in the map so that their usages are renamed
+        // if they name the element themselves
+//        allRenames.keys
+//            .asSequence()
+//            .mapNotNull { it as? JccIdentifier }
+//            .filter { (it.owner as? JccNonTerminalProduction)?.nodeIdentifier == it }
+//            ?.let {
+//                allRenames[it.nameIdentifier] = newName
+//            }
     }
 }

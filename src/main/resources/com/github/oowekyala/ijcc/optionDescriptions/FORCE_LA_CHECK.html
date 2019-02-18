@@ -1,0 +1,9 @@
+This option setting controls lookahead ambiguity checking performed by JavaCC.
+By default (when this option is false), lookahead ambiguity checking
+is performed for all choice points where the default lookahead
+of 1 is used. Lookahead ambiguity checking is not performed at
+choice points where there is an explicit lookahead specification,
+or if the option {option_link LOOKAHEAD} is set to something other than 1.
+Setting this option to true performs lookahead ambiguity checking
+at all choice points regardless of the lookahead specifications
+in the grammar file.

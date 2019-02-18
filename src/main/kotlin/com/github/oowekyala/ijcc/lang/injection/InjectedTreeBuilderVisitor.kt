@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange
@@ -164,8 +165,8 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         surroundTop("if /*lookahead*/ (", ");") //fixme?
     }
 
-    private fun jjtThisDecl(jccNodeClassOwner: JccNodeClassOwner): String =
-        jccNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
+    private fun jjtThisDecl(jjtNodeClassOwner: JjtNodeClassOwner): String =
+        jjtNodeClassOwner.nodeQualifiedName?.let { "$it jjtThis = new $it();\n\n" } ?: ""
 
     override fun visitJjtreeNodeDescriptorExpr(o: JccJjtreeNodeDescriptorExpr) {
         visitJavaExpression(o.javaExpression)
@@ -259,20 +260,25 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         // todo should be private
         fun javaccInsertedDecls(file: JccFile): String {
             val parserName = file.grammarOptions.parserSimpleName
+            val isJjtree = file.grammarNature >= GrammarNature.JJTREE
 
-            return """
-                        /** Only available in JJTree grammars. */
-                        protected JJT${parserName}State jjtree = new JJT${parserName}State();
+            val jjtreeDecls = if (isJjtree) """
+                 /** Only available in JJTree grammars. */
+                 protected JJT${parserName}State jjtree = new JJT${parserName}State();
+            """.trimIndent()
+            else ""
+
+            return  jjtreeDecls + """
 
                         /** Get the next Token. */
                         final public Token getNextToken() {}
 
                         /** Get the specific Token. */
-                        final public Token getToken(int index) {}
+                        final public Token getToken(int indices) {}
 
                         /** Generate ParseException. */
                         public ParseException generateParseException() {}
-                        private void jj_save(int index, int xla) {}
+                        private void jj_save(int indices, int xla) {}
                         private void jj_rescan_token() {}
                         private int trace_indent = 0;
                         private boolean trace_enabled;

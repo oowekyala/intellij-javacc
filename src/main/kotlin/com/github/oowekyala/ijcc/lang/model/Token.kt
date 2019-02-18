@@ -59,7 +59,6 @@ sealed class Token {    // we could have a type parameter here, but I'm too lazy
 
     val psiElement: JccRegularExpressionOwner? get() = psiPointer.element
 
-
     /**
      * Does a regex match on the string. This is not very useful except if we allow to test
      * regex spec definitions like "Check regex".

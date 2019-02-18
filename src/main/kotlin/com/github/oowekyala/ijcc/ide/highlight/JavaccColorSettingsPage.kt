@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
-import com.github.oowekyala.ijcc.util.JavaccIcons
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.openapi.editor.colors.CodeInsightColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -17,7 +17,7 @@ class JavaccColorSettingsPage : ColorSettingsPage {
 
     override fun getDisplayName(): String = "JavaCC"
 
-    override fun getIcon(): Icon = JavaccIcons.JAVACC_FILE
+    override fun getIcon(): Icon = JccIcons.JAVACC_FILE
 
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = attributes
 
@@ -45,17 +45,16 @@ class JavaccColorSettingsPage : ColorSettingsPage {
         "unknown" to CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES,
         "knownprod" to JavaccHighlightingColors.NONTERMINAL_REFERENCE.keys,
         "pdecl" to JavaccHighlightingColors.NONTERMINAL_DECLARATION.keys,
-        "lexstate" to JavaccHighlightingColors.LEXICAL_STATE.keys
+        "lexstate" to JavaccHighlightingColors.LEXICAL_STATE.keys,
+        "option-name" to JavaccHighlightingColors.OPTION_NAME.keys
     )
 
 
     override fun getDemoText(): String = """
 <jcckeyword>options</jcckeyword> {
-    LOOKAHEAD = 1;
-    CHOICE_AMBIGUITY_CHECK = 2;
-    OTHER_AMBIGUITY_CHECK = 1;
-    STATIC = true;
-    FORCE_LA_CHECK = false;
+    <option-name>LOOKAHEAD</option-name> = 1;
+    <option-name>CHOICE_AMBIGUITY_CHECK</option-name> = 2;
+    <option-name>FORCE_LA_CHECK</option-name> = false;
 }
 
 <jcckeyword>PARSER_BEGIN</jcckeyword>(JJTreeParser)

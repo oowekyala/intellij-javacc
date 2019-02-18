@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.findusages
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.psi.PsiElement
+import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.intellij.lang.annotations.Language
 
@@ -13,7 +14,7 @@ import org.intellij.lang.annotations.Language
 class JccFindUsagesTest : JccTestBase() {
 
 
-    fun `test nonterminal usages`() = doTestByText(
+    fun `test nonterminal usages from decl`() = doTestByText(
         """
                 $DummyHeader
 
@@ -31,6 +32,25 @@ class JccFindUsagesTest : JccTestBase() {
 
             """
     )
+
+//    fun `test nonterminal usages`() = doTestByText(
+//        """
+//                $DummyHeader
+//
+//                void Foo():
+//                {}
+//                {
+//                    bar() "foo" "zlatan" Foo() $Nonterminal
+//                                        //^
+//                }
+//
+//                void bar(): {}
+//                {
+//                    "f" Foo() $Nonterminal
+//                }
+//
+//            """
+//    )
 
 
     fun `test token ref`() = doTestByText(
@@ -125,7 +145,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
             }
 
             void Four():{}
@@ -161,7 +181,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
                 //^
             }
 
@@ -197,7 +217,7 @@ class JccFindUsagesTest : JccTestBase() {
             $DummyHeader
 
             TOKEN: {
-                <four: "4"> $Token
+                <four: "4">
                       //^
 
             }
@@ -308,18 +328,18 @@ class JccFindUsagesTest : JccTestBase() {
 
         val source = findElementInEditor<JccPsiElement>()
 
-        val actual = markersActual(source)
-        val expected = markersFrom(code)
+        val actual = markersActual(source).sortedBy { it.first }
+        val expected = markersFrom(code).sortedBy { it.first }
 
-        actual shouldContainExactlyInAnyOrder expected
+        actual shouldContainExactly expected
     }
 
-    private fun markersActual(source: JccPsiElement) =
+    private fun markersActual(source: JccPsiElement): List<Pair<Int, String>> =
         myFixture.findUsages(source)
             .filter { it.element != null }
-            .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
+            .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider.getType(it.element!!).split(" ")[0]) }
 
-    private fun markersFrom(text: String) =
+    private fun markersFrom(text: String): List<Pair<Int, String>> =
         text.split('\n')
             .withIndex()
             .filter { it.value.contains(MARKER) }

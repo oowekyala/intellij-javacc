@@ -117,7 +117,7 @@ class JccStructureViewTest : JccTestBase() {
                                        isPublic: Boolean) {
         myFixture.configureByText("main.rs", code)
         val psi = myFixture.file.children.mapNotNull { it as? JccPsiElement }.first()
-        val data = psi.getPresentationForStructure()
+        val data = psi.presentationForStructure
         TestCase.assertEquals(data.presentableText, expectedPresentableText)
         val icon = data.getIcon(false) as? RowIcon
         if (isPublic) {

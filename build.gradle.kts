@@ -17,7 +17,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.1"
+version = "1.2"
 
 
 ext {
@@ -26,8 +26,6 @@ ext {
     set("intellijPublishPassword", "")
     apply(from = "secrets.properties")
 }
-
-
 
 repositories {
     mavenCentral()
@@ -82,7 +80,7 @@ tasks {
 
 
         source = "src/main/grammars/JavaCC.bnf"
-        targetRoot = "${buildDir}/gen"
+        targetRoot = "$buildDir/gen"
         pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
         pathToPsiRoot = PathToPsiRoot
         purgeOldFiles = true
@@ -94,7 +92,7 @@ tasks {
         description = "Generate the JFlex lexer used by the parser"
 
         source = "src/main/grammars/JavaCC.flex"
-        targetDir = "${buildDir}/gen/com/github/oowekyala/ijcc/lang/lexer"
+        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
         targetClass = "JavaccLexer"
         purgeOldFiles = true
     }
@@ -133,6 +131,22 @@ tasks {
         }
     }
 
+    // compresses the icons and replaces them in the copied resource directory
+    // the icons in the source dir are "optimised for maintainability", which means
+    // much bigger than needed
+    // you need svgo on your path (npm install -g svgo)
+    val compressIcons by creating(Exec::class.java) {
+        dependsOn("processResources")
+
+        val iconsDir = "${buildDir.absolutePath}/resources/main$PackageRoot/icons"
+
+        commandLine(
+            "svgo",
+            "-f",
+            iconsDir
+        )
+    }
+
     compileJava {
         dependsOn(overrideDefaultPsi, generateLexer)
         sourceCompatibility = "1.8"
@@ -155,10 +169,13 @@ tasks {
         kotlinOptions.jvmTarget = "1.8"
     }
 
-
     runIde {
         jvmArgs = listOf("-Xmx2G")
         setConfigDirectory(projectDir.resolve("sandbox").resolve("config"))
+    }
+
+    buildPlugin {
+        dependsOn(compressIcons)
     }
 
     publishPlugin {
@@ -167,32 +184,10 @@ tasks {
     }
 
     patchPluginXml {
-        //language=HTML
-        changeNotes(
-            """
-                Main topic: improved support for the lexer generator.
-                <p>What's new:
-                <ul>
-                    <li>Completion of string literals with known string tokens!</li>
-                    <li>Tokens declared in BNF expansions are now in the structure view (even the implicit ones), and documented</li>
-                    <li>100% coverage of JavaCC semantic errors</li>
-                    <li>Left-recursive production detection, and regex loop detection</li>
-                    <li>Usage of string tokens that would be matched as another token now trigger a warning.
-                    "Token can never be matched" inspection has been toned down because it triggered false positives.
-                    </li>
-                </ul>
-                
-                <p>What's fixed:
-                <ul>
-                    <li>Many misunderstandings of the JavaCC spec, in particular regarding string token definitions, which it treats very specially.</li>
-                    <li>Countless false positives of "token name has not been defined"</li>
-                    <li>False positives with "Token can never be matched" inspection</li>
-                    <li>"Consecutive parser actions unit" inspection reporting on all siblings</li>
-                    <li>Significant performance issues in files with many tokens</li>
-                    <li>Caching issues, which caused changes to not be refreshed often enough</li>
-                </ul>
-            """.trimIndent()
-        )
+
+        val changelog = layout.files("changelog.html").singleFile.readText()
+
+        changeNotes(changelog)
 
         version(project.version)
     }

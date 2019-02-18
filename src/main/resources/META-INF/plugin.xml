@@ -1,3 +1,4 @@
+<!-- @formatter:off -->
 <idea-plugin>
     <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
@@ -13,10 +14,10 @@
         <h4>Main features</h4>
 
         <ul>
-            <li><b>JavaCC support:</b> Jump to declaration and find usages, structure view, quick documentation, etc.</li>
-            <li><b>JJTree support:</b> Jump to node class, some tooling to detect common errors, etc.</li>
+            <li><b>JavaCC support:</b> Navigate to declaration and find usages, code completion, structure view, quick documentation, etc.</li>
+            <li><b>JJTree support:</b> Navigate to/from node class, additional structure view nodes, node scope highlighting, etc.</li>
             <li><b>Java language injection:</b> Code completion, quick documentation, usage resolution, etc.</li>
-            <li><b>Inspections and intentions:</b>Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
+            <li><b>Inspections and intentions:</b> Including unnecessary parentheses detection, unreachable production detection, ambiguous JJTree node descriptor, etc.</li>
         </ul>
 
         Visit the <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a> README for more details.
@@ -24,7 +25,7 @@
         <h4>Usage notes</h4>
 
         <ul>
-            <li>I recommend to define an easy shortcut for fold/unfold region from the start if you don't have any</li>
+            <li>I recommend to define an easy shortcut to fold/unfold region from the start if you don't have any</li>
             <li>Code insight in Java fragments works best when the token manager and other supporting files have already been generated.</li>
             <li>Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any. The Java injection support in particular is still quite fragile. Contributions are most welcome as well!</li>
         </ul>
@@ -63,23 +64,23 @@
         <projectService serviceInterface="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService"
                         serviceImplementation="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsServiceImpl"/>
 
+        <!-- HIGHLIGHT -->
+
         <additionalTextAttributes scheme="Darcula" file="com/github/oowekyala/ijcc/colorSchemes/Darcula_Javacc.xml"/>
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
-        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.ide.highlight.JavaccColorSettingsPage"/>
 
-        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.ide.rename.JccRenameProcessor"/>
-        <lang.namesValidator language="JavaCC"
-                             implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
-
-        <lang.parserDefinition
-                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="JavaCC"
                 implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
-        <lang.commenter language="JavaCC"
-                        implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
+
+        <!-- LANGUAGE -->
+        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+        <lang.parserDefinition
+                language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
 
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 
@@ -87,6 +88,8 @@
                                     implementationClass="com.github.oowekyala.ijcc.ide.quickdoc.JccDocumentationProvider"/>
         <lang.ast.factory language="JavaCC"
                           implementationClass="com.github.oowekyala.ijcc.lang.psi.JavaccAstFactory"/>
+        <lang.commenter language="JavaCC"
+                        implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccCommenter"/>
 
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
@@ -94,25 +97,43 @@
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
 
+
+        <!-- LIVE TEMPLATES -->
+
         <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
 
+        <!-- FIND USAGES -->
+
         <lang.findUsagesProvider language="JavaCC"
                                  implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccFindUsagesProvider"/>
-        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.refs.JccDescriptionProvider"/>
+        <elementDescriptionProvider implementation="com.github.oowekyala.ijcc.ide.findusages.JccDescriptionProvider"/>
+        <usageTypeProvider implementation="com.github.oowekyala.ijcc.ide.findusages.JccUsageTypeProvider"/>
 
+        <referencesSearch
+                implementation="com.github.oowekyala.ijcc.ide.findusages.JjtreeNodeReferenceSearcher"/>
         <referencesSearch
                 implementation="com.github.oowekyala.ijcc.ide.findusages.StringReferenceSearcher"/>
         <findUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
 
-        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccFoldingBuilder"/>
 
-        <lang.psiStructureViewFactory language="JavaCC"
-                                      implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
+        <!-- INDEX -->
+
+        <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
+        <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
+
+
+        <!-- GUTTER -->
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccParserToGrammarLineMarkerProvider"/>
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtNodeToGrammarLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider"/>
@@ -123,14 +144,31 @@
         <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccRecursiveProductionLineMarkerProvider"/>
 
+        <!-- MISC -->
+
+
+        <completion.contributor
+                language="JavaCC"
+                implementationClass="com.github.oowekyala.ijcc.ide.completion.JccCompletionContributor"/>
+
+        <renamePsiElementProcessor implementation="com.github.oowekyala.ijcc.ide.rename.JccRenameProcessor"/>
+        <lang.namesValidator language="JavaCC"
+                             implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
+
+
+        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JccFoldingBuilder"/>
+
+        <lang.psiStructureViewFactory language="JavaCC"
+                                      implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>
+
+
+        <!-- INSPECTIONS & INTENTIONS -->
+
         <lang.inspectionSuppressor language="JavaCC"
                                    implementationClass="com.github.oowekyala.ijcc.ide.inspections.JccInspectionSuppressor"/>
 
         <inspectionToolProvider
                 implementation="com.github.oowekyala.ijcc.ide.inspections.JccInspectionsProvider"/>
-
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
 
         <intentionAction>
             <className>com.github.oowekyala.ijcc.ide.intentions.TokenInliningIntention</className>

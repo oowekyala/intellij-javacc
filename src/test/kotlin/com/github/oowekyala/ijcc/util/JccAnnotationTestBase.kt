@@ -93,13 +93,13 @@ abstract class JccAnnotationTestBase : JccTestBase() {
 
     )
 
-    private fun check(
+    private fun <T> check(
         @Language("JavaCC") text: String,
         checkWarn: Boolean,
         checkInfo: Boolean,
         checkWeakWarn: Boolean,
         ignoreExtraHighlighting: Boolean,
-        configure: (String) -> Unit
+        configure: (String) -> T
 
     ) {
         disableInjection()
@@ -113,11 +113,11 @@ abstract class JccAnnotationTestBase : JccTestBase() {
             settingsState.copy(injectionSupportLevel = InjectionSupportLevel.DISABLED)
     }
 
-    private fun checkFix(
+    private fun <T> checkFix(
         fixName: String,
         @Language("JavaCC") before: String,
         @Language("JavaCC") after: String,
-        configure: (String) -> Unit,
+        configure: (String) -> T,
         checkBefore: () -> Unit,
         checkAfter: (String) -> Unit
 
@@ -128,14 +128,14 @@ abstract class JccAnnotationTestBase : JccTestBase() {
         checkAfter(after)
     }
 
-    private fun checkFixIsUnavailable(
+    private fun <T> checkFixIsUnavailable(
         fixName: String,
         @Language("JavaCC") text: String,
         checkWarn: Boolean,
         checkInfo: Boolean,
         checkWeakWarn: Boolean,
         ignoreExtraHighlighting: Boolean = false,
-        configure: (String) -> Unit
+        configure: (String) -> T
 
     ) {
         check(text, checkWarn, checkInfo, checkWeakWarn, ignoreExtraHighlighting, configure)

@@ -2,8 +2,8 @@
 PARSER_END(JJTreeParser)</fold>
 
 <fold text='SKIP: {..}' expand='false'>SKIP : {
-    "(:" <fold text="{..}">{ commentNestingDepth++; }
-}</fold>
+    "(:" <fold text="{..}">{ commentNestingDepth++; }</fold>
+}
 
 
 <fold text='/BNF QuantifiedExpr()/' expand='true'>void QuantifiedExpr():

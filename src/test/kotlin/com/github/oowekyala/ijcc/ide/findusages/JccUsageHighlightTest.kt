@@ -55,7 +55,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             $DummyHeader
 
             TOKEN: {
-              < ${h("Foo")} : ${h("\"foo\"")} >
+              < ${h("Foo")} : "foo" >
             | <BAR : ("bar") >
             }
 
@@ -100,7 +100,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
 
     private fun h(content: String) = infoAnnot(content, "null")
 
-
+    // We can't use the //^ caret placer because it doesn't play well with the ${h()} shorthand
     private fun doTest(@Language("JavaCC") code: String) {
         configureByText(code)
         val document = myFixture.editor.document
@@ -118,8 +118,8 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             var startOffset = highlighter.startOffset
             var endOffset = highlighter.endOffset
 
-            if (startOffset > caret) startOffset += CARET_TAG.length
-            if (endOffset > caret) endOffset += CARET_TAG.length
+            if (startOffset >= caret) startOffset += CARET_TAG.length
+            if (endOffset >= caret) endOffset += CARET_TAG.length
 
             HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION).range(startOffset, endOffset).create()
         }

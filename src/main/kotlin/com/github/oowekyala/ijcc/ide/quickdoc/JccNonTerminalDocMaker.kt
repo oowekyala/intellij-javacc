@@ -1,13 +1,13 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.ide.inspections.docIsNecessary
+import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.util.foreachAndBetween
-import com.intellij.codeInsight.documentation.DocumentationManager
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
 import com.intellij.psi.util.PsiFormatUtilBase
@@ -121,11 +121,11 @@ object JccNonTerminalDocMaker {
             val reffed: Token? = o.typedReference?.resolveToken(exact = true)
 
             if (reffed != null) {
-                DocumentationManager.createHyperlink(
-                    sb,
-                    JccDocUtil.getLinkRefTo(reffed),
-                    o.text,
-                    false
+                psiLink(
+                    builder = sb,
+                    linkTarget = JccDocUtil.linkRefToToken(reffed),
+                    linkText = o.text,
+                    isCodeLink = true
                 )
             } else {
                 sb.append(o.text)
@@ -153,12 +153,7 @@ object JccNonTerminalDocMaker {
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
             val reffed = o.typedReference.resolveProduction()
 
-            DocumentationManager.createHyperlink(
-                sb,
-                reffed?.let { JccDocUtil.getLinkRefTo(it) },
-                "${o.name}()",
-                false
-            )
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToProd(it) }, linkText = "${o.name}()")
         }
 
         override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
@@ -191,12 +186,12 @@ object JccNonTerminalDocMaker {
 }
 
 
-internal fun SectionsBuilder.jjtreeSection(owner: JccNodeClassOwner) {
+internal fun SectionsBuilder.jjtreeSection(owner: JjtNodeClassOwner) {
     buildSection(JccNonTerminalDocMaker.JJTreeSectionName) {
 
         owner.nodeQualifiedName?.let { qname ->
             val simpleName = qname.split(".").last()
-            append(HtmlUtil.psiLink(qname, simpleName))
+            psiLink(builder = this, linkTarget = qname, linkText = simpleName)
         } ?: append("none")
 
     }

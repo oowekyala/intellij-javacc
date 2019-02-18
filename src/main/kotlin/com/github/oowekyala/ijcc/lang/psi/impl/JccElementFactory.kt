@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccFileType
+import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -181,7 +182,7 @@ object JccElementFactory {
     }
 
     fun createFile(project: Project, text: String): JccFile =
-        project.psiFileFactory.createFileFromText("dummy.jjt", JavaccFileType, text) as JccFile
+        project.psiFileFactory.createFileFromText("dummy.jjt", JjtreeFileType, text) as JccFile
 
     /**
      * Create from an AST node, used by the parser.

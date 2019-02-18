@@ -2,22 +2,25 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
+import org.intellij.lang.annotations.Language
 
 /**
+ * Pay attention, [STATIC] is duplicate with [JjtOption.STATIC]
+ *
  * @author Clément Fournier
  * @since 1.0
  */
 @Suppress("unused", "ClassName")
-sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
-    GenericOption<T>(type, staticDefaultValue) {
+sealed class JccOption<T : Any>(type: JccOptionType<T>,
+                                staticDefaultValue: T) :
+    GenericOption<T>(type, staticDefaultValue, GrammarNature.JAVACC) {
 
 
     override val name: String = javaClass.simpleName
 
 
     /**
-     * The number of tokens to look ahead before making a decision a
-     *t
+     * The number of tokens to look ahead before making a decision at
      * a choice point during parsing. The default value is 1. The smaller
      * this number, the faster the parser. This number may be overridden
      * for specific productions within the grammar as described later.
@@ -40,7 +43,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
      * Java grammar, increasing this number any further causes the checking
      * to take too much time.
      */
-    object CHOICE_AMBIGUITY_CHECK : JccOption<Int>(INTEGER, 0)
+    object CHOICE_AMBIGUITY_CHECK : JccOption<Int>(INTEGER, 2)
 
     /**
      * This is an integer option whose default value is 1. This is the
@@ -138,8 +141,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
     object IGNORE_CASE : JccOption<Boolean>(BOOLEAN, false)
 
     /**
-     * This is a boolean option whose default value is false. The defaul
-     *t
+     * This is a boolean option whose default value is false. The default
      * action is to generate a token manager that works on the specified
      * grammar tokens. If this option is set to true, then the parser
      * is generated to accept tokens from any token manager of type
@@ -149,8 +151,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
     object USER_TOKEN_MANAGER : JccOption<Boolean>(BOOLEAN, false)
 
     /**
-     * This is a boolean option whose default value is false. The defaul
-     *t
+     * This is a boolean option whose default value is false. The default
      * action is to generate a character stream reader as specified
      * by the options JAVA_UNICODE_ESCAPE and UNICODE_INPUT. The generated
      * token manager receives characters from this stream reader. If
@@ -168,13 +169,12 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
      * action is to generate the parser file ("MyParser.java" in the
      * above example). When set to false, the parser file is not generated.
      * Typically, this option is set to false when you wish to generate
-     * only the token manager and use it without the associated parser
-     *.
+     * only the token manager and use it without the associated parser.
      */
     object BUILD_PARSER : JccOption<Boolean>(BOOLEAN, true)
 
     /**
-     *  This is a boolean option whose default value is true. The default
+     * This is a boolean option whose default value is true. The default
      * action is to generate the token manager file ("MyParserTokenManager.java"
      * in the above example). When set to false the token manager file
      * is not generated. The only reason to set this option to false
@@ -293,7 +293,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
     object GRAMMAR_ENCODING
         : JccOption<String>(STRING, "") {
 
-        override fun defaultValueFallback(config: GrammarOptions): String =
+        override fun contextualDefaultValue(config: GrammarOptions): String =
             System.getProperties().getProperty("file.encoding")
     }
 
@@ -301,22 +301,23 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T) :
 
 
     object PARSER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object PARSER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun defaultValueFallback(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
     }
 
     // undocumented options...
+    // TODO ask the guys at JavaCC
 
     object KEEP_LINE_COLUMN : JccOption<Boolean>(BOOLEAN, true)
 

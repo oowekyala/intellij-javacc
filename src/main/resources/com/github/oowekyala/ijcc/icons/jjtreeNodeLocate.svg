@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+
+
+    <mask id="modifierClip">
+        <!--
+          Everything outside the circle will be
+          clipped and therefore invisible.
+        -->
+        <rect width="12" height="12" fill="white" transform="translate(-1,-1)"/>
+        <!--<rect width="8" height="8" fill="black" transform="translate(8.5,8.5)"/>-->
+        <circle cx="9" cy="9" r="3.5" fill="black"/>
+    </mask>
+
+    <g mask="url(#modifierClip)">
+        <circle cx="4" cy="6" r="4" fill="#74bd59" fill-opacity=".7"/>
+        <text x="2" y="12" fill="#231f20" opacity="0.7" transform="scale(.7)">n</text>
+    </g>
+
+
+    <g fill="#6E6E6E" fill-rule="evenodd" transform="translate(6,6)scale(.4)">
+        <path
+                d="M8,15 C4.13400675,15 1,11.8659932 1,8 C1,4.13400675 4.13400675,1 8,1 C11.8659932,1 15,4.13400675 15,8 C15,11.8659932 11.8659932,15 8,15 Z M8,13.5 C11.0375661,13.5 13.5,11.0375661 13.5,8 C13.5,4.96243388 11.0375661,2.5 8,2.5 C4.96243388,2.5 2.5,4.96243388 2.5,8 C2.5,11.0375661 4.96243388,13.5 8,13.5 Z"/>
+        <rect width="2" height="4" x="7" y="2"/>
+        <rect width="4" height="2" x="2" y="7"/>
+        <rect width="4" height="2" x="10" y="7"/>
+        <rect width="2" height="4" x="7" y="10"/>
+    </g>
+
+
+</svg>

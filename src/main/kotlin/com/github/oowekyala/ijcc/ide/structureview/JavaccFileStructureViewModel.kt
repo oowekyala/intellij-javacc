@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.util.JavaccIcons
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement
@@ -15,8 +15,8 @@ import com.intellij.openapi.actionSystem.Shortcut
  * @author Clément Fournier
  * @since 1.0
  */
-class JavaccFileStructureViewModel(psiFile: JccFile)
-    : StructureViewModelBase(psiFile, JccStructureTreeElement(psiFile, psiFile.lexicalGrammar)),
+class JavaccFileStructureViewModel(val psiFile: JccFile)
+    : StructureViewModelBase(psiFile, JccFileStructureTreeElement(psiFile)),
     StructureViewModel.ElementInfoProvider {
 
     init {
@@ -27,6 +27,7 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
 
             JccParserDeclaration::class.java,
             JccTokenManagerDecls::class.java,
+            JccScopedExpansionUnit::class.java,
 
             JccRegexProduction::class.java,
             JccRegexSpec::class.java,
@@ -51,11 +52,11 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
 
 
     override fun getSorters(): Array<Sorter> = arrayOf(Sorter.ALPHA_SORTER)
-    override fun getFilters(): Array<Filter> = arrayOf(terminalFilter(), optionFilter())
+    override fun getFilters(): Array<Filter> = arrayOf(TerminalFilter, OptionFilter)
 
     companion object {
 
-        private fun optionFilter(): Filter = object : FileStructureFilter {
+        object OptionFilter : FileStructureFilter {
             override fun getCheckBoxText(): String = "Show Options"
 
             override fun getShortcut(): Array<Shortcut> = emptyArray()
@@ -73,13 +74,13 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
                 ActionPresentationData(
                     "Show JavaCC Options",
                     "Show the options for code generation",
-                    JavaccIcons.JAVACC_OPTION
+                    JccIcons.JAVACC_OPTION
                 )
 
             override fun getName(): String = "OptionFilter"
         }
 
-        private fun terminalFilter(): Filter = object : FileStructureFilter {
+        object TerminalFilter : FileStructureFilter {
             override fun getCheckBoxText(): String = "Show Lexical Structure"
 
             override fun getShortcut(): Array<Shortcut> = emptyArray()
@@ -98,7 +99,7 @@ class JavaccFileStructureViewModel(psiFile: JccFile)
                 ActionPresentationData(
                     "Show Lexical Structure",
                     "Show tokens specifications.",
-                    JavaccIcons.TOKEN_HEADER
+                    JccIcons.TOKEN_HEADER
                 )
 
             override fun getName(): String = "TerminalFilter"

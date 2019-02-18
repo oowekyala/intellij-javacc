@@ -1,15 +1,16 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
 import com.intellij.util.IncorrectOperationException
@@ -23,7 +24,11 @@ import com.intellij.util.IncorrectOperationException
  */
 class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
 
-    override fun getFileType(): FileType = JavaccFileType
+    private val myType: FileType by lazy {
+        originalFile.virtualFile?.fileType ?: FileTypeRegistry.getInstance().getFileTypeByFileName(name)
+    }
+
+    override fun getFileType(): FileType = myType
 
     override val grammarFileRoot: JccGrammarFileRoot?
         get() = findChildByClass(JccGrammarFileRoot::class.java)
@@ -33,6 +38,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val regexProductions: Sequence<JccRegexProduction>
         get() = grammarFileRoot?.childrenSequence()?.filterIsInstance<JccRegexProduction>() ?: emptySequence()
+
+    override val lexicalStatesFirstMention: Sequence<JccIdentifier>
+        get() = regexProductions.flatMap { it.lexicalStatesIdents.asSequence() }.distinctBy { it.name }
 
     override val parserDeclaration: JccParserDeclaration?
         get() = grammarFileRoot?.parserDeclaration
@@ -56,6 +64,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val options: JccOptionSection?
         get() = grammarFileRoot?.optionSection
 
+    override fun getStub(): JccFileStub? = super.getStub() as? JccFileStub?
+
     /**
      * Some structures are lazily cached to reduce the number of times
      * they must be constructed. These include the [LexicalGrammar], the
@@ -65,24 +75,29 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      */
     internal fun invalidateCachedStructures() {
         myLexGrammarImpl = LexicalGrammar(this)
+        myGrammarOptionsImpl = GrammarOptions(this)
         mySyntaxGrammarImpl = SyntaxGrammar(this)
-        myGrammarOptionsImpl = GrammarOptions(options, parserDeclaration)
     }
+
+    /* TODO
+        find a better fucking way to cache that
+        * I tried PsiFileGist but got 100% cache miss so there's that
+     */
 
     private var myLexGrammarImpl: LexicalGrammar? = null
 
     override val lexicalGrammar: LexicalGrammar
-        get() = myLexGrammarImpl ?: let { invalidateCachedStructures(); myLexGrammarImpl!! }
+        get() = myLexGrammarImpl ?: let { myLexGrammarImpl = LexicalGrammar(this);myLexGrammarImpl!! }
 
     private var mySyntaxGrammarImpl: SyntaxGrammar? = null
 
-    override val syntaxGrammar: SyntaxGrammar
-        get() = mySyntaxGrammarImpl ?: let { invalidateCachedStructures(); mySyntaxGrammarImpl!! }
+    val syntaxGrammar: SyntaxGrammar
+        get() = mySyntaxGrammarImpl ?: let { mySyntaxGrammarImpl = SyntaxGrammar(this); mySyntaxGrammarImpl!! }
 
     private var myGrammarOptionsImpl: GrammarOptions? = null
 
     override val grammarOptions: GrammarOptions
-        get() = myGrammarOptionsImpl ?: let { invalidateCachedStructures(); myGrammarOptionsImpl!! }
+        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = GrammarOptions(this); myGrammarOptionsImpl!! }
 
 
     override fun getContainingFile(): JccFile = this
@@ -92,6 +107,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override fun setPackageName(packageName: String?) {
         throw IncorrectOperationException("Cannot set the package of the parser that way")
     }
+
 
     /**
      * This is important for access resolution to be done properly in injected
@@ -108,5 +124,4 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
             it.first.descendantSequence().filterIsInstance<PsiClass>().firstOrNull()
         }.toTypedArray()
     }
-
 }

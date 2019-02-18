@@ -1,7 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi
 
-interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner, JccProduction {
+interface JccNonTerminalProduction
+    : JccIdentifierOwner, JjtNodeClassOwner, JccProduction {
 
     val javaBlock: JccJavaBlock?
 
@@ -11,6 +12,6 @@ interface JccNonTerminalProduction : JccIdentifierOwner, JccNodeClassOwner, JccP
 
     override fun getNameIdentifier(): JccIdentifier
 
-    override fun getName(): String = nameIdentifier.name
+    override fun getName(): String
 
 }

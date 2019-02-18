@@ -1,17 +1,18 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.lang.psi.JccIdentifier
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRefRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.match
-import java.util.*
+import com.intellij.psi.SmartPsiElementPointer
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.regex.Matcher
-import kotlin.Comparator
 
 /**
  * Represents a lexical state.
  *
- * The JavaCC™ lexical specification is organized into a set of "lexical states".
+ * The JavaCC lexical specification is organized into a set of "lexical states".
  * Each lexical state is named with an identifier. There is a standard lexical state
  * called DEFAULT. The generated token manager is at any moment in one of these
  * lexical states. When the token manager is initialized, it starts off in the DEFAULT
@@ -20,12 +21,40 @@ import kotlin.Comparator
  *
  * Each lexical state contains an ordered list of regular expressions; the order is
  * derived from the order of occurrence in the input file. There are four kinds of
- * regular expressions: SKIP, MORE, TOKEN, and SPECIAL_TOKEN.
+ * regular expressions: SKIP, MORE, TOKEN, and SPECIAL_TOKEN. These are represented
+ * by the [RegexKind] enum.
  *
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalState private constructor(val name: String, val tokens: List<Token>) {
+class LexicalState private constructor(val lexicalGrammar: LexicalGrammar,
+                                       val name: String,
+                                       val tokens: List<Token>,
+                                       private val declarator: SmartPsiElementPointer<JccIdentifier>?) {
+
+    val declarationIdent: JccIdentifier?
+        get() = declarator?.element
+
+    // Grammars often have big number of tokens in the default state, which makes
+    // match computation suboptimal without caching.
+    private val matchedTokenCache = ConcurrentHashMap<MatchParams, Token?>()
+
+    private fun computeMatchInternal(matchParams: MatchParams): Token? {
+
+        val (toMatch, exact, consideredRegexKinds) = matchParams
+
+        return if (exact)
+            filterWith(consideredRegexKinds).firstOrNull { it.matchesLiteral(toMatch) }
+        else
+            filterWith(consideredRegexKinds)
+                .mapNotNull { token ->
+                    val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
+
+                    if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
+                }
+                .maxWith(matchComparator)
+                ?.let { it.first }
+    }
 
     /**
      * Returns the token that matches the given string in this lexical state.
@@ -46,19 +75,10 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      */
     fun matchLiteral(toMatch: String,
                      exact: Boolean,
-                     stopAtOffset: Int = Int.MAX_VALUE,
-                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-        if (exact)
-            filterWith(consideredRegexKinds, stopAtOffset).firstOrNull { it.matchesLiteral(toMatch) }
-        else
-            filterWith(consideredRegexKinds, stopAtOffset)
-                .mapNotNull { token ->
-                    val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
-
-                    if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
-                }
-                .maxWith(matchComparator)
-                ?.let { it.first }
+                     consideredRegexKinds: Set<RegexKind> = RegexKind.JustToken): Token? =
+        matchedTokenCache.computeIfAbsent(MatchParams(toMatch, exact, consideredRegexKinds)) {
+            this.computeMatchInternal(it)
+        }
 
     /**
      * Returns the string token that matches exactly this regex unit.
@@ -67,9 +87,20 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
      */
     fun matchLiteral(literal: JccLiteralRegexUnit,
                      exact: Boolean,
-                     stopAtOffset: Int = Int.MAX_VALUE,
-                     consideredRegexKinds: Set<RegexKind> = defaultConsideredRegex): Token? =
-        matchLiteral(literal.match, exact, stopAtOffset, consideredRegexKinds)
+                     consideredRegexKinds: Set<RegexKind> = RegexKind.JustToken): Token? =
+        matchLiteral(literal.match, exact, consideredRegexKinds)
+
+
+    val successors: Set<LexicalState> by lazy {
+        tokens.asSequence()
+            .mapNotNull { it.lexicalStateTransition }
+            .mapNotNull { lexicalGrammar.getLexicalState(it) }
+            .toSet()
+    }
+
+    val predecessors: Set<LexicalState> by lazy {
+        lexicalGrammar.lexicalStates.filter { this in it.successors }.toSet()
+    }
 
 
     override fun equals(other: Any?): Boolean {
@@ -83,19 +114,22 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
         return true
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
+    override fun hashCode(): Int = name.hashCode()
 
-    private fun filterWith(consideredRegexKinds: Set<RegexKind>, maxOffset: Int): Sequence<Token> =
+    override fun toString(): String = "LexicalState($name)"
+
+    private fun filterWith(consideredRegexKinds: Set<RegexKind>): Sequence<Token> =
         tokens.asSequence()
             .filter { consideredRegexKinds.contains(it.regexKind) }
-            .takeWhile { (it.textOffset ?: Int.MAX_VALUE) <= maxOffset }
+
+
+    private data class MatchParams(val toMatch: String,
+                                   val exactMatch: Boolean,
+                                   val consideredRegexKinds: Set<RegexKind>)
+
 
     companion object {
 
-
-        private val defaultConsideredRegex = EnumSet.of(RegexKind.TOKEN)
 
         /**
          * Maximal munch. First take the longest match, then take
@@ -109,7 +143,11 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
 
         val JustDefaultState = listOf(DefaultStateName)
 
-        class LexicalStateBuilder(val name: String) {
+        /**
+         * Builds a lexical state, used by [LexicalGrammar].
+         */
+        internal class LexicalStateBuilder(val name: String,
+                                           private val declarator: SmartPsiElementPointer<JccIdentifier>?) {
 
             private val mySpecs = mutableListOf<Token>()
 
@@ -129,7 +167,7 @@ class LexicalState private constructor(val name: String, val tokens: List<Token>
             val currentSpecs: List<Token>
                 get() = mySpecs
 
-            fun build() = LexicalState(name, mySpecs)
+            fun build(lexicalGrammar: LexicalGrammar) = LexicalState(lexicalGrammar, name, mySpecs, declarator)
         }
     }
 }

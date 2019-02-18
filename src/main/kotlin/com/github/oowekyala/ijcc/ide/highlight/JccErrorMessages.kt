@@ -1,12 +1,18 @@
 package com.github.oowekyala.ijcc.ide.highlight
 
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
+import com.intellij.codeInsight.daemon.impl.quickfix.RenameFileFix
+import com.intellij.codeInsight.intention.IntentionAction
 import org.jetbrains.annotations.TestOnly
 
 /**
+ * Error messages, externalized here for testability.
+ *
  * @author Clément Fournier
  * @since 1.1
  */
@@ -72,5 +78,16 @@ object JccErrorMessages {
         "String token $regexText has been defined as a private (#) regular expression"
 
     fun undefinedTokenName(name: String): String = "Undefined lexical token name \"$name\""
+
+    fun unexpectedJjtreeConstruct(): String = "Unexpected JJTree construct in *.jj file"
+
+    fun unexpectedJjtreeOption(): String = "JJTree option is ignored in *.jj file"
+
+
+    fun changeNatureFixes(jccFile: JccFile,
+                          targetNature: GrammarNature): Array<IntentionAction> = arrayOf(
+        RenameFileFix(jccFile.virtualFile.nameWithoutExtension + targetNature.dotAndExtension)
+    )
+
 
 }

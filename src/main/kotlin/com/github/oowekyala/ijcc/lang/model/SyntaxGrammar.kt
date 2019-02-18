@@ -1,8 +1,9 @@
 package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
-import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -15,30 +16,54 @@ import com.intellij.util.containers.MostlySingularMultiMap
  * @author Clément Fournier
  * @since 1.1
  */
-class SyntaxGrammar(file: JccFile) {
+class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
+
+    // TODO indexing like that is supposed to be done by stub indices
+
 
     /**
      * Index of named productions by their name. This is used by [JccNonTerminalReference]
      * to resolve references quickly, which is probably nice for performance for
      * many large grammars.
      */
-    private val namedTokensMap: MostlySingularMultiMap<String, ModelProduction> =
+    private val productionsByName: MostlySingularMultiMap<String, ProductionPointer> =
         file.nonTerminalProductions
-            .map(::ModelProduction)
-            .associateByToMostlySingular { it.name }
+            .associateByToMostlySingular({ it.name }) {
+                SmartPointerManager.createPointer(it)
+            }
+
+    private val jjtreeNodesByName: MostlySingularMultiMap<String, JjtreeNodePointer> =
+        file.nonTerminalProductions
+            .flatMap { it.descendantSequence(includeSelf = true) }
+            .filterIsInstance<JjtNodeClassOwner>()
+            .filter { it.isNotVoid }
+            .associateByToMostlySingular({ it.nodeRawName }) {
+                SmartPointerManager.createPointer(it)
+            }
+
+    val allJjtreeNodes: Map<String, List<JjtNodeClassOwner>>
+        get() = jjtreeNodesByName.asMap().mapValues { (_, v) -> v.mapNotNull { it.element } }
 
 
-    fun getProductionByName(name: String): JccNonTerminalProduction? =
-        namedTokensMap.get(name).firstOrNull()?.nonTerminal
+    fun getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
+        productionsByName.get(name).mapNotNullTo(mutableListOf()) { it.element }
 
-    fun getProductionByNameMulti(name: String): List<ModelProduction> = namedTokensMap.get(name).toList()
+    /**
+     * Gets the partial declarations of the jjtree node with this name declared in this file.
+     * The name has to be the [JjtNodeClassOwner.nodeRawName].
+     */
+    fun getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
+        jjtreeNodesByName.get(name).mapNotNullTo(mutableListOf()) { it.element }
 
-
-    data class ModelProduction(val name: String, val pointer: SmartPsiElementPointer<out JccNonTerminalProduction>) {
-
-        constructor(production: JccNonTerminalProduction)
-            : this(production.name, SmartPointerManager.createPointer(production))
-
-        val nonTerminal: JccNonTerminalProduction? = pointer.element
-    }
+    //
+    //    val usesJjtreeDescriptors: Boolean by lazy {
+    //        jjtreeNodes
+    //            .asMap()
+    //            .values
+    //            .asSequence()
+    //            .flatten().any { it.declarator?.nodeIdentifier?.parent is JccJjtreeNodeDescriptor }
+    //    }
 }
+
+private typealias JjtreeNodePointer = SmartPsiElementPointer<JjtNodeClassOwner>
+private typealias ProductionPointer = SmartPsiElementPointer<JccNonTerminalProduction>

@@ -62,9 +62,9 @@ val JccRegularExpressionOwner.definedToken: Token
         else                     -> throw IllegalStateException(this.toString())
     }
 /**
- * Null if [JccNodeClassOwner.isVoid], not null otherwise.
+ * Null if [JjtNodeClassOwner.isVoid], not null otherwise.
  * This is not yielded by PsiElement.getReference because it breaks
  * find usages.
  */
-val JccNodeClassOwner.typedReference: JjtNodePolyReference?
+val JjtNodeClassOwner.typedReference: JjtNodePolyReference?
     get() = if (isNotVoid) JjtNodePolyReference(this) else null

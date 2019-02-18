@@ -26,7 +26,7 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
 
     /*
         FIXME
-            this is probably very inefficient, build index in LexicalGrammar
+            this is probably very inefficient, build indices in LexicalGrammar (or stubs!)
             we can't use the optimised word scan because it doesn't pick up on non-alphanumeric characters
 
     */
@@ -35,7 +35,10 @@ object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearc
             .allProductions()
             .flatMap { it.descendantSequence(includeSelf = true) }
             .filterIsInstance<JccRegularExpressionOwner>()
-            .mapNotNull { it.regularExpression.asSingleLiteral()?.typedReference }
+            .mapNotNull { it.regularExpression.asSingleLiteral() }
+            // filter out declaration
+            .filter { it != target.definedToken.takeIf { it.isExplicit }?.asStringToken }
+            .mapNotNull { it.typedReference }
             .filter { it.isReferenceTo(target) }
 
 }

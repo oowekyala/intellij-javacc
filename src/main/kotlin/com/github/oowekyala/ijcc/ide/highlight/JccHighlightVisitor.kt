@@ -5,8 +5,10 @@ import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.warningInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
+import com.github.oowekyala.ijcc.ide.intentions.ReplaceLiteralWithReferenceIntention
+import com.github.oowekyala.ijcc.ide.intentions.ReplaceSupersedingUsageWithReferenceIntentionFix
 import com.github.oowekyala.ijcc.lang.JccTypes
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -93,7 +95,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             tokenManagerDecls.drop(1).forEach {
                 myHolder += errorInfo(
                     it,
-                    "Duplicate token manager declarations, at most one occurrence expected."
+                    "Duplicate token manager declarations, at most one occurrence expected"
                 )
             }
         }
@@ -137,6 +139,14 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
+
+        if (myFile.grammarNature < GrammarNature.JJTREE) {
+            myHolder += JccHighlightUtil.errorInfo(
+                nodeDescriptor,
+                JccErrorMessages.unexpectedJjtreeConstruct()
+            ).withQuickFix(fixes = *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
+        }
+
         // extracts the range of the "#" + the range of the ident or "void" kword
         fun rangeOf(element: JccJjtreeNodeDescriptor): TextRange {
             val ident = element.nameIdentifier
@@ -153,13 +163,19 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
     }
 
     override fun visitOptionBinding(binding: JccOptionBinding) {
-        val opt = GrammarOptions.knownOptions[binding.name]
+        val opt = binding.modelOption
         if (opt == null) {
-            myHolder += wrongReferenceInfo(
-                binding.nameIdentifier!!,
+            myHolder += warningInfo(
+                binding.namingLeaf,
                 "Unknown option: ${binding.name}"
             )
             return
+        } else if (myFile.grammarNature < GrammarNature.JJTREE && opt.supportedNature < GrammarNature.JJTREE) {
+            myHolder += warningInfo(
+                binding.namingLeaf,
+                JccErrorMessages.unexpectedJjtreeOption()
+            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
+
         } else {
             myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)
         }
@@ -173,7 +189,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitNonTerminalProduction(o: JccNonTerminalProduction) {
         // check for duplicates
-        myFile.syntaxGrammar.getProductionByNameMulti(o.name).runIt { dups ->
+        myFile.getProductionByNameMulti(o.name).runIt { dups ->
             if (dups.count() > 1) {
                 myHolder += errorInfo(
                     o.nameIdentifier,
@@ -359,7 +375,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             .getTokenByNameMulti(element.name!!)
             .takeIf { it.size > 1 }
             ?.forEach { token ->
-                myHolder += errorInfo(element, "Multiply defined lexical token name \"${token.nameIdentifier}\"")
+                myHolder += errorInfo(element, "Multiply defined lexical token name \"${token.name}\"")
             }
     }
 
@@ -423,8 +439,13 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
                     myHolder +=
                         if (!token.isIgnoreCase && spec.isIgnoreCase)
-                            // TODO implement as an inspection if we want to add quickfixes
-                            warningInfo(spec, JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token))
+                            warningInfo(
+                                spec,
+                                JccErrorMessages.stringLiteralWithIgnoreCaseIsPartiallySuperceded(token)
+                            ).let {
+                                if (spec.name == null) it
+                                else it.withQuickFix(ReplaceSupersedingUsageWithReferenceIntentionFix(token.asStringToken!!, spec.name!!))
+                            }
                         else
                             errorInfo(spec, JccErrorMessages.duplicateStringToken(regex, state, token))
 

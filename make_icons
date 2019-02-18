@@ -1,0 +1,5 @@
+#!/bin/bash
+
+svgo -f "src/main/resources/com/github/oowekyala/ijcc/icons" \
+     -o "build/resources/main/com/github/oowekyala/ijcc/icons"
+

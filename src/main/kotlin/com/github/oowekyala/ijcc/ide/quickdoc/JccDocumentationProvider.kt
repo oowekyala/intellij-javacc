@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
+import com.github.oowekyala.ijcc.ide.refs.JccLexicalStateReference
 import com.github.oowekyala.ijcc.lang.model.ExplicitToken
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.firstOfAnyType
@@ -16,25 +17,43 @@ import com.intellij.psi.PsiManager
 object JccDocumentationProvider : AbstractDocumentationProvider() {
 
     private val stopTypes = arrayOf(
-        JccNonTerminalProduction::class.java,
+        JccProduction::class.java,
         JccRegexSpec::class.java,
+        JccOptionBinding::class.java,
         // stop at the first expansion, the interesting ones are filtered in the "when" stmt
         JccExpansion::class.java
     )
 
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
-        return element?.ancestors(includeSelf = true)?.firstOfAnyType(*stopTypes)?.let {
-            when (it) {
-                is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(it)
-                is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(it)
-                is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(it)
-                is JccRegexSpec           -> JccTerminalDocMaker.makeDoc(ExplicitToken(it))
-                is JccRegexExpansionUnit  -> it.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
-                else                      -> null
+
+        val file = element?.containingFile as? JccFile ?: return null
+
+        when {
+            element == file.fakeDefaultStateDecl                   ->
+                return JccLexicalStateDocMaker.makeDoc(file.lexicalGrammar.defaultState)
+            element is FakeOptionElt                               ->
+                return JccOptionDocMaker.makeDoc(null, file.grammarOptions, element.genericOption)
+            element is JccIdentifier && element.isLexicalStateName ->
+                return JccLexicalStateDocMaker.makeDoc(JccLexicalStateReference(element).resolveState()!!)
+        }
+
+
+        val target =
+            (element as? JccIdentifier)?.owner ?: element.ancestors(includeSelf = true).firstOfAnyType(*stopTypes)
+
+        return when (target) {
+            // not fake
+            is JccOptionBinding       -> target.modelOption?.let {
+                JccOptionDocMaker.makeDoc(target, target.grammarOptions, it)
             }
+            is JccScopedExpansionUnit -> JjtNodeDocMaker.makeDoc(target)
+            is JccBnfProduction       -> JccNonTerminalDocMaker.makeDoc(target)
+            is JccJavacodeProduction  -> JccNonTerminalDocMaker.makeDoc(target)
+            is JccRegexSpec           -> JccTerminalDocMaker.makeDoc(ExplicitToken(target))
+            is JccRegexExpansionUnit  -> target.referencedToken?.let { JccTerminalDocMaker.makeDoc(it) }
+            else                      -> null
         }
     }
-
 
     override fun getDocumentationElementForLink(psiManager: PsiManager?,
                                                 link: String?,

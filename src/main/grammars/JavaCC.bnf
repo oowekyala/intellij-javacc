@@ -1,6 +1,9 @@
 {
   parserClass="com.github.oowekyala.ijcc.lang.parser.JavaccParser"
   parserUtilClass="com.github.oowekyala.ijcc.lang.parser.JavaccParserUtil"
+  parserImports=[
+    "com.github.oowekyala.ijcc.lang.psi.JccTypesExt.*"
+  ]
 
   implements="com.github.oowekyala.ijcc.lang.psi.JccPsiElement"
   extends="com.github.oowekyala.ijcc.lang.psi.impl.JccPsiElementImpl"
@@ -9,6 +12,8 @@
   elementTypePrefix="JCC_"
   elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccElementType"
   tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccTokenType"
+  // factory for stub types
+  elementTypeFactory="com.github.oowekyala.ijcc.lang.psi.stubs.StubImplementationsKt.factory"
 
   psiClassPrefix="Jcc"
   psiImplClassSuffix="Impl"
@@ -89,12 +94,15 @@
         STRING_LITERAL      = 'regexp:"([^"\\]|\\.)*"'
         FLOAT_LITERAL       = 'regexp:(0[xb])?[\da-fA-F]*(\.[\da-fA-F]+)?[fF]?'
         LONG_LITERAL        = 'regexp:(0[xb])?[\da-fA-F]+[lL]'
-        CHARACTER_LITERAL   = "regexp:'([^\\\'\r\n]|\\[^\n\r])'"
+        CHARACTER_LITERAL   = "regexp:'([^\\'\r\n]|\\[^\n\r])'"
 
         BAD_CHARACTER   = "BAD_CHARACTER"
   ]
 
-  extends("(bnf|javacode)_production") = non_terminal_production
+  extends("bnf_production") = "com.github.oowekyala.ijcc.lang.psi.impl.JccNonTerminalProductionImpl<com.github.oowekyala.ijcc.lang.psi.stubs.BnfProductionStubImpl>"
+  extends("javacode_production") = "com.github.oowekyala.ijcc.lang.psi.impl.JccNonTerminalProductionImpl<com.github.oowekyala.ijcc.lang.psi.stubs.JavacodeProductionStubImpl>"
+  implements("(bnf|javacode)_production") = non_terminal_production
+
   methods("(bnf|javacode)_production") = [header="java_non_terminal_production_header"]
 
   implements("(bnf|javacode)_production|.*production_header|jjtree_node_descriptor|named_regular_expression|token_reference_regex_unit|ref_regular_expression|non_terminal_production|non_terminal_expansion_unit|option_binding|scoped_expansion_unit")=identifier_owner
@@ -110,6 +118,17 @@
   // Use implements for fake rules
   // Use extends for real rules
 
+  // we override here the class hierarchy for scoped_expansion_unit
+  // so that it may be stub_based without stubbing all expansions (which
+  // may one day come I guess).
+  extends("scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.impl.JjtNodeClassOwnerImpl<com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub>"
+  implements("scoped_expansion_unit")="expansion_unit"
+
+  methods("expansion_unit")=[
+    scoped_expansion_unit=""
+    expansion_unit=""
+  ]
+
   extends(".+_regex_unit")=regex_unit
   extends("regex_sequence_elt|regex_unit|regex_alternative_elt")=regex_element
   extends(".+_regular_expression")=regular_expression
@@ -120,13 +139,21 @@
   extends("expansion_(sequence|unit)")=expansion_sequence_or_unit
   extends("expansion_(alternative|sequence_or_unit)")=expansion
 
+
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
 
   implements("production|token_manager_decls")="production_like"
   implements("non_terminal_production|regex_production")="production"
-  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JccNodeClassOwner"
+  implements("scoped_expansion_unit|non_terminal_production")="com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner"
   implements("regex_spec|regex_expansion_unit")="regular_expression_owner"
+
+
+  stubClass("bnf_production")="com.github.oowekyala.ijcc.lang.psi.stubs.BnfProductionStubImpl"
+  stubClass("javacode_production")="com.github.oowekyala.ijcc.lang.psi.stubs.JavacodeProductionStubImpl"
+  stubClass("scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub"
+
+
 }
 
 // Grammar for the JavaCC language
@@ -145,10 +172,10 @@
 //   Here, expansion alternatives and sequences are only pushed on the tree if they have at
 //   least two children. That makes ASTs easier to navigate and query, but also harder to modify.
 
-javacc_input 	::=
+javacc_input 	    ::=
     grammar_file_root
 
-grammar_file_root ::=
+grammar_file_root   ::=
     option_section?
 	parser_declaration
 	( production_impl )*
@@ -176,7 +203,7 @@ parser_begin        ::=
     "PARSER_BEGIN" "(" identifier ")"
     {pin=1 name="PARSER_BEGIN"}
 
-parser_end        ::=
+parser_end          ::=
     "PARSER_END" "(" identifier ")"
 
 /* Productions. */
@@ -193,33 +220,95 @@ parser_end        ::=
          |- JccJavacodeProduction
  */
 
-private production_impl  ::=
+private production_impl             ::=
         javacode_production
     | 	bnf_production
 	| 	regex_production
 	| 	token_manager_decls
+	//  errors rules are tried last
+	|   error_production
+    {recoverWhile="#auto"}
 
-javacode_production ::=
+
+javacode_production                 ::=
         "JAVACODE"
 		java_non_terminal_production_header [ jjtree_node_descriptor ]
 		java_block
-		{pin=2 recoverWhile="#auto"}
+		{pin=2}
 
-bnf_production 	    ::=
+bnf_production 	                    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
 		java_block
-		"{" expansion_choices "}"
-		{pin=1 recoverWhile="#auto"}
+        curly_then_expansion_choices
+        "}"
+		{pin=1}
+
+// Yeah this is weird, but important to recover from incomplete code.
+// It fixes the pin behaviour. BNF productions are pinned on their header.
+// If the ":" is not present, it will try to match the expansion block anyway.
+// Then
+// * If the expansion is written "{" expansion_choices "}", the pin behaviour
+//   will try to match expansion_choices even if there is no "{". Then the
+//   recoverWhile of expansion_unit will take effect and swallow the whole file.
+// * If the "{" is isolated in another rule (this one), the expansion_choices will
+//   not be tried unless there is a "{".
+//
+// Keeping the "}" up there allows the production to recover from wrong lookahead
+// specs that leave a comma dangling, which would make the failed match for "}"
+// fail the whole expansion_choices (and hence drop it) if it wasn't accepted by
+// the pin.
+// TODO normally, however wrong it may be, a failed expansion unit shouldn't make
+// the whole alternative fail. The comma problem is real though, since expansion_choices
+// may be followed by a comma (just in syntactic lookaheads)
+private curly_then_expansion_choices ::=
+        "{" expansion_choices
 
 
-java_non_terminal_production_header  ::=  // TODO inject java here
+java_non_terminal_production_header ::=  // TODO inject java here
         java_access_modifier
         java_return_type
         identifier
-        "(" java_parameter_list ")"
+        java_parameter_list
         [ java_throws_list ]
-        {pin=3 recoverWhile="#auto"}
+        {pin=4 recoverWhile="#auto"}
 
+// incomplete productions fall down one of these productions.
+// This is to be able to pin on the name of a production
+// so that a valid production always has a name.
+// The pin is actually on the parameter list so that there is no
+// conflict with following return type (which itself can't be followed by parentheses)
+// This allows incomplete code to not break the rest of the grammar file.
+// See test file ProductionTolerance.jjt
+
+error_production                    ::=
+       error_just_javacode
+   |   error_unnamed_or_no_params_production
+   |   error_just_lexical_states
+
+// catches single identifiers
+private error_unnamed_or_no_params_production ::=
+    ["JAVACODE"] java_return_type lone_prod_name no_params_error
+    {pin=java_return_type}
+
+private lone_prod_name              ::=
+    identifier !(identifier)
+    {name="identifier"}
+
+private error_just_javacode         ::=
+    "JAVACODE" no_header_error
+    {pin=1}
+
+private error_just_lexical_states   ::=
+    lexical_state_list no_regex_kind_error
+    {pin=1}
+
+
+// improbable, unsatisfiable production, used to insert an error
+// never pin!
+private no_params_error         ::= "#" "#" "catch" "#" "throws" "#" "void" "#" "try" {name="parameter list"}
+// these just rename it
+private no_regex_kind_error     ::= no_params_error {name="regex kind"}
+private no_header_error         ::= no_params_error {name="method header"}
 
 java_throws_list ::=
         "throws" java_name ("," java_name)*
@@ -228,7 +317,7 @@ java_throws_list ::=
 jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
     [ jjtree_node_descriptor_expr ]
-    {pin=2 recoverWhile="#auto"}
+    {pin=2}
 
 // The expr is integer valued for definite nodes, is boolean valued for conditional nodes
 jjtree_node_descriptor_expr ::=
@@ -239,20 +328,20 @@ token_manager_decls ::=
 
 
 lexical_state_list 	::=
-        "<" "*" ">"
-	| 	"<" identifier ( "," identifier )* ">"
+        "<" ( "*" | identifier ( "," identifier )* ) ">"
+	    {pin=1}
 
-regex_kind 	    ::=
+regex_kind 	        ::=
         "TOKEN"
 	| 	"SPECIAL_TOKEN"
 	| 	"SKIP"
 	| 	"MORE"
 
 regex_production 	::=
-        [ lexical_state_list ]
-		regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
-		"{" regex_spec_list "}"
-		{pin="regex_kind" recoverWhile="#auto"}
+    [ lexical_state_list ]
+	regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
+	<<in_block regex_spec_list>>
+	{pin="regex_kind"}
 
 private regex_spec_list   ::=
     regex_spec ( "|" regex_spec )*
@@ -263,7 +352,7 @@ private regex_spec_list_recover   ::= // exclude ident, most important is the rb
     !( 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '}')
 
 
-regex_spec 	    ::=
+regex_spec 	        ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
         methods=[
@@ -274,7 +363,7 @@ regex_spec 	    ::=
     }
 
 
-private regex_spec_recover        ::= // exclude ident, most important is the pipe
+private regex_spec_recover      ::= // exclude ident, most important is the pipe
     !('<' | 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | 'private' | 'protected' | 'public' | 'void' | '|' | '}' | PRIMITIVE_TYPE)
 
 /* Expansions */
@@ -299,15 +388,20 @@ private regex_spec_recover        ::= // exclude ident, most important is the pi
  */
 
 
-private expansion_choices 	        ::=
+private expansion_choices 	    ::=
         expansion_alternative
     |   expansion_sequence
 
 expansion_alternative           ::=
-    expansion_sequence ( "|" expansion_sequence )+ {pin="|" methods=[expansionList="expansion_sequence_or_unit"]}
+    expansion_sequence ( alternative_tail )+
+    {methods=[expansionList="expansion_sequence_or_unit"]}
+
+private alternative_tail        ::=
+    "|" expansion_sequence
+    {pin=1}
 
 expansion_sequence 	            ::=
-    ( expansion_unit )+ {recoverWhile="#auto"}
+    ( expansion_unit )+ {pin=1 recoverWhile="#auto"}
 
 
 
@@ -343,10 +437,15 @@ parser_actions_unit             ::=
 regex_expansion_unit            ::=
     regular_expression
 
+
 local_lookahead_unit 	        ::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
 
-
+/* TODO error recovery is made considerably harder by this shit
+ * Maybe, if the parser accepted some invalid input (like the extra
+ * commas and/or arguments), and we reported it in the highlight
+ * visitor, we'd fare better.
+ */
 private local_lookahead_tail    ::=
       // java_expression takes precedence over expansion_choices
       // but only if the construct starts with a "{"
@@ -359,7 +458,7 @@ private braced_expression       ::=
     "{" java_expression "}"
 
 non_terminal_expansion_unit     ::=
-    identifier "(" java_expression_list ")" {pin=1}
+    identifier "(" java_expression_list ")" {pin=1 recoverWhile="#auto"}
 
 parenthesized_expansion_unit    ::=
     "(" expansion_choices ")" occurrence_indicator?  {pin=1}
@@ -374,7 +473,7 @@ try_catch_expansion_unit        ::=
     finally_clause?
     {pin="try"}
 
-catch_clause                     ::=
+catch_clause                    ::=
     "catch" "(" java_name identifier ")" java_block
 
 finally_clause                  ::=
@@ -395,7 +494,7 @@ finally_clause                  ::=
 */
 
 
-regular_expression	::=
+regular_expression	            ::=
         literal_regular_expression
     |   eof_regular_expression
     // Pins try to match these in order to allow autocompletion
@@ -417,11 +516,11 @@ named_regular_expression        ::=
 	"<" [ "#" ] identifier ":" complex_regex_choices ">"
     {pin=4}
 
-ref_regular_expression    ::=
+ref_regular_expression          ::=
     token_reference_regex_unit
     {methods=[unit="token_reference_regex_unit" nameIdentifier="token_reference_regex_unit/identifier"]}
 
-container_regular_expression       ::=
+container_regular_expression    ::=
 	"<" complex_regex_choices ">"
 	{pin=1}
 
@@ -495,6 +594,8 @@ repetition_range                ::= "{" INTEGER_LITERAL [ "," INTEGER_LITERAL ] 
 
 // Meta and fake rules
 
+private meta in_block                   ::= "{" <<param>> "}"
+private meta in_parens                  ::= "(" <<param>> ")"
 private meta comma_separated_list       ::= [ <<param>> ( ',' <<param>> )* ]
 
 fake identifier_owner           ::= identifier {
@@ -537,7 +638,7 @@ private java_coi_type           ::=    java_name  // FIXME generics
 java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
-private java_parameter_list     ::=    [ java_formal_parameter [ ("," java_formal_parameter)* ] ]
+private java_parameter_list     ::=   "(" [ java_formal_parameter [ ("," java_formal_parameter)* ] ] ")" {name = "parameter list"}
 java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")* {pin=1 recoverWhile="#auto"}
 
 // externals

@@ -3,6 +3,8 @@ package com.github.oowekyala.ijcc.ide.highlight
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
+import com.intellij.codeInsight.daemon.impl.quickfix.QuickFixAction
+import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
@@ -30,10 +32,12 @@ object JccHighlightUtil {
             .also { if (message != null) it.descriptionAndTooltip(message) }
             .createUnconditionally()
 
-    fun wrongReferenceInfo(element: PsiElement, message: String): HighlightInfo =
+    fun wrongReferenceInfo(element: PsiElement,
+                           message: String): HighlightInfo =
         wrongReferenceInfo(element.textRange, message)
 
-    fun wrongReferenceInfo(range: TextRange, message: String): HighlightInfo =
+    fun wrongReferenceInfo(range: TextRange,
+                           message: String): HighlightInfo =
         highlightInfo(
             textRange = range,
             severity = HighlightSeverity.ERROR,
@@ -41,7 +45,8 @@ object JccHighlightUtil {
             message = message
         )
 
-    fun warningInfo(element: PsiElement, message: String): HighlightInfo =
+    fun warningInfo(element: PsiElement,
+                    message: String): HighlightInfo =
         highlightInfo(
             textRange = element.textRange,
             severity = HighlightSeverity.WARNING,
@@ -49,10 +54,12 @@ object JccHighlightUtil {
             message = message
         )
 
-    fun errorInfo(element: PsiElement, message: String?): HighlightInfo =
+    fun errorInfo(element: PsiElement,
+                  message: String?): HighlightInfo =
         errorInfo(element.textRange, message)
 
-    fun errorInfo(range: TextRange, message: String?): HighlightInfo =
+    fun errorInfo(range: TextRange,
+                  message: String?): HighlightInfo =
         highlightInfo(
             textRange = range,
             severity = HighlightSeverity.ERROR,
@@ -61,6 +68,19 @@ object JccHighlightUtil {
         )
 
 }
+
+fun HighlightInfo.withQuickFix(range: TextRange, vararg fixes: IntentionAction) =
+    this.also {
+        QuickFixAction.registerQuickFixActions(this, range, fixes.toList())
+    }
+
+
+fun HighlightInfo.withQuickFix(vararg fixes: IntentionAction) =
+    this.also {
+        fixes.forEach {
+            QuickFixAction.registerQuickFixAction(this, it)
+        }
+    }
 
 internal operator fun HighlightInfoHolder.plusAssign(highlightInfo: HighlightInfo) {
     add(highlightInfo)

@@ -1,11 +1,16 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil
+import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.github.oowekyala.ijcc.lang.psi.stringValue
+import com.github.oowekyala.ijcc.util.ResourcePrefix
+import java.io.IOException
 
 /**
  * Generic option for JavaCC or its preprocessors.
+ * All options are available in [GrammarOptions.knownOptions]
  *
  * @param T the type of literal to expect
  *
@@ -19,7 +24,11 @@ abstract class GenericOption<T : Any>(
      * Static default value used by JavaCC to represent a
      * default. See [getActualValue].
      */
-    val staticDefaultValue: T?) {
+    val staticDefaultValue: T?,
+    /**
+     * Max supported grammar nature.
+     */
+    val supportedNature: GrammarNature) {
 
     // TODO maybe support a "since version" attribute
 
@@ -41,13 +50,45 @@ abstract class GenericOption<T : Any>(
      * option, or some other thing.
      */
     open fun getActualValue(overriddenValue: T?, config: GrammarOptions): T = when (overriddenValue) {
-        null, staticDefaultValue -> defaultValueFallback(config)
+        null, staticDefaultValue -> contextualDefaultValue(config)
         else                     -> overriddenValue
     }
 
-    /** Must be implemented if [staticDefaultValue] is null. */
-    protected open fun defaultValueFallback(config: GrammarOptions): T =
+
+    /**
+     * This is the actual default value used by JavaCC, which may depend
+     * on other option bindings.
+     *
+     * Must be implemented if [staticDefaultValue] is null.
+     */
+    open fun contextualDefaultValue(config: GrammarOptions): T =
         staticDefaultValue ?: TODO("Should have been implemented!")
 
 
+    /**
+     * Returns the documentable description of the option if it could be found.
+     */
+    val description: String? by lazy {
+
+        // link options between them
+        fun String.escapeMarkup(): String =
+            replace(OptionLinkRegex) {
+                val name = it.groupValues[1]
+                HtmlUtil.psiLink(linkTarget = JccDocUtil.linkRefToOption(name), linkText = name)
+            }
+
+        try {
+            // try jjtree first
+            val resource = javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/jjtree/$name.html")
+                ?: javaClass.classLoader.getResource("$ResourcePrefix/optionDescriptions/$name.html")
+
+            resource?.readText()?.escapeMarkup()
+        } catch (e: IOException) {
+            null
+        }
+    }
+
+    companion object {
+        private val OptionLinkRegex = Regex("""\{\s*option_link\s*(\w+)\s*}""")
+    }
 }

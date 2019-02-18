@@ -44,7 +44,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
         (file as JccFileImpl).invalidateCachedStructures()
         val grammar = file.lexicalGrammar
 
-        val allTokens = grammar.allTokens.toList()
+        val allTokens = grammar.allTokens
 
         val visited = allTokens.associateWithTo(mutableMapOf()) { VisitStatus.NOT_VISITED }
 

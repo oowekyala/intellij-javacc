@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
-import com.github.oowekyala.ijcc.lang.psi.JccParserDeclaration
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 
 /**
@@ -11,7 +11,8 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  * @author Clément Fournier
  * @since 1.0
  */
-class GrammarOptions(private val options: JccOptionSection?, private val parserDeclaration: JccParserDeclaration?) {
+class GrammarOptions(file: JccFile) : BaseCachedModelObject(file) {
+
 
     val parserQualifiedName: String
         get() {
@@ -22,10 +23,10 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
 
     // TODO parse from the PARSER def
     val parserPackage: String  by lazy {
-        parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: ""
+        file.parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: ""
     }
     val parserSimpleName: String  by lazy {
-        parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: ""
+        file.parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: ""
     }
 
     val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
@@ -38,8 +39,10 @@ class GrammarOptions(private val options: JccOptionSection?, private val parserD
 
     val lookahead: Int by lazy { getOptionValueOrDefault(JccOption.LOOKAHEAD) }
 
+    val allOptionsBindings: List<JccOptionBinding> = file.options?.optionBindingList ?: emptyList()
+
     private fun <T : Any> getOptionValueOrDefault(genericOption: GenericOption<T>): T =
-        genericOption.getValue(options?.getBindingFor(genericOption), this)
+        genericOption.getValue(file.options?.getBindingFor(genericOption), this)
 
     companion object {
         private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
