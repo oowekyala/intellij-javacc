@@ -129,8 +129,11 @@
 
         <!-- GUTTER -->
 
+<!--        <codeInsight.lineMarkerProvider language="JAVA"-->
+<!--                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccParserToGrammarLineMarkerProvider"/>-->
+
         <codeInsight.lineMarkerProvider language="JAVA"
-                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccParserToGrammarLineMarkerProvider"/>
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccProductionLinkLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtNodeToGrammarLineMarkerProvider"/>
