@@ -3,10 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
+import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 
@@ -28,6 +25,16 @@ fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? =
 val PsiFile.grammarSearchScope: GlobalSearchScope
     get() = GlobalSearchScope.projectScope(project)
 
+
+val JccFile.parserFile: PsiClass?
+    get() = getJavaClassFromQname(this, grammarOptions.parserQualifiedName)
+
+
+val JccNonTerminalProduction.parserMethod: PsiMethod?
+    get() =
+        containingFile.parserFile
+            ?.findMethodsByName(name, false)
+            ?.firstOrNull()
 
 /**
  * If this is the generated parser class of a known grammar,

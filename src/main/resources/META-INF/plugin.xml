@@ -139,6 +139,9 @@
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreeNodeClassLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
+                                        implementationClass="com.github.oowekyala.ijcc.ide.gutter.JccProductionToParserLineMarkerProvider"/>
+
+        <codeInsight.lineMarkerProvider language="JavaCC"
                                         implementationClass="com.github.oowekyala.ijcc.ide.gutter.JjtreePartialDeclarationLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider language="JavaCC"
