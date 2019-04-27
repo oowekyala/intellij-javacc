@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.folding
 
+import com.github.oowekyala.ijcc.ide.folding.JccFoldingBuilder.Companion.FolderVisitor.Companion.BGEN_PATTERN
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.settings.globalPluginSettings
 import com.intellij.lang.ASTNode
@@ -9,9 +10,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import com.intellij.psi.javadoc.PsiDocComment
 
 
 /**
@@ -41,15 +44,32 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
 
     private fun TextRange.isProperTextRange() = startOffset in 0..endOffset
 
-    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = when (node.psi) {
-        is JccNonTerminalProduction -> false
-        else                        -> true
+    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean {
+        val opts = globalPluginSettings
+        return when (val psi = node.psi) {
+            is JccNonTerminalProduction -> false
+            is JccOptionSection         -> opts.isFoldOptions
+            is JccParserDeclaration     -> opts.isFoldParserDecl
+            is JccTokenManagerDecls     -> opts.isFoldTokenMgrDecl
+            is JccRegexProduction       -> opts.isFoldTokenProds
+            is JccJavaBlock,
+            is JccParserActionsUnit     -> opts.isFoldJavaFragments
+            is JccLocalLookaheadUnit    -> opts.isFoldLookaheads
+            is PsiComment               ->
+                psi.text.matches(BGEN_PATTERN) && opts.isFoldBgenSections
+            else                        -> true
+        }
     }
 
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is PsiComment                 -> node.text // start comment of a generated section
+            is PsiComment                 ->
+                when {
+                    // start comment of a generated section
+                    node.text.matches(BGEN_PATTERN) -> node.text
+                    else                            -> "/*...*/"
+                }
             is JccTokenReferenceRegexUnit -> literalRegexForRef(psi)!!.stringLiteral.text
             is JccParserDeclaration       -> "/PARSER DECLARATION/"
             is JccTokenManagerDecls       -> "/TOKEN MANAGER DECLARATIONS/"
@@ -113,8 +133,6 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitComment(comment: PsiComment) {
-                if (!opts.isFoldBgenSections) return
-
                 if (comment.text.matches(BGEN_PATTERN)) {
                     val startOffset = comment.textOffset
                     val end = comment.containingFile.text.indexOf(EGEN, startIndex = startOffset + comment.textLength)
@@ -125,6 +143,9 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                     inGenSection = false
                 }
 
+                if (comment.node.elementType != JavaTokenType.END_OF_LINE_COMMENT) {
+                    result += FoldingDescriptor(comment, comment.textRange)
+                }
             }
 
             override fun visitRegexProduction(o: JccRegexProduction) {
@@ -136,8 +157,6 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitRegexSpec(o: JccRegexSpec) {
-                if (!opts.isFoldJavaFragments) return
-
                 o.lexicalActions?.run {
                     result += FoldingDescriptor(node, textRange, currentJBlockGroup)
                 }
@@ -156,23 +175,19 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
-                if (opts.isFoldLookaheads)
-                    result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
+                result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
             override fun visitOptionSection(o: JccOptionSection) {
-                if (opts.isFoldOptions)
-                    result += FoldingDescriptor(o, o.textRange)
+                result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitParserDeclaration(o: JccParserDeclaration) {
-                if (opts.isFoldParserDecl)
-                    result += FoldingDescriptor(o, o.textRange)
+                result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitTokenManagerDecls(o: JccTokenManagerDecls) {
-                if (opts.isFoldTokenMgrDecl)
-                    result += FoldingDescriptor(o, o.textRange)
+                result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitJavacodeProduction(o: JccJavacodeProduction) {
@@ -196,21 +211,27 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             override fun visitJavaBlock(javaBlock: JccJavaBlock) = visitJavaBlockLike(javaBlock)
 
             private fun visitJavaBlockLike(elt: JccPsiElement) {
-                if (!opts.isFoldJavaFragments) return
-
                 if (elt.textLength > 2) { // not just "{}"
                     result +=
                         when {
-                            inGenSection               -> FoldingDescriptor(elt.node, trimWhitespace(elt), jjtreeGenGroup)
-                            currentJBlockGroup != null -> FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
+                            inGenSection               -> FoldingDescriptor(
+                                elt.node,
+                                trimWhitespace(elt),
+                                jjtreeGenGroup
+                            )
+                            currentJBlockGroup != null -> FoldingDescriptor(
+                                elt.node,
+                                trimWhitespace(elt),
+                                currentJBlockGroup
+                            )
                             else                       -> FoldingDescriptor(elt, trimWhitespace(elt))
                         }
                 }
             }
 
             companion object {
-                private val BGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
-                private const val EGEN = "/*@egen*/"
+                val BGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
+                const val EGEN = "/*@egen*/"
 
             }
         }
