@@ -54,12 +54,15 @@
     <extensions defaultExtensionNs="com.intellij">
 
 
+        <!-- Settings page -->
         <projectConfigurable
                 instance="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsConfigurable"
                 displayName="JavaCC"
                 id="language.javacc"
                 groupId="language"
         />
+
+        <applicationService serviceImplementation="com.github.oowekyala.ijcc.settings.JavaccAppSettingsService"/>
 
         <projectService serviceInterface="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService"
                         serviceImplementation="com.github.oowekyala.ijcc.settings.JavaccProjectSettingsServiceImpl"/>
@@ -159,7 +162,10 @@
                              implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
 
 
-        <lang.foldingBuilder language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JccFoldingBuilder"/>
+        <codeFoldingOptionsProvider implementation="com.github.oowekyala.ijcc.ide.folding.JccFoldingOptionsProvider" />
+
+        <lang.foldingBuilder language="JavaCC"
+                             implementationClass="com.github.oowekyala.ijcc.ide.folding.JccFoldingBuilder"/>
 
         <lang.psiStructureViewFactory language="JavaCC"
                                       implementationClass="com.github.oowekyala.ijcc.ide.structureview.JavaccStructureViewBuilderFactory"/>

@@ -1,6 +1,7 @@
-package com.github.oowekyala.ijcc
+package com.github.oowekyala.ijcc.ide.folding
 
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.settings.globalPluginSettings
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
@@ -88,6 +89,9 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
          * Collects all folded regions in the file.
          */
         private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : DepthFirstVisitor() {
+
+            val opts = globalPluginSettings
+
             // all java blocks in the same bnf production belong in the same group
             private var currentJBlockGroup: FoldingGroup? = null
             // all lookaheads in the same bnf production belong in the same group
@@ -100,6 +104,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             private var inGenSection: Boolean = false
 
             override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
+                if (!opts.isFoldTokenRefs) return
+
                 val ref = literalRegexForRef(o)
                 if (ref != null) {
                     result += FoldingDescriptor(o, o.textRange)
@@ -107,7 +113,9 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitComment(comment: PsiComment) {
-                if (comment.text.matches(BEGEN_PATTERN)) {
+                if (!opts.isFoldBgenSections) return
+
+                if (comment.text.matches(BGEN_PATTERN)) {
                     val startOffset = comment.textOffset
                     val end = comment.containingFile.text.indexOf(EGEN, startIndex = startOffset + comment.textLength)
                     val endOffset = end + EGEN.length
@@ -128,6 +136,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitRegexSpec(o: JccRegexSpec) {
+                if (!opts.isFoldJavaFragments) return
+
                 o.lexicalActions?.run {
                     result += FoldingDescriptor(node, textRange, currentJBlockGroup)
                 }
@@ -146,19 +156,23 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitLocalLookaheadUnit(o: JccLocalLookaheadUnit) {
-                result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
+                if (opts.isFoldLookaheads)
+                    result += FoldingDescriptor(o.node, trimWhitespace(o), currentLookaheadGroup)
             }
 
             override fun visitOptionSection(o: JccOptionSection) {
-                result += FoldingDescriptor(o, o.textRange)
+                if (opts.isFoldOptions)
+                    result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitParserDeclaration(o: JccParserDeclaration) {
-                result += FoldingDescriptor(o, o.textRange)
+                if (opts.isFoldParserDecl)
+                    result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitTokenManagerDecls(o: JccTokenManagerDecls) {
-                result += FoldingDescriptor(o, o.textRange)
+                if (opts.isFoldTokenMgrDecl)
+                    result += FoldingDescriptor(o, o.textRange)
             }
 
             override fun visitJavacodeProduction(o: JccJavacodeProduction) {
@@ -182,6 +196,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             override fun visitJavaBlock(javaBlock: JccJavaBlock) = visitJavaBlockLike(javaBlock)
 
             private fun visitJavaBlockLike(elt: JccPsiElement) {
+                if (!opts.isFoldJavaFragments) return
+
                 if (elt.textLength > 2) { // not just "{}"
                     result +=
                         when {
@@ -193,7 +209,7 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             companion object {
-                private val BEGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
+                private val BGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
                 private const val EGEN = "/*@egen*/"
 
             }
