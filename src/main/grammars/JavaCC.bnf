@@ -47,6 +47,8 @@
   		PRIVATE_KEYWORD		= "private"
   		PUBLIC_KEYWORD		= "public"
   		PROTECTED_KEYWORD	= "protected"
+        SUPER_KEYWORD	= "super"
+        EXTENDS_KEYWORD	= "extends"
 
   		STATIC_KEYWORD	= "static"
 
@@ -142,6 +144,8 @@
 
   extends("one_or_more|zero_or_more|zero_or_one")=occurrence_indicator
   extends("repetition_range|occurrence_indicator")=occurrence_indicator_or_range
+
+  extends("java_type")=java_return_type
 
   implements("production|token_manager_decls")="production_like"
   implements("non_terminal_production|regex_production")="production"
@@ -632,8 +636,14 @@ boolean_literal                 ::=    "true" | "false"     {name="boolean liter
 java_name                       ::=    identifier ("." identifier)* {pin=1}
 
 java_return_type                ::=    "void" | java_type
-private java_type               ::=    (PRIMITIVE_TYPE | java_coi_type) ("[" "]")*
-private java_coi_type           ::=    java_name  // FIXME generics
+java_type                       ::=    (PRIMITIVE_TYPE  ("[" "]")* | java_ref_type)
+private java_ref_type           ::=    java_coi_type ("[" "]")* | PRIMITIVE_TYPE ("[" "]")+ // don't pin
+private java_coi_type           ::=    java_name java_type_args?
+
+private java_type_args          ::=    "<" [ java_type_arg ( ',' java_type_arg )* ] ">"
+private java_type_arg           ::=    java_ref_type | java_wildcard
+private java_wildcard           ::=    "?" (java_wildcard_bound)?               {pin=1 recoverWhile="#auto"}
+private java_wildcard_bound     ::=    ("extends" | "super") java_ref_type      {pin=1 recoverWhile="#auto"}
 
 java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 

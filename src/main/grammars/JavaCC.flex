@@ -141,6 +141,10 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "catch"                     { return JCC_CATCH_KEYWORD; }
     "finally"                   { return JCC_FINALLY_KEYWORD; }
 
+    "extends"                   { return JCC_EXTENDS_KEYWORD; }
+    "super"                     { return JCC_SUPER_KEYWORD; }
+
+
     /* Java keywords not relevant to JavaCC */
 
     "null"                      { return JavaTokenType.NULL_KEYWORD; }
@@ -159,7 +163,6 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "do"                        { return JavaTokenType.DO_KEYWORD; }
     "else"                      { return JavaTokenType.ELSE_KEYWORD; }
 
-    "extends"                   { return JavaTokenType.EXTENDS_KEYWORD; }
     "final"                     { return JavaTokenType.FINAL_KEYWORD; }
     "for"                       { return JavaTokenType.FOR_KEYWORD; }
     "goto"                      { return JavaTokenType.GOTO_KEYWORD; }
@@ -171,7 +174,6 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "native"                    { return JavaTokenType.NATIVE_KEYWORD; }
     "new"                       { return JavaTokenType.NEW_KEYWORD; }
     "package"                   { return JavaTokenType.PACKAGE_KEYWORD; }
-    "super"                     { return JavaTokenType.SUPER_KEYWORD; }
     "switch"                    { return JavaTokenType.SWITCH_KEYWORD; }
     "synchronized"              { return JavaTokenType.SYNCHRONIZED_KEYWORD; }
     "this"                      { return JavaTokenType.THIS_KEYWORD; }

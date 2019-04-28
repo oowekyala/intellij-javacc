@@ -156,6 +156,8 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
                 JCC_FINALLY_KEYWORD         -> JavaTokenType.FINALLY_KEYWORD
                 JCC_FLOAT_LITERAL           -> JavaTokenType.FLOAT_LITERAL
                 JCC_GT                      -> JavaTokenType.GT
+                JCC_EXTENDS_KEYWORD         -> JavaTokenType.EXTENDS_KEYWORD
+                JCC_SUPER_KEYWORD           -> JavaTokenType.SUPER_KEYWORD
 
                 // These javacc keywords are mapped to identifiers
                 // in fact they should cause an unexpected token error
@@ -170,6 +172,7 @@ object JavaccParserUtil : GeneratedParserUtilBase() {
                 JCC_SPECIAL_TOKEN_KEYWORD   -> JavaTokenType.IDENTIFIER
                 JCC_TOKEN_KEYWORD           -> JavaTokenType.IDENTIFIER
                 JCC_TOKEN_MGR_DECLS_KEYWORD -> JavaTokenType.IDENTIFIER
+
 
                 JCC_POUND                   -> JCC_POUND // not remapped, not a java token
 
