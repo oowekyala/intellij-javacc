@@ -18,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.2"
+version = "1.3"
 
 
 ext {
