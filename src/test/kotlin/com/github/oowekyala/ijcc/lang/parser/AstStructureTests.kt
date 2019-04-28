@@ -116,6 +116,15 @@ class AstStructureTests : ParserTestDsl() {
             child<JccRegexExpansionUnit>(ignoreChildren = true) { }
         }
 
+
+        "\"ff\" | \"cd\" #F" should matchExpansion<JccExpansionAlternative> {
+
+            child<JccRegexExpansionUnit>(ignoreChildren = true) { }
+
+            // FIXME should be so, is an ExpansionUnitImpl!! bug in the parser generator
+            child<JccScopedExpansionUnit>(ignoreChildren = true) { }
+        }
+
         """"ff" | <baz> | "f" foo()""" should matchExpansion<JccExpansionAlternative> {
             // check that the node is not left recursive
 

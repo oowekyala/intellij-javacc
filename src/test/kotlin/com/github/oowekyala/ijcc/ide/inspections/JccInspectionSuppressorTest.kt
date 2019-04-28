@@ -11,7 +11,7 @@ class JccInspectionSuppressorTest : JccInspectionTestBase(LookaheadIsNotAtChoice
         """
             $DummyHeader
 
-            //noinspection JavaCCLookaheadIsNotAtChoicePoint
+            //noinspection LookaheadIsNotAtChoicePoint
             void Foo(): {}
             {
              LOOKAHEAD(1) "foo" "bar"
@@ -25,7 +25,7 @@ class JccInspectionSuppressorTest : JccInspectionTestBase(LookaheadIsNotAtChoice
         """
             $DummyHeader
 
-            /* noinspection JavaCCLookaheadIsNotAtChoicePoint */
+            /* noinspection LookaheadIsNotAtChoicePoint */
             void Foo(): {}
             {
              LOOKAHEAD(1) "foo" "bar"
@@ -55,7 +55,7 @@ class JccInspectionSuppressorTest : JccInspectionTestBase(LookaheadIsNotAtChoice
 
             void Foo(): {}
             {
-            /* noinspection JavaCCLookaheadIsNotAtChoicePoint */ LOOKAHEAD(1) "foo" "bar"
+            /* noinspection LookaheadIsNotAtChoicePoint */ LOOKAHEAD(1) "foo" "bar"
             }
 
         """.trimIndent()

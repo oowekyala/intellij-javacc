@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
 import com.github.oowekyala.ijcc.util.contains
 import com.intellij.codeInspection.InspectionProfileEntry
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.ex.BaseLocalInspectionTool
 import com.intellij.psi.JavaTokenType.C_STYLE_COMMENT
 import com.intellij.psi.JavaTokenType.END_OF_LINE_COMMENT
 import com.intellij.psi.PsiElement
@@ -18,8 +17,11 @@ import com.intellij.psi.impl.source.tree.JavaDocElementType
  * @since 1.0
  */
 abstract class JccInspectionBase(private val myDisplayName: String) : LocalInspectionTool() {
-    // since inspections can be suppressed inspection names and this scheme are published API
-    final override fun getID(): String = "JavaCC" + InspectionProfileEntry.getShortName(this::class.java.simpleName)
+    // Since inspections can be suppressed inspection names and this scheme are published API
+    // Basically the class name minus the "Inspection" suffix is the id
+    // If the name collides with inspections of other languages, prefix the node class with "Jcc"
+    // This is formalized in 1.3
+    final override fun getID(): String = InspectionProfileEntry.getShortName(this::class.java.simpleName)
 
     final override fun getDisplayName(): String = myDisplayName
     final override fun getShortName(): String = id // short name must be unique wrt all other inspections

@@ -1,6 +1,8 @@
-package com.github.oowekyala.ijcc
+package com.github.oowekyala.ijcc.ide.folding
 
+import com.github.oowekyala.ijcc.ide.folding.JccFoldingBuilder.Companion.FolderVisitor.Companion.BGEN_PATTERN
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.settings.globalPluginSettings
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.CustomFoldingBuilder
 import com.intellij.lang.folding.FoldingDescriptor
@@ -8,9 +10,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import com.intellij.psi.javadoc.PsiDocComment
 
 
 /**
@@ -40,15 +44,32 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
 
     private fun TextRange.isProperTextRange() = startOffset in 0..endOffset
 
-    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean = when (node.psi) {
-        is JccNonTerminalProduction -> false
-        else                        -> true
+    override fun isRegionCollapsedByDefault(node: ASTNode): Boolean {
+        val opts = globalPluginSettings
+        return when (val psi = node.psi) {
+            is JccNonTerminalProduction -> false
+            is JccOptionSection         -> opts.isFoldOptions
+            is JccParserDeclaration     -> opts.isFoldParserDecl
+            is JccTokenManagerDecls     -> opts.isFoldTokenMgrDecl
+            is JccRegexProduction       -> opts.isFoldTokenProds
+            is JccJavaBlock,
+            is JccParserActionsUnit     -> opts.isFoldJavaFragments
+            is JccLocalLookaheadUnit    -> opts.isFoldLookaheads
+            is PsiComment               ->
+                psi.text.matches(BGEN_PATTERN) && opts.isFoldBgenSections
+            else                        -> true
+        }
     }
 
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
         val psi = node.psi
         return when (psi) {
-            is PsiComment                 -> node.text // start comment of a generated section
+            is PsiComment                 ->
+                when {
+                    // start comment of a generated section
+                    node.text.matches(BGEN_PATTERN) -> node.text
+                    else                            -> "/*...*/"
+                }
             is JccTokenReferenceRegexUnit -> literalRegexForRef(psi)!!.stringLiteral.text
             is JccParserDeclaration       -> "/PARSER DECLARATION/"
             is JccTokenManagerDecls       -> "/TOKEN MANAGER DECLARATIONS/"
@@ -88,6 +109,9 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
          * Collects all folded regions in the file.
          */
         private class FolderVisitor(val result: MutableList<FoldingDescriptor>) : DepthFirstVisitor() {
+
+            val opts = globalPluginSettings
+
             // all java blocks in the same bnf production belong in the same group
             private var currentJBlockGroup: FoldingGroup? = null
             // all lookaheads in the same bnf production belong in the same group
@@ -100,6 +124,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             private var inGenSection: Boolean = false
 
             override fun visitTokenReferenceRegexUnit(o: JccTokenReferenceRegexUnit) {
+                if (!opts.isFoldTokenRefs) return
+
                 val ref = literalRegexForRef(o)
                 if (ref != null) {
                     result += FoldingDescriptor(o, o.textRange)
@@ -107,7 +133,7 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitComment(comment: PsiComment) {
-                if (comment.text.matches(BEGEN_PATTERN)) {
+                if (comment.text.matches(BGEN_PATTERN)) {
                     val startOffset = comment.textOffset
                     val end = comment.containingFile.text.indexOf(EGEN, startIndex = startOffset + comment.textLength)
                     val endOffset = end + EGEN.length
@@ -117,6 +143,9 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                     inGenSection = false
                 }
 
+                if (comment.node.elementType != JavaTokenType.END_OF_LINE_COMMENT) {
+                    result += FoldingDescriptor(comment, comment.textRange)
+                }
             }
 
             override fun visitRegexProduction(o: JccRegexProduction) {
@@ -185,16 +214,24 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                 if (elt.textLength > 2) { // not just "{}"
                     result +=
                         when {
-                            inGenSection               -> FoldingDescriptor(elt.node, trimWhitespace(elt), jjtreeGenGroup)
-                            currentJBlockGroup != null -> FoldingDescriptor(elt.node, trimWhitespace(elt), currentJBlockGroup)
+                            inGenSection               -> FoldingDescriptor(
+                                elt.node,
+                                trimWhitespace(elt),
+                                jjtreeGenGroup
+                            )
+                            currentJBlockGroup != null -> FoldingDescriptor(
+                                elt.node,
+                                trimWhitespace(elt),
+                                currentJBlockGroup
+                            )
                             else                       -> FoldingDescriptor(elt, trimWhitespace(elt))
                         }
                 }
             }
 
             companion object {
-                private val BEGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
-                private const val EGEN = "/*@egen*/"
+                val BGEN_PATTERN = Regex("""/\*@bgen\(\w++\).*\*/""")
+                const val EGEN = "/*@egen*/"
 
             }
         }

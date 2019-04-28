@@ -3,6 +3,7 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 import java.net.URI
+import java.nio.file.Files.delete
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -17,7 +18,7 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 group = "com.github.oowekyala"
-version = "1.2"
+version = "1.3"
 
 
 ext {
@@ -40,8 +41,9 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation(kotlin("reflect"))
     // https://mvnrepository.com/artifact/net.java.dev.javacc/javacc
-    testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.1")
+    testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
 

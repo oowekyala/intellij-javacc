@@ -2,8 +2,6 @@ package com.github.oowekyala.ijcc.ide.rename
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.intellij.find.findUsages.FindUsagesManager
-import com.intellij.find.findUsages.FindUsagesUtil
 import com.intellij.openapi.util.Comparing
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
@@ -91,8 +89,34 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         }
     }
 
-    override fun findReferences(element: PsiElement): MutableCollection<PsiReference> =
-        ReferencesSearch.search(element, GlobalSearchScope.fileScope(element.containingFile)).findAll()
+    override fun findReferences(element: PsiElement): MutableCollection<PsiReference> {
+
+        val file = element.containingFile
+
+        val base: MutableCollection<PsiReference> = HashSet(
+            ReferencesSearch.search(element, GlobalSearchScope.fileScope(file)).findAll()
+        )
+
+        if (element is JccIdentifier && (element.owner is JccJjtreeNodeDescriptor || element.owner is JccScopedExpansionUnit)) {
+            (file as JccFile).getJjtreeDeclsForRawName(element.text).forEach {
+
+                val eltToRename = when (it) {
+                    is JccNonTerminalProduction -> when {
+                        it.jjtreeNodeDescriptor == null               -> it
+                        it.jjtreeNodeDescriptor?.name == element.name -> it.jjtreeNodeDescriptor
+                        else                                          -> null
+                    }
+                    else                        -> it
+                }
+                eltToRename?.let {
+                    base += ReferencesSearch.search(it, GlobalSearchScope.fileScope(file)).findAll()
+                }
+            }
+
+        }
+
+        return base
+    }
 
     override fun prepareRenaming(element: PsiElement, // the JccIdentifier
                                  newName: String,
@@ -104,6 +128,7 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
 
         // add the non terminal prods in the map so that their usages are renamed
         // if they name the element themselves
+
 //        allRenames.keys
 //            .asSequence()
 //            .mapNotNull { it as? JccIdentifier }

@@ -55,9 +55,7 @@ class PluginSettingsPage(initialState: JccSettingsState) : Disposable {
     }
 
 
-    fun toState(): JccSettingsState {
-        return JccSettingsState(myInjectionLevel)
-    }
+    fun toState(): JccSettingsState = JccSettingsState(myInjectionLevel)
 
     override fun dispose() {
 
