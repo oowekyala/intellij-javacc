@@ -44,23 +44,23 @@
         EOF_KEYWORD               = 'EOF'
 
 
-  		PRIVATE_KEYWORD		= "private"
-  		PUBLIC_KEYWORD		= "public"
-  		PROTECTED_KEYWORD	= "protected"
+        PRIVATE_KEYWORD		= "private"
+        PUBLIC_KEYWORD		= "public"
+        PROTECTED_KEYWORD	= "protected"
         SUPER_KEYWORD	= "super"
         EXTENDS_KEYWORD	= "extends"
 
-  		STATIC_KEYWORD	= "static"
+        STATIC_KEYWORD	= "static"
 
-  		VOID_KEYWORD	= "void"
+        VOID_KEYWORD	= "void"
 
-  		FALSE_KEYWORD	= "false"
-  		TRUE_KEYWORD	= "true"
+        FALSE_KEYWORD	= "false"
+        TRUE_KEYWORD	= "true"
 
-  		THROWS_KEYWORD	= "throws"
-  		TRY_KEYWORD	    = "try"
-  		CATCH_KEYWORD	= "catch"
-  		FINALLY_KEYWORD	= "finally"
+        THROWS_KEYWORD	= "throws"
+        TRY_KEYWORD	    = "try"
+        CATCH_KEYWORD	= "catch"
+        FINALLY_KEYWORD	= "finally"
 
         IDENT       = 'regexp:\p{Alpha}\w*'
 
@@ -70,22 +70,22 @@
         LT          = "<"
         GT          = ">"
 
-  		LPARENTH	= "("
-  		RPARENTH	= ")"
-  		LBRACE		= "{"
-  		RBRACE		= "}"
+        LPARENTH	= "("
+        RPARENTH	= ")"
+        LBRACE		= "{"
+        RBRACE		= "}"
         LBRACKET    = "["
         RBRACKET    = "]"
 
-  		SEMICOLON	= ";"
-  		COMMA	    = ","
-  		ELLIPSIS    = "..."
-  		DOT         = "."
+        SEMICOLON	= ";"
+        COMMA	    = ","
+        ELLIPSIS    = "..."
+        DOT         = "."
 
         EQ          = "="
 
-  		UNION       = "|"
-  		TILDE       = "~"
+        UNION       = "|"
+        TILDE       = "~"
         ASTERISK    = "*"
         PLUS        = "+"
         MINUS       = "-"
@@ -181,9 +181,9 @@ javacc_input 	    ::=
 
 grammar_file_root   ::=
     option_section?
-	parser_declaration
-	( production_impl )*
-	{name="PARSER_BEGIN"}
+    parser_declaration
+    ( production_impl )*
+    {name="PARSER_BEGIN"}
 
 option_section 	    ::=
     "options" "{" ( option_binding )* "}" {pin=1}
@@ -227,25 +227,25 @@ parser_end          ::=
 private production_impl             ::=
         javacode_production
     | 	bnf_production
-	| 	regex_production
-	| 	token_manager_decls
-	//  errors rules are tried last
-	|   error_production
+    | 	regex_production
+    | 	token_manager_decls
+    //  errors rules are tried last
+    |   error_production
     {recoverWhile="#auto"}
 
 
 javacode_production                 ::=
         "JAVACODE"
-		java_non_terminal_production_header [ jjtree_node_descriptor ]
-		java_block
-		{pin=2}
+        java_non_terminal_production_header [ jjtree_node_descriptor ]
+        java_block
+        {pin=2}
 
 bnf_production 	                    ::=
         java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
-		java_block
+        java_block
         curly_then_expansion_choices
         "}"
-		{pin=1}
+        {pin=1}
 
 // Yeah this is weird, but important to recover from incomplete code.
 // It fixes the pin behaviour. BNF productions are pinned on their header.
@@ -333,19 +333,19 @@ token_manager_decls ::=
 
 lexical_state_list 	::=
         "<" ( "*" | identifier ( "," identifier )* ) ">"
-	    {pin=1}
+        {pin=1}
 
 regex_kind 	        ::=
         "TOKEN"
-	| 	"SPECIAL_TOKEN"
-	| 	"SKIP"
-	| 	"MORE"
+    | 	"SPECIAL_TOKEN"
+    | 	"SKIP"
+    | 	"MORE"
 
 regex_production 	::=
     [ lexical_state_list ]
-	regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
-	<<in_block regex_spec_list>>
-	{pin="regex_kind"}
+    regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
+    <<in_block regex_spec_list>>
+    {pin="regex_kind"}
 
 private regex_spec_list   ::=
     regex_spec ( "|" regex_spec )*
@@ -419,12 +419,12 @@ left scoped_expansion_unit      ::=
 
 private priv_expansion_unit 	::=
     (   local_lookahead_unit
-	| 	parser_actions_unit
-	| 	parenthesized_expansion_unit
-	| 	optional_expansion_unit
-	|   try_catch_expansion_unit
-	|   assigned_expansion_unit
-	|   assignable_expansion_unit
+    | 	parser_actions_unit
+    | 	parenthesized_expansion_unit
+    | 	optional_expansion_unit
+    |   try_catch_expansion_unit
+    |   assigned_expansion_unit
+    |   assignable_expansion_unit
     )
 
 assignable_expansion_unit       ::=
@@ -505,19 +505,19 @@ regular_expression	            ::=
     // If       ("<" IDENT ":") -> named regex
     // Else if  ("<" IDENT)     -> reference (autocomplete)
     // Else if  "<"             -> inline regex
-	|   named_regular_expression
-	|   ref_regular_expression
-	|   container_regular_expression
+    |   named_regular_expression
+    |   ref_regular_expression
+    |   container_regular_expression
 
 literal_regular_expression      ::=
     literal_regex_unit
     {methods=[unit="literal_regex_unit"]}
 
 eof_regular_expression          ::=
-	"<" "EOF" ">"
+    "<" "EOF" ">"
 
 named_regular_expression        ::=
-	"<" [ "#" ] identifier ":" complex_regex_choices ">"
+    "<" [ "#" ] identifier ":" complex_regex_choices ">"
     {pin=4}
 
 ref_regular_expression          ::=
@@ -525,8 +525,8 @@ ref_regular_expression          ::=
     {methods=[unit="token_reference_regex_unit" nameIdentifier="token_reference_regex_unit/identifier"]}
 
 container_regular_expression    ::=
-	"<" complex_regex_choices ">"
-	{pin=1}
+    "<" complex_regex_choices ">"
+    {pin=1}
 
 /* Regex elements. */
 /* These are always contained within regexes, and are not equivalent. */
@@ -555,16 +555,16 @@ regex_sequence_elt              ::=
 
 regex_unit 	    ::=
         literal_regex_unit
-	| 	token_reference_regex_unit
-	| 	character_list_regex_unit
-	| 	parenthesized_regex_unit
-	{recoverWhile="#auto"}
+    | 	token_reference_regex_unit
+    | 	character_list_regex_unit
+    | 	parenthesized_regex_unit
+    {recoverWhile="#auto"}
 
 literal_regex_unit              ::=
     string_literal
 
 token_reference_regex_unit      ::=
-	"<" identifier ">"
+    "<" identifier ">"
     {pin=identifier}
 
 parenthesized_regex_unit        ::=
