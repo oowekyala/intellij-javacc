@@ -234,10 +234,10 @@
     <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.oowekyala.treeutils:tree-matchers:2.0.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.github.oowekyala.treeutils:tree-matchers:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.oowekyala.treeutils:tree-printers:2.0.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.github.oowekyala.treeutils:tree-printers:2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-launcher:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-engine:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-suite-api:1.2.0" level="project" />
