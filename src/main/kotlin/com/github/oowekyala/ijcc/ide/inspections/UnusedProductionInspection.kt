@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.ide.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNREACHABLE
-import com.github.oowekyala.ijcc.ide.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNUSED
+import com.github.oowekyala.ijcc.ide.inspections.UnusedProductionInspection.Companion.ErrorType.UNREACHABLE
+import com.github.oowekyala.ijcc.ide.inspections.UnusedProductionInspection.Companion.ErrorType.UNUSED
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.addIfNotNull
@@ -19,7 +19,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-class JccUnusedProductionInspection : JccInspectionBase(DisplayName) {
+class UnusedProductionInspection : JccInspectionBase(DisplayName) {
 
     @Language("HTML")
     override fun getStaticDescription() = """

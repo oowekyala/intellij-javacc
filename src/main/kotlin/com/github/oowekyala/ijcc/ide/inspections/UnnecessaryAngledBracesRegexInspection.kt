@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix

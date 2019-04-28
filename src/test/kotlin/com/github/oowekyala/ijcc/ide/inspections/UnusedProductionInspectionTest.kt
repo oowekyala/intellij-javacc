@@ -1,13 +1,13 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
-import com.github.oowekyala.ijcc.ide.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNREACHABLE
-import com.github.oowekyala.ijcc.ide.inspections.JccUnusedProductionInspection.Companion.ErrorType.UNUSED
+import com.github.oowekyala.ijcc.ide.inspections.UnusedProductionInspection.Companion.ErrorType.UNREACHABLE
+import com.github.oowekyala.ijcc.ide.inspections.UnusedProductionInspection.Companion.ErrorType.UNUSED
 
 /**
  * @author Clément Fournier
  * @since 1.1
  */
-class JccUnusedProductionInspectionTest : JccInspectionTestBase(JccUnusedProductionInspection()) {
+class UnusedProductionInspectionTest : JccInspectionTestBase(UnusedProductionInspection()) {
 
 
     private fun unused(name: String) = warningAnnot(name, UNUSED.makeMessage(name))
@@ -72,7 +72,7 @@ class JccUnusedProductionInspectionTest : JccInspectionTestBase(JccUnusedProduct
             "foo"
         }
 
-        //noinspection JavaCCUnusedProduction
+        //noinspection UnusedProduction
         void Unused(): {}{
             "hello" Unreachable()
         }

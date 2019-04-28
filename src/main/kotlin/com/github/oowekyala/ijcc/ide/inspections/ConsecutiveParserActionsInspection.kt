@@ -27,6 +27,8 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
         which can be rewritten as <code>{foo(); bar();}</code>.
     """.trimIndent()
 
+    // TODO ignore when the last one is at the end of a node scope!
+
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
         object : JccVisitor() {
             override fun visitParserActionsUnit(o: JccParserActionsUnit) {
