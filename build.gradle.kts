@@ -8,7 +8,7 @@ import java.net.URI
 plugins {
     kotlin("jvm") version "1.3.10"
     id("java")
-    id("org.jetbrains.intellij") version "0.3.12"
+    id("org.jetbrains.intellij") version "0.4.8"
     id("org.jetbrains.grammarkit") version "2018.2.2"
 }
 
