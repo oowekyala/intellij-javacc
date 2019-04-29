@@ -18,8 +18,8 @@ class ErrorCollector {
                     category: Category,
                     severityOverride: Severity? = null,
                     sourcePosition: SourcePosition? = null): Severity {
-        // TODO
-        return TODO()
+        println("$category: $message")
+        return severityOverride ?: category.minSeverity
     }
 
     enum class Category(val minSeverity: Severity) {

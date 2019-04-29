@@ -1,8 +1,11 @@
 package com.github.oowekyala.ijcc.jjtx
 
-import tv.twelvetone.json.JsonObject
-import tv.twelvetone.rjson.RJsonParserFactory
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import java.io.File
+import java.io.Reader
+import java.io.StringReader
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -22,18 +25,16 @@ class JjtxOptsModel(jsonValue: JsonObject) {
 
         fun default() : JjtxOptsModel = JjtxOptsModel(JsonObject())
 
-        fun parse(string: String): JjtxOptsModel {
+        fun parse(string: String): JjtxOptsModel = parse(StringReader(string))
 
-            val parsed = RJsonParserFactory().createParser().stringToValue(string)
-
-            return JjtxOptsModel(parsed.asObject())
-        }
+        fun parse(reader: Reader): JjtxOptsModel =
+            JsonParser().parse(reader)?.let { it as? JsonObject }?.let { JjtxOptsModel(it) } ?: default()
 
         fun parse(file: File): JjtxOptsModel =
             if (!file.exists() || file.isDirectory)
                 default()
             else
-                parse(file.readText())
+                parse(file.bufferedReader())
 
     }
 }
@@ -57,7 +58,7 @@ private class JsonStringProp(val jsonValue: JsonObject, val ns: String, val defa
     : ReadOnlyProperty<Any, String> {
 
     override fun getValue(thisRef: Any, property: KProperty<*>) =
-        jsonValue.getString("$ns.${property.name}", defaultGetter())
+        jsonValue["$ns.${property.name}"]?.asString ?: defaultGetter()
 }
 
 private class JsonObjectProp<T>(val jsonValue: JsonObject,
@@ -68,7 +69,7 @@ private class JsonObjectProp<T>(val jsonValue: JsonObject,
 
     private lateinit var pname: String
     val myVal: T by lazy {
-        jsonValue["$ns.$pname"]?.asObject()?.let { mapper(it) } ?: defaultGetter()
+        jsonValue["$ns.$pname"]?.let { it as? JsonObject }?.let { mapper(it) } ?: defaultGetter()
     }
 
     override fun getValue(thisRef: Any, property: KProperty<*>): T {
@@ -77,3 +78,5 @@ private class JsonObjectProp<T>(val jsonValue: JsonObject,
     }
 
 }
+
+fun JsonElement.asObject(): JsonObject? = this as? JsonObject

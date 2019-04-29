@@ -44,10 +44,14 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
-    compile("tv.twelvetone.rjson:rjson:1.0-SNAPSHOT")
-    implementation(kotlin("reflect"))
+    implementation(kotlin("reflect")) // this could be avoided
+
+    // this is only for JJTX
+    compile("com.google.guava:guava:23.5-jre")
+    compile("com.google.code.gson:gson:2.8.5")
     compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    // https://mvnrepository.com/artifact/net.java.dev.javacc/javacc
+    
+    // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")

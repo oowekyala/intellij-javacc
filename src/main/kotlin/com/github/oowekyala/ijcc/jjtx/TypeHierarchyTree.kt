@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.jjtx
 import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.*
 import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Severity.FAIL
 import com.github.oowekyala.treeutils.TreeLikeAdapter
-import tv.twelvetone.json.JsonObject
+import com.google.gson.JsonObject
 
 /**
  * @author Clément Fournier
@@ -50,7 +50,7 @@ data class TypeHierarchyTree(val nodeName: String,
         return listOf(TypeHierarchyTree(
             realName,
             positionInfo,
-            children.flatMap { expandRegex(grammarNodeNames, ctx) }
+            children.flatMap { it.expandRegex(grammarNodeNames, ctx) }
         ))
     }
 
@@ -90,7 +90,7 @@ data class TypeHierarchyTree(val nodeName: String,
 
     companion object {
 
-        private val regexThRule = Regex("^regex\\(.*\\)$")
+        private val regexThRule = Regex("^regex\\((.*)\\)$")
 
 
         fun fromJsonRoot(jsonObject: JsonObject, ctx: JjtxRunContext): TypeHierarchyTree? {
@@ -103,8 +103,8 @@ data class TypeHierarchyTree(val nodeName: String,
                 return null
             }
 
-            val name = jsonObject.names()[0]
-            return fromJsonObjectImpl(name, jsonObject[name]!!.asObject(), ctx)
+            val name = jsonObject.keySet().first()
+            return jsonObject[name]!!.let { it as? JsonObject }?.let { fromJsonObjectImpl(name, it, ctx) }
         }
 
         private fun fromJsonObjectImpl(nodeName: String,
@@ -113,7 +113,9 @@ data class TypeHierarchyTree(val nodeName: String,
             val me = TypeHierarchyTree(
                 nodeName,
                 null,
-                jsonObject.names().map { fromJsonObjectImpl(it, jsonObject[it]!!.asObject(), ctx) }
+                jsonObject.keySet().mapNotNull { name ->
+                    jsonObject[name]!!.asObject()?.let { fromJsonObjectImpl(name, it, ctx) }
+                }
             )
 
             me.children.forEach { it.parent = me }

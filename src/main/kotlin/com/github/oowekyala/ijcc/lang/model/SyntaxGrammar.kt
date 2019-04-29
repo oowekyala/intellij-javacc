@@ -29,7 +29,7 @@ class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
     private val productionsByName: MostlySingularMultiMap<String, ProductionPointer> =
         file.nonTerminalProductions
             .associateByToMostlySingular({ it.name }) {
-                SmartPointerManager.createPointer(it)
+                it
             }
 
     private val jjtreeNodesByName: MostlySingularMultiMap<String, JjtreeNodePointer> =
@@ -38,22 +38,22 @@ class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
             .filterIsInstance<JjtNodeClassOwner>()
             .filter { it.isNotVoid }
             .associateByToMostlySingular({ it.nodeRawName }) {
-                SmartPointerManager.createPointer(it)
+                it
             }
 
     val allJjtreeNodes: Map<String, List<JjtNodeClassOwner>>
-        get() = jjtreeNodesByName.asMap().mapValues { (_, v) -> v.mapNotNull { it.element } }
+        get() = jjtreeNodesByName.asMap().mapValues { (_, v) -> v.map { it } }
 
 
     fun getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
-        productionsByName.get(name).mapNotNullTo(mutableListOf()) { it.element }
+        productionsByName.get(name).mapNotNullTo(mutableListOf()) { it }
 
     /**
      * Gets the partial declarations of the jjtree node with this name declared in this file.
      * The name has to be the [JjtNodeClassOwner.nodeRawName].
      */
     fun getJjtreeDeclsForRawName(name: String): List<JjtNodeClassOwner> =
-        jjtreeNodesByName.get(name).mapNotNullTo(mutableListOf()) { it.element }
+        jjtreeNodesByName.get(name).mapNotNullTo(mutableListOf()) { it }
 
     //
     //    val usesJjtreeDescriptors: Boolean by lazy {
@@ -65,5 +65,5 @@ class SyntaxGrammar(file: JccFile) : BaseCachedModelObject(file) {
     //    }
 }
 
-private typealias JjtreeNodePointer = SmartPsiElementPointer<JjtNodeClassOwner>
-private typealias ProductionPointer = SmartPsiElementPointer<JccNonTerminalProduction>
+private typealias JjtreeNodePointer = JjtNodeClassOwner
+private typealias ProductionPointer = JccNonTerminalProduction

@@ -3,7 +3,6 @@ package com.github.oowekyala.ijcc.jjtx
 import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
-import org.intellij.grammar.LightPsi
 import kotlin.system.exitProcess
 
 /**
@@ -23,7 +22,7 @@ object JjtxMain {
             exitProcess(-1)
         }
 
-        val jccFile = LightPsi.parseFile(grammarFile, JavaccParserDefinition) as? JccFile ?: run {
+        val jccFile = JjtxLightPsi.parseFile(grammarFile, JavaccParserDefinition) as? JccFile ?: run {
             println("Couldn't read grammar file")
             exitProcess(-1)
         }
