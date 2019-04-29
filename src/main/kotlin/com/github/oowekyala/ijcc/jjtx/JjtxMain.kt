@@ -35,10 +35,10 @@ object JjtxMain {
 
         val ctx = JjtxRunContext(config, jccFile)
 
-        val names = jccFile.allJjtreeDecls.keys
+        val jjtDecls = jccFile.allJjtreeDecls
         val typeHierarchy =
             ctx.jjtxOptsModel.typeHierarchy?.let {
-                TypeHierarchyTree.buildFully(it, names, ctx)
+                TypeHierarchyTree.buildFully(it, jjtDecls, ctx)
             }
 
 

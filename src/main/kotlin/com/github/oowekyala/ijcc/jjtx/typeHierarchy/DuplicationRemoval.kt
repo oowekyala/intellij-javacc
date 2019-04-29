@@ -19,7 +19,7 @@ fun TypeHierarchyTree.removeDuplicates(ctx: JjtxRunContext): TypeHierarchyTree {
             ctx.errorCollector.handleError(
                 "Node $name is matched by several productions, selecting ${mostSpecific.positionInfo} by specificity",
                 DUPLICATE_MATCH,
-                sourcePosition = mostSpecific.positionInfo
+                sourcePosition = *dups.map { it.positionInfo }.toTypedArray()
             )
 
             for (n in dups) {

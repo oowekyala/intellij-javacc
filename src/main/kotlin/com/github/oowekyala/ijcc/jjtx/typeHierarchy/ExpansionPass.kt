@@ -51,7 +51,8 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         ctx.errorCollector.handleError(
             qname,
             ErrorCollector.Category.EXACT_NODE_NOT_IN_GRAMMAR,
-            sourcePosition = positionInfo
+            null,
+            positionInfo
         )
     }
 
@@ -78,8 +79,8 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
         ctx.errorCollector.handleError(
             extractedRegex.pattern,
             ErrorCollector.Category.REGEX_SHOULD_BE_LEAF,
-            severityOverride = override,
-            sourcePosition = positionInfo
+            override,
+            positionInfo
         )
         if (override == ErrorCollector.Severity.FAIL) {
             return emptyList()
@@ -91,7 +92,8 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
         ctx.errorCollector.handleError(
             extractedRegex.pattern,
             ErrorCollector.Category.UNMATCHED_HIERARCHY_REGEX,
-            sourcePosition = positionInfo
+            null,
+            positionInfo
         )
     }
     return matching.map {
@@ -112,6 +114,7 @@ enum class Specificity {
     RESOLVED,
     QUOTED,
     QNAME,
+    ROOT,
 }
 
-private val RegexPattern = Regex("^regex\\((.*)\\)$")
+private val RegexPattern = Regex("^r:(.*)")

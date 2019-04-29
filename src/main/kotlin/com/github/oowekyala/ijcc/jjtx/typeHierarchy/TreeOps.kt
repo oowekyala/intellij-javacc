@@ -15,13 +15,11 @@ interface TreeOps<Self : TreeOps<Self>> {
     fun children(): Sequence<Self> = adapter.getChildren(this.myself()).asSequence()
 
 
-    fun descendants(): Sequence<Self> = children().flatMap { it.tree() }
-
+    fun descendants(): Sequence<Self> = children().flatMap { it.descendantsOrSelf() }
+    fun descendantsOrSelf(): Sequence<Self> = descendants().prepend(myself())
 
     private fun myself(): Self = this as Self
 
-
-    private fun tree(): Sequence<Self> = children().prepend(myself())
 }
 
 

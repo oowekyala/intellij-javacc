@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.jjtx
 /**
  * @author Clément Fournier
  */
-class ErrorCollector {
+class ErrorCollector(val ctx: JjtxRunContext) {
 
 
     /**
@@ -17,10 +17,11 @@ class ErrorCollector {
     fun handleError(message: String,
                     category: Category,
                     severityOverride: Severity? = null,
-                    sourcePosition: JsonPosition? = null): Severity {
+                    vararg sourcePosition: Position): Severity {
         System.err.println("$category: $message")
-        if (sourcePosition != null)
-            System.err.println("\t At $sourcePosition")
+        sourcePosition.forEach {
+            System.err.println("\t At ${it.toString(ctx)}")
+        }
 
         return severityOverride ?: category.minSeverity
     }
@@ -35,6 +36,8 @@ class ErrorCollector {
          * Just a warning if it matches exactly one name.
          */
         REGEX_SHOULD_BE_LEAF(Severity.WARN),
+
+        UNCOVERED_NODE(Severity.WARN),
 
         MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
 

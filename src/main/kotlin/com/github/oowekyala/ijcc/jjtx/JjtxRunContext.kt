@@ -9,7 +9,7 @@ class JjtxRunContext(val jjtxParams: JjtxParams,
                      val grammarFile: JccFile) {
 
 
-    val errorCollector = ErrorCollector()
+    val errorCollector = ErrorCollector(this)
 
     val jjtxOptsModel: JjtxOptsModel =
         jjtxParams.jjtxConfigFile?.let {

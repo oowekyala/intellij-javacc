@@ -4,7 +4,9 @@ import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.MULTIPLE_HIERARCHY
 import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.NO_HIERARCHY_ROOTS
 import com.github.oowekyala.ijcc.jjtx.JjtxRunContext
 import com.github.oowekyala.ijcc.jjtx.JsonPosition
+import com.github.oowekyala.ijcc.jjtx.Position
 import com.github.oowekyala.ijcc.jjtx.asObject
+import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.google.gson.JsonObject
 
@@ -13,10 +15,13 @@ import com.google.gson.JsonObject
  */
 class TypeHierarchyTree(
     val nodeName: String,
-    val positionInfo: JsonPosition,
+    val positionInfo: Position,
     children: List<TypeHierarchyTree>,
-    val specificity: Specificity = Specificity.UNKNOWN
+    specificity: Specificity = Specificity.UNKNOWN
 ) : TreeOps<TypeHierarchyTree> {
+
+    var specificity: Specificity = specificity
+        private set
 
     override val adapter: TreeLikeAdapter<TypeHierarchyTree> = TreeLikeWitness
 
@@ -54,12 +59,14 @@ class TypeHierarchyTree(
 
 
         fun buildFully(jsonObject: JsonObject,
-                                         names: Set<String>,
-                                         ctx: JjtxRunContext): TypeHierarchyTree? {
+                       jjtreeDeclsByRawName: Map<String, List<JjtNodeClassOwner>>,
+                       ctx: JjtxRunContext): TypeHierarchyTree? {
 
             val fst = fromJsonRoot(jsonObject, ctx) ?: return null
-            val expanded = fst.expandAllNames(names, ctx)
-            return expanded.removeDuplicates(ctx)
+            val expanded = fst.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
+            val dedup = expanded.removeDuplicates(ctx)
+            val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
+            return adopted
         }
 
 
@@ -69,10 +76,10 @@ class TypeHierarchyTree(
         private fun fromJsonRoot(jsonObject: JsonObject, ctx: JjtxRunContext): TypeHierarchyTree? {
 
             if (jsonObject.size() > 1) {
-                ctx.errorCollector.handleError("${jsonObject.size()}", MULTIPLE_HIERARCHY_ROOTS, null, null)
+                ctx.errorCollector.handleError("${jsonObject.size()}", MULTIPLE_HIERARCHY_ROOTS, null)
                 return null
             } else if (jsonObject.size() == 0) {
-                ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null, null)
+                ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null)
                 return null
             }
 
@@ -85,6 +92,8 @@ class TypeHierarchyTree(
                         it,
                         ctx
                     )
+                }?.also {
+                    it.specificity = Specificity.ROOT
                 }
         }
 
