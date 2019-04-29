@@ -2,8 +2,8 @@
 
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
-import java.nio.file.Files.delete
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -34,6 +34,9 @@ repositories {
     maven {
         url = URI("http://dl.bintray.com/kotlin/kotlinx")
     }
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
 }
 
 
@@ -41,7 +44,9 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    compile("tv.twelvetone.rjson:rjson:1.0-SNAPSHOT")
     implementation(kotlin("reflect"))
+    compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
     // https://mvnrepository.com/artifact/net.java.dev.javacc/javacc
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
