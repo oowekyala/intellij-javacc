@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
-import com.github.oowekyala.ijcc.lang.psi.grammarNature
 import com.github.oowekyala.ijcc.lang.psi.nodeIdentifier
 import com.github.oowekyala.ijcc.lang.psi.stubs.JjtNodeClassOwnerStub
 import com.intellij.lang.ASTNode

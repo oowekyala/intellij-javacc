@@ -55,18 +55,15 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner {
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>
 
 
+    val grammarNature: GrammarNature
+
+
     companion object {
         /** Element type. */
         val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)
     }
 }
 
-val JccFile.grammarNature: GrammarNature
-    get() = when {
-        isInInjection              -> GrammarNature.UNKNOWN
-        fileType == JjtreeFileType -> GrammarNature.JJTREE
-        else                       -> GrammarNature.JAVACC
-    }
 
 val JccFile.allJjtreeDecls: Map<String, List<JjtNodeClassOwner>>
     get() = (this as JccFileImpl).syntaxGrammar.allJjtreeNodes

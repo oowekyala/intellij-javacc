@@ -17,8 +17,11 @@ class ErrorCollector {
     fun handleError(message: String,
                     category: Category,
                     severityOverride: Severity? = null,
-                    sourcePosition: SourcePosition? = null): Severity {
-        println("$category: $message")
+                    sourcePosition: JsonPosition? = null): Severity {
+        System.err.println("$category: $message")
+        if (sourcePosition != null)
+            System.err.println("\t At $sourcePosition")
+
         return severityOverride ?: category.minSeverity
     }
 
@@ -26,7 +29,7 @@ class ErrorCollector {
         /** Regex pattern in jjtopts doesn't match any jjtree node in grammar. */
         UNMATCHED_HIERARCHY_REGEX(Severity.WARN),
         /** Exact node name in jjtopts doesn't match any jjtree node in grammar. */
-        UNMATCHED_EXACT_NODE(Severity.INFO),
+        EXACT_NODE_NOT_IN_GRAMMAR(Severity.INFO),
         /**
          * Regex pattern in jjtopts should be a leaf.
          * Just a warning if it matches exactly one name.
@@ -34,7 +37,10 @@ class ErrorCollector {
         REGEX_SHOULD_BE_LEAF(Severity.WARN),
 
         MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
+
         NO_HIERARCHY_ROOTS(Severity.INFO),
+
+        DUPLICATE_MATCH(Severity.WARN),
     }
 
     enum class Severity {

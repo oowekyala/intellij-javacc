@@ -1,7 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.GrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
@@ -50,6 +52,12 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override val globalNamedTokens: Sequence<JccNamedRegularExpression>
         get() = globalTokenSpecs.map { it.regularExpression }.filterIsInstance<JccNamedRegularExpression>()
+
+    override var grammarNature: GrammarNature = when {
+        isInInjection              -> GrammarNature.UNKNOWN
+        fileType == JjtreeFileType -> GrammarNature.JJTREE
+        else                       -> GrammarNature.JAVACC
+    }
 
 
     override val globalTokenSpecs: Sequence<JccRegexSpec>

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.jjtx
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
 import java.io.File
 import java.io.Reader
 import java.io.StringReader
@@ -27,8 +28,13 @@ class JjtxOptsModel(jsonValue: JsonObject) {
 
         fun parse(string: String): JjtxOptsModel = parse(StringReader(string))
 
-        fun parse(reader: Reader): JjtxOptsModel =
-            JsonParser().parse(reader)?.let { it as? JsonObject }?.let { JjtxOptsModel(it) } ?: default()
+        fun parse(reader: Reader): JjtxOptsModel {
+
+            val jsonReader = JsonReader(reader)
+            jsonReader.isLenient = true
+
+            return JsonParser().parse(jsonReader)?.asJsonObject?.let { JjtxOptsModel(it) } ?: default()
+        }
 
         fun parse(file: File): JjtxOptsModel =
             if (!file.exists() || file.isDirectory)
