@@ -2,7 +2,6 @@
 
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
@@ -50,7 +49,8 @@ dependencies {
     compile("com.google.guava:guava:23.5-jre")
     compile("com.google.code.gson:gson:2.8.5")
     compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    
+    compile("org.apache.velocity:velocity:1.6.2")
+
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
