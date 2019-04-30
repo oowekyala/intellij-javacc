@@ -6,9 +6,7 @@ $visibility interface $visitorName$typeParams $extendsList {
 
 
 #foreach($node in $typeHierarchy)
-
-    $method.modifiers $method.typeParams $method.returnType #evaluate($method.name) (#evaluate($method.params)) #evaluate($method.body)
-
+    #evaluate($methodTemplate)
 #end
 
 }
