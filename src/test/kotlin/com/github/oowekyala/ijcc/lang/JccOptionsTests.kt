@@ -24,7 +24,7 @@ class JccOptionsTests : LightCodeInsightFixtureTestCase() {
         val file = myFixture.file as JccFile
 
         // overridden
-        file.grammarOptions.lookahead shouldBe 4
+        file.grammarOptions.inlineBindings.lookahead shouldBe 4
     }
 
 

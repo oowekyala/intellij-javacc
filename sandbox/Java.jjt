@@ -198,7 +198,7 @@ options {
   VISITOR = true;
   NODE_USES_PARSER = true;
   TRACK_TOKENS = true;
-  NODE_PACKAGE="net.sourceforge.pmd.lang.java.ast";
+  NODE_PACKAGE="net.sourceforge.pmd.lang.foo.ast";
 
   
   //DEBUG_PARSER = true;

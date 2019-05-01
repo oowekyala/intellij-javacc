@@ -1,0 +1,12 @@
+
+
+#evaluate($headerTemplate) {
+
+
+    #foreach($node in $grammar.typeHierarchy)
+
+        #evaluate($methodTemplate)
+
+    #end
+
+}

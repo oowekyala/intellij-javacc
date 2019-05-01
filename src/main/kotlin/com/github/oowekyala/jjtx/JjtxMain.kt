@@ -29,7 +29,7 @@ object JjtxMain {
             exitProcess(-1)
         }
 
-        (jccFile as JccFileImpl).grammarNature = GrammarNature.JJTREE
+        (jccFile as JccFileImpl).grammarNature = GrammarNature.JJTRICKS
 
         val ctx = JjtxRunContext(config, jccFile)
 

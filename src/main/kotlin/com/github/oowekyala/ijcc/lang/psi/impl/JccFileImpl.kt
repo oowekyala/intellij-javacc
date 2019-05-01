@@ -56,6 +56,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         fileType == JjtreeFileType -> GrammarNature.JJTREE
         else                       -> GrammarNature.JAVACC
     }
+        set(value) {
+            field = value
+            invalidateCachedStructures()
+        }
 
 
     override val globalTokenSpecs: Sequence<JccRegexSpec>
@@ -80,9 +84,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      * routine of [JccHighlightVisitor]).
      */
     internal fun invalidateCachedStructures() {
-        myLexGrammarImpl = LexicalGrammar(this)
-        myGrammarOptionsImpl = InlineGrammarOptions(this)
-        mySyntaxGrammarImpl = SyntaxGrammar(this)
+        myLexGrammarImpl = null
+        myGrammarOptionsImpl = null
+        mySyntaxGrammarImpl = null
     }
 
     /* TODO

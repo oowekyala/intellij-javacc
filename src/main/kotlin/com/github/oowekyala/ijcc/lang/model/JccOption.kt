@@ -292,7 +292,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
     object GRAMMAR_ENCODING
         : JccOption<String>(STRING, "") {
 
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String =
+        override fun contextualDefaultValue(config: IGrammarOptions): String =
             System.getProperties().getProperty("file.encoding")
     }
 
@@ -300,19 +300,19 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
 
 
     object PARSER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: IGrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: IGrammarOptions): String = JLangObject
     }
 
     object PARSER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: IGrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: IGrammarOptions): String = JLangObject
     }
 
     // undocumented options...

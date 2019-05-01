@@ -26,8 +26,8 @@ abstract class JccStubBasedPsiElementImpl<T : StubElement<*>> : StubBasedPsiElem
     constructor(node: ASTNode) : super(node)
     constructor(stub: T, nodeType: IStubElementType<T, *>) : super(stub, nodeType)
 
-    override val grammarOptions: InlineGrammarOptions
-        get() = containingFile.grammarOptions.inlineBindings
+    override val grammarOptions: IGrammarOptions
+        get() = containingFile.grammarOptions
 
     // TODO remove duplication!
 
