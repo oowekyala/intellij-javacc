@@ -27,34 +27,25 @@ ext {
     apply(from = "secrets.properties")
 }
 
-repositories {
-    mavenCentral()
-    jcenter()
-    maven {
-        url = URI("http://dl.bintray.com/kotlin/kotlinx")
+allprojects {
+
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url = URI("http://dl.bintray.com/kotlin/kotlinx")
+        }
     }
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
+
 }
 
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
-    compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
-
-    // this is only for JJTX
-    compile("com.google.guava:guava:23.5-jre")
-    compile("com.google.code.gson:gson:2.8.5")
-    compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    compile("org.apache.velocity:velocity:1.6.2")
-    compile("org.yaml:snakeyaml:1.24")
-    compile("com.google.googlejavaformat:google-java-format:1.7")
-    
-    // FIXME
-    implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
 
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
