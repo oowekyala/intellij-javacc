@@ -3,8 +3,12 @@ package com.github.oowekyala.ijcc.jjtx
 import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TreeLikeWitness
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.presentValue
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.tylerthrailkill.helpers.prettyprint.pp
 import org.yaml.snakeyaml.Yaml
 import kotlin.system.exitProcess
 
@@ -34,9 +38,11 @@ object JjtxMain {
 
         val ctx = JjtxRunContext(config, jccFile)
 
-        val t: Any = Yaml().load(config.jjtxConfigFile?.bufferedReader())
+        val yaml: Any = Yaml().load(config.jjtxConfigFile?.bufferedReader())
 
-        print(t)
+        yaml.pp()
+
+        GsonBuilder().setPrettyPrinting().create().toJson(yaml).pp()
 
         val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.process(ctx)
 

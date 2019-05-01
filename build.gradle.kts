@@ -51,7 +51,10 @@ dependencies {
     compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
     compile("org.apache.velocity:velocity:1.6.2")
     compile("org.yaml:snakeyaml:1.24")
-    
+
+    // FIXME
+    implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
+
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
