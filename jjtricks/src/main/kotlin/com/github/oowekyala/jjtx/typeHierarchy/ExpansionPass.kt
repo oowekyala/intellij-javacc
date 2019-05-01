@@ -71,12 +71,14 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         )
     }
 
+    val rootSpec = if (parent == null) Specificity.ROOT else spec
+
     return listOf(
         TypeHierarchyTree(
             qname,
             positionInfo,
             children.flatMap { it.resolveAgainst(grammarNodeNames, ctx) },
-            spec
+            rootSpec
         )
     )
 }

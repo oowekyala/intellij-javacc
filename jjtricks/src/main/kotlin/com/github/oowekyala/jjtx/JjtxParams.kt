@@ -25,7 +25,6 @@ data class JjtxParams(
 
     fun Path.resolveExisting(name: String): File? = resolve(name).takeIf { Files.exists(it) }?.toFile()
 
-
     companion object {
 
         fun parse(vararg args: String): JjtxParams? {

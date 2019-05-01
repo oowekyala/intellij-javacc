@@ -49,14 +49,14 @@ interface JjtxOptsModel {
         fun default(ctx: JjtxRunContext): JjtxOptsModel = JsonOptsModel(ctx, null, JsonObject())
 
 
-        private fun parseYaml(ctx: JjtxRunContext,
+        fun parseYaml(ctx: JjtxRunContext,
                               reader: Reader): JjtxOptsModel {
             val yaml: Any = Yaml().load(reader)
             // TODO don't swallow errors
             return parseJson(ctx, StringReader(Gson().toJson(yaml)))
         }
 
-        private fun parseJson(ctx: JjtxRunContext,
+        fun parseJson(ctx: JjtxRunContext,
                               reader: Reader): JjtxOptsModel {
 
             val jsonReader = JsonReader(reader)

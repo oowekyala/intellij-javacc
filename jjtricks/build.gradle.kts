@@ -26,6 +26,14 @@ dependencies {
     compile("org.yaml:snakeyaml:1.24")
     compile("com.google.googlejavaformat:google-java-format:1.7")
 
+
+    // this is for tests
+    testCompile(rootProject.sourceSets["test"].output)
+    testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
+    testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
+    testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
+
+
 }
 
 configure<JavaPluginConvention> {

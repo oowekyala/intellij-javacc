@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.lineNumber
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 
 /**
  * @author Clément Fournier
@@ -27,9 +28,9 @@ data class JsonPosition(val path: List<String>) : Position {
 }
 
 
-data class FilePosition(val line: Int, val column: Int, val file: VirtualFile) : Position {
+data class FilePosition(val line: Int, val column: Int, val file: PsiFile) : Position {
 
-    override fun toString(jjtxRunContext: JjtxRunContext): String = "${file.presentableName} [$line, $column]"
+    override fun toString(jjtxRunContext: JjtxRunContext): String = "${file.name} [$line, $column]"
 
 }
 
@@ -39,6 +40,6 @@ fun PsiElement.position(): FilePosition {
     return FilePosition(
         line = line,
         column = textOffset - StringUtil.lineColToOffset(containingFile.text, line, 0),
-        file = containingFile.virtualFile
+        file = containingFile
     )
 }
