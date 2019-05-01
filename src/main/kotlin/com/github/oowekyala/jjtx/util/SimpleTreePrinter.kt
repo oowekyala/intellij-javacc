@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx
+package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.github.oowekyala.treeutils.printers.TreePrinter

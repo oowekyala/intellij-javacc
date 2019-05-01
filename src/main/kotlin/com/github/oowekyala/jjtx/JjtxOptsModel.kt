@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
@@ -51,8 +52,13 @@ interface JjtxOptsModel : IGrammarOptions {
                       reader: Reader,
                       parent: JjtxOptsModel): JjtxOptsModel? {
             val yaml: Any = Yaml().load(reader)
+
+            val json = GsonBuilder().also {
+                it.setLenient()
+            }.create().toJsonTree(yaml)
+
             // TODO don't swallow errors
-            return fromElement(ctx, Gson().toJsonTree(yaml), parent)
+            return fromElement(ctx, json, parent)
         }
 
         fun parseJson(ctx: JjtxContext,

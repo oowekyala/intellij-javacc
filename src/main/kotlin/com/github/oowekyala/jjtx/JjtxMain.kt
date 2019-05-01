@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
+import com.github.oowekyala.jjtx.util.SimpleTreePrinter
 import kotlin.system.exitProcess
 
 /**
