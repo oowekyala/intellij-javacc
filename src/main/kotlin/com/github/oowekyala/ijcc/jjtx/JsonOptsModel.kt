@@ -23,7 +23,7 @@ class JsonOptsModel(val ctx: JjtxRunContext,
     override val nodePackage: String by jjtx.withDefault { "" }
 
     override val typeHierarchy: TypeHierarchyTree by lazy {
-        // lazyness is important, the method calls back to the nodePrefix & nodePackage through the context
+        // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
         TypeHierarchyTree.fromJson(jjtx["typeHierarchy"], ctx)
     }
 
@@ -33,7 +33,7 @@ inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): Rea
     JsonProperty(this)
         .map {
             it?.toJava(T::class.java) as? T ?: default()
-        }
+        }.lazily()
 
 fun JsonElement.toJava(expectedType: Class<*>): Any? {
     return when (this) {
@@ -61,16 +61,3 @@ class JsonProperty(private val namespacer: Namespacer) : ReadOnlyProperty<Any, J
     override fun getValue(thisRef: Any, property: KProperty<*>): JsonElement? = namespacer[property.name]
 }
 
-
-inline fun <reified T> ReadOnlyProperty<Any, *>.coerce(): ReadOnlyProperty<Any, T?> =
-    object : ReadOnlyProperty<Any, T?> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T? =
-            this@coerce.getValue(thisRef, property) as? T
-    }
-
-
-fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
-    object : ReadOnlyProperty<Any, R> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): R =
-            f(this@map.getValue(thisRef, property))
-    }

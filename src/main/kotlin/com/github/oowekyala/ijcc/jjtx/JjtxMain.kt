@@ -4,8 +4,8 @@ import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TreeLikeWitness
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import org.yaml.snakeyaml.Yaml
 import kotlin.system.exitProcess
 
 /**
@@ -34,7 +34,10 @@ object JjtxMain {
 
         val ctx = JjtxRunContext(config, jccFile)
 
-        val jjtDecls = jccFile.allJjtreeDecls
+        val t: Any = Yaml().load(config.jjtxConfigFile?.bufferedReader())
+
+        print(t)
+
         val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.process(ctx)
 
         println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))

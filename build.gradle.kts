@@ -48,7 +48,10 @@ dependencies {
     // this is only for JJTX
     compile("com.google.guava:guava:23.5-jre")
     compile("com.google.code.gson:gson:2.8.5")
-
+    compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
+    compile("org.apache.velocity:velocity:1.6.2")
+    compile("org.yaml:snakeyaml:1.24")
+    
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")

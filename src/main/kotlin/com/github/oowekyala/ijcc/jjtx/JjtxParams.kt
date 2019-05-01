@@ -20,7 +20,7 @@ data class JjtxParams(
 
 
     val jjtxConfigFile: File?
-        get() = grammarDir.resolveExisting("$grammarName.jjtopts.json")
+        get() = grammarDir.resolveExisting("$grammarName.jjtopts.yaml")
 
 
     fun Path.resolveExisting(name: String): File? = resolve(name).takeIf { Files.exists(it) }?.toFile()

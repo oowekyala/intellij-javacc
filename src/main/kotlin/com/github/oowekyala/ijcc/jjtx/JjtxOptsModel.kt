@@ -67,6 +67,9 @@ interface JjtxOptsModel {
         }
 
     }
-
-
 }
+
+
+fun JjtxOptsModel.addPackage(simpleName:String) =
+    nodePackage.let { if (it.isNotEmpty()) "$it.$simpleName" else simpleName }
+
