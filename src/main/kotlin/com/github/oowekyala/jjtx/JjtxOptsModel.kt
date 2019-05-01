@@ -33,7 +33,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
         fun parse(ctx: JjtxRunContext,
                   file: File,
-                  parent: JjtxOptsModel?): JjtxOptsModel? {
+                  parent: JjtxOptsModel): JjtxOptsModel? {
 
             assert(file.exists() && !file.isDirectory)
 
@@ -48,7 +48,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
         fun parseYaml(ctx: JjtxRunContext,
                       reader: Reader,
-                      parent: JjtxOptsModel? = null): JjtxOptsModel? {
+                      parent: JjtxOptsModel): JjtxOptsModel? {
             val yaml: Any = Yaml().load(reader)
             // TODO don't swallow errors
             return fromElement(ctx, Gson().toJsonTree(yaml), parent)
@@ -56,7 +56,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
         fun parseJson(ctx: JjtxRunContext,
                       reader: Reader,
-                      parent: JjtxOptsModel? = null): JjtxOptsModel? {
+                      parent: JjtxOptsModel): JjtxOptsModel? {
 
             val jsonReader = JsonReader(reader)
             jsonReader.isLenient = true
@@ -68,7 +68,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
         private fun fromElement(ctx: JjtxRunContext,
                                 jsonElement: JsonElement?,
-                                parent: JjtxOptsModel? = null) =
+                                parent: JjtxOptsModel) =
             jsonElement?.asJsonObject?.let { JsonOptsModel(ctx, parent, it) }
 
     }

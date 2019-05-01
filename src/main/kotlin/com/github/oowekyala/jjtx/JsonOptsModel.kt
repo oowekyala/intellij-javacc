@@ -11,22 +11,24 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
+ * A chain of json config files ending up in the inline bindings.
+ *
  * @author Clément Fournier
  */
 class JsonOptsModel(val ctx: JjtxRunContext,
-                    override val parentModel: JjtxOptsModel?,
+                    override val parentModel: JjtxOptsModel,
                     json: JsonObject) : JjtxOptsModel {
 
 
     private val jjtx: Namespacer = json namespace "jjtx"
 
-    override val inlineBindings: InlineGrammarOptions        by lazy {
+    override val inlineBindings: InlineGrammarOptions by lazy {
         generateSequence(parentModel) { it.parentModel }.filterIsInstance<InlineGrammarOptions>().first()
     }
 
-    override val nodePrefix: String by jjtx.withDefault { "AST" }
-    override val nodePackage: String by jjtx.withDefault { "" }
-    override val isDefaultVoid: Boolean by jjtx.withDefault { false }
+    override val nodePrefix: String by jjtx.withDefault { parentModel.nodePrefix }
+    override val nodePackage: String by jjtx.withDefault { parentModel.nodePackage }
+    override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
 
     override val visitors: List<VisitorConfig> by jjtx.withDefault {
         emptyList<VisitorConfig>()
