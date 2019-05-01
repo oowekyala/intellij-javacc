@@ -42,6 +42,7 @@ class ErrorCollector(val ctx: JjtxRunContext) {
         MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
 
         NO_HIERARCHY_ROOTS(Severity.INFO),
+        WRONG_TYPE(Severity.INFO),
 
         DUPLICATE_MATCH(Severity.WARN),
     }

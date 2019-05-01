@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.jjtx
 
-import com.intellij.util.io.exists
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path

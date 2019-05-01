@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.jjtx
 
 import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TreeLikeWitness
-import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
@@ -36,16 +35,7 @@ object JjtxMain {
         val ctx = JjtxRunContext(config, jccFile)
 
         val jjtDecls = jccFile.allJjtreeDecls
-        val typeHierarchy =
-            ctx.jjtxOptsModel.typeHierarchy?.let {
-                TypeHierarchyTree.buildFully(it, jjtDecls, ctx)
-            }
-
-
-        if (typeHierarchy == null) {
-            println("Couldn't read type hierarchy...")
-            exitProcess(-1)
-        }
+        val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.process(ctx)
 
         println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))
     }

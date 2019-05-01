@@ -1,88 +1,72 @@
 package com.github.oowekyala.ijcc.jjtx
 
-import com.google.gson.JsonElement
+import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TypeHierarchyTree
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.Reader
 import java.io.StringReader
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 
 /**
+ * Models a jjtopts configuration file.
+ *
  * @author Clément Fournier
  */
-class JjtxOptsModel(jsonValue: JsonObject) {
+interface JjtxOptsModel {
 
-    val nodePrefix: String by jsonValue.string { "AST" }
-    val nodePackage: String by jsonValue.string { "" }
+    val parentModel: JjtxOptsModel?
+    val nodePrefix: String
+    val nodePackage: String
+    val typeHierarchy: TypeHierarchyTree
 
-    // FIXME by default delegate to root interface
-    val typeHierarchy: JsonObject? by jsonValue.obj()
 
     companion object {
 
+        const val DefaultRootNodeName = "Node"
 
-        fun default() : JjtxOptsModel = JjtxOptsModel(JsonObject())
 
-        fun parse(string: String): JjtxOptsModel = parse(StringReader(string))
+        fun parse(ctx: JjtxRunContext,
+                  file: File): JjtxOptsModel {
 
-        fun parse(reader: Reader): JjtxOptsModel {
+            assert(file.exists() && !file.isDirectory)
+
+            return when (file.extension) {
+                "json" -> parseJson(ctx, file.bufferedReader())
+                "yaml" -> parseYaml(ctx, file.bufferedReader())
+                else   -> {
+                    // TODO don't swallow errors
+                    default(ctx)
+                }
+            }
+
+        }
+
+        fun default(ctx: JjtxRunContext): JjtxOptsModel = JsonOptsModel(ctx, null, JsonObject())
+
+
+        private fun parseYaml(ctx: JjtxRunContext,
+                              reader: Reader): JjtxOptsModel {
+            val yaml: Any = Yaml().load(reader)
+            // TODO don't swallow errors
+            return parseJson(ctx, StringReader(Gson().toJson(yaml)))
+        }
+
+        private fun parseJson(ctx: JjtxRunContext,
+                              reader: Reader): JjtxOptsModel {
 
             val jsonReader = JsonReader(reader)
             jsonReader.isLenient = true
 
-            return JsonParser().parse(jsonReader)?.asJsonObject?.let { JjtxOptsModel(it) } ?: default()
+            // TODO don't swallow errors
+            val jsonParser = JsonParser()
+            return jsonParser.parse(jsonReader)?.asJsonObject?.let { JsonOptsModel(ctx, null, it) }
+                ?: default(ctx)
         }
 
-        fun parse(file: File): JjtxOptsModel =
-            if (!file.exists() || file.isDirectory)
-                default()
-            else
-                parse(file.bufferedReader())
-
-    }
-}
-
-
-private fun JsonObject.string(ns: String = "jjtx", defaultGetter: () -> String): ReadOnlyProperty<Any, String> =
-    JsonStringProp(this, ns, defaultGetter)
-
-
-private fun <T> JsonObject.obj(ns: String = "jjtx",
-                               defaultGetter: () -> T,
-                               mapper: (JsonObject) -> T): ReadOnlyProperty<Any, T> =
-    JsonObjectProp(this, ns, mapper, defaultGetter)
-
-
-private fun JsonObject.obj(ns: String = "jjtx"): ReadOnlyProperty<Any, JsonObject?> =
-    JsonObjectProp(this, ns, { it }, { null })
-
-
-private class JsonStringProp(val jsonValue: JsonObject, val ns: String, val defaultGetter: () -> String)
-    : ReadOnlyProperty<Any, String> {
-
-    override fun getValue(thisRef: Any, property: KProperty<*>) =
-        jsonValue["$ns.${property.name}"]?.asString ?: defaultGetter()
-}
-
-private class JsonObjectProp<T>(val jsonValue: JsonObject,
-                                val ns: String,
-                                val mapper: (JsonObject) -> T,
-                                val defaultGetter: () -> T)
-    : ReadOnlyProperty<Any, T> {
-
-    private lateinit var pname: String
-    val myVal: T by lazy {
-        jsonValue["$ns.$pname"]?.let { it as? JsonObject }?.let { mapper(it) } ?: defaultGetter()
     }
 
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
-        pname = property.name
-        return myVal
-    }
 
 }
-
-fun JsonElement.asObject(): JsonObject? = this as? JsonObject

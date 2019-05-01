@@ -1,14 +1,15 @@
 package com.github.oowekyala.ijcc.jjtx.typeHierarchy
 
-import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.MULTIPLE_HIERARCHY_ROOTS
-import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.NO_HIERARCHY_ROOTS
+import com.github.oowekyala.ijcc.jjtx.ErrorCollector.Category.*
+import com.github.oowekyala.ijcc.jjtx.JjtxOptsModel
 import com.github.oowekyala.ijcc.jjtx.JjtxRunContext
 import com.github.oowekyala.ijcc.jjtx.JsonPosition
 import com.github.oowekyala.ijcc.jjtx.Position
-import com.github.oowekyala.ijcc.jjtx.asObject
-import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
+import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.treeutils.TreeLikeAdapter
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 
 /**
  * @author Clément Fournier
@@ -53,72 +54,72 @@ class TypeHierarchyTree(
         )
     }
 
-
+    fun process(ctx: JjtxRunContext): TypeHierarchyTree {
+        val jjtreeDeclsByRawName = ctx.grammarFile.allJjtreeDecls
+        val expanded = this.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
+        val dedup = expanded.removeDuplicates(ctx)
+        val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
+        return adopted
+    }
 
     companion object {
 
+        fun default() =
+            default(JjtxOptsModel.DefaultRootNodeName)
 
-        fun buildFully(jsonObject: JsonObject,
-                       jjtreeDeclsByRawName: Map<String, List<JjtNodeClassOwner>>,
-                       ctx: JjtxRunContext): TypeHierarchyTree? {
-
-            val fst = fromJsonRoot(jsonObject, ctx) ?: return null
-            val expanded = fst.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
-            val dedup = expanded.removeDuplicates(ctx)
-            val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
-            return adopted
-        }
-
+        fun default(rootName: String) =
+            TypeHierarchyTree(rootName, JsonPosition("jjtx.typeHierarchy"), emptyList())
 
         /**
          * First construction pass, from a Json object.
          */
-        private fun fromJsonRoot(jsonObject: JsonObject, ctx: JjtxRunContext): TypeHierarchyTree? {
+        fun fromJson(json: JsonElement?, ctx: JjtxRunContext): TypeHierarchyTree = when {
+            json == null                           -> default()
+            json is JsonObject                     -> fromJsonRoot(json, ctx)
+            json is JsonPrimitive && json.isString -> default(json.asString)
+            else                                   -> {
+                ctx.errorCollector.handleError("", WRONG_TYPE, null)
+                default()
+            }
+        }
+
+        private fun fromJsonRoot(jsonObject: JsonObject, ctx: JjtxRunContext): TypeHierarchyTree {
 
             if (jsonObject.size() > 1) {
                 ctx.errorCollector.handleError("${jsonObject.size()}", MULTIPLE_HIERARCHY_ROOTS, null)
-                return null
+                return default()
             } else if (jsonObject.size() == 0) {
                 ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null)
-                return null
+                return default()
             }
 
             val name = jsonObject.keySet().first()
-            return jsonObject[name]!!.asJsonObject
+            return jsonObject[name]!!.let { it as? JsonObject }
                 ?.let {
-                    fromJsonObjectImpl(
-                        name,
-                        JsonPosition("jjtx.typeHierarchy"),
-                        it,
-                        ctx
-                    )
-                }?.also {
+                    it.toTree(name, JsonPosition("jjtx.typeHierarchy"), ctx)
+                }?.let {
                     it.specificity = Specificity.ROOT
-                }
+                    it.process(ctx)
+                } ?: default(name)
         }
 
-        private fun fromJsonObjectImpl(nodeName: String,
+        private fun JsonElement.toTree(nodeName: String,
                                        parentPosition: JsonPosition,
-                                       jsonObject: JsonObject,
-                                       ctx: JjtxRunContext): TypeHierarchyTree {
+                                       ctx: JjtxRunContext): TypeHierarchyTree? {
             val myPosition = parentPosition.resolve(nodeName)
 
-            return TypeHierarchyTree(
-                nodeName,
-                myPosition,
-                jsonObject.keySet().mapNotNull { name ->
-                    jsonObject[name]!!.asObject()?.let {
-                        fromJsonObjectImpl(
-                            name,
-                            myPosition,
-                            it,
-                            ctx
-                        )
-                    }
-                }
-            )
+
+            val children = when (this) {
+                is JsonObject    -> keySet().mapNotNull { name -> this[name].toTree(name, myPosition, ctx) }
+                is JsonPrimitive -> emptyList() // TODO
+                else             -> emptyList() // TODO
+
+            }
+
+            return TypeHierarchyTree(nodeName, myPosition, children)
         }
     }
+
 }
 
 object TreeLikeWitness : TreeLikeAdapter<TypeHierarchyTree> {

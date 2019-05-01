@@ -13,7 +13,6 @@ interface TypeHierarchyRenderer {
         // Velocity template somewhere
         // User populates variables or uses defaults
 
-
     }
 }
 
