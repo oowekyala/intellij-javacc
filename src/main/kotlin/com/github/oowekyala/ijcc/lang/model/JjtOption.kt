@@ -41,7 +41,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  meaning that SimpleNode will be used as the factory class.
      */
     object NODE_FACTORY : JjtOption<String>(RefinedOptionType.TYPE, "") {
-        override fun getValue(optionBinding: JccOptionBinding?, config: InlineGrammarOptions): String =
+        override fun getValue(optionBinding: JccOptionBinding?, config: IGrammarOptions): String =
             if (optionBinding == null
                 || optionBinding.matchesType(INTEGER)
                 || optionBinding.matchesType(BOOLEAN)
@@ -56,7 +56,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  this is the parser package.
      */
     object NODE_PACKAGE : JjtOption<String>(PACKAGE, null) {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = config.parserPackage
+        override fun contextualDefaultValue(config: IGrammarOptions): String = config.parserPackage
     }
 
     /**
@@ -135,7 +135,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      *  files.
      */
     object JJTREE_OUTPUT_DIRECTORY : JjtOption<String>(RefinedOptionType.DIRECTORY, ".") {
-        override fun contextualDefaultValue(config: InlineGrammarOptions): String = config.outputDirectory
+        override fun contextualDefaultValue(config: IGrammarOptions): String = config.inlineBindings.outputDirectory
     }
 
 

@@ -12,7 +12,7 @@ data class JjtxParams(
     val grammarName: String,
     val grammarDir: Path,
     val outputDir: Path,
-    val configChain: List<Path> = listOf(grammarDir.resolve("$grammarName.jjtopts.yaml"))
+    val configChain: List<Path> = defaultConfigChain(grammarDir, grammarName)
 ) {
 
     val mainGrammarFile: File?
@@ -29,5 +29,11 @@ data class JjtxParams(
             val wdir = Paths.get(System.getProperty("user.dir"))
             return JjtxParams(grammarName = args[0], grammarDir = wdir, outputDir = wdir.resolve("gen"))
         }
+
+        fun defaultConfigChain(grammarDir: Path, grammarName: String) = listOf(
+            grammarDir.resolve("$grammarName.jjtopts.yaml"),
+            grammarDir.resolve("$grammarName.jjtopts.json")
+        )
+
     }
 }

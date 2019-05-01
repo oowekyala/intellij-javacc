@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
+import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.StubBasedPsiElementBase
@@ -26,7 +27,7 @@ abstract class JccStubBasedPsiElementImpl<T : StubElement<*>> : StubBasedPsiElem
     constructor(stub: T, nodeType: IStubElementType<T, *>) : super(stub, nodeType)
 
     override val grammarOptions: InlineGrammarOptions
-        get() = containingFile.grammarOptions
+        get() = containingFile.grammarOptions.inlineBindings
 
     // TODO remove duplication!
 

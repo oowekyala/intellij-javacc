@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 import com.github.oowekyala.ijcc.lang.model.GenericOption
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.lang.model.allOptionsBindings
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
@@ -239,7 +240,7 @@ fun JccFile.realOrFakeOptionNodeFor(optionName: String): PsiElement? {
 
     val option = InlineGrammarOptions.knownOptions[optionName] ?: return null
 
-    val real = grammarOptions.allOptionsBindings.firstOrNull { it.name == optionName }
+    val real = allOptionsBindings.firstOrNull { it.name == optionName }
     if (real != null) return real
 
     val fakes = getUserData(FakeOptionEltsKey) ?: let {

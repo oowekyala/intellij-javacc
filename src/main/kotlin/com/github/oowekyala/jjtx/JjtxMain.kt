@@ -1,10 +1,10 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.JavaccParserDefinition
-import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
 import kotlin.system.exitProcess
 
 /**
@@ -37,6 +37,6 @@ object JjtxMain {
 
         println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))
 
-        ctx.runTemplates()
+        ctx.runTemplates(config.outputDir)
     }
 }

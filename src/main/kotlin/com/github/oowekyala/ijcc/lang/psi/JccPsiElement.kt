@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
+import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService
 import com.github.oowekyala.ijcc.settings.javaccSettings
 import com.intellij.psi.NavigatablePsiElement
@@ -17,7 +17,7 @@ interface JccPsiElement : NavigatablePsiElement {
 
     /** Gets the options bundle associated with the grammar this element is found in. */
     @JvmDefault
-    val grammarOptions: InlineGrammarOptions
+    val grammarOptions: IGrammarOptions
         get() = containingFile.grammarOptions
 
     /** Gets the project-specific settings of the plugin. */

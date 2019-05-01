@@ -1,13 +1,12 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.intellij.util.io.exists
 
 
 /**
  * @author Clément Fournier
  */
-class JjtxLightContext(override val grammarFile: JccFile) : JjtxContext {
+class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, null) {
 
 
     override val errorCollector = object : ErrorCollector {
@@ -20,23 +19,5 @@ class JjtxLightContext(override val grammarFile: JccFile) : JjtxContext {
         }
 
     }
-
-
-    override val jjtxOptsModel: JjtxOptsModel
-
-    init {
-
-        val top = OldJavaccOptionsModel(grammarFile.grammarOptions)
-
-
-        jjtxOptsModel =
-            grammarDir.resolve("$grammarName.jjtopts.yaml")
-                .takeIf { it.exists() }
-                ?.let {
-                    JjtxOptsModel.parse(this, it.toFile(), top)
-                } ?: top
-
-    }
-
 
 }

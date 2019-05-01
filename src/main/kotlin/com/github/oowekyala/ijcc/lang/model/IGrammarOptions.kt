@@ -1,5 +1,8 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
+
 /**
  * Most general options interface.
  * Handles JJTricks option files.
@@ -11,6 +14,10 @@ interface IGrammarOptions {
 
     val inlineBindings: InlineGrammarOptions
 }
+
+
+val JccFile.allOptionsBindings: List<JccOptionBinding> get() = options?.optionBindingList ?: emptyList()
+
 
 val IGrammarOptions.parserQualifiedName: String
     get() {
