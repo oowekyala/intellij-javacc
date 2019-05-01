@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx
 
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 
@@ -8,8 +8,12 @@ import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
  * @author Clément Fournier
  */
 class OldJavaccOptionsModel(
-    grammarOptions: GrammarOptions
+    grammarOptions: InlineGrammarOptions
 ) : JjtxOptsModel {
+
+    override val inlineBindings: InlineGrammarOptions = grammarOptions
+
+    override val isDefaultVoid: Boolean = grammarOptions.isDefaultVoid
 
     override val parentModel: JjtxOptsModel? = null
 

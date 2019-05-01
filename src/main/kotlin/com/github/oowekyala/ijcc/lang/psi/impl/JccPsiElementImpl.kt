@@ -3,8 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
-import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
@@ -21,7 +20,7 @@ import com.intellij.psi.search.SearchScope
  */
 abstract class JccPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), JccPsiElement {
 
-    override val grammarOptions: GrammarOptions
+    override val grammarOptions: InlineGrammarOptions
         get() = containingFile.grammarOptions
 
     override fun getContainingFile() = super.getContainingFile() as JccFile

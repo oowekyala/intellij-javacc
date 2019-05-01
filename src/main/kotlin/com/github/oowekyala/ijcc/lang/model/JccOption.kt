@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
-import org.intellij.lang.annotations.Language
 
 /**
  * Pay attention, [STATIC] is duplicate with [JjtOption.STATIC]
@@ -293,7 +292,7 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
     object GRAMMAR_ENCODING
         : JccOption<String>(STRING, "") {
 
-        override fun contextualDefaultValue(config: GrammarOptions): String =
+        override fun contextualDefaultValue(config: InlineGrammarOptions): String =
             System.getProperties().getProperty("file.encoding")
     }
 
@@ -301,19 +300,19 @@ sealed class JccOption<T : Any>(type: JccOptionType<T>,
 
 
     object PARSER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_SUPER_CLASS : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
     }
 
     object PARSER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
     }
 
     object TOKEN_MANAGER_CODE_GENERATOR : JccOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: GrammarOptions): String = JLangObject
+        override fun contextualDefaultValue(config: InlineGrammarOptions): String = JLangObject
     }
 
     // undocumented options...

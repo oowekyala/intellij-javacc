@@ -10,7 +10,7 @@ import java.io.IOException
 
 /**
  * Generic option for JavaCC or its preprocessors.
- * All options are available in [GrammarOptions.knownOptions]
+ * All options are available in [InlineGrammarOptions.knownOptions]
  *
  * @param T the type of literal to expect
  *
@@ -36,7 +36,7 @@ abstract class GenericOption<T : Any>(
     abstract val name: String
 
     /** Gets the value of this option from an binding. If it's null then the default value is used. */
-    open fun getValue(optionBinding: JccOptionBinding?, config: GrammarOptions): T =
+    open fun getValue(optionBinding: JccOptionBinding?, config: InlineGrammarOptions): T =
         optionBinding
             ?.takeIf { it.matchesType(expectedType) }
             ?.let { expectedType.projection.parseStringValue(optionBinding.stringValue) }
@@ -49,7 +49,7 @@ abstract class GenericOption<T : Any>(
      * interprets as meaning something else, eg defaulting to another
      * option, or some other thing.
      */
-    open fun getActualValue(overriddenValue: T?, config: GrammarOptions): T = when (overriddenValue) {
+    open fun getActualValue(overriddenValue: T?, config: InlineGrammarOptions): T = when (overriddenValue) {
         null, staticDefaultValue -> contextualDefaultValue(config)
         else                     -> overriddenValue
     }
@@ -61,7 +61,7 @@ abstract class GenericOption<T : Any>(
      *
      * Must be implemented if [staticDefaultValue] is null.
      */
-    open fun contextualDefaultValue(config: GrammarOptions): T =
+    open fun contextualDefaultValue(config: InlineGrammarOptions): T =
         staticDefaultValue ?: TODO("Should have been implemented!")
 
 

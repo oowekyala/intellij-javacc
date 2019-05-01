@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.lang.model.GenericOption
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
@@ -237,7 +237,7 @@ interface FakeOptionElt {
  */
 fun JccFile.realOrFakeOptionNodeFor(optionName: String): PsiElement? {
 
-    val option = GrammarOptions.knownOptions[optionName] ?: return null
+    val option = InlineGrammarOptions.knownOptions[optionName] ?: return null
 
     val real = grammarOptions.allOptionsBindings.firstOrNull { it.name == optionName }
     if (real != null) return real

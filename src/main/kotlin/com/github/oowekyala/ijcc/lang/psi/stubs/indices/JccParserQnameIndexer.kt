@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.stubs.indices
 
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JjtreeFileType
+import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.intellij.util.indexing.*
 import com.intellij.util.io.EnumeratorStringDescriptor

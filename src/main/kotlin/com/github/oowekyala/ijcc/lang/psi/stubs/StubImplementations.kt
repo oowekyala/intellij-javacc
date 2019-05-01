@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi.stubs
 
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl

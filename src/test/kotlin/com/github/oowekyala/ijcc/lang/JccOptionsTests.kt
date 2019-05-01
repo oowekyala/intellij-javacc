@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang
 import com.github.oowekyala.ijcc.lang.model.GenericOption
 import com.github.oowekyala.ijcc.lang.model.JccOption
 import com.github.oowekyala.ijcc.lang.model.JjtOption
+import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 import com.github.oowekyala.ijcc.lang.psi.matchesType

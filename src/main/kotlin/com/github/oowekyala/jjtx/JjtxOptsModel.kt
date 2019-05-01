@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx
 
+import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.google.gson.Gson
@@ -15,11 +16,12 @@ import java.io.Reader
  *
  * @author Clément Fournier
  */
-interface JjtxOptsModel {
+interface JjtxOptsModel : IGrammarOptions {
 
     val parentModel: JjtxOptsModel?
-    val nodePrefix: String
-    val nodePackage: String
+    override val nodePrefix: String
+    override val nodePackage: String
+    override val isDefaultVoid: Boolean
     val typeHierarchy: TypeHierarchyTree
 
     val visitors: List<VisitorConfig>

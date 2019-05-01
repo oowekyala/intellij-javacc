@@ -1,9 +1,10 @@
 package com.github.oowekyala.jjtx
 
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
+import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.Namespacer
 import com.github.oowekyala.jjtx.util.namespace
-import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.google.gson.*
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
@@ -19,8 +20,13 @@ class JsonOptsModel(val ctx: JjtxRunContext,
 
     private val jjtx: Namespacer = json namespace "jjtx"
 
+    override val inlineBindings: InlineGrammarOptions        by lazy {
+        generateSequence(parentModel) { it.parentModel }.filterIsInstance<InlineGrammarOptions>().first()
+    }
+
     override val nodePrefix: String by jjtx.withDefault { "AST" }
     override val nodePackage: String by jjtx.withDefault { "" }
+    override val isDefaultVoid: Boolean by jjtx.withDefault { false }
 
     override val visitors: List<VisitorConfig> by jjtx.withDefault {
         emptyList<VisitorConfig>()

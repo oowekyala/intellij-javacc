@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionNamePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionValuePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern
 import com.github.oowekyala.ijcc.ide.quickdoc.realOrFakeOptionNodeFor
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -42,7 +42,7 @@ class JccCompletionContributor : CompletionContributor() {
                 .mapNotNull { it.modelOption?.name }
 
 
-            GrammarOptions.knownOptions
+            InlineGrammarOptions.knownOptions
                 .filterKeys { it !in alreadyThere }
                 .filterValues { it.supportedNature <= fileNature }
                 .map { (name, opt) ->

@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.grayed
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.model.GenericOption
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.presentValue
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 
@@ -14,7 +14,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 object JccOptionDocMaker {
 
     fun makeDoc(binding: JccOptionBinding?,
-                ctx: GrammarOptions,
+                ctx: InlineGrammarOptions,
                 opt: GenericOption<*>): String = buildQuickDoc {
         definition {
             "Option ${HtmlUtil.bold(opt.name)} " + grayed("(${opt.supportedNature.displayName})")

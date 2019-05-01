@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.vfs.VirtualFile

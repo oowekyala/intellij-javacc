@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange

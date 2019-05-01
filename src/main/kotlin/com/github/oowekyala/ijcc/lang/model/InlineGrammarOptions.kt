@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 
+
 /**
  * Toplevel model object representing the options bundle
  * pertaining to a grammar.
@@ -11,31 +12,17 @@ import com.github.oowekyala.ijcc.lang.psi.getBindingFor
  * @author Clément Fournier
  * @since 1.0
  */
-class GrammarOptions(file: JccFile) : BaseCachedModelObject(file) {
+class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGrammarOptions {
 
+    override val inlineBindings: InlineGrammarOptions = this
 
-    val parserQualifiedName: String
-        get() {
-            val pack = parserPackage
-            return if (pack.isEmpty()) parserSimpleName
-            else "$pack.$parserSimpleName"
-        }
-
-    // TODO parse from the PARSER def
-    val parserPackage: String  by lazy {
-        file.parserDeclaration?.text?.let { packageRegex.find(it) }?.groups?.get(1)?.value ?: ""
-    }
-    val parserSimpleName: String  by lazy {
-        file.parserDeclaration?.text?.let { classRegex.find(it) }?.groups?.get(1)?.value ?: ""
-    }
-
-    val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
+    override val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 
     val outputDirectory: String by lazy { getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY) }
 
-    val isDefaultVoid: Boolean by lazy { getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID) }
+    override val isDefaultVoid: Boolean by lazy { getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID) }
 
-    val nodePrefix: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PREFIX) }
+    override val nodePrefix: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PREFIX) }
 
     val lookahead: Int by lazy { getOptionValueOrDefault(JccOption.LOOKAHEAD) }
 
@@ -45,8 +32,6 @@ class GrammarOptions(file: JccFile) : BaseCachedModelObject(file) {
         genericOption.getValue(file.options?.getBindingFor(genericOption), this)
 
     companion object {
-        private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
-        private val classRegex = Regex("\\bclass\\s+(\\w+)")
 
         /** Indexes all known JavaCC or JJTree options by their name.*/
         val knownOptions: Map<String, GenericOption<*>> =

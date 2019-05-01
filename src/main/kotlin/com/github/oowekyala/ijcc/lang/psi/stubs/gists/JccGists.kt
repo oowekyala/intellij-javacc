@@ -1,12 +1,9 @@
 package com.github.oowekyala.ijcc.lang.psi.stubs.gists
 
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
+import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.intellij.openapi.project.Project
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.util.CachedValueBase
 import com.intellij.util.gist.GistManager
 import com.intellij.util.gist.PsiFileGist
 import com.intellij.util.io.DataExternalizer
@@ -37,10 +34,10 @@ object JccGists {
             }
         }
 
-    private val GrammarOptionsGist: PsiFileGist<GrammarOptions?> =
+    private val GrammarOptionsGist: PsiFileGist<InlineGrammarOptions?> =
         GistManager.getInstance().newPsiFileGist("jcc.GrammarOptions", 1, InMemoryExternalizer()) { file ->
             when (file) {
-                is JccFile -> GrammarOptions(file)
+                is JccFile -> InlineGrammarOptions(file)
                 else       -> null
             }
         }
@@ -53,9 +50,9 @@ object JccGists {
         SyntaxGrammarGist.getFileData(jccFile)
             ?: SyntaxGrammar(jccFile)
 
-    fun getGrammarOptions(jccFile: JccFile): GrammarOptions =
+    fun getGrammarOptions(jccFile: JccFile): InlineGrammarOptions =
         GrammarOptionsGist.getFileData(jccFile)
-            ?: GrammarOptions(jccFile)
+            ?: InlineGrammarOptions(jccFile)
 
 
     private fun <T> nullExternaliser(): DataExternalizer<T> =

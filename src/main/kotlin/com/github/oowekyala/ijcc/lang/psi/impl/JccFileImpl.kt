@@ -3,10 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
-import com.github.oowekyala.ijcc.lang.model.GrammarNature
-import com.github.oowekyala.ijcc.lang.model.GrammarOptions
-import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
-import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
+import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
@@ -77,13 +74,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     /**
      * Some structures are lazily cached to reduce the number of times
      * they must be constructed. These include the [LexicalGrammar], the
-     * [GrammarOptions] and stuff. They're rebuilt when text changes, a
+     * [InlineGrammarOptions] and stuff. They're rebuilt when text changes, a
      * heuristic for that is the highlight passes (it's done in the init
      * routine of [JccHighlightVisitor]).
      */
     internal fun invalidateCachedStructures() {
         myLexGrammarImpl = LexicalGrammar(this)
-        myGrammarOptionsImpl = GrammarOptions(this)
+        myGrammarOptionsImpl = InlineGrammarOptions(this)
         mySyntaxGrammarImpl = SyntaxGrammar(this)
     }
 
@@ -102,10 +99,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     val syntaxGrammar: SyntaxGrammar
         get() = mySyntaxGrammarImpl ?: let { mySyntaxGrammarImpl = SyntaxGrammar(this); mySyntaxGrammarImpl!! }
 
-    private var myGrammarOptionsImpl: GrammarOptions? = null
+    private var myGrammarOptionsImpl: InlineGrammarOptions? = null
 
-    override val grammarOptions: GrammarOptions
-        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = GrammarOptions(this); myGrammarOptionsImpl!! }
+    override val grammarOptions: InlineGrammarOptions
+        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = InlineGrammarOptions(this); myGrammarOptionsImpl!! }
 
 
     override fun getContainingFile(): JccFile = this
