@@ -17,4 +17,6 @@ class JjtxRunContext(val jjtxParams: JjtxParams,
             JjtxOptsModel.parse(this, it)
         } ?: JjtxOptsModel.default(this)
 
+    override fun toString(): String = "Run context[$jjtxParams]"
+
 }

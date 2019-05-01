@@ -2,6 +2,8 @@ package com.github.oowekyala.ijcc.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.jjtx.ErrorCollector
 import com.github.oowekyala.ijcc.jjtx.JjtxRunContext
+import com.github.oowekyala.ijcc.jjtx.addPackage
+import java.util.regex.PatternSyntaxException
 
 
 fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
@@ -14,7 +16,7 @@ fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
  *
  * Shorthands are
  *
- * "regex(something)" -> match all nodes with regex, can only be a leaf pattern, then expanded to package + prefix + name
+ * "r:something"      -> match all nodes with regex, can only be a leaf pattern, then expanded to package + prefix + name
  * "Something"        -> expanded to eg package.ASTSomething
  * "%Something"       -> expanded to package.Something
  * "foo.Something"    -> exactly foo.Something
@@ -25,23 +27,34 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
 
 
     RegexPattern.matchEntire(nodeName)?.groups?.get(1)?.run {
-        return resolveRegex(grammarNodeNames, Regex(value), ctx) // TODO invalid regex?
-    }
 
-    val packagePrefix = ctx.jjtxOptsModel.nodePackage.takeIf { it.isNotEmpty() }?.plus(".") ?: ""
+        val r = try {
+            Regex(value)
+        } catch (e: PatternSyntaxException) {
+            ctx.errorCollector.handleError(
+                e.message.orEmpty(),
+                ErrorCollector.Category.EXACT_NODE_NOT_IN_GRAMMAR,
+                null,
+                positionInfo
+            )
+            return listOf()
+        }
+
+        return resolveRegex(grammarNodeNames,r , ctx) // TODO invalid regex?
+    }
 
     val (qname, prodName, spec) = when {
         nodeName[0] == '%'              -> {
             val short = nodeName.substring(1)
             Triple(
-                packagePrefix + short,
+                ctx.jjtxOptsModel.addPackage(short),
                 short,
                 Specificity.QUOTED
             )
         }
         nodeName.matches(Regex("\\w+")) ->
             Triple(
-                packagePrefix + ctx.jjtxOptsModel.nodePrefix + nodeName,
+                ctx.jjtxOptsModel.addPackage(ctx.jjtxOptsModel.nodePrefix + nodeName),
                 nodeName,
                 Specificity.RESOLVED
             )
@@ -100,7 +113,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
     }
     return matching.map {
         TypeHierarchyTree(
-            ctx.jjtxOptsModel.nodePackage + "." + ctx.jjtxOptsModel.nodePrefix + it,
+            ctx.jjtxOptsModel.addPackage(ctx.jjtxOptsModel.nodePrefix + it),
             positionInfo,
             emptyList(),
             Specificity.REGEX

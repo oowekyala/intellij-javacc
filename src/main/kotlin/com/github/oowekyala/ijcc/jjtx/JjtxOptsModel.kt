@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.jjtx
 
 import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TypeHierarchyTree
+import com.github.oowekyala.ijcc.jjtx.visitors.VisitorConfig
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -22,6 +23,7 @@ interface JjtxOptsModel {
     val nodePackage: String
     val typeHierarchy: TypeHierarchyTree
 
+    val visitors: List<VisitorConfig>
 
     companion object {
 

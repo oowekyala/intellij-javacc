@@ -1,0 +1,10 @@
+#evaluate($imports)
+
+#evaluate($headerTemplate) {
+
+
+#foreach($node in $typeHierarchy)
+    #evaluate($methodTemplate)
+#end
+
+}

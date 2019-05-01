@@ -45,6 +45,8 @@ class ErrorCollector(val ctx: JjtxRunContext) {
         WRONG_TYPE(Severity.INFO),
 
         DUPLICATE_MATCH(Severity.WARN),
+        INVALID_REGEX(Severity.WARN),
+        FILE_NOT_FOUND(Severity.WARN),
     }
 
     enum class Severity {

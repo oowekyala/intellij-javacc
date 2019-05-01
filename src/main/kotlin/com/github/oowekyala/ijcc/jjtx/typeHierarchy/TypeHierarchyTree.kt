@@ -19,11 +19,10 @@ class TypeHierarchyTree(
     val nodeName: String,
     val positionInfo: Position,
     children: List<TypeHierarchyTree>,
-    specificity: Specificity = Specificity.UNKNOWN
+    val specificity: Specificity = Specificity.UNKNOWN,
+    val external: Boolean = false
 ) : TreeOps<TypeHierarchyTree> {
 
-    var specificity: Specificity = specificity
-        private set
 
     override val adapter: TreeLikeAdapter<TypeHierarchyTree> = TreeLikeWitness
 
@@ -35,6 +34,8 @@ class TypeHierarchyTree(
 
     val children: List<TypeHierarchyTree>
         get() = realChildren
+
+    private var processed = false
 
 
     internal fun removeFromParent() {
@@ -55,11 +56,22 @@ class TypeHierarchyTree(
         )
     }
 
+    fun copy(nodeName: String = this.nodeName,
+             positionInfo: Position = this.positionInfo,
+             children: List<TypeHierarchyTree> = this.children,
+             specificity: Specificity = this.specificity,
+             external: Boolean = this.external): TypeHierarchyTree =
+        TypeHierarchyTree(
+            nodeName, positionInfo, children, specificity, external
+        )
+
     fun process(ctx: JjtxRunContext): TypeHierarchyTree {
+        if (processed) throw IllegalStateException("Node already processed")
         val jjtreeDeclsByRawName = ctx.grammarFile.allJjtreeDecls
         val expanded = this.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
         val dedup = expanded.removeDuplicates(ctx)
         val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
+        adopted.descendantsOrSelf().forEach { it.processed = true }
         return adopted
     }
 
@@ -78,7 +90,7 @@ class TypeHierarchyTree(
             null -> default()
             else ->
                 json.toTree(JsonPosition("jjtx.typeHierarchy"), ctx)
-                    ?.also { it.specificity = Specificity.ROOT }
+                    ?.copy(specificity = Specificity.ROOT)
                     ?: default()
         }
 
@@ -141,9 +153,7 @@ class TypeHierarchyTree(
                 positionInfo = position
             )
         }
-
     }
-
 }
 
 object TreeLikeWitness : TreeLikeAdapter<TypeHierarchyTree> {

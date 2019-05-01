@@ -8,6 +8,9 @@ import kotlin.reflect.KProperty
 fun String.splitAroundFirst(delimiter: Char): Pair<String, String> =
     Pair(substringBefore(delimiter), substringAfter(delimiter))
 
+fun String.splitAroundLast(delimiter: Char): Pair<String, String> =
+    Pair(substringBeforeLast(delimiter), substringAfterLast(delimiter))
+
 fun JsonObject.asMap(): Map<String, JsonElement> {
     return object : Map<String, JsonElement> {
         val obj = this@asMap

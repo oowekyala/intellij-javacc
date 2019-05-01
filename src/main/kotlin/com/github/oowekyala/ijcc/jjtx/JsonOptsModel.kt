@@ -3,9 +3,9 @@ package com.github.oowekyala.ijcc.jjtx
 import com.github.oowekyala.ijcc.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.ijcc.jjtx.util.Namespacer
 import com.github.oowekyala.ijcc.jjtx.util.namespace
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.github.oowekyala.ijcc.jjtx.visitors.VisitorConfig
+import com.google.gson.*
+import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -22,9 +22,17 @@ class JsonOptsModel(val ctx: JjtxRunContext,
     override val nodePrefix: String by jjtx.withDefault { "AST" }
     override val nodePackage: String by jjtx.withDefault { "" }
 
+    override val visitors: List<VisitorConfig> by jjtx.withDefault {
+        emptyList<VisitorConfig>()
+    }
+
+    private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
+        TypeHierarchyTree.fromJson(it, ctx)
+    }
+
     override val typeHierarchy: TypeHierarchyTree by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        TypeHierarchyTree.fromJson(jjtx["typeHierarchy"], ctx)
+        th.process(ctx)
     }
 
 }
@@ -32,11 +40,20 @@ class JsonOptsModel(val ctx: JjtxRunContext,
 inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this)
         .map {
-            it?.toJava(T::class.java) as? T ?: default()
+            it?.let {
+                val type = object : TypeLiteral<T>() {}
+                Gson().fromJson<T>(it, type.type)
+            }
+                ?: default()
         }.lazily()
+
 
 fun JsonElement.toJava(expectedType: Class<*>): Any? {
     return when (this) {
+        is JsonArray     -> when (expectedType) {
+            List::class.java -> (this as JsonArray).toList()
+            else             -> (this as JsonArray).toList()
+        }
         is JsonPrimitive -> {
             when {
                 isBoolean -> asBoolean
@@ -57,7 +74,7 @@ fun JsonElement.toJava(expectedType: Class<*>): Any? {
 }
 
 
-class JsonProperty(private val namespacer: Namespacer) : ReadOnlyProperty<Any, JsonElement?> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): JsonElement? = namespacer[property.name]
+class JsonProperty(private val namespacer: Namespacer, val name: String? = null) : ReadOnlyProperty<Any, JsonElement?> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): JsonElement? = namespacer[name ?: property.name]
 }
 
