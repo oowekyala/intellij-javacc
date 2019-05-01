@@ -25,6 +25,8 @@ enum class GrammarNature(val displayName: String,
                          val icon: Icon) {
     JAVACC("JavaCC", "jj", JccIcons.JAVACC_FILE),
     JJTREE("JJTree", "jjt", JccIcons.JJTREE_FILE),
+    JJTRICKS("JJTricks", "jjtx", JccIcons.JJTREE_FILE),
+
     /**
      * Special nature in which all features are enabled,
      * used in injection. Higher than all features.

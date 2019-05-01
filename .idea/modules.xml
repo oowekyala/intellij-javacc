@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/intellij-javacc.iml" filepath="$PROJECT_DIR$/intellij-javacc.iml" group="intellij-javacc" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jjtricks.iml" filepath="$PROJECT_DIR$/.idea/modules/jjtricks.iml" group="intellij-javacc/jjtricks" />
     </modules>
   </component>
 </project>
