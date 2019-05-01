@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxRunContext
+import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
 import com.intellij.util.io.createFile
 import com.intellij.util.io.exists
@@ -37,18 +38,13 @@ data class VisitorConfig(val templateFile: String?,
 
             template == null && templateFile != null -> {
 
-
-                val resource = VisitorConfig::class.java.getResource(templateFile)?.toExternalForm()?.let { File(it) }
-
-                if (resource != null) {
-                    return resource.readText()
+                fun fromResource() = VisitorConfig::class.java.getResource(templateFile)?.let {
+                    Resources.toString(it, Charsets.UTF_8)
                 }
 
-                val file: File = ctx.jjtxParams.grammarDir.resolve(templateFile).toFile()
+                fun fromFile() = ctx.jjtxParams.grammarDir.resolve(templateFile).toFile().readText()
 
-                if (!file.exists()) throw FileNotFoundException("Cannot resolve template file $templateFile")
-
-                file.readText()
+                fromResource() ?: fromFile()
             }
 
 

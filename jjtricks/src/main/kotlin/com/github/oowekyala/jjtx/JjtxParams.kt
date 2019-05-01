@@ -29,6 +29,7 @@ data class JjtxParams(
     companion object {
 
         fun parse(vararg args: String): JjtxParams? {
+            // TODO
             val wdir = Paths.get(System.getProperty("user.dir"))
             return JjtxParams(grammarName = args[0], grammarDir = wdir, outputDir = wdir.resolve("gen"))
         }
