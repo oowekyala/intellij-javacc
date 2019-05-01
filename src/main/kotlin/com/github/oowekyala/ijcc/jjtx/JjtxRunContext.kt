@@ -19,4 +19,22 @@ class JjtxRunContext(val jjtxParams: JjtxParams,
 
     override fun toString(): String = "Run context[$jjtxParams]"
 
+
+    fun runTemplates() {
+        for (visitor in jjtxOptsModel.visitors) {
+            try {
+                visitor.execute(this)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 }

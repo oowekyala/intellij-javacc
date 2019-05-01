@@ -19,6 +19,7 @@ package com.github.oowekyala.ijcc.jjtx;
 import com.github.oowekyala.ijcc.JavaccLanguage;
 import com.github.oowekyala.ijcc.JavaccParserDefinition;
 import com.github.oowekyala.ijcc.JjtreeFileType;
+import com.intellij.application.options.GenerationSettingsProvider;
 import com.intellij.concurrency.AsyncFutureFactory;
 import com.intellij.concurrency.AsyncFutureFactoryImpl;
 import com.intellij.concurrency.JobLauncher;
@@ -48,6 +49,8 @@ import com.intellij.openapi.progress.impl.ProgressManagerImpl;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.DumbServiceImpl;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.impl.ProjectManagerImpl;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.KeyedExtensionCollector;
@@ -56,6 +59,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.encoding.EncodingManager;
 import com.intellij.openapi.vfs.encoding.EncodingManagerImpl;
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.CodeStyleSettingsProvider;
 import com.intellij.psi.impl.PsiCachedValuesFactory;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import com.intellij.psi.impl.search.CachesBasedRefSearcher;
@@ -281,6 +285,8 @@ public class JjtxLightPsi {
             registerComponentInstance(appContainer, FileDocumentManager.class, new MockFileDocumentManagerImpl(editorFactory::createDocument, FileDocumentManagerImpl.HARD_REF_TO_DOCUMENT_KEY));
             registerComponentInstance(appContainer, PsiDocumentManager.class, new MockPsiDocumentManager());
             registerComponentInstance(appContainer, FileTypeManager.class, new MockFileTypeManager(new MockLanguageFileType(PlainTextLanguage.INSTANCE, "txt")));
+            // don't do that
+            // registerComponentInstance(appContainer, ProjectManager.class, new ProjectManagerImpl(new ProgressManagerImpl()));
 
             registerApplicationService(project, PsiBuilderFactory.class, PsiBuilderFactoryImpl.class);
             registerApplicationService(project, DefaultASTFactory.class, DefaultASTFactoryImpl.class);

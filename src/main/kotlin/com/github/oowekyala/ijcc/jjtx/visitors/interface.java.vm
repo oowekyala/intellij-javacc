@@ -1,9 +1,7 @@
-#evaluate($imports)
 
 #evaluate($headerTemplate) {
 
-
-#foreach($node in $typeHierarchy)
+#foreach($node in $grammar.typeHierarchy)
     #evaluate($methodTemplate)
 #end
 

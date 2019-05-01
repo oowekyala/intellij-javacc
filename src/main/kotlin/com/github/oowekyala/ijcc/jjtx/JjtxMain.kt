@@ -36,5 +36,7 @@ object JjtxMain {
         val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy
 
         println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))
+
+        ctx.runTemplates()
     }
 }

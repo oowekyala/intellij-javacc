@@ -1,50 +1,116 @@
 package com.github.oowekyala.ijcc.jjtx.visitors
 
 import com.github.oowekyala.ijcc.jjtx.JjtxRunContext
+import com.google.googlejavaformat.java.Formatter
+import com.intellij.util.io.createFile
+import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import org.apache.velocity.exception.ResourceNotFoundException
 import java.io.File
-import java.net.URL
+import java.io.FileNotFoundException
+import java.io.StringWriter
 import java.nio.file.Path
+
+
+data class VisitorConfigBean(
+    val templateFile: String?,
+    val template: String?,
+    val output: String?,
+    val context: Map<String, Any?>
+)
 
 /**
  * @author Clément Fournier
  */
-data class VisitorConfig(var template: String,
-                         val output: Path,
+data class VisitorConfig(val templateFile: String?,
+                         val template: String?,
+                         val output: String?,
                          val context: Map<String, Any?>) {
 
 
-    fun resolveTemplate() {
+    private fun resolveTemplate(ctx: JjtxRunContext): String {
 
-        if (template[0] == '@') {
+        return when {
 
-            val fname = template.substring(1)
+            template != null && templateFile == null -> template
 
-            val url: URL =
-                VisitorConfig::class.java.classLoader.getResource(fname) ?: throw ResourceNotFoundException(template)
+            template == null && templateFile != null -> {
 
-            template = File(url.toExternalForm()).readText()
+                val file: File =
+                    VisitorConfig::class.java.classLoader.getResource(templateFile)?.toExternalForm()?.let { File(it) }
+                        ?: ctx.jjtxParams.grammarDir.resolve(templateFile).toFile()
+
+                if (!file.exists()) throw FileNotFoundException("Cannot resolve template file $templateFile")
+
+                file.readText()
+            }
+
+
+            else                                     -> throw java.lang.IllegalStateException(
+                "Visitor spec must mention either 'templateFile' or 'template'"
+            )
         }
     }
+
+    private fun resolveOutput(ctx: JjtxRunContext,
+                              velocityContext: VelocityContext): Path {
+
+        if (output == null) {
+            throw java.lang.IllegalStateException("Visitor spec must mention the 'output' file")
+        }
+
+        val engine = VelocityEngine()
+
+        val fname = StringWriter().also {
+            engine.evaluate(velocityContext, it, "visitor-output", output)
+        }.toString()
+
+
+        val o = ctx.jjtxParams.outputDir.resolve(fname)
+
+
+        if (o.isDirectory()) {
+            throw IllegalStateException("Output file ${this.output} is directory")
+        }
+
+        if (!o.exists()) {
+            // todo log
+            o.createFile()
+        }
+
+        return o
+    }
+
+
 
     fun execute(ctx: JjtxRunContext) {
 
-        val engine = VelocityEngine()
-        val baseCtx = VelocityContext()
+        val baseCtx = VelocityContext(context)
 
-        baseCtx["grammar"] = GrammarBean(ctx.jjtxParams.grammarName, ctx.jjtxParams.mainGrammarFile!!)
-        baseCtx["nodes"] = NodeBean.dump(ctx.jjtxOptsModel.typeHierarchy, ctx)
+        baseCtx["grammar"] = GrammarBean.create(ctx)
         baseCtx["user"] = context
 
-        if (output.isDirectory()) {
-            throw IllegalStateException("Output file $output is directory")
-        }
 
-        engine.evaluate(baseCtx, output.toFile().bufferedWriter(), "visitor-template", template)
+        val template = resolveTemplate(ctx)
+        val engine = VelocityEngine()
+
+        val o = resolveOutput(ctx, baseCtx)
+
+        val rendered =StringWriter().also {
+            engine.evaluate(baseCtx, it, "visitor-template", template)
+        }.toString()
+
+        afterRender(ctx, rendered, o)
 
     }
+
+    private fun afterRender(ctx: JjtxRunContext, rendered: String, output: Path) {
+        val formatted = Formatter().formatSource(rendered)
+        output.toFile().bufferedWriter().use {
+            it.write(formatted)
+        }
+    }
+
 
 }
