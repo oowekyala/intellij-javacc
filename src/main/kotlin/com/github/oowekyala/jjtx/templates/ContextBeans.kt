@@ -28,8 +28,9 @@ data class NodeBean(
             val (pack, simpleName) = nodeName.splitAroundLast('.')
 
             val name = when (specificity) {
-                Specificity.RESOLVED -> simpleName.removePrefix(ctx.jjtxOptsModel.nodePrefix)
-                else                 -> simpleName
+                Specificity.RESOLVED,
+                Specificity.REGEX -> simpleName.removePrefix(ctx.jjtxOptsModel.nodePrefix)
+                else              -> simpleName
             }
 
             val bean = NodeBean(
