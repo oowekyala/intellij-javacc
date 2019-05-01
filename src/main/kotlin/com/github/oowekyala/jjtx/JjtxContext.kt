@@ -2,7 +2,10 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.templates.GrammarBean
+import com.github.oowekyala.jjtx.templates.set
 import com.intellij.util.io.exists
+import org.apache.velocity.VelocityContext
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -28,9 +31,17 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>?) {
 
 
     fun runTemplates(outputDir: Path) {
+
+        val globalCtx = VelocityContext()
+        globalCtx["grammar"] = GrammarBean.create(this)
+        globalCtx["global"] = jjtxOptsModel.templateContext
+        globalCtx["H"] = "#"
+
+
         for (visitor in jjtxOptsModel.visitors) {
+
             try {
-                visitor.execute(this, outputDir)
+                visitor.execute(this, globalCtx, outputDir)
             } catch (e: Exception) {
                 // FIXME report cleanly
                 e.printStackTrace()

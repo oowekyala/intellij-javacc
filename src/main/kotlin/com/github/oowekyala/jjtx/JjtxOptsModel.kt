@@ -3,7 +3,6 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -11,7 +10,6 @@ import com.google.gson.stream.JsonReader
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.Reader
-import java.nio.file.Path
 
 /**
  * Models a jjtopts configuration file.
@@ -25,6 +23,8 @@ interface JjtxOptsModel : IGrammarOptions {
     override val nodePackage: String
     override val isDefaultVoid: Boolean
     val typeHierarchy: TypeHierarchyTree
+
+    val templateContext: Map<String, Any>
 
     val visitors: List<VisitorConfig>
 

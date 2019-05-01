@@ -34,7 +34,7 @@ data class NodeBean(
 
     // those methods should not include both subNodes & supernodes,
     // otherwise we run into infinite loop
-    
+
     override fun toString(): String = "NodeBean($classQualifiedName)"
 
     override fun equals(other: Any?): Boolean {

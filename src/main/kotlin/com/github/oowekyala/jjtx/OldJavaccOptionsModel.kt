@@ -24,4 +24,6 @@ class OldJavaccOptionsModel(
     override val visitors: List<VisitorConfig> = emptyList()
 
     override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default()
+
+    override val templateContext: Map<String, Any> = emptyMap()
 }

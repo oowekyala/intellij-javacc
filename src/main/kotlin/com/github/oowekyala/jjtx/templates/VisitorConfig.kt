@@ -7,17 +7,31 @@ import com.intellij.util.io.createFile
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.Velocity
 import org.apache.velocity.app.VelocityEngine
 import java.io.StringWriter
 import java.nio.file.Path
 
 
+// The field names of this class are public API, because they're serialized
+// They're decoupled from the real VisitorConfig though
 data class VisitorConfigBean(
     val templateFile: String?,
     val template: String?,
     val output: String?,
     val context: Map<String, Any?>
-)
+) {
+
+
+    fun toConfig(): VisitorConfig {
+        return VisitorConfig(
+            templateFile = templateFile,
+            template = template,
+            output = output,
+            context = context
+        )
+    }
+}
 
 /**
  * @author Clément Fournier
@@ -82,21 +96,17 @@ data class VisitorConfig(val templateFile: String?,
     }
 
 
-    fun execute(ctx: JjtxContext, outputDir: Path) {
+    fun execute(ctx: JjtxContext, sharedCtx: VelocityContext, outputDir: Path) {
 
-        val baseCtx = VelocityContext(context)
-
-        baseCtx["grammar"] = GrammarBean.create(ctx)
-        baseCtx["user"] = context
-
+        val fullCtx = VelocityContext(context, sharedCtx)
 
         val template = resolveTemplate(ctx)
         val engine = VelocityEngine()
 
-        val o = resolveOutput(baseCtx, outputDir)
+        val o = resolveOutput(fullCtx, outputDir)
 
         val rendered = StringWriter().also {
-            engine.evaluate(baseCtx, it, "visitor-template", template)
+            engine.evaluate(fullCtx, it, "visitor-template", template)
         }.toString()
 
         afterRender(ctx, rendered, o)

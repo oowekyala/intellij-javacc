@@ -2,12 +2,12 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
+import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.Namespacer
 import com.github.oowekyala.jjtx.util.namespace
 import com.google.gson.*
 import org.apache.commons.lang3.reflect.TypeLiteral
-import java.nio.file.Path
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -31,9 +31,18 @@ class JsonOptsModel(val ctx: JjtxContext,
     override val nodePackage: String by jjtx.withDefault { parentModel.nodePackage }
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
 
-    override val visitors: List<VisitorConfig> by jjtx.withDefault {
-        parentModel.visitors
-    }
+    override val templateContext: Map<String, Any> by
+    jjtx.withDefault { emptyMap<String, Any>() }
+        .map { deepest ->
+            // keep all parent keys, but override them
+            parentModel.templateContext + deepest
+        }.lazily()
+
+    override val visitors: List<VisitorConfig> by jjtx.withDefault<List<VisitorConfigBean>> {
+        emptyList()
+    }.map {
+        it.map { it.toConfig() }
+    }.lazily()
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
         TypeHierarchyTree.fromJson(it, ctx)
