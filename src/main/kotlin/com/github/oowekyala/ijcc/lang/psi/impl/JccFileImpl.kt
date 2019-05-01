@@ -102,8 +102,15 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     private var myGrammarOptionsImpl: InlineGrammarOptions? = null
 
     override val grammarOptions: InlineGrammarOptions
-        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = InlineGrammarOptions(this); myGrammarOptionsImpl!! }
+        get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = buildOptions(); myGrammarOptionsImpl!! }
 
+    private fun buildOptions(): IGrammarOptions {
+        return if (grammarNature < GrammarNature.JJTRICKS) {
+            InlineGrammarOptions(this)
+        } else {
+
+        }
+    }
 
     override fun getContainingFile(): JccFile = this
 

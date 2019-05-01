@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.templates
 
-import com.github.oowekyala.jjtx.JjtxRunContext
+import com.github.oowekyala.jjtx.JjtxContext
 import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
 import com.intellij.util.io.createFile
@@ -8,8 +8,6 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.StringWriter
 import java.nio.file.Path
 
@@ -30,7 +28,7 @@ data class VisitorConfig(val templateFile: String?,
                          val context: Map<String, Any?>) {
 
 
-    private fun resolveTemplate(ctx: JjtxRunContext): String {
+    private fun resolveTemplate(ctx: JjtxContext): String {
 
         return when {
 
@@ -42,7 +40,7 @@ data class VisitorConfig(val templateFile: String?,
                     Resources.toString(it, Charsets.UTF_8)
                 }
 
-                fun fromFile() = ctx.jjtxParams.grammarDir.resolve(templateFile).toFile().readText()
+                fun fromFile() = ctx.grammarDir.resolve(templateFile).toFile().readText()
 
                 fromResource() ?: fromFile()
             }
@@ -54,8 +52,8 @@ data class VisitorConfig(val templateFile: String?,
         }
     }
 
-    private fun resolveOutput(ctx: JjtxRunContext,
-                              velocityContext: VelocityContext): Path {
+    private fun resolveOutput(velocityContext: VelocityContext,
+                              outputDir: Path): Path {
 
         if (output == null) {
             throw java.lang.IllegalStateException("Visitor spec must mention the 'output' file")
@@ -68,7 +66,7 @@ data class VisitorConfig(val templateFile: String?,
         }.toString()
 
 
-        val o = ctx.jjtxParams.outputDir.resolve(fname)
+        val o = outputDir.resolve(fname)
 
 
         if (o.isDirectory()) {
@@ -84,8 +82,7 @@ data class VisitorConfig(val templateFile: String?,
     }
 
 
-
-    fun execute(ctx: JjtxRunContext) {
+    fun execute(ctx: JjtxContext, outputDir: Path) {
 
         val baseCtx = VelocityContext(context)
 
@@ -96,9 +93,9 @@ data class VisitorConfig(val templateFile: String?,
         val template = resolveTemplate(ctx)
         val engine = VelocityEngine()
 
-        val o = resolveOutput(ctx, baseCtx)
+        val o = resolveOutput(baseCtx, outputDir)
 
-        val rendered =StringWriter().also {
+        val rendered = StringWriter().also {
             engine.evaluate(baseCtx, it, "visitor-template", template)
         }.toString()
 
@@ -106,7 +103,7 @@ data class VisitorConfig(val templateFile: String?,
 
     }
 
-    private fun afterRender(ctx: JjtxRunContext, rendered: String, output: Path) {
+    private fun afterRender(ctx: JjtxContext, rendered: String, output: Path) {
         val formatted = Formatter().formatSource(rendered)
         output.toFile().bufferedWriter().use {
             it.write(formatted)

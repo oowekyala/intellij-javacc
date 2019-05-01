@@ -1,11 +1,8 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.jjtx.ErrorCollector.Category.*
-import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.JjtxRunContext
-import com.github.oowekyala.jjtx.JsonPosition
-import com.github.oowekyala.jjtx.Position
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
+import com.github.oowekyala.jjtx.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -65,7 +62,7 @@ class TypeHierarchyTree(
             nodeName, positionInfo, children, specificity, external
         )
 
-    fun process(ctx: JjtxRunContext): TypeHierarchyTree {
+    fun process(ctx: JjtxContext): TypeHierarchyTree {
         if (processed) throw IllegalStateException("Node already processed")
         val jjtreeDeclsByRawName = ctx.grammarFile.allJjtreeDecls
         val expanded = this.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
@@ -86,7 +83,7 @@ class TypeHierarchyTree(
         /**
          * First construction pass, from a Json object.
          */
-        fun fromJson(json: JsonElement?, ctx: JjtxRunContext): TypeHierarchyTree = when (json) {
+        fun fromJson(json: JsonElement?, ctx: JjtxContext): TypeHierarchyTree = when (json) {
             null -> default()
             else ->
                 json.toTree(JsonPosition("jjtx.typeHierarchy"), ctx)
@@ -96,7 +93,7 @@ class TypeHierarchyTree(
 
 
         private fun JsonElement.toTree(parentPosition: JsonPosition,
-                                       ctx: JjtxRunContext): TypeHierarchyTree? {
+                                       ctx: JjtxContext): TypeHierarchyTree? {
 
 
             return when (this) {
@@ -115,7 +112,7 @@ class TypeHierarchyTree(
         }
 
         private fun JsonPrimitive.fromJsonPrimitive(parentPosition: JsonPosition,
-                                                    ctx: JjtxRunContext): TypeHierarchyTree? {
+                                                    ctx: JjtxContext): TypeHierarchyTree? {
 
             val myPosition = parentPosition.resolve(this.toString())
             return if (isString) {
@@ -127,7 +124,7 @@ class TypeHierarchyTree(
         }
 
         private fun JsonObject.fromJsonObject(parentPosition: JsonPosition,
-                                              ctx: JjtxRunContext): TypeHierarchyTree? {
+                                              ctx: JjtxContext): TypeHierarchyTree? {
 
             if (size() > 1) {
                 ctx.errorCollector.handleError("${size()}", MULTIPLE_HIERARCHY_ROOTS, null, parentPosition)

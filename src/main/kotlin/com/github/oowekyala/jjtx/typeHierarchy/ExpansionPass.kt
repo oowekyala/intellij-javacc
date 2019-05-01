@@ -1,13 +1,14 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.jjtx.ErrorCollector
+import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxRunContext
 import com.github.oowekyala.jjtx.addPackage
 import java.util.regex.PatternSyntaxException
 
 
 fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
-                                     ctx: JjtxRunContext): TypeHierarchyTree =
+                                     ctx: JjtxContext): TypeHierarchyTree =
     resolveAgainst(grammarNodeNames, ctx).first()
 
 /**
@@ -23,7 +24,7 @@ fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
  *
  */
 private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
-                                             ctx: JjtxRunContext): List<TypeHierarchyTree> {
+                                             ctx: JjtxContext): List<TypeHierarchyTree> {
 
 
     RegexPattern.matchEntire(nodeName)?.groups?.get(1)?.run {
@@ -85,7 +86,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
 
 private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
                                            extractedRegex: Regex,
-                                           ctx: JjtxRunContext): List<TypeHierarchyTree> {
+                                           ctx: JjtxContext): List<TypeHierarchyTree> {
 
 
     val matching = grammarNodeNames.filter { extractedRegex.matches(it) }

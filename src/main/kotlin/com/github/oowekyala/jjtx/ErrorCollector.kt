@@ -1,30 +1,11 @@
 package com.github.oowekyala.jjtx
 
-/**
- * @author Clément Fournier
- */
-class ErrorCollector(val ctx: JjtxRunContext) {
 
-
-    /**
-     * @param message arg for the message
-     * @param category determines min severity & message
-     * @param severityOverride Force this severity to be used
-     * @param sourcePosition to report
-     *
-     * @return The actual severity reported
-     */
+interface ErrorCollector {
     fun handleError(message: String,
                     category: Category,
                     severityOverride: Severity? = null,
-                    vararg sourcePosition: Position): Severity {
-        System.err.println("$category: $message")
-        sourcePosition.forEach {
-            System.err.println("\t At ${it.toString(ctx)}")
-        }
-
-        return severityOverride ?: category.minSeverity
-    }
+                    vararg sourcePosition: Position): Severity
 
     enum class Category(val minSeverity: Severity) {
         /** Regex pattern in jjtopts doesn't match any jjtree node in grammar. */
@@ -55,5 +36,34 @@ class ErrorCollector(val ctx: JjtxRunContext) {
         WARN,
         FAIL
     }
+}
+
+
+/**
+ * @author Clément Fournier
+ */
+class ErrorCollectorImpl(val ctx: JjtxRunContext) : ErrorCollector {
+
+
+    /**
+     * @param message arg for the message
+     * @param category determines min severity & message
+     * @param severityOverride Force this severity to be used
+     * @param sourcePosition to report
+     *
+     * @return The actual severity reported
+     */
+    override fun handleError(message: String,
+                             category: ErrorCollector.Category,
+                             severityOverride: ErrorCollector.Severity?,
+                             vararg sourcePosition: Position): ErrorCollector.Severity {
+        System.err.println("$category: $message")
+        sourcePosition.forEach {
+            System.err.println("\t At ${it.toString(ctx)}")
+        }
+
+        return severityOverride ?: category.minSeverity
+    }
+
 
 }

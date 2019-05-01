@@ -7,31 +7,18 @@ import java.nio.file.Path
 /**
  * @author Clément Fournier
  */
-class JjtxRunContext(val jjtxParams: JjtxParams,
-                     val grammarFile: JccFile) {
+class JjtxRunContext(jjtxParams: JjtxParams,
+                     override val grammarFile: JccFile) : JjtxContext {
 
 
-    val errorCollector = ErrorCollector(this)
+    override val errorCollector = ErrorCollectorImpl(this)
 
-    val jjtxOptsModel: JjtxOptsModel =
+    override val jjtxOptsModel: JjtxOptsModel =
         jjtxParams
             .configChain
             .filter { it.exists() }
             .fold<Path, JjtxOptsModel>(OldJavaccOptionsModel(grammarFile.grammarOptions)) { model, path ->
                 JjtxOptsModel.parse(this, path.toFile(), model) ?: model
             }
-
-    override fun toString(): String = "Run context[$jjtxParams]"
-
-
-    fun runTemplates() {
-        for (visitor in jjtxOptsModel.visitors) {
-            try {
-                visitor.execute(this)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
 
 }

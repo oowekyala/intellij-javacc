@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.Reader
+import java.nio.file.Path
 
 /**
  * Models a jjtopts configuration file.
@@ -31,7 +32,7 @@ interface JjtxOptsModel : IGrammarOptions {
         const val DefaultRootNodeName = "Node"
 
 
-        fun parse(ctx: JjtxRunContext,
+        fun parse(ctx: JjtxContext,
                   file: File,
                   parent: JjtxOptsModel): JjtxOptsModel? {
 
@@ -46,7 +47,7 @@ interface JjtxOptsModel : IGrammarOptions {
         }
 
 
-        fun parseYaml(ctx: JjtxRunContext,
+        fun parseYaml(ctx: JjtxContext,
                       reader: Reader,
                       parent: JjtxOptsModel): JjtxOptsModel? {
             val yaml: Any = Yaml().load(reader)
@@ -54,7 +55,7 @@ interface JjtxOptsModel : IGrammarOptions {
             return fromElement(ctx, Gson().toJsonTree(yaml), parent)
         }
 
-        fun parseJson(ctx: JjtxRunContext,
+        fun parseJson(ctx: JjtxContext,
                       reader: Reader,
                       parent: JjtxOptsModel): JjtxOptsModel? {
 
@@ -66,7 +67,7 @@ interface JjtxOptsModel : IGrammarOptions {
             return fromElement(ctx, jsonParser.parse(jsonReader), parent)
         }
 
-        private fun fromElement(ctx: JjtxRunContext,
+        private fun fromElement(ctx: JjtxContext,
                                 jsonElement: JsonElement?,
                                 parent: JjtxOptsModel) =
             jsonElement?.asJsonObject?.let { JsonOptsModel(ctx, parent, it) }

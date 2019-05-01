@@ -7,6 +7,7 @@ import com.github.oowekyala.jjtx.util.Namespacer
 import com.github.oowekyala.jjtx.util.namespace
 import com.google.gson.*
 import org.apache.commons.lang3.reflect.TypeLiteral
+import java.nio.file.Path
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -15,7 +16,7 @@ import kotlin.reflect.KProperty
  *
  * @author Clément Fournier
  */
-class JsonOptsModel(val ctx: JjtxRunContext,
+class JsonOptsModel(val ctx: JjtxContext,
                     override val parentModel: JjtxOptsModel,
                     json: JsonObject) : JjtxOptsModel {
 
@@ -31,7 +32,7 @@ class JsonOptsModel(val ctx: JjtxRunContext,
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
 
     override val visitors: List<VisitorConfig> by jjtx.withDefault {
-        emptyList<VisitorConfig>()
+        parentModel.visitors
     }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {

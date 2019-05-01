@@ -1,12 +1,12 @@
 package com.github.oowekyala.jjtx.templates
 
-import com.github.oowekyala.jjtx.JjtxRunContext
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.util.removeLast
+import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.splitAroundLast
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.ijcc.util.removeLast
 import org.apache.velocity.VelocityContext
-import java.io.File
 
 
 data class NodeBean(
@@ -21,7 +21,7 @@ data class NodeBean(
     companion object {
 
         // stack has the parent of the receiver
-        private fun TypeHierarchyTree.dumpInternal(ctx: JjtxRunContext,
+        private fun TypeHierarchyTree.dumpInternal(ctx: JjtxContext,
                                                    stack: MutableList<NodeBean>,
                                                    total: MutableList<NodeBean>) {
 
@@ -49,7 +49,7 @@ data class NodeBean(
         }
 
 
-        fun dump(tree: TypeHierarchyTree, ctx: JjtxRunContext): List<NodeBean> {
+        fun dump(tree: TypeHierarchyTree, ctx: JjtxContext): List<NodeBean> {
 
             val total = mutableListOf<NodeBean>()
             tree.dumpInternal(ctx, mutableListOf(), total)
@@ -60,15 +60,15 @@ data class NodeBean(
 
 data class GrammarBean(
     val name: String,
-    val file: File,
+    val file: JccFile,
     val nodePackage: String,
     val typeHierarchy: List<NodeBean>
 ) {
 
     companion object {
-        fun create(ctx: JjtxRunContext): GrammarBean = GrammarBean(
-            name = ctx.jjtxParams.grammarName,
-            file = ctx.jjtxParams.mainGrammarFile!!,
+        fun create(ctx: JjtxContext): GrammarBean = GrammarBean(
+            name = ctx.grammarName,
+            file = ctx.grammarFile,
             nodePackage = ctx.jjtxOptsModel.nodePackage,
             typeHierarchy = NodeBean.dump(ctx.jjtxOptsModel.typeHierarchy, ctx)
         )

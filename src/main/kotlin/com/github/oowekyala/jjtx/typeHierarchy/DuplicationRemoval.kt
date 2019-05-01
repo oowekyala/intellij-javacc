@@ -4,9 +4,10 @@ import com.github.oowekyala.jjtx.ErrorCollector.Category.DUPLICATE_MATCH
 import com.github.oowekyala.jjtx.JjtxRunContext
 import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
+import com.github.oowekyala.jjtx.JjtxContext
 
 
-fun TypeHierarchyTree.removeDuplicates(ctx: JjtxRunContext): TypeHierarchyTree {
+fun TypeHierarchyTree.removeDuplicates(ctx: JjtxContext): TypeHierarchyTree {
 
     val copy = deepCopy()
 

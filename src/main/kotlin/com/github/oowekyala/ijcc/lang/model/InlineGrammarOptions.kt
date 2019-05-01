@@ -3,6 +3,8 @@ package com.github.oowekyala.ijcc.lang.model
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
+import java.nio.file.Path
+import java.nio.file.Paths
 
 
 /**
@@ -18,7 +20,7 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
 
     override val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 
-    val outputDirectory: String by lazy { getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY) }
+    val outputDirectory: Path by lazy { Paths.get(getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY)) }
 
     override val isDefaultVoid: Boolean by lazy { getOptionValueOrDefault(JjtOption.NODE_DEFAULT_VOID) }
 
