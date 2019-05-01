@@ -11,16 +11,13 @@ import java.nio.file.Paths
 data class JjtxParams(
     val grammarName: String,
     val grammarDir: Path,
-    val outputDir: Path
+    val outputDir: Path,
+    val configChain: List<Path> = listOf(grammarDir.resolve("$grammarName.jjtopts.yaml"))
 ) {
 
     val mainGrammarFile: File?
         get() = grammarDir.resolveExisting("$grammarName.jjt")
             ?: grammarDir.resolveExisting("$grammarName.jjtx")
-
-
-    val jjtxConfigFile: File?
-        get() = grammarDir.resolveExisting("$grammarName.jjtopts.yaml")
 
 
     fun Path.resolveExisting(name: String): File? = resolve(name).takeIf { Files.exists(it) }?.toFile()
