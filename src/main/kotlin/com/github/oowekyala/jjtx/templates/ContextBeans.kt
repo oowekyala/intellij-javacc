@@ -6,17 +6,56 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.splitAroundLast
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
+import groovyjarjarantlr.build.ANTLR.root
 import org.apache.velocity.VelocityContext
 
 
 data class NodeBean(
     val name: String,
-    val classSimpleName: String,
     val classQualifiedName: String,
-    val classPackage: String,
-    val superNode: NodeBean?
+    val superNode: NodeBean?,
+    val subNodes: MutableList<NodeBean>
 ) {
-    val root: Boolean = superNode == null
+
+    val classSimpleName: String
+    val classPackage: String
+
+    init {
+
+        val (pack, simpleName) = classQualifiedName.splitAroundLast('.')
+
+        classSimpleName = simpleName
+        classPackage = pack
+
+        superNode?.let {
+            it.subNodes += this
+        }
+    }
+
+    // those methods should not include both subNodes & supernodes,
+    // otherwise we run into infinite loop
+    
+    override fun toString(): String = "NodeBean($classQualifiedName)"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NodeBean
+
+        if (name != other.name) return false
+        if (classQualifiedName != other.classQualifiedName) return false
+        if (superNode != other.superNode) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + classQualifiedName.hashCode()
+        return result
+    }
+
 
     companion object {
 
@@ -25,7 +64,7 @@ data class NodeBean(
                                                    stack: MutableList<NodeBean>,
                                                    total: MutableList<NodeBean>) {
 
-            val (pack, simpleName) = nodeName.splitAroundLast('.')
+            val simpleName = nodeName.substringAfterLast('.')
 
             val name = when (specificity) {
                 Specificity.RESOLVED,
@@ -35,10 +74,9 @@ data class NodeBean(
 
             val bean = NodeBean(
                 name = name,
-                classSimpleName = simpleName,
-                classPackage = pack,
                 classQualifiedName = nodeName,
-                superNode = stack.lastOrNull()
+                superNode = stack.lastOrNull(),
+                subNodes = mutableListOf()
             )
 
             stack += bean
