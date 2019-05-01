@@ -28,18 +28,20 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         return resolveRegex(grammarNodeNames, Regex(value), ctx) // TODO invalid regex?
     }
 
+    val packagePrefix = ctx.jjtxOptsModel.nodePackage.takeIf { it.isNotEmpty() }?.plus(".") ?: ""
+
     val (qname, prodName, spec) = when {
         nodeName[0] == '%'              -> {
             val short = nodeName.substring(1)
             Triple(
-                ctx.jjtxOptsModel.nodePackage + "." + short,
+                packagePrefix + short,
                 short,
                 Specificity.QUOTED
             )
         }
         nodeName.matches(Regex("\\w+")) ->
             Triple(
-                ctx.jjtxOptsModel.nodePackage + "." + ctx.jjtxOptsModel.nodePrefix + nodeName,
+                packagePrefix + ctx.jjtxOptsModel.nodePrefix + nodeName,
                 nodeName,
                 Specificity.RESOLVED
             )
