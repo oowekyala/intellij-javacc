@@ -20,7 +20,7 @@ group = "com.github.oowekyala"
 version = "1.4"
 
 
-ext {
+ext { 
     // creates secret properties
     set("intellijPublishUsername", "")
     set("intellijPublishPassword", "")

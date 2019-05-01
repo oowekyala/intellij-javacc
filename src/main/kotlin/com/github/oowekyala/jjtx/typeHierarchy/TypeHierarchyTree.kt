@@ -1,8 +1,11 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
-import com.github.oowekyala.jjtx.ErrorCollector.Category.*
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
-import com.github.oowekyala.jjtx.*
+import com.github.oowekyala.jjtx.ErrorCollector.Category.*
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.JsonPosition
+import com.github.oowekyala.jjtx.Position
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -139,16 +142,29 @@ class TypeHierarchyTree(
 
             val children = this[name]
 
-            if (children !is JsonArray) {
-                ctx.errorCollector.handleError("expected array, got ${children.javaClass}", WRONG_TYPE, null, position)
-                return null
+            if (children is JsonPrimitive) {
+
+            } else if (children !is JsonArray) {
+
             }
 
-            return TypeHierarchyTree(
-                nodeName = name,
-                children = children.mapNotNull { it.toTree(position, ctx) },
-                positionInfo = position
-            )
+            return when (children) {
+                is JsonPrimitive -> TypeHierarchyTree(nodeName = name, children = listOfNotNull(children.fromJsonPrimitive(position, ctx)), positionInfo = position)
+                is JsonArray -> TypeHierarchyTree(
+                    nodeName = name,
+                    children = children.mapNotNull { it.toTree(position, ctx) },
+                    positionInfo = position
+                )
+                else -> {
+                    ctx.errorCollector.handleError(
+                        "expected array or string, got $children",
+                        WRONG_TYPE,
+                        null,
+                        position
+                    )
+                    null
+                }
+            }
         }
     }
 }

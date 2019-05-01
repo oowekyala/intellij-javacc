@@ -139,7 +139,7 @@ object JjtxLightPsi {
 
         val jar = JarOutputStream(FileOutputStream(outJarFile))
         var count = 0
-        var s: String
+        var s: String?
         addJarEntry(jar, "misc/registry.properties")
         s = reader.readLine()
         while (s != null) {
