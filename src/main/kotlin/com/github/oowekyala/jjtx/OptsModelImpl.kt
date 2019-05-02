@@ -4,9 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.AstMap
-import com.github.oowekyala.jjtx.util.DataAstNode
-import com.github.oowekyala.jjtx.util.toJson
+import com.github.oowekyala.jjtx.util.*
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
@@ -22,7 +20,7 @@ class OptsModelImpl(val ctx: JjtxContext,
                     json: AstMap) : JjtxOptsModel {
 
 
-    private val jjtx: AstMap = json namespace "jjtx"
+    private val jjtx: Namespacer = json namespace "jjtx"
 
     override val inlineBindings: InlineGrammarOptions by lazy {
         generateSequence(parentModel) { it.parentModel }.filterIsInstance<InlineGrammarOptions>().first()
@@ -56,7 +54,7 @@ class OptsModelImpl(val ctx: JjtxContext,
 
 }
 
-inline fun <reified T> AstMap.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
+inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this)
         .map {
             it?.let {
@@ -68,7 +66,7 @@ inline fun <reified T> AstMap.withDefault(crossinline default: () -> T): ReadOnl
         }.lazily()
 
 
-class JsonProperty(private val namespacer: AstMap, val name: String? = null) : ReadOnlyProperty<Any, DataAstNode?> {
+class JsonProperty(private val namespacer: Namespacer, val name: String? = null) : ReadOnlyProperty<Any, DataAstNode?> {
     override fun getValue(thisRef: Any, property: KProperty<*>): DataAstNode? = namespacer[name ?: property.name]
 }
 

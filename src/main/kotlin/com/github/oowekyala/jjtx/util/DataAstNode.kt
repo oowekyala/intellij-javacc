@@ -1,8 +1,6 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.jjtx.Position
-import com.github.oowekyala.jjtx.splitAroundFirst
-import com.intellij.util.SystemProperties
 
 /**
  * Abstract AST, common denominator between JSON
@@ -44,29 +42,6 @@ data class AstMap(
     override val position: Position,
     val namespace: String = ""
 ) : DataAstNode(), Map<String, DataAstNode> by map {
-
-    override operator fun get(key: String): DataAstNode? = getSplit(fullKey(key))
-
-    fun getHere(key: String) = map[key]
-
-    private fun fullKey(k: String) = if (namespace.isEmpty()) k else "$namespace.$k"
-
-    operator fun contains(key: String): Boolean = map.containsKey(key)
-
-    infix fun namespace(sub: String): AstMap = copy(namespace = fullKey(sub))
-
-    private fun getSplit(key: String): DataAstNode? {
-        return when {
-            SystemProperties.has(key) -> getHere(key)
-            '.' in key                -> {
-                val (hd, tl) = key.splitAroundFirst('.')
-                val subMap = this.getHere(hd) as? AstMap ?: return null
-                subMap.getSplit(tl)
-            }
-            else                      -> null
-        }
-    }
-
 
     companion object {
 
