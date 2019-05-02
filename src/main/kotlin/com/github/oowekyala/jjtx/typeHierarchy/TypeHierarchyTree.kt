@@ -6,11 +6,8 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.JsonPosition
 import com.github.oowekyala.jjtx.Position
+import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 
 /**
  * @author Clément Fournier
@@ -86,76 +83,64 @@ class TypeHierarchyTree(
         /**
          * First construction pass, from a Json object.
          */
-        fun fromJson(json: JsonElement?, ctx: JjtxContext): TypeHierarchyTree = when (json) {
+        fun fromJson(json: DataAstNode?, ctx: JjtxContext): TypeHierarchyTree = when (json) {
             null -> default()
             else ->
-                json.toTree(JsonPosition("jjtx.typeHierarchy"), ctx)
-                    ?.copy(specificity = Specificity.ROOT)
-                    ?: default()
+                json.toTree(ctx)?.copy(specificity = Specificity.ROOT) ?: default()
         }
 
 
-        private fun JsonElement.toTree(parentPosition: JsonPosition,
-                                       ctx: JjtxContext): TypeHierarchyTree? {
+        private fun DataAstNode.toTree(ctx: JjtxContext): TypeHierarchyTree? {
 
 
             return when (this) {
-                is JsonObject    -> this.fromJsonObject(parentPosition, ctx)
-                is JsonPrimitive -> this.fromJsonPrimitive(parentPosition, ctx)
-                else             -> {
+                is AstMap    -> this.fromJsonObject(ctx)
+                is AstScalar -> this.fromJsonPrimitive(ctx)
+                else         -> {
                     ctx.errorCollector.handleError(
                         "expected string or object, got $this",
                         WRONG_TYPE,
                         null,
-                        parentPosition.resolve(this.toString())
+                        position
                     )
                     null
                 }
             }
         }
 
-        private fun JsonPrimitive.fromJsonPrimitive(parentPosition: JsonPosition,
-                                                    ctx: JjtxContext): TypeHierarchyTree? {
-
-            val myPosition = parentPosition.resolve(this.toString())
-            return if (isString) {
-                TypeHierarchyTree(asString, myPosition, emptyList())
+        private fun AstScalar.fromJsonPrimitive(ctx: JjtxContext): TypeHierarchyTree? {
+            return if (type == ScalarType.STRING) {
+                TypeHierarchyTree(any, position, emptyList())
             } else {
-                ctx.errorCollector.handleError("expected string, got ${this}", WRONG_TYPE, null, myPosition)
+                ctx.errorCollector.handleError("expected string, got ${this}", WRONG_TYPE, null, position)
                 null
             }
         }
 
-        private fun JsonObject.fromJsonObject(parentPosition: JsonPosition,
-                                              ctx: JjtxContext): TypeHierarchyTree? {
+        private fun AstMap.fromJsonObject(ctx: JjtxContext): TypeHierarchyTree? {
 
-            if (size() > 1) {
-                ctx.errorCollector.handleError("${size()}", MULTIPLE_HIERARCHY_ROOTS, null, parentPosition)
+            if (size > 1) {
+                ctx.errorCollector.handleError("$size", MULTIPLE_HIERARCHY_ROOTS, null, position)
                 return null
-            } else if (size() == 0) {
-                ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null, parentPosition)
+            } else if (size == 0) {
+                ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null, position)
                 return null
             }
 
-            val name = keySet().first()
-            val position = parentPosition.resolve(name)
+            val name = keys.first()
 
-            val children = this[name]
-
-            if (children is JsonPrimitive) {
-
-            } else if (children !is JsonArray) {
-
-            }
-
-            return when (children) {
-                is JsonPrimitive -> TypeHierarchyTree(nodeName = name, children = listOfNotNull(children.fromJsonPrimitive(position, ctx)), positionInfo = position)
-                is JsonArray -> TypeHierarchyTree(
+            return when (val children = this[name]) {
+                is AstScalar -> TypeHierarchyTree(
                     nodeName = name,
-                    children = children.mapNotNull { it.toTree(position, ctx) },
+                    children = listOfNotNull(children.fromJsonPrimitive(ctx)),
                     positionInfo = position
                 )
-                else -> {
+                is AstSeq    -> TypeHierarchyTree(
+                    nodeName = name,
+                    children = children.mapNotNull { it.toTree(ctx) },
+                    positionInfo = position
+                )
+                else         -> {
                     ctx.errorCollector.handleError(
                         "expected array or string, got $children",
                         WRONG_TYPE,

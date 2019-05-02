@@ -4,9 +4,10 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.Namespacer
-import com.github.oowekyala.jjtx.util.namespace
-import com.google.gson.*
+import com.github.oowekyala.jjtx.util.AstMap
+import com.github.oowekyala.jjtx.util.DataAstNode
+import com.github.oowekyala.jjtx.util.toJson
+import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -16,12 +17,12 @@ import kotlin.reflect.KProperty
  *
  * @author Clément Fournier
  */
-class JsonOptsModel(val ctx: JjtxContext,
+class OptsModelImpl(val ctx: JjtxContext,
                     override val parentModel: JjtxOptsModel,
-                    json: JsonObject) : JjtxOptsModel {
+                    json: AstMap) : JjtxOptsModel {
 
 
-    private val jjtx: Namespacer = json namespace "jjtx"
+    private val jjtx: AstMap = json namespace "jjtx"
 
     override val inlineBindings: InlineGrammarOptions by lazy {
         generateSequence(parentModel) { it.parentModel }.filterIsInstance<InlineGrammarOptions>().first()
@@ -55,45 +56,19 @@ class JsonOptsModel(val ctx: JjtxContext,
 
 }
 
-inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
+inline fun <reified T> AstMap.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this)
         .map {
             it?.let {
                 val type = object : TypeLiteral<T>() {}
-                val any = Gson().fromJson<Any>(it, type.type)
+                val any = Gson().fromJson<Any>(it.toJson(), type.type)
                 any as T
             }
                 ?: default()
         }.lazily()
 
 
-fun JsonElement.toJava(expectedType: Class<*>): Any? {
-    return when (this) {
-        is JsonArray     -> when (expectedType) {
-            List::class.java -> (this as JsonArray).toList()
-            else             -> (this as JsonArray).toList()
-        }
-        is JsonPrimitive -> {
-            when {
-                isBoolean -> asBoolean
-                isString  -> asString
-                isNumber  -> {
-                    when (expectedType) {
-                        Int::class    -> asInt
-                        Double::class -> asDouble
-                        // etc
-                        else          -> asNumber
-                    }
-                }
-                else      -> null
-            }
-        }
-        else             -> null
-    }
-}
-
-
-class JsonProperty(private val namespacer: Namespacer, val name: String? = null) : ReadOnlyProperty<Any, JsonElement?> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): JsonElement? = namespacer[name ?: property.name]
+class JsonProperty(private val namespacer: AstMap, val name: String? = null) : ReadOnlyProperty<Any, DataAstNode?> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): DataAstNode? = namespacer[name ?: property.name]
 }
 

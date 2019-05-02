@@ -3,11 +3,10 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.toJson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
+import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import com.tylerthrailkill.helpers.prettyprint.pp
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.Reader
@@ -52,7 +51,8 @@ interface JjtxOptsModel : IGrammarOptions {
         fun parseYaml(ctx: JjtxContext,
                       reader: Reader,
                       parent: JjtxOptsModel): JjtxOptsModel? {
-            val json = Yaml().compose(reader).toJson()
+            val json = Yaml().compose(reader).yamlToData().pp()
+
 
             // TODO don't swallow errors
             return fromElement(ctx, json, parent)
@@ -67,13 +67,13 @@ interface JjtxOptsModel : IGrammarOptions {
 
             // TODO don't swallow errors
             val jsonParser = JsonParser()
-            return fromElement(ctx, jsonParser.parse(jsonReader), parent)
+            return fromElement(ctx, jsonParser.parse(jsonReader).jsonToData(), parent)
         }
 
         private fun fromElement(ctx: JjtxContext,
-                                jsonElement: JsonElement?,
+                                jsonElement: DataAstNode?,
                                 parent: JjtxOptsModel) =
-            jsonElement?.asJsonObject?.let { JsonOptsModel(ctx, parent, it) }
+            jsonElement?.let { it as? AstMap }?.let { OptsModelImpl(ctx, parent, it) }
 
     }
 }

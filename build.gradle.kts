@@ -3,6 +3,7 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 import java.net.URI
+import java.nio.file.Files.delete
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -54,6 +55,7 @@ dependencies {
     compile("org.apache.velocity:velocity:1.6.2")
     compile("org.yaml:snakeyaml:1.24")
     compile("com.google.googlejavaformat:google-java-format:1.7")
+    implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
 
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")

@@ -2,9 +2,9 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.lineNumber
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import org.yaml.snakeyaml.error.Mark
 
 /**
  * @author Clément Fournier
@@ -13,6 +13,13 @@ interface Position {
 
     fun toString(jjtxRunContext: JjtxRunContext): String
 
+}
+
+data class YamlPosition(
+    val startMark: Mark,
+    val endMark: Mark
+) : Position {
+    override fun toString(jjtxRunContext: JjtxRunContext): String = startMark.toString()
 }
 
 
