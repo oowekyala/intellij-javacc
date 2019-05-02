@@ -21,7 +21,7 @@ class OldJavaccOptionsModel(
 
     override val nodePrefix: String = grammarOptions.nodePrefix
 
-    override val visitors: List<VisitorConfig> = emptyList()
+    override val visitors: Map<String, VisitorConfig> = emptyMap()
 
     override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default()
 

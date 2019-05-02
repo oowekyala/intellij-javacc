@@ -15,21 +15,57 @@ import java.nio.file.Path
 // The field names of this class are public API, because they're serialized
 // They're decoupled from the real VisitorConfig though
 data class VisitorConfigBean(
+    val execute: Boolean?,
     val templateFile: String?,
     val template: String?,
-    val formatter: String? = "java",
+    val formatter: String?,
     val output: String?,
-    val context: Map<String, Any?>
+    val context: Map<String, Any?>?
 ) {
 
+    /**
+     * Completes the missing settings of this bean with those of the [other] bean.
+     * Beans are merged with beans with the same id higher up the config chain. If
+     * in the end, the merged bean should [execute], then validation is performed by
+     * [toConfig] and the bean is promoted to a complete [VisitorConfig].
+     */
+    fun merge(other: VisitorConfigBean): VisitorConfigBean =
+        VisitorConfigBean(
+            execute = execute ?: other.execute,
+            templateFile = templateFile ?: other.templateFile,
+            template = template ?: other.template,
+            formatter = formatter ?: other.formatter,
+            output = output ?: other.output,
+            // merge the contexts
+            context = (other.context ?: emptyMap()).plus(this.context ?: emptyMap())
+        )
 
-    fun toConfig(): VisitorConfig {
+
+    fun toConfig(id: String): VisitorConfig? {
+
+        if (execute == false) {
+            // the config is not even checked
+            return null
+        }
+
+        val t = if (templateFile == null && template == null) {
+            throw java.lang.IllegalStateException("Visitor spec '$id' must mention either 'templateFile' or 'template'")
+        } else if (template != null) {
+            TemplateSource.Source(template)
+        } else {
+            TemplateSource.File(templateFile!!)
+        }
+
+        if (output == null) {
+            throw java.lang.IllegalStateException("Visitor spec '$id' must mention the 'output' file")
+        }
+
         return VisitorConfig(
-            templateFile = templateFile,
-            template = template,
-            formatter = FormatterOpt.select(formatter),
+            execute = execute ?: true,
+            template = t,
+            formatter = FormatterOpt.select(formatter ?: "java"),
             output = output,
-            context = context
+            context = context ?: emptyMap()
         )
     }
 }
@@ -48,46 +84,60 @@ enum class FormatterOpt(private val doFormat: (String) -> String) {
     }
 }
 
+sealed class TemplateSource {
+
+    data class File(val fname: String) : TemplateSource()
+    data class Source(val source: String) : TemplateSource()
+
+}
+
 /**
+ * Gathers the info required by a visitor.
+ *
+ * Visitor generation generates a single file using a velocity
+ * template.
+ *
+ * The velocity context is build as follows:
+ *
+ * - The [GrammarBean] is put under key "grammar". This provides
+ * access to the full type hierarchy, among other things.
+ * - The user can add their own variables shared by all visitor
+ * runs by using the "jjtx.templateContext" key in the [JjtxOptsModel].
+ * This is put under the key "global". Those are chained following
+ * the option file config chain.
+ * - Visitor-specific mappings, specified in visitor's [context]
+ * element, are put directly into the inner context.
+ *
  * @author Clément Fournier
  */
-data class VisitorConfig(val templateFile: String?,
-                         val template: String?,
+data class VisitorConfig(val execute: Boolean,
+                         val template: TemplateSource,
                          val formatter: FormatterOpt?,
-                         val output: String?,
+                         val output: String,
                          val context: Map<String, Any?>) {
 
 
     private fun resolveTemplate(ctx: JjtxContext): String {
 
-        return when {
+        return when (template) {
 
-            template != null && templateFile == null -> template
+            is TemplateSource.Source -> template.source
 
-            template == null && templateFile != null -> {
+            is TemplateSource.File   -> {
 
-                fun fromResource() = VisitorConfig::class.java.getResource(templateFile)?.let {
+                fun fromResource() = VisitorConfig::class.java.getResource(template.fname)?.let {
                     Resources.toString(it, Charsets.UTF_8)
                 }
 
-                fun fromFile() = ctx.grammarDir.resolve(templateFile).toFile().readText()
+                fun fromFile() = ctx.grammarDir.resolve(template.fname).toFile().readText()
 
                 fromResource() ?: fromFile()
             }
-
-
-            else                                     -> throw java.lang.IllegalStateException(
-                "Visitor spec must mention either 'templateFile' or 'template'"
-            )
         }
     }
 
     private fun resolveOutput(velocityContext: VelocityContext,
                               outputDir: Path): Path {
-
-        if (output == null) {
-            throw java.lang.IllegalStateException("Visitor spec must mention the 'output' file")
-        }
 
         val engine = VelocityEngine()
 
@@ -131,7 +181,12 @@ data class VisitorConfig(val templateFile: String?,
 
     private fun afterRender(ctx: JjtxContext, rendered: String, output: Path) {
 
-        val formatted = formatter?.format(rendered) ?: rendered
+        val formatted =
+            try {
+                formatter?.format(rendered)
+            } catch (e: Exception) {
+                null
+            } ?: rendered
 
         output.toFile().bufferedWriter().use {
             it.write(formatted)

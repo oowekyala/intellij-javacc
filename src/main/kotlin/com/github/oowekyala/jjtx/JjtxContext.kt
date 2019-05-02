@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.ErrorCollector.Category.VISITOR_NOT_RUN
 import com.github.oowekyala.jjtx.templates.GrammarBean
 import com.github.oowekyala.jjtx.templates.set
 import com.intellij.util.io.exists
@@ -39,7 +40,12 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>?) {
         globalCtx["H"] = "#"
 
 
-        for (visitor in jjtxOptsModel.visitors) {
+        for ((id, visitor) in jjtxOptsModel.visitors) {
+
+            if (!visitor.execute) {
+                errorCollector.handleError("Visitor $id is not configured for execution", VISITOR_NOT_RUN)
+                continue
+            }
 
             try {
                 visitor.execute(this, globalCtx, outputDir)

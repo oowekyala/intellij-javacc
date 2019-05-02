@@ -2,11 +2,14 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
+import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.AstMap
+import com.github.oowekyala.jjtx.util.DataAstNode
+import com.github.oowekyala.jjtx.util.jsonToData
+import com.github.oowekyala.jjtx.util.yamlToData
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import com.tylerthrailkill.helpers.prettyprint.pp
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.Reader
@@ -26,7 +29,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
     val templateContext: Map<String, Any>
 
-    val visitors: List<VisitorConfig>
+    val visitors: Map<String, VisitorConfig>
 
     companion object {
 

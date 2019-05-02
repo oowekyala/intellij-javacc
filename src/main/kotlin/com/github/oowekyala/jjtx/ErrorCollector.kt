@@ -28,6 +28,9 @@ interface ErrorCollector {
         DUPLICATE_MATCH(Severity.WARN),
         INVALID_REGEX(Severity.WARN),
         FILE_NOT_FOUND(Severity.WARN),
+
+        VISITOR_NOT_RUN(Severity.INFO),
+        INCOMPLETE_VISITOR_SPEC(Severity.INFO),
     }
 
     enum class Severity {

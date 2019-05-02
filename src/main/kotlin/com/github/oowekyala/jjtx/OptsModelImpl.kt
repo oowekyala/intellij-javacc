@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
+import com.github.oowekyala.jjtx.ErrorCollector.Category.*
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
@@ -37,11 +38,32 @@ class OptsModelImpl(val ctx: JjtxContext,
             parentModel.templateContext + deepest
         }.lazily()
 
-    override val visitors: List<VisitorConfig> by jjtx.withDefault<List<VisitorConfigBean>> {
-        emptyList()
-    }.map {
-        it.map { it.toConfig() }
+    private val visitorBeans: Map<String, VisitorConfigBean> by jjtx.withDefault<Map<String, VisitorConfigBean>>("visitors") {
+        emptyMap()
+    }.map { curBeans ->
+        curBeans.mapValues { (id, bean) ->
+            parentModel.let { it as? OptsModelImpl }?.visitorBeans?.get(id)?.let {
+                bean.merge(it)
+            } ?: bean
+        }
     }.lazily()
+
+    override val visitors: Map<String, VisitorConfig> by lazy {
+
+        val valid = visitorBeans.mapValuesTo(mutableMapOf()) { (id, bean) ->
+            try {
+                bean.toConfig(id)
+            } catch (e: IllegalStateException) {
+                // todo don't swallow
+                ctx.errorCollector.handleError(e.message ?: "", INCOMPLETE_VISITOR_SPEC)
+                null
+            }
+        }
+
+
+        @Suppress("UNCHECKED_CAST")
+        valid.filterValues { it != null } as Map<String, VisitorConfig>
+    }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
         TypeHierarchyTree.fromJson(it, ctx)
@@ -54,8 +76,9 @@ class OptsModelImpl(val ctx: JjtxContext,
 
 }
 
-inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): ReadOnlyProperty<Any, T> =
-    JsonProperty(this)
+inline fun <reified T> Namespacer.withDefault(propName: String? = null,
+                                              crossinline default: () -> T): ReadOnlyProperty<Any, T> =
+    JsonProperty(this, propName)
         .map {
             it?.let {
                 val type = object : TypeLiteral<T>() {}
