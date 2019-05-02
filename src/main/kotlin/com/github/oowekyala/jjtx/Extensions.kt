@@ -6,10 +6,19 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 fun String.splitAroundFirst(delimiter: Char): Pair<String, String> =
-    Pair(substringBefore(delimiter), substringAfter(delimiter))
+    Pair(substringBefore(delimiter, missingDelimiterValue = ""), substringAfter(delimiter))
 
-fun String.splitAroundLast(delimiter: Char): Pair<String, String> =
-    Pair(substringBeforeLast(delimiter), substringAfterLast(delimiter))
+/**
+ * Returns a pair of the substrings before and after the last occurrence of the [delimiter].
+ * If the delimiter is not found in the string, then
+ * - if [firstBias], returns a Pair([this], ""),
+ * - else returns Pair("", [this])
+ */
+fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<String, String> =
+    Pair(
+        substringBeforeLast(delimiter, missingDelimiterValue = if (firstBias) this else ""),
+        substringAfterLast(delimiter, missingDelimiterValue = if (firstBias) "" else this)
+    )
 
 fun JsonObject.asMap(): Map<String, JsonElement> {
     return object : Map<String, JsonElement> {

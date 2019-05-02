@@ -3,13 +3,28 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.splitAroundLast
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import groovyjarjarantlr.build.ANTLR.root
 import org.apache.velocity.VelocityContext
 
+/*
+    Beans used to present data insidea Velocity context.
+ */
 
+
+
+/**
+ * Represents a JJTree node.
+ *
+ * @property name Simple name of the node, unprefixed, as occurring in the grammar
+ * @property classSimpleName Simple name of the class (prefixed)
+ * @property classQualifiedName Fully qualified name of the node class ([classPackage] + [classSimpleName])
+ * @property classPackage Package name of the class (may be the empty string)
+ * @property superNode Node bean describing the node which this node extends directly, as defined by [JjtxOptsModel.typeHierarchy]
+ * @property subNodes List of node beans for which [superNode] is this
+ */
 data class NodeBean(
     val name: String,
     val classQualifiedName: String,
@@ -22,7 +37,7 @@ data class NodeBean(
 
     init {
 
-        val (pack, simpleName) = classQualifiedName.splitAroundLast('.')
+        val (pack, simpleName) = classQualifiedName.splitAroundLast('.', firstBias = false)
 
         classSimpleName = simpleName
         classPackage = pack
@@ -97,9 +112,31 @@ data class NodeBean(
     }
 }
 
+data class FileBean(
+    val fileName: String,
+    val absolutePath: String,
+    val extension: String?
+) {
+    companion object {
+        fun create(jccFile: JccFile): FileBean = FileBean(
+            fileName = jccFile.name,
+            absolutePath = jccFile.virtualFile.path,
+            extension = jccFile.virtualFile.extension
+        )
+    }
+}
+
+/**
+ * Presents information about the whole grammar.
+ *
+ * @property name The name of the grammar
+ * @property file A [FileBean] describing the main grammar file
+ * @property nodePackage The package in which the nodes live, as defined by [JjtxOptsModel.nodePackage]
+ * @property typeHierarchy The list of all [NodeBean]s defined in the grammar
+ */
 data class GrammarBean(
     val name: String,
-    val file: JccFile,
+    val file: FileBean,
     val nodePackage: String,
     val typeHierarchy: List<NodeBean>
 ) {
@@ -107,7 +144,7 @@ data class GrammarBean(
     companion object {
         fun create(ctx: JjtxContext): GrammarBean = GrammarBean(
             name = ctx.grammarName,
-            file = ctx.grammarFile,
+            file = FileBean.create(ctx.grammarFile),
             nodePackage = ctx.jjtxOptsModel.nodePackage,
             typeHierarchy = NodeBean.dump(ctx.jjtxOptsModel.typeHierarchy, ctx)
         )
