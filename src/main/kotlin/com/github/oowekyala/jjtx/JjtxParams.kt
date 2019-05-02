@@ -31,8 +31,9 @@ data class JjtxParams(
         }
 
         fun defaultConfigChain(grammarDir: Path, grammarName: String) = listOf(
-            grammarDir.resolve("$grammarName.jjtopts.yaml"),
-            grammarDir.resolve("$grammarName.jjtopts.json")
+            grammarDir.resolve("$grammarName.jjtopts.yaml")
+            // FIXME
+            // grammarDir.resolve("$grammarName.jjtopts.json")
         )
 
     }

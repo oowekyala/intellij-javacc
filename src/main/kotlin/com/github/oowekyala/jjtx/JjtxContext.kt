@@ -23,6 +23,7 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>?) {
 
     val jjtxOptsModel: JjtxOptsModel by lazy {
         (configChain ?: JjtxParams.defaultConfigChain(grammarDir, grammarName))
+            .asReversed()
             .filter { it.exists() }
             .fold<Path, JjtxOptsModel>(OldJavaccOptionsModel(InlineGrammarOptions(grammarFile))) { model, path ->
                 JjtxOptsModel.parse(this, path.toFile(), model) ?: model
