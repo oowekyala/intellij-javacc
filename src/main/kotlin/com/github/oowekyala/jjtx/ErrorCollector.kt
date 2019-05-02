@@ -1,5 +1,7 @@
 package com.github.oowekyala.jjtx
 
+import com.github.oowekyala.jjtx.util.Position
+
 
 interface ErrorCollector {
     fun handleError(message: String,

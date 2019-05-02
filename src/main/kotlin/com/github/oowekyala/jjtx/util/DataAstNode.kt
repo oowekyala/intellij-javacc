@@ -1,7 +1,5 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.jjtx.Position
-
 /**
  * Abstract AST, common denominator between JSON
  * and YAML.

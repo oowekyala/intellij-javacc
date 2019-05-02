@@ -1,7 +1,5 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.jjtx.splitAroundFirst
-
 /**
  * @author Clément Fournier
  */

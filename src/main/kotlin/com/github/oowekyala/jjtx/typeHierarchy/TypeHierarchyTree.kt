@@ -4,8 +4,8 @@ import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.jjtx.ErrorCollector.Category.*
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.JsonPosition
-import com.github.oowekyala.jjtx.Position
+import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
@@ -78,7 +78,8 @@ class TypeHierarchyTree(
             default(JjtxOptsModel.DefaultRootNodeName)
 
         fun default(rootName: String) =
-            TypeHierarchyTree(rootName, JsonPosition("jjtx.typeHierarchy"), emptyList(), specificity = Specificity.ROOT)
+            TypeHierarchyTree(rootName,
+                JsonPosition("jjtx.typeHierarchy"), emptyList(), specificity = Specificity.ROOT)
 
         /**
          * First construction pass, from a Json object.

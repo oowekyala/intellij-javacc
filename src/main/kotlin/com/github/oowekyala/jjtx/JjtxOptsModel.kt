@@ -3,10 +3,7 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.AstMap
-import com.github.oowekyala.jjtx.util.DataAstNode
-import com.github.oowekyala.jjtx.util.jsonToData
-import com.github.oowekyala.jjtx.util.yamlToData
+import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import com.intellij.util.io.exists

@@ -1,8 +1,5 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.jjtx.JsonPosition
-import com.github.oowekyala.jjtx.Position
-import com.github.oowekyala.jjtx.YamlPosition
 import com.github.oowekyala.jjtx.util.ScalarType.*
 import com.google.gson.*
 import com.google.gson.internal.LazilyParsedNumber

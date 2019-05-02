@@ -1,6 +1,7 @@
-package com.github.oowekyala.jjtx
+package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.psi.lineNumber
+import com.github.oowekyala.jjtx.JjtxRunContext
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile

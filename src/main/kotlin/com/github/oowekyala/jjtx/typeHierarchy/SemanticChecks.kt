@@ -5,7 +5,7 @@ import com.github.oowekyala.jjtx.ErrorCollector.Category.UNCOVERED_NODE
 import com.github.oowekyala.jjtx.ErrorCollector.Severity.FAIL
 import com.github.oowekyala.jjtx.ErrorCollector.Severity.INFO
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.position
+import com.github.oowekyala.jjtx.util.position
 
 
 fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>, ctx: JjtxContext): TypeHierarchyTree {

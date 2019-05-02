@@ -17,7 +17,7 @@ object JjtxMain {
     @JvmStatic
     fun main(vararg args: String) {
 
-        val config = JjtxParams.parse(*args) ?: exitProcess(-1)
+        val config = JjtxParams.parseCliArgs(*args) ?: exitProcess(-1)
 
 
         val grammarFile = config.mainGrammarFile ?: run {

@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx
+package com.github.oowekyala.jjtx.util
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject

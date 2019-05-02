@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.util.Position
 
 
 /**

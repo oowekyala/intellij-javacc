@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.ErrorCollector.Category.VISITOR_NOT_RUN
 import com.github.oowekyala.jjtx.templates.GrammarBean
 import com.github.oowekyala.jjtx.templates.set
+import com.github.oowekyala.jjtx.util.splitAroundFirst
 import com.intellij.util.io.exists
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
@@ -27,7 +28,7 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>?) {
             .asReversed()
             .filter { it.exists() }
             .fold<Path, JjtxOptsModel>(OldJavaccOptionsModel(InlineGrammarOptions(grammarFile))) { model, path ->
-                JjtxOptsModel.parse(this, path.toFile(), model) ?: model
+                JjtxOptsModel.parse(this, path, model) ?: model
             }
     }
 

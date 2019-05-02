@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.splitAroundLast
+import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import org.apache.velocity.VelocityContext

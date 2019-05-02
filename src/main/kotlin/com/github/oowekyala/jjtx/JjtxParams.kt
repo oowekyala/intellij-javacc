@@ -6,6 +6,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
+ * CLI parameters of a JJTX run.
+ *
+ *
  * @author Clément Fournier
  */
 data class JjtxParams(
@@ -24,7 +27,7 @@ data class JjtxParams(
 
     companion object {
 
-        fun parse(vararg args: String): JjtxParams? {
+        fun parseCliArgs(vararg args: String): JjtxParams? {
             // TODO
             val wdir = Paths.get(System.getProperty("user.dir"))
             return JjtxParams(grammarName = args[0], grammarDir = wdir, outputDir = wdir.resolve("gen"))
