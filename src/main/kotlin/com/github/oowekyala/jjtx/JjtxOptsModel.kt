@@ -51,8 +51,7 @@ interface JjtxOptsModel : IGrammarOptions {
         fun parseYaml(ctx: JjtxContext,
                       reader: Reader,
                       parent: JjtxOptsModel): JjtxOptsModel? {
-            val json = Yaml().compose(reader).yamlToData().pp()
-
+            val json = Yaml().compose(reader).yamlToData()
 
             // TODO don't swallow errors
             return fromElement(ctx, json, parent)

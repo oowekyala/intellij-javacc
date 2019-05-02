@@ -59,6 +59,7 @@ inline fun <reified T> Namespacer.withDefault(crossinline default: () -> T): Rea
         .map {
             it?.let {
                 val type = object : TypeLiteral<T>() {}
+
                 val any = Gson().fromJson<Any>(it.toJson(), type.type)
                 any as T
             }

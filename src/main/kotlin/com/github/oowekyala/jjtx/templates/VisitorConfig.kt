@@ -7,7 +7,6 @@ import com.intellij.util.io.createFile
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import org.apache.velocity.VelocityContext
-import org.apache.velocity.app.Velocity
 import org.apache.velocity.app.VelocityEngine
 import java.io.StringWriter
 import java.nio.file.Path
@@ -18,6 +17,7 @@ import java.nio.file.Path
 data class VisitorConfigBean(
     val templateFile: String?,
     val template: String?,
+    val formatter: String? = "java",
     val output: String?,
     val context: Map<String, Any?>
 ) {
@@ -27,9 +27,24 @@ data class VisitorConfigBean(
         return VisitorConfig(
             templateFile = templateFile,
             template = template,
+            formatter = FormatterOpt.select(formatter),
             output = output,
             context = context
         )
+    }
+}
+
+enum class FormatterOpt(private val doFormat: (String) -> String) {
+    JAVA({ Formatter().formatSource(it) });
+
+
+    fun format(source: String) = doFormat(source)
+
+    companion object {
+        fun select(key: String?): FormatterOpt? {
+            val k = key?.toUpperCase() ?: return null
+            return values().firstOrNull { it.name == k }
+        }
     }
 }
 
@@ -38,6 +53,7 @@ data class VisitorConfigBean(
  */
 data class VisitorConfig(val templateFile: String?,
                          val template: String?,
+                         val formatter: FormatterOpt?,
                          val output: String?,
                          val context: Map<String, Any?>) {
 
@@ -114,7 +130,9 @@ data class VisitorConfig(val templateFile: String?,
     }
 
     private fun afterRender(ctx: JjtxContext, rendered: String, output: Path) {
-        val formatted = Formatter().formatSource(rendered)
+
+        val formatted = formatter?.format(rendered) ?: rendered
+
         output.toFile().bufferedWriter().use {
             it.write(formatted)
         }
