@@ -18,7 +18,7 @@ fun TypeHierarchyTree.removeDuplicates(ctx: JjtxContext): TypeHierarchyTree {
             val mostSpecific = dups.maxBy { it.specificity.ordinal }!!
 
             ctx.errorCollector.handleError(
-                "Node $name is matched by several productions, selecting ${mostSpecific.positionInfo} by specificity",
+                "Node $name is matched by several productions, most specific will be chosen",
                 DUPLICATE_MATCH,
                 sourcePosition = *dups.map { it.positionInfo }.toTypedArray()
             )

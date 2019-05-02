@@ -59,7 +59,7 @@ class ErrorCollectorImpl(val ctx: JjtxRunContext) : ErrorCollector {
                              vararg sourcePosition: Position): ErrorCollector.Severity {
         System.err.println("$category: $message")
         sourcePosition.forEach {
-            System.err.println("\t At ${it.toString(ctx)}")
+            System.err.println("\t${it.toString(ctx)}")
         }
 
         return severityOverride ?: category.minSeverity

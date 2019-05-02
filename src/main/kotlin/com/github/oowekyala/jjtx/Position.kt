@@ -11,7 +11,7 @@ import org.yaml.snakeyaml.error.Mark
  */
 interface Position {
 
-    fun toString(jjtxRunContext: JjtxRunContext): String
+    fun toString(jjtxRunContext: JjtxRunContext): String = toString()
 
 }
 
@@ -19,7 +19,8 @@ data class YamlPosition(
     val startMark: Mark,
     val endMark: Mark
 ) : Position {
-    override fun toString(jjtxRunContext: JjtxRunContext): String = startMark.toString()
+
+    override fun toString(): String = startMark.toString()
 }
 
 
@@ -29,15 +30,13 @@ data class JsonPosition(val path: List<String>) : Position {
 
     fun resolve(key: String) = JsonPosition(path + key)
 
-    override fun toString(jjtxRunContext: JjtxRunContext): String = toString()
-
-    override fun toString(): String = path.joinToString(" / ") { "\"$it\"" }
+    override fun toString(): String = "At " + path.joinToString(" / ") { "\"$it\"" }
 }
 
 
 data class FilePosition(val line: Int, val column: Int, val file: PsiFile) : Position {
 
-    override fun toString(jjtxRunContext: JjtxRunContext): String = "${file.name} [$line, $column]"
+    override fun toString(jjtxRunContext: JjtxRunContext): String = "in '${file.name}' [$line, $column]"
 
 }
 
