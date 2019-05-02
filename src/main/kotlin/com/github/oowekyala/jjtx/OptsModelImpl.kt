@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.ErrorCollector.Category.*
-import com.github.oowekyala.jjtx.templates.VisitorConfig
+import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
@@ -48,7 +48,7 @@ class OptsModelImpl(val ctx: JjtxContext,
         }
     }.lazily()
 
-    override val visitors: Map<String, VisitorConfig> by lazy {
+    override val visitors: Map<String, VisitorGenerationTask> by lazy {
 
         val valid = visitorBeans.mapValuesTo(mutableMapOf()) { (id, bean) ->
             try {
@@ -62,7 +62,7 @@ class OptsModelImpl(val ctx: JjtxContext,
 
 
         @Suppress("UNCHECKED_CAST")
-        valid.filterValues { it != null } as Map<String, VisitorConfig>
+        valid.filterValues { it != null } as Map<String, VisitorGenerationTask>
     }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {

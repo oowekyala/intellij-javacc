@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
-import com.github.oowekyala.jjtx.templates.VisitorConfig
+import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 
 /**
@@ -21,7 +21,7 @@ class OldJavaccOptionsModel(
 
     override val nodePrefix: String = grammarOptions.nodePrefix
 
-    override val visitors: Map<String, VisitorConfig> = emptyMap()
+    override val visitors: Map<String, VisitorGenerationTask> = emptyMap()
 
     override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default()
 

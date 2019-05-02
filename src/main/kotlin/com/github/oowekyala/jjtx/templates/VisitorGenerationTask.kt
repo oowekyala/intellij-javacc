@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
 import com.intellij.util.io.createFile
@@ -27,7 +28,7 @@ data class VisitorConfigBean(
      * Completes the missing settings of this bean with those of the [other] bean.
      * Beans are merged with beans with the same id higher up the config chain. If
      * in the end, the merged bean should [execute], then validation is performed by
-     * [toConfig] and the bean is promoted to a complete [VisitorConfig].
+     * [toConfig] and the bean is promoted to a complete [VisitorGenerationTask].
      */
     fun merge(other: VisitorConfigBean): VisitorConfigBean =
         VisitorConfigBean(
@@ -41,7 +42,7 @@ data class VisitorConfigBean(
         )
 
 
-    fun toConfig(id: String): VisitorConfig? {
+    fun toConfig(id: String): VisitorGenerationTask? {
 
         if (execute == false) {
             // the config is not even checked
@@ -60,11 +61,11 @@ data class VisitorConfigBean(
             throw java.lang.IllegalStateException("Visitor spec '$id' must mention the 'output' file")
         }
 
-        return VisitorConfig(
+        return VisitorGenerationTask(
             execute = execute ?: true,
             template = t,
             formatter = FormatterOpt.select(formatter ?: "java"),
-            output = output,
+            outputFileName = output,
             context = context ?: emptyMap()
         )
     }
@@ -92,7 +93,7 @@ sealed class TemplateSource {
 }
 
 /**
- * Gathers the info required by a visitor.
+ * Gathers the info required by a visitor generation task.
  *
  * Visitor generation generates a single file using a velocity
  * template.
@@ -110,11 +111,13 @@ sealed class TemplateSource {
  *
  * @author Clément Fournier
  */
-data class VisitorConfig(val execute: Boolean,
-                         val template: TemplateSource,
-                         val formatter: FormatterOpt?,
-                         val output: String,
-                         val context: Map<String, Any?>) {
+data class VisitorGenerationTask(
+    val execute: Boolean,
+    val template: TemplateSource,
+    val formatter: FormatterOpt?,
+    val outputFileName: String,
+    val context: Map<String, Any?>
+) {
 
 
     private fun resolveTemplate(ctx: JjtxContext): String {
@@ -125,7 +128,7 @@ data class VisitorConfig(val execute: Boolean,
 
             is TemplateSource.File   -> {
 
-                fun fromResource() = VisitorConfig::class.java.getResource(template.fname)?.let {
+                fun fromResource() = VisitorGenerationTask::class.java.getResource(template.fname)?.let {
                     Resources.toString(it, Charsets.UTF_8)
                 }
 
@@ -142,7 +145,7 @@ data class VisitorConfig(val execute: Boolean,
         val engine = VelocityEngine()
 
         val fname = StringWriter().also {
-            engine.evaluate(velocityContext, it, "visitor-output", output)
+            engine.evaluate(velocityContext, it, "visitor-output", outputFileName)
         }.toString()
 
 
@@ -150,7 +153,7 @@ data class VisitorConfig(val execute: Boolean,
 
 
         if (o.isDirectory()) {
-            throw IllegalStateException("Output file ${this.output} is directory")
+            throw IllegalStateException("Output file ${this.outputFileName} is directory")
         }
 
         if (!o.exists()) {
@@ -161,7 +164,13 @@ data class VisitorConfig(val execute: Boolean,
         return o
     }
 
-
+    /**
+     * Executes the visitor run.
+     *
+     * @param [ctx] Run context
+     * @param [sharedCtx] Global velocity context, the local properties will be chained
+     * @param [outputDir] Root directory where the visitors should be generated
+     */
     fun execute(ctx: JjtxContext, sharedCtx: VelocityContext, outputDir: Path) {
 
         val fullCtx = VelocityContext(context, sharedCtx)

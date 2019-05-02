@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.jjtx.templates.VisitorConfig
+import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
@@ -27,7 +27,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
     val templateContext: Map<String, Any>
 
-    val visitors: Map<String, VisitorConfig>
+    val visitors: Map<String, VisitorGenerationTask>
 
     companion object {
 
