@@ -2,6 +2,8 @@ package com.github.oowekyala.jjtx
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import java.io.Reader
+import java.nio.file.Path
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -19,6 +21,12 @@ fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<St
         substringBeforeLast(delimiter, missingDelimiterValue = if (firstBias) this else ""),
         substringAfterLast(delimiter, missingDelimiterValue = if (firstBias) "" else this)
     )
+
+val Path.extension: String?
+    get() = fileName.toString().substringBeforeLast('.', missingDelimiterValue = "").ifEmpty { null }
+
+fun Path.bufferedReader(): Reader = toFile().bufferedReader()
+
 
 fun JsonObject.asMap(): Map<String, JsonElement> {
     return object : Map<String, JsonElement> {

@@ -2,7 +2,6 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.VisitorConfig
-import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.AstMap
 import com.github.oowekyala.jjtx.util.DataAstNode
@@ -10,9 +9,11 @@ import com.github.oowekyala.jjtx.util.jsonToData
 import com.github.oowekyala.jjtx.util.yamlToData
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import com.intellij.util.io.exists
+import com.intellij.util.io.isDirectory
 import org.yaml.snakeyaml.Yaml
-import java.io.File
 import java.io.Reader
+import java.nio.file.Path
 
 /**
  * Models a jjtopts configuration file.
@@ -35,12 +36,11 @@ interface JjtxOptsModel : IGrammarOptions {
 
         const val DefaultRootNodeName = "Node"
 
-
         fun parse(ctx: JjtxContext,
-                  file: File,
+                  file: Path,
                   parent: JjtxOptsModel): JjtxOptsModel? {
 
-            assert(file.exists() && !file.isDirectory)
+            assert(file.exists() && !file.isDirectory())
 
             return when (file.extension) {
                 "json" -> parseJson(ctx, file.bufferedReader(), parent)
