@@ -16,7 +16,7 @@ plugins {
 val KotlinVersion by extra { "1.3.10" } // sync with above
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
-val lightPsiJarPath = "${project.buildDir}/libs/light-psi-all.jar"
+val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
 
 
 group = "com.github.oowekyala"
@@ -242,14 +242,14 @@ tasks {
         main = "com.github.oowekyala.jjtx.JjtxLightPsi"
         classpath = fakeClassPath
 
-        args = listOf("${project.buildDir}/libs", classLogFile.toString())
+        args = listOf(lightPsiJarPath, classLogFile.toString())
     }
 
     shadowJar {
         dependsOn(minimiseIdea)
 
-        baseName = "jjtricks-shadow"
-
+        archiveName = "jjtricks.jar"
+        
         mergeServiceFiles {}
         manifest {
             attributes(

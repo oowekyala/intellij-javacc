@@ -156,8 +156,9 @@ object JjtxLightPsi {
         if (jar.exists()) jar.delete()
         jar.createFile()
 
-        val count = mainImpl(classesFile.toFile(), jar)
-        println(StringUtil.formatFileSize(jar.length()) + " and " + count + " classes written to " + jar.name)
+        val out = jar.toFile()
+        val count = mainImpl(classesFile.toFile(), out)
+        println(StringUtil.formatFileSize(out.length()) + " and " + count + " classes written to " + out.name)
     }
 
     private fun mainImpl(classesFile: File, outJarFile: File): Int {
