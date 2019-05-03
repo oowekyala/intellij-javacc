@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.util.io.isFile
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -12,7 +13,7 @@ import java.nio.file.Paths
  *
  * @author Clément Fournier
  */
-class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, listOf(grammarFile.defaultJjtopts())) {
+class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, grammarFile.defaultJjtopts()) {
 
     override val io: Io = Io()
 
@@ -29,11 +30,15 @@ class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, listOf(g
 
 }
 
-fun JccFile.defaultJjtopts(): Path {
+fun JccFile.defaultJjtopts(): List<Path> {
 
     val myPath = Paths.get(virtualFile.path)
     val grammarName = myPath.fileName
 
-    return myPath.resolveSibling("$grammarName.jjtopts").takeIf { it.isFile() }
-        ?: myPath.resolveSibling("$grammarName.jjtopts.yaml")
+    val opts =
+        myPath.resolveSibling("$grammarName.jjtopts").takeIf { it.isFile() }
+            ?: myPath.resolveSibling("$grammarName.jjtopts.yaml").takeIf { it.isFile() }
+
+    return listOfNotNull(opts)
+
 }

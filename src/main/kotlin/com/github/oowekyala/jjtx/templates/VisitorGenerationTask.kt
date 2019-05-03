@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.templates
 
+import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.google.common.io.Resources
@@ -128,7 +129,7 @@ data class VisitorGenerationTask(
 
             is TemplateSource.File   -> {
 
-                fun fromResource() = VisitorGenerationTask::class.java.getResource(template.fname)?.let {
+                fun fromResource() = Jjtricks.getResource(template.fname)?.let {
                     Resources.toString(it, Charsets.UTF_8)
                 }
 

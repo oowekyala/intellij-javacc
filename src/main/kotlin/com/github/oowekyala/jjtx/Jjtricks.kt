@@ -6,9 +6,11 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.Jjtricks.Companion.WRONG_PARAMS_CODE
 import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.github.oowekyala.jjtx.util.extension
 import com.intellij.util.io.isFile
 import kotlinx.cli.*
+import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
@@ -120,6 +122,33 @@ class Jjtricks(
                 DumpConfigTask.execute(ctx)
             }
         }
+
+        fun getResource(path: String): URL? {
+
+            val p = when {
+                path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
+                else                     -> path
+            }
+
+            return Jjtricks::class.java.getResource(p)
+        }
+
+        fun getResourceAsStream(path: String): NamedInputStream? {
+
+            val p = when {
+                path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
+                else                     -> path
+            }
+
+            return Jjtricks::class.java.getResourceAsStream(p)?.let {
+                NamedInputStream(
+                    it,
+                    path
+                )
+            }
+
+        }
+
     }
 }
 

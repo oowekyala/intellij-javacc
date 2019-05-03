@@ -6,11 +6,9 @@ import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import com.intellij.util.io.exists
-import com.intellij.util.io.isDirectory
+import org.apache.commons.io.FilenameUtils
 import org.yaml.snakeyaml.Yaml
 import java.io.Reader
-import java.nio.file.Path
 
 /**
  * Models a jjtopts configuration file.
@@ -34,17 +32,14 @@ interface JjtxOptsModel : IGrammarOptions {
         const val DefaultRootNodeName = "Node"
 
         fun parse(ctx: JjtxContext,
-                  file: Path,
+                  file: NamedInputStream,
                   parent: JjtxOptsModel): JjtxOptsModel? {
 
-            assert(file.exists() && !file.isDirectory())
-
-            return when (file.extension) {
-                "json" -> parseJson(ctx, file.bufferedReader(), parent)
-                "yaml" -> parseYaml(ctx, file.bufferedReader(), parent)
-                else   -> null
+            return when (FilenameUtils.getExtension(file.filename)) {
+                "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
+                // by default assume it's yaml
+                else   -> parseYaml(ctx, file.inputStream.bufferedReader(), parent)
             }
-
         }
 
 

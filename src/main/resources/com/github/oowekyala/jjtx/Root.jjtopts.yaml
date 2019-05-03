@@ -1,0 +1,82 @@
+# Root file at the top of option file chains
+# The default visitors can be referred to by id and completed
+# Template variables may be overridden
+
+# Note: this file should not be used to set things that can be overridden
+# in the JJTree file.
+
+jjtx:
+  templateContext:
+    visitorMethodComment: |
+      /**
+       * Visits {@linkplain $node.classSimpleName $node.name}.
+         #if ( $node.superNode )
+       * Delegates to {@link $H#methodAnchor($node.superNode)}
+       * if unimplemented.
+       *
+        #if ( !$node.subNodes.empty )
+       * This method is delegated to by:
+       * <ul>
+          #foreach($sub in $node.subNodes)
+       *   <li>{@link $H#methodAnchor($sub)}</li>
+          #end
+       * </ul>
+        #end
+        #else
+       *   This is the root of the delegation chain.
+        #end
+       *
+       */
+
+  visitors:
+    defaultJjtreeVisitor:
+      templateFile: "/jjtx/templates/Visitor.java.vm"
+      formatter: "java"
+      execute: false
+      context:
+        headerTemplate: "
+          package ${grammar.nodePackage};
+
+          #macro( methodAnchor $n)
+          visit($n.classSimpleName,Object)
+          #end
+
+          public interface ${grammar.name}ParserVisitor
+        "
+        methodTemplate: |
+
+          #evaluate($global.visitorMethodComment)
+          default Object visit($node.classSimpleName node, Object data) {
+              #if ($node.superNode)
+              return visit(($node.superNode.classSimpleName) node, data);
+              #else
+              return node.childrenAccept(this, data);
+              #end
+          }
+
+    parameterlessVisitor:
+      templateFile: "/jjtx/templates/Visitor.java.vm"
+      execute: false
+      context:
+        headerTemplate: "
+          package ${grammar.nodePackage};
+
+          #macro( methodAnchor $node)
+          visit($node.classSimpleName)
+          #end
+
+
+          public interface ${grammar.name}SimpleVisitor
+        "
+        methodTemplate: |
+
+          #evaluate($global.visitorMethodComment)
+          default void visit($node.classSimpleName node) {
+              #if ($node.superNode)
+              visit(($node.superNode.classSimpleName) node);
+              #else
+              node.childrenAccept(this, data);
+              #end
+          }
+
+  typeHierarchy: Node
