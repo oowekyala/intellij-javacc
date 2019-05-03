@@ -56,7 +56,7 @@ class Jjtricks(
         Paths.get(it)
     }
 
-    fun printHelpAndExit(message: String, code: Int = WRONG_PARAMS_CODE): Nothing {
+    private fun printHelpAndExit(message: String, code: Int = WRONG_PARAMS_CODE): Nothing {
         cli.defaultHelpPrinter!!.printText(message)
         cli.defaultHelpPrinter!!.printText("(Run with -h parameter to show help)")
         io.exit(code)
@@ -116,7 +116,7 @@ class Jjtricks(
         }
 
         if (isDumpConfig) {
-            DumpConfigTask.execute(ctx)
+            DumpConfigTask(io.stdout).execute(ctx)
         }
     }
 

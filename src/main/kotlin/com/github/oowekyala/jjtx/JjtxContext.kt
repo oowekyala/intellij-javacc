@@ -5,7 +5,6 @@ import com.github.oowekyala.jjtx.util.ErrorCollector
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.intellij.util.io.inputStream
-import com.intellij.util.io.inputStreamIfExists
 import com.intellij.util.io.isFile
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -16,7 +15,7 @@ import java.nio.file.Paths
  *
  * @author Clément Fournier
  */
-abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>) {
+abstract class JjtxContext(val grammarFile: JccFile, val configChain: List<Path>) {
 
     abstract val errorCollector: ErrorCollector
 
@@ -24,7 +23,7 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>) {
 
     val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 
-    val grammarDir: Path = Paths.get(grammarFile.virtualFile.path).parent
+    val grammarDir: Path = grammarFile.path.parent
 
     /**
      * The fully resolved model taking into account the chained options files.
@@ -50,3 +49,6 @@ abstract class JjtxContext(val grammarFile: JccFile, configChain: List<Path>) {
 // TODO there may be some mischief when this is in a jar
 val RootJjtOpts: NamedInputStream
     get() = Jjtricks.getResourceAsStream("/jjtx/Root.jjtopts.yaml")!!
+
+val JccFile.path: Path
+    get() = Paths.get(virtualFile.path)

@@ -3,11 +3,12 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.templates.GrammarBean
 import com.github.oowekyala.jjtx.templates.set
-import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
-import com.github.oowekyala.jjtx.util.*
-import com.tylerthrailkill.helpers.prettyprint.pp
+import com.github.oowekyala.jjtx.util.ErrorCategory
+import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.toYaml
+import com.github.oowekyala.jjtx.util.toYamlString
 import org.apache.velocity.VelocityContext
-import org.yaml.snakeyaml.Yaml
+import java.io.PrintStream
 import java.nio.file.Path
 
 /**
@@ -30,16 +31,22 @@ sealed class JjtxTask {
 }
 
 
-object DumpConfigTask : JjtxTask() {
+class DumpConfigTask(val out: PrintStream) : JjtxTask() {
 
     override fun execute(ctx: JjtxContext) {
 
         val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
 
-        val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy
+        val chainDump =
+            ctx.configChain
+                .map { ctx.io.wd.relativize(it) }
+                .plus("/jjtx/Root.jjtopts.yaml")
+                .plus(ctx.io.wd.relativize(ctx.grammarFile.path))
+                .joinToString(separator = " -> ", prefix = "Config file chain: ")
 
-        val treeDump = SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy)
-        ctx.io.stdout.println(Yaml().dump(opts.toYaml().toYamlString()))
+        out.println("# Fully resolved JJTricks configuration")
+        out.println("# $chainDump")
+        out.println(opts.toYaml().toYamlString())
     }
 }
 

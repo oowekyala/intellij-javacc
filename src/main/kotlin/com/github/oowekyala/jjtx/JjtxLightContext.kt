@@ -21,7 +21,7 @@ class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, grammarF
         override fun handleError(message: String,
                                  category: ErrorCategory,
                                  severityOverride: Severity?,
-                                 vararg sourcePosition: Position): Severity {
+                                 vararg sourcePosition: Position?): Severity {
             // do nothing
             return severityOverride ?: category.minSeverity
         }
