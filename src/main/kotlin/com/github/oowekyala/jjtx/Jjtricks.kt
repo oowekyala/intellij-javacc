@@ -123,32 +123,21 @@ class Jjtricks(
             }
         }
 
-        fun getResource(path: String): URL? {
 
-            val p = when {
+        fun getResource(path: String): URL? = Jjtricks::class.java.getResource(expandResourcePath(path))
+
+        fun getResourceAsStream(path: String): NamedInputStream? =
+            Jjtricks::class.java.getResourceAsStream(expandResourcePath(path))
+                ?.let {
+                    NamedInputStream(it, path)
+                }
+
+        private fun expandResourcePath(path: String): String {
+            return when {
                 path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
                 else                     -> path
             }
-
-            return Jjtricks::class.java.getResource(p)
         }
-
-        fun getResourceAsStream(path: String): NamedInputStream? {
-
-            val p = when {
-                path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
-                else                     -> path
-            }
-
-            return Jjtricks::class.java.getResourceAsStream(p)?.let {
-                NamedInputStream(
-                    it,
-                    path
-                )
-            }
-
-        }
-
     }
 }
 
