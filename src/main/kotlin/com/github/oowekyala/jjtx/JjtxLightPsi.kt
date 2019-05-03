@@ -16,6 +16,8 @@ package com.github.oowekyala.jjtx
  * limitations under the License.
  */
 
+import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.workingDirectory
 import com.intellij.concurrency.AsyncFutureFactory
 import com.intellij.concurrency.AsyncFutureFactoryImpl
 import com.intellij.concurrency.JobLauncher
@@ -66,6 +68,8 @@ import com.intellij.psi.search.PsiSearchHelper
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.CachedValuesManagerImpl
+import com.intellij.util.io.createDirectories
+import com.intellij.util.io.isFile
 import com.intellij.util.messages.MessageBus
 import com.intellij.util.messages.MessageBusFactory
 import org.picocontainer.MutablePicoContainer
@@ -114,6 +118,28 @@ object JjtxLightPsi {
     fun parseLight(text: String, parserDefinition: ParserDefinition): SyntaxTraverser<LighterASTNode> =
         ourParsing.parseLight(text, parserDefinition)
 
+    object GenerateClassLog {
+
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+
+            val closedOut = PrintStream(object : OutputStream() {
+                override fun write(b: Int) {
+                    // do nothing
+                }
+            })
+
+            val io = Io(
+                stdout = closedOut,
+                exit = { _, _ -> throw Error() }
+            )
+
+            Jjtricks.main(io, "Java", "--dump-config")
+        }
+
+    }
+
     /*
      * Builds light-psi-all.jar from JVM class loader log (-verbose:class option)
      */
@@ -125,10 +151,18 @@ object JjtxLightPsi {
             return
         }
 
-        val dir = File(args[0])
-        val file = File(args[1])
-        val out = File(dir, "light-psi-all.jar")
-        val count = mainImpl(file, out)
+        val dir = workingDirectory.resolve(args[0])
+        val classesFile = workingDirectory.resolve(args[1])
+
+        assert(classesFile.isFile())
+
+        dir.createDirectories()
+
+        println("Class log dumped to $classesFile")
+
+
+        val out = File(dir.toFile(), "light-psi-all.jar")
+        val count = mainImpl(classesFile.toFile(), out)
         println(StringUtil.formatFileSize(out.length()) + " and " + count + " classes written to " + out.name)
     }
 
@@ -162,16 +196,13 @@ object JjtxLightPsi {
         return count
     }
 
+    private val KotlinClass = Regex(".*kotlin-stdlib-.*.jar$")
+
     private fun shouldAddEntry(path: String): Boolean {
         if (!path.startsWith("/")) {
             return false
         }
-        return if (path.contains("/grammar-kit/")) {
-            false
-        } else path.contains("/out/classes/production/") || path.contains("extensions.jar") || path.contains("openapi.jar") || path.contains(
-            "idea.jar"
-        )
-
+        return !path.endsWith("/rt.jar") && !path.contains("/intellij-javacc/") && path.contains("idea", ignoreCase = true)
     }
 
     @Throws(IOException::class)

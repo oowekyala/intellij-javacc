@@ -119,10 +119,13 @@ class Jjtricks(
          * CLI execution.
          */
         @JvmStatic
-        fun main(args: Array<String>) = mainBody(programName = "jjtricks") {
+        fun main(args: Array<String>) = main(Io(), *args)
+
+        @JvmStatic
+        fun main(io: Io, vararg args: String) = mainBody(programName = "jjtricks") {
 
             ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
-                .parseInto { Jjtricks(it) }
+                .parseInto { Jjtricks(io = io, args = it) }
                 .runTasks()
         }
 

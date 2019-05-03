@@ -10,11 +10,13 @@ plugins {
     id("java")
     id("org.jetbrains.intellij") version "0.4.8"
     id("org.jetbrains.grammarkit") version "2018.2.2"
+    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 val KotlinVersion by extra { "1.3.10" } // sync with above
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
+val lightPsiJarPath = "${project.buildDir}/libs/light-psi-all.jar"
 
 
 group = "com.github.oowekyala"
@@ -58,6 +60,8 @@ dependencies {
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
+    runtimeOnly(files(lightPsiJarPath))
+    
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
@@ -208,6 +212,20 @@ tasks {
         changeNotes(changelog)
 
         version(project.version)
+    }
+
+
+
+    shadowJar {
+        baseName = "jjtricks-shadow"
+
+        mergeServiceFiles {}
+        
+        manifest {
+            attributes(
+                "MainClass" to "com.github.oowekyala.jjtx.Jjtricks"
+            )
+        }
     }
 
 }
