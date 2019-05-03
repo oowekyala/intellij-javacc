@@ -113,12 +113,6 @@ object JjtxLightPsi {
     fun parseFile(name: String, text: String, parserDefinition: ParserDefinition): PsiFile? =
         ourParsing.createFile(name, text, parserDefinition)
 
-    fun parseText(text: String, parserDefinition: ParserDefinition): ASTNode =
-        ourParsing.createAST(text, parserDefinition)
-
-    fun parseLight(text: String, parserDefinition: ParserDefinition): SyntaxTraverser<LighterASTNode> =
-        ourParsing.parseLight(text, parserDefinition)
-
     object GenerateClassLog {
 
 
@@ -216,8 +210,6 @@ object JjtxLightPsi {
         fun createFile(name: String, text: String, definition: ParserDefinition): PsiFile? {
             val language = definition.fileNodeType.language
             Init.addKeyedExtension(LanguageParserDefinitions.INSTANCE, language, definition, project)
-
-            //            val file = LocalFileSystem.getInstance().findFileByIoFile(File(name))
             val virtualFile = PathedLightVirtualFile(name, language, text)
             return (PsiFileFactory.getInstance(project) as PsiFileFactoryImpl).trySetupPsiForFile(
                 virtualFile, language, true, false
@@ -230,21 +222,6 @@ object JjtxLightPsi {
             // this is used by LightJjtxContext
             override fun getPath(): String = "/$myPath"
 
-        }
-
-        fun createAST(text: String, definition: ParserDefinition): ASTNode {
-            val parser = definition.createParser(project)
-            val lexer = definition.createLexer(project)
-            val psiBuilder = PsiBuilderImpl(project, null, definition, lexer, CharTableImpl(), text, null, null)
-            return parser.parse(definition.fileNodeType, psiBuilder)
-        }
-
-        fun parseLight(text: String, definition: ParserDefinition): SyntaxTraverser<LighterASTNode> {
-            val parser = definition.createParser(project) as LightPsiParser
-            val lexer = definition.createLexer(project)
-            val psiBuilder = PsiBuilderImpl(project, null, definition, lexer, CharTableImpl(), text, null, null)
-            parser.parseLight(definition.fileNodeType, psiBuilder)
-            return SyntaxTraverser.lightTraverser(psiBuilder)
         }
 
         override fun dispose() {}
