@@ -121,6 +121,9 @@ object JjtxLightPsi {
     object GenerateClassLog {
 
 
+        /**
+         * Redirect stdout to get the class log, run with -verbose:class.
+         */
         @JvmStatic
         fun main(args: Array<String>) {
 
@@ -135,7 +138,7 @@ object JjtxLightPsi {
                 exit = { _, _ -> throw Error() }
             )
 
-            Jjtricks.main(io, "Java", "--dump-config")
+            Jjtricks.main(io, "Java", "--dump-config", "--quiet")
         }
 
     }
@@ -158,7 +161,6 @@ object JjtxLightPsi {
 
         dir.createDirectories()
 
-        println("Class log dumped to $classesFile")
 
 
         val out = File(dir.toFile(), "light-psi-all.jar")

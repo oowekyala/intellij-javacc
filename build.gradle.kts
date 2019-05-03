@@ -1,9 +1,10 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
+import com.google.common.io.Files
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
+import java.io.PrintStream
 import java.net.URI
-import java.nio.file.Files.delete
 
 plugins {
     kotlin("jvm") version "1.3.10"
@@ -46,7 +47,7 @@ allprojects {
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
-    compile("org.apache.commons:commons-lang3:3.1") // only used to unescape java I think
+    compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
@@ -61,7 +62,7 @@ dependencies {
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
     runtimeOnly(files(lightPsiJarPath))
-    
+
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
@@ -106,27 +107,10 @@ tasks {
         pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
         pathToPsiRoot = PathToPsiRoot
         purgeOldFiles = true
-    }
 
-
-    val generateLexer by creating(GenerateLexer::class) {
-        group = GenerationTaskGroup
-        description = "Generate the JFlex lexer used by the parser"
-
-        source = "src/main/grammars/JavaCC.flex"
-        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
-        targetClass = "JavaccLexer"
-        purgeOldFiles = true
-    }
-
-
-    val overrideDefaultPsi: Task by creating {
-        dependsOn(generateParser)
-
-        group = GenerationTaskGroup
-        description = "Eliminate the duplicate PSI classes found in the generated and main source tree"
 
         doLast {
+            // Eliminate the duplicate PSI classes found in the generated and main source tree
 
             val deletedNames = listOf("JccRegularExpressionOwnerImpl.java")
 
@@ -153,6 +137,17 @@ tasks {
         }
     }
 
+
+    val generateLexer by creating(GenerateLexer::class) {
+        group = GenerationTaskGroup
+        description = "Generate the JFlex lexer used by the parser"
+
+        source = "src/main/grammars/JavaCC.flex"
+        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
+        targetClass = "JavaccLexer"
+        purgeOldFiles = true
+    }
+
     // compresses the icons and replaces them in the copied resource directory
     // the icons in the source dir are "optimised for maintainability", which means
     // much bigger than needed
@@ -170,13 +165,13 @@ tasks {
     }
 
     compileJava {
-        dependsOn(overrideDefaultPsi, generateLexer)
+        dependsOn(generateParser, generateLexer)
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
     }
 
     compileKotlin {
-        dependsOn(generateLexer, overrideDefaultPsi)
+        dependsOn(generateLexer, generateParser)
 
         kotlinOptions {
             freeCompilerArgs = listOf(
@@ -214,13 +209,52 @@ tasks {
         version(project.version)
     }
 
+    // This is for JJTricks
 
+    val classLogFile = File("${project.buildDir}/tmp/minimiseIdea/all-classes.log")
+
+
+    // idea is not in the runtime class path, only compile
+    val fakeClassPath =
+        sourceSets["main"].compileClasspath
+            .plus(sourceSets["main"].output.classesDirs)
+            .plus(files(sourceSets["main"].output.resourcesDir))
+
+
+    val dumpClassLog by creating(JavaExec::class.java) {
+        dependsOn(jar)
+
+        main = "com.github.oowekyala.jjtx.JjtxLightPsi\$GenerateClassLog"
+        jvmArgs = listOf("-verbose:class")
+
+        classpath = fakeClassPath
+
+        workingDir = File("${project.projectDir}/sandbox")
+
+        Files.createParentDirs(classLogFile)
+
+        standardOutput = PrintStream(classLogFile.outputStream().buffered())
+
+        doLast {
+            standardOutput.flush()
+        }
+    }
+
+    val minimiseIdea by creating(JavaExec::class.java) {
+        dependsOn(dumpClassLog)
+
+        main = "com.github.oowekyala.jjtx.JjtxLightPsi"
+        classpath = fakeClassPath
+
+        args = listOf("${project.buildDir}/libs", classLogFile.toString())
+    }
 
     shadowJar {
+        dependsOn(minimiseIdea)
+
         baseName = "jjtricks-shadow"
 
         mergeServiceFiles {}
-        
         manifest {
             attributes(
                 "MainClass" to "com.github.oowekyala.jjtx.Jjtricks"
