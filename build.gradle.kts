@@ -3,7 +3,6 @@
 import com.google.common.io.Files
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
-import java.io.PrintStream
 import java.net.URI
 
 plugins {
@@ -221,6 +220,7 @@ tasks {
             .plus(files(sourceSets["main"].output.resourcesDir))
 
 
+    // for some reason the file is only correctly created when running the task in the IDE
     val dumpClassLog by creating(JavaExec::class.java) {
         dependsOn(jar)
 
@@ -228,16 +228,12 @@ tasks {
         jvmArgs = listOf("-verbose:class")
 
         classpath = fakeClassPath
-
         workingDir = File("${project.projectDir}/sandbox")
 
         Files.createParentDirs(classLogFile)
+        classLogFile.createNewFile()
 
-        standardOutput = PrintStream(classLogFile.outputStream().buffered())
-
-        doLast {
-            standardOutput.flush()
-        }
+        standardOutput = classLogFile.outputStream()
     }
 
     val minimiseIdea by creating(JavaExec::class.java) {

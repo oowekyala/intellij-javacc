@@ -68,7 +68,9 @@ import com.intellij.psi.search.PsiSearchHelper
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.CachedValuesManagerImpl
-import com.intellij.util.io.createDirectories
+import com.intellij.util.io.createFile
+import com.intellij.util.io.delete
+import com.intellij.util.io.exists
 import com.intellij.util.io.isFile
 import com.intellij.util.messages.MessageBus
 import com.intellij.util.messages.MessageBusFactory
@@ -81,7 +83,6 @@ import java.io.*
 import java.lang.reflect.Modifier
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
-import java.util.regex.Pattern
 
 /**
  * @author greg
@@ -138,7 +139,7 @@ object JjtxLightPsi {
                 exit = { _, _ -> throw Error() }
             )
 
-            Jjtricks.main(io, "Java", "--dump-config", "--quiet")
+            Jjtricks.main(io, "Java", "--dump-config", "-q")
         }
 
     }
@@ -150,55 +151,40 @@ object JjtxLightPsi {
     @JvmStatic
     fun main(args: Array<String>) {
         if (args.size < 2) {
-            println("Usage: Main <output-dir> <classes.log.txt>")
+            println("Usage: Main <output-path> <classes.log.txt>")
             return
         }
 
-        val dir = workingDirectory.resolve(args[0])
+        val jar = workingDirectory.resolve(args[0])
         val classesFile = workingDirectory.resolve(args[1])
 
         assert(classesFile.isFile())
+        if (jar.exists()) jar.delete()
+        jar.createFile()
 
-        dir.createDirectories()
-
-
-
-        val out = File(dir.toFile(), "light-psi-all.jar")
-        val count = mainImpl(classesFile.toFile(), out)
-        println(StringUtil.formatFileSize(out.length()) + " and " + count + " classes written to " + out.name)
+        val count = mainImpl(classesFile.toFile(), jar)
+        println(StringUtil.formatFileSize(jar.length()) + " and " + count + " classes written to " + jar.name)
     }
 
-    @Throws(Throwable::class)
     private fun mainImpl(classesFile: File, outJarFile: File): Int {
         val reader = BufferedReader(FileReader(classesFile))
-        val pattern = Pattern.compile("\\[Loaded (.*) from (?:file:)?(.*)]")
+        val jdk8Pattern = Regex("\\[Loaded (.*) from (?:file:)?(.*)]")
+        val jdkAbovePattern = Regex("\\[[^]]++]\\[info]\\[class,load] (.*?) source: file:(.+)")
 
         val jar = JarOutputStream(FileOutputStream(outJarFile))
-        var count = 0
-        var s: String?
         addJarEntry(jar, "misc/registry.properties")
-        s = reader.readLine()
-        while (s != null) {
-            val matcher = pattern.matcher(s)
-            if (!matcher.matches()) {
-                s = reader.readLine()
-                continue
-            }
-            val className = matcher.group(1)
-            val path = matcher.group(2)
-            if (!shouldAddEntry(path)) {
-                s = reader.readLine()
-                continue
-            }
-            addJarEntry(jar, className.replace(".", "/") + ".class")
-            count++
-            s = reader.readLine()
-        }
-        jar.close()
-        return count
-    }
 
-    private val KotlinClass = Regex(".*kotlin-stdlib-.*.jar$")
+        return reader.lineSequence()
+            .mapNotNull { jdk8Pattern.matchEntire(it) ?: jdkAbovePattern.matchEntire(it) }
+            .filter { shouldAddEntry(it.groupValues[2]) }
+            .fold(0) { sum, it ->
+                addJarEntry(jar, it.groupValues[1].replace(".", "/") + ".class")
+                sum + 1
+            }.also {
+                jar.close()
+                reader.close()
+            }
+    }
 
     private fun shouldAddEntry(path: String): Boolean {
         if (!path.startsWith("/")) {
@@ -264,7 +250,7 @@ object JjtxLightPsi {
         override fun dispose() {}
     }
 
-    object Init {
+    private object Init {
 
         fun initExtensions(project: MockProject) {
             Extensions.getRootArea()
