@@ -16,7 +16,6 @@ import kotlin.system.exitProcess
 /**
  * A JJTX run.
  *
- *
  * @author Clément Fournier
  */
 class Jjtricks(
@@ -56,9 +55,8 @@ class Jjtricks(
     }
 
     fun printHelpAndExit(message: String, code: Int = WRONG_PARAMS_CODE): Nothing {
-        cli.printHelp()
-        cli.defaultHelpPrinter!!.printSeparator()
-        cli.defaultHelpPrinter!!.printSection(message)
+        cli.defaultHelpPrinter!!.printText(message)
+        cli.defaultHelpPrinter!!.printText("(Run with -h parameter to show help)")
         io.exit(code)
     }
 

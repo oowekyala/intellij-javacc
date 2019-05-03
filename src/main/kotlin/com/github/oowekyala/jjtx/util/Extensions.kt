@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.util
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import org.apache.commons.lang3.text.WordUtils
 import java.io.Reader
 import java.nio.file.Path
 import kotlin.properties.ReadOnlyProperty
@@ -23,9 +24,12 @@ fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<St
     )
 
 val Path.extension: String?
-    get() = toFile().extension.takeIf { it.isNotEmpty() } ?: null
+    get() = toFile().extension.takeIf { it.isNotEmpty() }
 
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
+
+fun String.wrap(lineLength: Int, indent: Int = 0): String =
+    WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)
 
 
 fun JsonObject.asMap(): Map<String, JsonElement> {

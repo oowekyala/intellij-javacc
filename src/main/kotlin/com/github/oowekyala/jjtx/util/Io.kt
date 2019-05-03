@@ -14,12 +14,16 @@ data class Io(
     val exit: (Int) -> Nothing = ::exitProcess
 ) {
 
-    fun helpPrinter(syntaxWidth: Int = 24): HelpPrinter = CustomHelpPrinter(syntaxWidth)
+    fun helpPrinter(syntaxWidth: Int = 24, totalWidth: Int = 80): HelpPrinter =
+        CustomHelpPrinter(syntaxWidth, totalWidth)
 
-    private inner class CustomHelpPrinter(private val syntaxWidth: Int) : HelpPrinter {
+    private inner class CustomHelpPrinter(private val syntaxWidth: Int, private val totalWidth: Int) : HelpPrinter {
+
+        private val restLen = totalWidth - syntaxWidth
+        private val syntaxIndent = "    "
 
         override fun printText(text: String) {
-            stdout.println(text)
+            stdout.println(text.wrap(totalWidth))
         }
 
         override fun printSeparator() {
@@ -27,16 +31,19 @@ data class Io(
         }
 
         override fun printEntry(helpEntry: String, description: String) {
-            if (helpEntry.length <= syntaxWidth) {
-                stdout.println("  ${helpEntry.padEnd(syntaxWidth)}  $description")
+            if (helpEntry.length <= syntaxWidth - syntaxIndent.length) {
+                stdout.println(syntaxIndent + helpEntry.padEnd(syntaxWidth) + syntaxIndent + wrapDescription(description))
             } else {
-                stdout.println("  $helpEntry")
-                stdout.println("  ${"".padEnd(syntaxWidth)}  $description")
+                stdout.println(syntaxIndent + helpEntry)
+                stdout.println(syntaxIndent + " ".repeat(syntaxWidth) + syntaxIndent + wrapDescription(description))
             }
         }
+
+        private fun wrapDescription(description: String) = description.wrap(restLen, syntaxWidth + syntaxIndent.length * 2 + 1)
     }
 }
 
 
 val workingDirectory: Path
     get() = Paths.get(System.getProperty("user.dir"))
+
