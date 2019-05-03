@@ -22,7 +22,7 @@ data class VisitorConfigBean(
     val templateFile: String?,
     val template: String?,
     val formatter: String?,
-    val genClassName: String?,
+    var genClassName: String?,
     val context: Map<String, Any?>?
 ) {
 
@@ -64,11 +64,12 @@ data class VisitorConfigBean(
         }
 
         return VisitorGenerationTask(
+            myBean = this,
             id = id,
             execute = execute ?: true,
             template = t,
             formatter = FormatterOpt.select(formatter ?: "java"),
-            outputFileName = genClassName,
+            genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )
     }
@@ -115,11 +116,12 @@ sealed class TemplateSource {
  * @author Clément Fournier
  */
 data class VisitorGenerationTask(
+    private val myBean: VisitorConfigBean,
     val id: String,
     val execute: Boolean,
     val template: TemplateSource,
     val formatter: FormatterOpt?,
-    val outputFileName: String,
+    val genFqcn: String,
     val context: Map<String, Any?>
 ) {
 
@@ -149,7 +151,7 @@ data class VisitorGenerationTask(
         val engine = VelocityEngine()
 
         val templated = StringWriter().also {
-            engine.evaluate(velocityContext, it, "visitor-output", outputFileName)
+            engine.evaluate(velocityContext, it, "visitor-output", genFqcn)
         }.toString()
 
 
@@ -161,13 +163,16 @@ data class VisitorGenerationTask(
         val o = outputDir.resolve(templated.replace('.', '/') + ".java")
 
         if (o.isDirectory()) {
-            throw IllegalStateException("Output file ${this.outputFileName} is directory")
+            throw IllegalStateException("Output file ${this.genFqcn} is directory")
         }
 
         if (!o.exists()) {
             // todo log
             o.createFile()
         }
+
+        // The beans are dumped, so we update it with the final value
+        myBean.genClassName = templated
 
         return Pair(templated, o)
     }
