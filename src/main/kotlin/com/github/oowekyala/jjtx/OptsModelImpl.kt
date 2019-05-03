@@ -1,11 +1,11 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
-import com.github.oowekyala.jjtx.util.ErrorCategory.*
-import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
+import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.ErrorCategory.INCOMPLETE_VISITOR_SPEC
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
@@ -38,7 +38,7 @@ class OptsModelImpl(val ctx: JjtxContext,
             parentModel.templateContext + deepest
         }.lazily()
 
-    private val visitorBeans: Map<String, VisitorConfigBean> by jjtx.withDefault<Map<String, VisitorConfigBean>>("visitors") {
+    internal val visitorBeans: Map<String, VisitorConfigBean> by jjtx.withDefault<Map<String, VisitorConfigBean>>("visitors") {
         emptyMap()
     }.map { curBeans ->
         curBeans.mapValues { (id, bean) ->

@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import org.apache.commons.io.FilenameUtils
 import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.reader.UnicodeReader
 import java.io.Reader
 
 /**
@@ -38,7 +39,7 @@ interface JjtxOptsModel : IGrammarOptions {
             return when (FilenameUtils.getExtension(file.filename)) {
                 "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
                 // by default assume it's yaml
-                else   -> parseYaml(ctx, file.inputStream.bufferedReader(), parent)
+                else   -> parseYaml(ctx, UnicodeReader(file.inputStream).buffered(), parent)
             }
         }
 

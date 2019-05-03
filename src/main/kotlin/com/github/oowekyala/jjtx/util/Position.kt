@@ -17,8 +17,8 @@ interface Position {
 }
 
 data class YamlPosition(
-    val startMark: Mark,
-    val endMark: Mark
+    val startMark: Mark?,
+    val endMark: Mark?
 ) : Position {
 
     override fun toString(): String = startMark.toString()

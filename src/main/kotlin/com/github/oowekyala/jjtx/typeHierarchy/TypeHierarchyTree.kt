@@ -14,7 +14,7 @@ import com.github.oowekyala.treeutils.TreeLikeAdapter
  */
 class TypeHierarchyTree(
     val nodeName: String,
-    val positionInfo: Position,
+    val positionInfo: Position?,
     children: List<TypeHierarchyTree>,
     val specificity: Specificity = Specificity.UNKNOWN,
     val external: Boolean = false
@@ -54,7 +54,7 @@ class TypeHierarchyTree(
     }
 
     fun copy(nodeName: String = this.nodeName,
-             positionInfo: Position = this.positionInfo,
+             positionInfo: Position? = this.positionInfo,
              children: List<TypeHierarchyTree> = this.children,
              specificity: Specificity = this.specificity,
              external: Boolean = this.external): TypeHierarchyTree =

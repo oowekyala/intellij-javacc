@@ -5,14 +5,14 @@ package com.github.oowekyala.jjtx.util
  * and YAML.
  */
 sealed class DataAstNode {
-    abstract val position: Position
+    abstract val position: Position?
 }
 
 
 data class AstScalar(
     val any: String,
     val type: ScalarType,
-    override val position: Position
+    override val position: Position? = null
 ) : DataAstNode()
 
 enum class ScalarType {
@@ -26,7 +26,7 @@ enum class ScalarType {
 
 data class AstSeq(
     val list: List<DataAstNode>,
-    override val position: Position
+    override val position: Position? = null
 ) : DataAstNode(), List<DataAstNode> by list
 
 
@@ -37,13 +37,12 @@ data class AstSeq(
  */
 data class AstMap(
     val map: Map<String, DataAstNode>,
-    override val position: Position,
-    val namespace: String = ""
+    override val position: Position? = null
 ) : DataAstNode(), Map<String, DataAstNode> by map {
 
     companion object {
 
-        operator fun invoke(map: Map<DataAstNode, DataAstNode>, position: Position): AstMap {
+        operator fun invoke(map: Map<DataAstNode, DataAstNode>, position: Position? = null): AstMap {
 
             val strMap = map.mapKeysTo(mutableMapOf()) { (k, _) ->
                 when {

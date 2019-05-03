@@ -4,6 +4,7 @@ import kotlinx.cli.HelpPrinter
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.logging.Logger
 import kotlin.system.exitProcess
 
 
@@ -11,7 +12,8 @@ data class Io(
     val wd: Path = workingDirectory,
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
-    val exit: (Int) -> Nothing = ::exitProcess
+    val exit: (Int) -> Nothing = ::exitProcess,
+    val rootLogger: Logger = Logger.getLogger("jjtricks")
 ) {
 
     fun helpPrinter(syntaxWidth: Int = 24, totalWidth: Int = 80): HelpPrinter =

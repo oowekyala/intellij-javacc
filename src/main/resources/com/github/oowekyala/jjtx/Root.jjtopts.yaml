@@ -34,7 +34,7 @@ jjtx:
       formatter: "java"
       execute: false
       context:
-        headerTemplate: "
+        headerTemplate: |
           package ${grammar.nodePackage};
 
           #macro( methodAnchor $n)
@@ -42,7 +42,7 @@ jjtx:
           #end
 
           public interface ${grammar.name}ParserVisitor
-        "
+
         methodTemplate: |
 
           #evaluate($global.visitorMethodComment)
@@ -58,7 +58,7 @@ jjtx:
       templateFile: "/jjtx/templates/Visitor.java.vm"
       execute: false
       context:
-        headerTemplate: "
+        headerTemplate: |
           package ${grammar.nodePackage};
 
           #macro( methodAnchor $node)
@@ -67,7 +67,7 @@ jjtx:
 
 
           public interface ${grammar.name}SimpleVisitor
-        "
+
         methodTemplate: |
 
           #evaluate($global.visitorMethodComment)
@@ -78,5 +78,3 @@ jjtx:
               node.childrenAccept(this, data);
               #end
           }
-
-  typeHierarchy: Node

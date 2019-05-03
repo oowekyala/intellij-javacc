@@ -7,7 +7,7 @@ interface ErrorCollector {
     fun handleError(message: String,
                     category: ErrorCategory,
                     severityOverride: Severity? = null,
-                    vararg sourcePosition: Position): Severity
+                    vararg sourcePosition: Position?): Severity
 
 }
 
@@ -30,9 +30,9 @@ class ErrorCollectorImpl(val ctx: JjtxRunContext) :
     override fun handleError(message: String,
                              category: ErrorCategory,
                              severityOverride: Severity?,
-                             vararg sourcePosition: Position): Severity {
+                             vararg sourcePosition: Position?): Severity {
         System.err.println("$category: $message")
-        sourcePosition.forEach {
+        sourcePosition.filterNotNull().forEach {
             System.err.println("\t${it.toString(ctx)}")
         }
 

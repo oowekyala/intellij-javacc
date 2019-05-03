@@ -4,10 +4,10 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.templates.GrammarBean
 import com.github.oowekyala.jjtx.templates.set
 import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
-import com.github.oowekyala.jjtx.util.ErrorCategory
-import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.SimpleTreePrinter
+import com.github.oowekyala.jjtx.util.*
+import com.tylerthrailkill.helpers.prettyprint.pp
 import org.apache.velocity.VelocityContext
+import org.yaml.snakeyaml.Yaml
 import java.nio.file.Path
 
 /**
@@ -34,9 +34,12 @@ object DumpConfigTask : JjtxTask() {
 
     override fun execute(ctx: JjtxContext) {
 
+        val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
+
         val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy
 
-        ctx.io.stdout.println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))
+        val treeDump = SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy)
+        ctx.io.stdout.println(Yaml().dump(opts.toYaml().toYamlString()))
     }
 }
 
