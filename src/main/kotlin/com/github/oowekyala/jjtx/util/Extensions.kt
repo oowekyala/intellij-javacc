@@ -94,3 +94,6 @@ fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
         override fun getValue(thisRef: Any, property: KProperty<*>): R =
             f(this@map.getValue(thisRef, property))
     }
+
+
+fun String.matches(regex: String): Boolean = matches(Regex(regex))

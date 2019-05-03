@@ -39,6 +39,7 @@ allprojects {
         maven {
             url = URI("https://dl.bintray.com/kotlin/kotlinx")
         }
+        maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
     }
 
 }
@@ -60,7 +61,7 @@ dependencies {
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
-    runtimeOnly(files(lightPsiJarPath))
+//    runtimeOnly(files(lightPsiJarPath))
 
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
@@ -245,11 +246,19 @@ tasks {
         args = listOf(lightPsiJarPath, classLogFile.toString())
     }
 
+    task("printBuildClasspath") {
+        doLast {
+            fakeClassPath.forEach {
+                println(it)
+            }
+        }
+    }
+
     shadowJar {
         dependsOn(minimiseIdea)
 
         archiveName = "jjtricks.jar"
-        
+
         mergeServiceFiles {}
         manifest {
             attributes(

@@ -119,16 +119,15 @@ class Jjtricks(
          * CLI execution.
          */
         @JvmStatic
-        fun main(args: Array<String>) = main(Io(), *args)
+        fun main(args: Array<String>): Unit = main(Io(), *args)
 
         @JvmStatic
-        fun main(io: Io, vararg args: String) = mainBody(programName = "jjtricks") {
+        fun main(io: Io, vararg args: String): Unit = mainBody(programName = "jjtricks") {
 
             ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
                 .parseInto { Jjtricks(io = io, args = it) }
                 .runTasks()
         }
-
 
         fun getResource(path: String): URL? = Jjtricks::class.java.getResource(expandResourcePath(path))
 

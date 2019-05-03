@@ -5,7 +5,7 @@ package com.github.oowekyala.ijcc.lang.psi
  * @author Clément Fournier
  * @since 1.0
  */
-fun JccPsiElement.foldingName() = when (this) {
+fun JccPsiElement.foldingName(): String = when (this) {
     is JccOptionalExpansionUnit      -> "[...]"
     is JccParenthesizedExpansionUnit -> "(...)" + occurrenceIndicator.foldingName()
     is JccOptionSection              -> "options {..}"

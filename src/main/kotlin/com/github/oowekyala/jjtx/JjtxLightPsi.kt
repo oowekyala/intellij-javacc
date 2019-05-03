@@ -16,7 +16,9 @@ package com.github.oowekyala.jjtx
  * limitations under the License.
  */
 
+import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.toPath
 import com.github.oowekyala.jjtx.util.workingDirectory
 import com.intellij.concurrency.AsyncFutureFactory
 import com.intellij.concurrency.AsyncFutureFactoryImpl
@@ -25,7 +27,6 @@ import com.intellij.concurrency.JobLauncherImpl
 import com.intellij.ide.startup.impl.StartupManagerImpl
 import com.intellij.lang.*
 import com.intellij.lang.impl.PsiBuilderFactoryImpl
-import com.intellij.lang.impl.PsiBuilderImpl
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.mock.*
 import com.intellij.openapi.Disposable
@@ -59,7 +60,6 @@ import com.intellij.psi.impl.PsiCachedValuesFactory
 import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.psi.impl.search.CachesBasedRefSearcher
 import com.intellij.psi.impl.search.PsiSearchHelperImpl
-import com.intellij.psi.impl.source.CharTableImpl
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistryImpl
@@ -68,6 +68,7 @@ import com.intellij.psi.search.PsiSearchHelper
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.util.CachedValuesManagerImpl
+import com.intellij.util.ExceptionUtil
 import com.intellij.util.io.createFile
 import com.intellij.util.io.delete
 import com.intellij.util.io.exists
@@ -81,7 +82,9 @@ import org.picocontainer.PicoIntrospectionException
 import org.picocontainer.defaults.AbstractComponentAdapter
 import java.io.*
 import java.lang.reflect.Modifier
+import java.nio.file.Path
 import java.util.jar.JarEntry
+import java.util.jar.JarInputStream
 import java.util.jar.JarOutputStream
 
 /**
@@ -110,7 +113,7 @@ object JjtxLightPsi {
         return parseFile(name, text, parserDefinition)
     }
 
-    fun parseFile(name: String, text: String, parserDefinition: ParserDefinition): PsiFile? =
+    private fun parseFile(name: String, text: String, parserDefinition: ParserDefinition): PsiFile? =
         ourParsing.createFile(name, text, parserDefinition)
 
     object GenerateClassLog {
@@ -133,14 +136,31 @@ object JjtxLightPsi {
                 exit = { _, _ -> throw Error() }
             )
 
-            Jjtricks.main(io, "Java", "--dump-config", "-q")
-        }
 
+            noFail {
+                Jjtricks.main(io, "Java", "--dump-config", "-q")
+            }
+            noFail {
+                // error case to load relevant classes
+                parseFile(File("IDONTEXIST"), JavaccParserDefinition)
+            }
+
+            Class.forName("com.intellij.util.ExceptionUtil$1")
+            ExceptionUtil::class.java.toString()
+        }
     }
 
+    private inline fun noFail(block: () -> Unit): Unit =
+        try {
+            block()
+        } catch (t: Throwable) {
+
+        }
+
+
     /*
-     * Builds light-psi-all.jar from JVM class loader log (-verbose:class option)
-     */
+         * Builds light-psi-all.jar from JVM class loader log (-verbose:class option)
+         */
     @Throws(Throwable::class)
     @JvmStatic
     fun main(args: Array<String>) {
@@ -161,13 +181,18 @@ object JjtxLightPsi {
         println(StringUtil.formatFileSize(out.length()) + " and " + count + " classes written to " + out.name)
     }
 
+
     private fun mainImpl(classesFile: File, outJarFile: File): Int {
         val reader = BufferedReader(FileReader(classesFile))
         val jdk8Pattern = Regex("\\[Loaded (.*) from (?:file:)?(.*)]")
         val jdkAbovePattern = Regex("\\[[^]]++]\\[info]\\[class,load] (.*?) source: file:(.+)")
 
         val jar = JarOutputStream(FileOutputStream(outJarFile))
-        addJarEntry(jar, "misc/registry.properties")
+        addResources(jar)
+
+        addFullJar(jar, getJarPathOfResource("/gutter/recursiveMethod.svg")) {
+            true
+        }
 
         return reader.lineSequence()
             .mapNotNull { jdk8Pattern.matchEntire(it) ?: jdkAbovePattern.matchEntire(it) }
@@ -179,6 +204,42 @@ object JjtxLightPsi {
                 jar.close()
                 reader.close()
             }
+    }
+
+
+
+    private fun addResources(jar: JarOutputStream) {
+        listOf(
+            "misc/registry.properties"
+        ).forEach {
+            addJarEntry(jar, it)
+        }
+    }
+
+    private fun getJarPathOfResource(resourceName: String): Path {
+
+        val url = JjtxLightPsi::class.java.getResource(resourceName)
+
+        val uri = url.toURI().normalize()
+
+        return uri.schemeSpecificPart.substringBeforeLast('!').toPath()
+    }
+
+
+    private fun addFullJar(jar: JarOutputStream,
+                           toInclude: Path,
+                           filter: (JarEntry) -> Boolean) {
+
+        val input = JarInputStream(toInclude.toFile().inputStream().buffered())
+
+        generateSequence { input.nextJarEntry }
+            .filter { filter(it) }
+            .forEach {
+                jar.putNextEntry(it)
+                input.closeEntry()
+            }
+
+        input.close()
     }
 
     private fun shouldAddEntry(path: String): Boolean {
