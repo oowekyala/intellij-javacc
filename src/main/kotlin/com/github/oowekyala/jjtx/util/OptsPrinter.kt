@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.ScalarType.*
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK
@@ -23,9 +24,20 @@ fun OptsModelImpl.toDataNode(): DataAstNode {
 
     val visitors = visitorBeans.toDataNode()
 
+    val th = typeHierarchy.toDataNode()
+
     return AstMap(
-        mapOf("jjtx.visitors" to visitors),
-        JsonPosition("jjtx")
+        mapOf(
+            "jjtx" to AstMap(
+                mapOf(
+                    "nodePrefix" to nodePrefix.toDataNode(),
+                    "nodePackage" to nodePackage.toDataNode(),
+                    "visitors" to visitors,
+                    "templateContext" to templateContext.toDataNode(),
+                    "typeHierarchy" to th
+                )
+            )
+        )
     )
 }
 
@@ -41,6 +53,12 @@ val DataAstNode.yamlTag: Tag
         is AstMap    -> Tag.MAP
         is AstSeq    -> Tag.SEQ
     }
+
+fun TypeHierarchyTree.toDataNode(): DataAstNode =
+    if (children.isEmpty())
+        AstScalar(nodeName, STRING)
+    else
+        AstMap(mapOf(nodeName to AstSeq(children.map { it.toDataNode() })))
 
 fun YamlNode.toYamlString(): String {
     val opts = DumperOptions()
