@@ -8,12 +8,11 @@ import com.github.oowekyala.jjtx.Jjtricks.Companion.WRONG_PARAMS_CODE
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.github.oowekyala.jjtx.util.extension
+import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.util.io.isFile
-import kotlinx.cli.*
+import com.xenomachina.argparser.*
 import java.net.URL
 import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.system.exitProcess
 
 /**
  * A JJTX run.
@@ -21,65 +20,56 @@ import kotlin.system.exitProcess
  * @author Clément Fournier
  */
 class Jjtricks(
-    val io: Io
+    args: ArgParser,
+    private val io: Io = Io()
 ) {
 
-    private val cli = CommandLineInterface(
-        commandName = "jjtricks",
-        description = "A preprocessor for JJTree files and code generator.",
-        defaultHelpPrinter = io.helpPrinter()
+
+    private val grammarPath: Path by args.positional(
+        name = "GRAMMAR",
+        help = "Path to a grammar file (the extension can be omitted)"
+    ) {
+        toPath()
+    }.addValidator {
+        val myIo = io.copy(exit = { m, c -> throw SystemExitException(m, c) })
+        findGrammarFile(myIo, value)
+    }
+
+
+    private val outputRoot: Path by args.storing(
+        "-o", "--output",
+        help = "Output directory. Files are generated in a package tree rooted in this directory."
+    ) {
+        toPath()
+    }.default(io.wd.resolve("gen")).addValidator {
+        if (value.isFile()) {
+            throw InvalidArgumentException(
+                "-o $value is not a directory"
+            )
+        }
+    }
+
+    private val isDumpConfig by args.flagging(
+        "--dump-config",
+        help = "Print the fully resolved jjtopts file"
+    )
+    private val isNoVisitors by args.flagging(
+        "--no-visitors",
+        help = "Don't generate any visitors"
     )
 
-    val isDumpConfig by cli.flagArgument("show-config", "Print the fully resolved jjtopts file")
-    val isGenerateVisitors by cli.flagArgument("visitors", "Generate the visitors")
-
-
-    private val grammarPath: Path? by cli.positionalArgument(
-        "<grammarFile>",
-        "Path to a grammar file (the extension can be omitted)",
-        minArgs = 1
-    ) { Paths.get(it) }
-
-    private val configFiles: List<Path> by cli.positionalArgumentsList(
-        name = "-c",
-        help = """Config file to use, from lowest to highest priority. The options specified inline in the grammar file always have the lowest priority.""".trimMargin()
-    ) { str ->
-        Paths.get(str)
-    }
-
-    private val outputRoot: Path? by cli.flagValueArgument(
-        flags = listOf("-o", "--output"),
-        valueSyntax = "<dir>",
-        help = "Root of the output directory. Files are generated in a package tree rooted in this directory.",
-        initialValue = grammarPath?.resolveSibling("generated")
+    private val configFiles: List<Path> by args.adding(
+        "-p", "--opts",
+        help = "Option files to chain, from lowest to highest priority. The options specified inline in the grammar file always have the lowest priority.",
+        argName = "OPTS"
     ) {
-        Paths.get(it)
-    }
-
-    private fun printHelpAndExit(message: String, code: Int = WRONG_PARAMS_CODE): Nothing {
-        cli.defaultHelpPrinter!!.printText(message)
-        cli.defaultHelpPrinter!!.printText("(Run with -h parameter to show help)")
-        io.exit(code)
+        toPath()
     }
 
 
-    // TODO help, overwrite files,
+    private fun produceContext(): JjtxContext {
 
-
-    fun produceContext(args: Array<String>): JjtxContext {
-
-        try {
-            cli.parse(args)
-        } catch (e: Exception) {
-            exitProcess(1)
-        }
-
-        val g = grammarPath ?: run {
-            cli.printHelp()
-            io.exit(WRONG_PARAMS_CODE)
-        }
-
-        val grammarFile = findGrammarFile(io, g)
+        val grammarFile = findGrammarFile(io, grammarPath)
         val configChain = validateConfigFiles(io, grammarFile, configFiles)
         val jccFile = parseGrammarFile(io, grammarFile)
 
@@ -94,25 +84,12 @@ class Jjtricks(
     }
 
 
-    fun runTasks(ctx: JjtxContext) {
+    fun runTasks() {
 
-        if (isGenerateVisitors) {
+        val ctx = produceContext()
 
-            val o = outputRoot ?: let {
-
-                io.stdout.println("No --output dir specified, defaulting to ./gen")
-
-                val dir = io.wd.resolve("gen")
-
-                if (dir.isFile()) {
-                    io.stdout.println("Expected a directory, but was a file: $dir")
-                    io.exit(WRONG_PARAMS_CODE)
-                }
-
-                dir
-            }
-
-            GenerateVisitorsTask(o).execute(ctx)
+        if (!isNoVisitors) {
+            GenerateVisitorsTask(outputRoot).execute(ctx)
         }
 
         if (isDumpConfig) {
@@ -125,15 +102,19 @@ class Jjtricks(
 
         const val WRONG_PARAMS_CODE = -1
 
+        private val DESCRIPTION = """
+            A java code generator for JJTree grammars.
+        """.trimIndent()
+
         /**
          * CLI execution.
          */
         @JvmStatic
-        fun main(args: Array<String>) {
+        fun main(args: Array<String>) = mainBody(programName = "jjtricks") {
 
-            val jjtx = Jjtricks(Io())
-            val ctx = jjtx.produceContext(args)
-            jjtx.runTasks(ctx)
+            ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
+                .parseInto { Jjtricks(it) }
+                .runTasks()
         }
 
 
@@ -166,9 +147,9 @@ private fun validateConfigFiles(io: Io,
             listOf(grammarPath.resolveSibling("$grammarName.jjtopts"))
         else paths
 
-    val resolved = defaulted.associateWith {
+    val resolved = defaulted.associateWith { p ->
 
-        val path = io.wd.resolve(it)
+        val path = io.wd.resolve(p)
 
         if (path.isFile()) return@associateWith path
 
@@ -201,8 +182,7 @@ private fun validateConfigFiles(io: Io,
 
 
 private fun Io.bail(message: String): Nothing {
-    stdout.println(message)
-    exit(WRONG_PARAMS_CODE)
+    exit(message, WRONG_PARAMS_CODE)
 }
 
 private fun findGrammarFile(io: Io, path: Path): Path {

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
 import java.io.Reader
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -31,6 +32,8 @@ fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 fun String.wrap(lineLength: Int, indent: Int = 0): String =
     WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)
 
+
+fun String.toPath() = Paths.get(this)
 
 fun JsonObject.asMap(): Map<String, JsonElement> {
     return object : Map<String, JsonElement> {

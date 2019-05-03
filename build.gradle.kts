@@ -37,10 +37,6 @@ allprojects {
         maven {
             url = URI("https://dl.bintray.com/kotlin/kotlinx")
         }
-        maven {
-            // for CLI package
-            url = URI("https://dl.bintray.com/hanafey/kotlinx/")
-        }
     }
 
 }
@@ -56,11 +52,11 @@ dependencies {
     compile("com.google.guava:guava:23.5-jre")
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    implementation("org.jetbrains.kotlinx:kotlinxcli:0.2")
     compile("org.apache.velocity:velocity:1.6.2")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
+    implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
