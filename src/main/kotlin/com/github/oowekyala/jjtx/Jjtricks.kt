@@ -5,10 +5,7 @@ import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.Jjtricks.Companion.WRONG_PARAMS_CODE
-import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.NamedInputStream
-import com.github.oowekyala.jjtx.util.extension
-import com.github.oowekyala.jjtx.util.toPath
+import com.github.oowekyala.jjtx.util.*
 import com.intellij.util.io.isFile
 import com.xenomachina.argparser.*
 import java.net.URL
@@ -58,6 +55,16 @@ class Jjtricks(
         help = "Don't generate any visitors"
     )
 
+    private val minSeverity by args.mapping(
+        "--quiet" to Severity.FAIL,
+        "-q" to Severity.FAIL,
+        "--debug" to Severity.INFO,
+        "-X" to Severity.INFO,
+        help = "Amount of log output to issue"
+    ).default {
+        Severity.WARN
+    }
+
     private val configFiles: List<Path> by args.adding(
         "-p", "--opts",
         help = "Option files to chain, from lowest to highest priority. The options specified inline in the grammar file always have the lowest priority.",
@@ -80,7 +87,9 @@ class Jjtricks(
             configChain = configChain
         )
 
-        return JjtxRunContext(params)
+        return JjtxRunContext(params) {
+            ErrorCollectorImpl(it, minSeverity)
+        }
     }
 
 

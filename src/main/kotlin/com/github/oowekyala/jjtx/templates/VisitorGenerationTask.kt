@@ -13,6 +13,7 @@ import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.io.StringWriter
 import java.nio.file.Path
+import java.util.*
 
 
 // The field names of this class are public API, because they're serialized
@@ -207,29 +208,26 @@ data class VisitorGenerationTask(
             withLocalBindings(
                 sharedCtx,
                 "package" to pack,
-                "simpleName" to simpleName
+                "simpleName" to simpleName,
+                "timestamp" to Date()
             )
 
         val rendered = StringWriter().also {
             engine.evaluate(fullCtx, it, id, template)
         }.toString()
 
-        afterRender(ctx, rendered, o)
 
-    }
+        val formatted = try {
+            formatter?.format(rendered)
+        } catch (e: Exception) {
+            null
+        } ?: rendered
 
-    private fun afterRender(ctx: JjtxContext, rendered: String, output: Path) {
-
-        val formatted =
-            try {
-                formatter?.format(rendered)
-            } catch (e: Exception) {
-                null
-            } ?: rendered
-
-        output.toFile().bufferedWriter().use {
+        o.toFile().bufferedWriter().use {
             it.write(formatted)
         }
+
+        ctx.io.stdout.println("Generated visitor '$id' into $o")
     }
 
 

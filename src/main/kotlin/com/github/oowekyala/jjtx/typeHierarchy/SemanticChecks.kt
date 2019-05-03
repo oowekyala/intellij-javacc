@@ -29,8 +29,7 @@ fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>, ctx
 
             ctx.errorCollector.handleError(
                 "They will be adopted by the root (${this.nodeName})",
-                UNCOVERED_NODE,
-                severityOverride = INFO
+                UNCOVERED_NODE
             )
 
             val newChildren = children + remaining.entries.map { (qname, owners) ->

@@ -13,10 +13,12 @@ interface ErrorCollector {
 
 
 /**
+ * @property minSeverity Minimum severity on which to report
+ *
  * @author Clément Fournier
  */
-class ErrorCollectorImpl(val ctx: JjtxRunContext) :
-    ErrorCollector {
+class ErrorCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Severity)
+    : ErrorCollector {
 
 
     /**
@@ -31,12 +33,17 @@ class ErrorCollectorImpl(val ctx: JjtxRunContext) :
                              category: ErrorCategory,
                              severityOverride: Severity?,
                              vararg sourcePosition: Position?): Severity {
-        System.err.println("$category: $message")
+
+        val realSeverity = severityOverride ?: category.minSeverity
+
+        if (realSeverity < minSeverity) return Severity.IGNORE
+
+        ctx.io.stderr.println("$category: $message")
         sourcePosition.filterNotNull().forEach {
-            System.err.println("\t${it.toString(ctx)}")
+            ctx.io.stderr.println("\t${it.toString(ctx)}")
         }
 
-        return severityOverride ?: category.minSeverity
+        return realSeverity
     }
 
 
