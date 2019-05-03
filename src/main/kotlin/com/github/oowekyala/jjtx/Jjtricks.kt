@@ -13,7 +13,6 @@ import kotlinx.cli.*
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.logging.Logger
 import kotlin.system.exitProcess
 
 /**
@@ -92,7 +91,33 @@ class Jjtricks(
         )
 
         return JjtxRunContext(params)
+    }
 
+
+    fun runTasks(ctx: JjtxContext) {
+
+        if (isGenerateVisitors) {
+
+            val o = outputRoot ?: let {
+
+                io.stdout.println("No --output dir specified, defaulting to ./gen")
+
+                val dir = io.wd.resolve("gen")
+
+                if (dir.isFile()) {
+                    io.stdout.println("Expected a directory, but was a file: $dir")
+                    io.exit(WRONG_PARAMS_CODE)
+                }
+
+                dir
+            }
+
+            GenerateVisitorsTask(o).execute(ctx)
+        }
+
+        if (isDumpConfig) {
+            DumpConfigTask.execute(ctx)
+        }
     }
 
 
@@ -106,22 +131,9 @@ class Jjtricks(
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val jjtricks = Jjtricks(Io())
-
-            val ctx = jjtricks.produceContext(args)
-
-            if (jjtricks.isGenerateVisitors) {
-
-                val o = jjtricks.outputRoot ?: run {
-                    jjtricks.printHelpAndExit("Specify the --output (-o) option to generate visitors")
-                }
-
-                GenerateVisitorsTask(o).execute(ctx)
-            }
-
-            if (jjtricks.isDumpConfig) {
-                DumpConfigTask.execute(ctx)
-            }
+            val jjtx = Jjtricks(Io())
+            val ctx = jjtx.produceContext(args)
+            jjtx.runTasks(ctx)
         }
 
 

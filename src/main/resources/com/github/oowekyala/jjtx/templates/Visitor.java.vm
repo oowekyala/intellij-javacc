@@ -1,7 +1,9 @@
+#if( ! $package.isEmpty )
+package $package;
+#end
 
 
-#evaluate($headerTemplate) {
-
+public interface ${simpleName} {
 
     #foreach($node in $grammar.typeHierarchy)
 

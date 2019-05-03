@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
 import com.intellij.util.io.createFile
@@ -21,7 +22,7 @@ data class VisitorConfigBean(
     val templateFile: String?,
     val template: String?,
     val formatter: String?,
-    val output: String?,
+    val genClassName: String?,
     val context: Map<String, Any?>?
 ) {
 
@@ -37,7 +38,7 @@ data class VisitorConfigBean(
             templateFile = templateFile ?: other.templateFile,
             template = template ?: other.template,
             formatter = formatter ?: other.formatter,
-            output = output ?: other.output,
+            genClassName = genClassName ?: other.genClassName,
             // merge the contexts
             context = (other.context ?: emptyMap()).plus(this.context ?: emptyMap())
         )
@@ -58,15 +59,16 @@ data class VisitorConfigBean(
             TemplateSource.File(templateFile!!)
         }
 
-        if (output == null) {
-            throw java.lang.IllegalStateException("Visitor spec '$id' must mention the 'output' file")
+        if (genClassName == null) {
+            throw java.lang.IllegalStateException("Visitor spec '$id' must mention 'genClassName', the a fully qualified class name of the generated class")
         }
 
         return VisitorGenerationTask(
+            id = id,
             execute = execute ?: true,
             template = t,
             formatter = FormatterOpt.select(formatter ?: "java"),
-            outputFileName = output,
+            outputFileName = genClassName,
             context = context ?: emptyMap()
         )
     }
@@ -113,6 +115,7 @@ sealed class TemplateSource {
  * @author Clément Fournier
  */
 data class VisitorGenerationTask(
+    val id: String,
     val execute: Boolean,
     val template: TemplateSource,
     val formatter: FormatterOpt?,
@@ -141,17 +144,21 @@ data class VisitorGenerationTask(
     }
 
     private fun resolveOutput(velocityContext: VelocityContext,
-                              outputDir: Path): Path {
+                              outputDir: Path): Pair<String, Path> {
 
         val engine = VelocityEngine()
 
-        val fname = StringWriter().also {
+        val templated = StringWriter().also {
             engine.evaluate(velocityContext, it, "visitor-output", outputFileName)
         }.toString()
 
 
-        val o = outputDir.resolve(fname)
+        val fqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
+        if (!templated.matches(fqcnRegex)) {
+            throw java.lang.IllegalStateException("'genClassName' should be a fully qualified class name, but was $templated")
+        }
 
+        val o = outputDir.resolve(templated.replace('.', '/') + ".java")
 
         if (o.isDirectory()) {
             throw IllegalStateException("Output file ${this.outputFileName} is directory")
@@ -162,7 +169,15 @@ data class VisitorGenerationTask(
             o.createFile()
         }
 
-        return o
+        return Pair(templated, o)
+    }
+
+    private fun withLocalBindings(sharedCtx: VelocityContext,
+                                  vararg additionalBindings: Pair<String, Any>): VelocityContext {
+
+        val local = VelocityContext(additionalBindings.toMap(), sharedCtx)
+
+        return VelocityContext(context, local)
     }
 
     /**
@@ -174,15 +189,24 @@ data class VisitorGenerationTask(
      */
     fun execute(ctx: JjtxContext, sharedCtx: VelocityContext, outputDir: Path) {
 
-        val fullCtx = VelocityContext(context, sharedCtx)
+        val tmpCtx = withLocalBindings(sharedCtx)
 
         val template = resolveTemplate(ctx)
         val engine = VelocityEngine()
 
-        val o = resolveOutput(fullCtx, outputDir)
+        val (fqcn, o) = resolveOutput(tmpCtx, outputDir)
+
+        val (pack, simpleName) = fqcn.splitAroundLast('.')
+
+        val fullCtx =
+            withLocalBindings(
+                sharedCtx,
+                "package" to pack,
+                "simpleName" to simpleName
+            )
 
         val rendered = StringWriter().also {
-            engine.evaluate(fullCtx, it, "visitor-template", template)
+            engine.evaluate(fullCtx, it, id, template)
         }.toString()
 
         afterRender(ctx, rendered, o)
