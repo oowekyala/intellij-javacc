@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
-import com.github.oowekyala.jjtx.ErrorCollector.Category.*
+import com.github.oowekyala.jjtx.util.ErrorCategory.*
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.util.JsonPosition

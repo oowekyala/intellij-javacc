@@ -1,15 +1,21 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
+import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 
 /**
+ * Wraps an [InlineGrammarOptions] and implements [JjtxOptsModel].
+ * Those have less precedence than regular jjtopts files.
+ *
  * @author Clément Fournier
  */
 class OldJavaccOptionsModel(
-    grammarOptions: InlineGrammarOptions
+    grammarFile: JccFile
 ) : JjtxOptsModel {
+
+    val grammarOptions = InlineGrammarOptions(grammarFile)
 
     override val inlineBindings: InlineGrammarOptions = grammarOptions
 

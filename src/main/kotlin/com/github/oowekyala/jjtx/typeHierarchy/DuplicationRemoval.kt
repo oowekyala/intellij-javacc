@@ -1,7 +1,6 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
-import com.github.oowekyala.jjtx.ErrorCollector.Category.DUPLICATE_MATCH
-import com.github.oowekyala.jjtx.JjtxRunContext
+import com.github.oowekyala.jjtx.util.ErrorCategory.DUPLICATE_MATCH
 import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.github.oowekyala.jjtx.JjtxContext

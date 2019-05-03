@@ -35,7 +35,11 @@ allprojects {
         mavenCentral()
         jcenter()
         maven {
-            url = URI("http://dl.bintray.com/kotlin/kotlinx")
+            url = URI("https://dl.bintray.com/kotlin/kotlinx")
+        }
+        maven {
+            // for CLI package
+            url = URI("https://dl.bintray.com/hanafey/kotlinx/")
         }
     }
 
@@ -50,11 +54,12 @@ dependencies {
 
     // this is for JJTX
     compile("com.google.guava:guava:23.5-jre")
-    compile("com.google.code.gson:gson:2.8.5")
-    compile("com.github.oowekyala.treeutils:tree-printers:2.0.2")
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
+    implementation("org.jetbrains.kotlinx:kotlinxcli:0.2")
     compile("org.apache.velocity:velocity:1.6.2")
-    compile("org.yaml:snakeyaml:1.24")
-    compile("com.google.googlejavaformat:google-java-format:1.7")
+    implementation("org.yaml:snakeyaml:1.24")
+    implementation("com.google.googlejavaformat:google-java-format:1.7")
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
 
     // this is for tests

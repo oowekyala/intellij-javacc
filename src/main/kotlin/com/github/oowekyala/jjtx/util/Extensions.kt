@@ -23,7 +23,7 @@ fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<St
     )
 
 val Path.extension: String?
-    get() = fileName.toString().substringBeforeLast('.', missingDelimiterValue = "").ifEmpty { null }
+    get() = toFile().extension.takeIf { it.isNotEmpty() } ?: null
 
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 

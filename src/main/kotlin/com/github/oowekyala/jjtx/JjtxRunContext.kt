@@ -1,15 +1,15 @@
 package com.github.oowekyala.jjtx
 
-import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.util.ErrorCollectorImpl
+import com.github.oowekyala.jjtx.util.Io
 
 /**
  * @author Clément Fournier
  */
-class JjtxRunContext(jjtxParams: JjtxParams,
-                     grammarFile: JccFile) : JjtxContext(grammarFile, jjtxParams.configChain) {
+class JjtxRunContext(jjtxParams: JjtxParams) : JjtxContext(jjtxParams.mainGrammarFile, jjtxParams.configChain) {
 
+    override val io: Io = jjtxParams.io
 
     override val errorCollector = ErrorCollectorImpl(this)
-
 
 }

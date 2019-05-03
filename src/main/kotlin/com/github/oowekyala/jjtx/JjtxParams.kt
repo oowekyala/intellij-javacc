@@ -1,9 +1,14 @@
 package com.github.oowekyala.jjtx
 
-import java.io.File
-import java.nio.file.Files
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.templates.GrammarBean
+import com.github.oowekyala.jjtx.templates.set
+import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
+import com.github.oowekyala.jjtx.util.ErrorCategory
+import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.SimpleTreePrinter
+import org.apache.velocity.VelocityContext
 import java.nio.file.Path
-import java.nio.file.Paths
 
 /**
  * CLI parameters of a JJTX run.
@@ -12,32 +17,56 @@ import java.nio.file.Paths
  * @author Clément Fournier
  */
 data class JjtxParams(
-    val grammarName: String,
-    val grammarDir: Path,
-    val outputDir: Path,
-    val configChain: List<Path> = defaultConfigChain(grammarDir, grammarName)
-) {
+    val io: Io,
+    val mainGrammarFile: JccFile,
+    val outputRoot: Path?,
+    val configChain: List<Path>
+)
 
-    val mainGrammarFile: File?
-        get() = grammarDir.resolveExisting("$grammarName.jjt")
-            ?: grammarDir.resolveExisting("$grammarName.jjtx")
+sealed class JjtxTask {
+
+    abstract fun execute(ctx: JjtxContext)
+
+}
 
 
-    fun Path.resolveExisting(name: String): File? = resolve(name).takeIf { Files.exists(it) }?.toFile()
+object DumpConfigTask : JjtxTask() {
 
-    companion object {
+    override fun execute(ctx: JjtxContext) {
 
-        fun parseCliArgs(vararg args: String): JjtxParams? {
-            // TODO
-            val wdir = Paths.get(System.getProperty("user.dir"))
-            return JjtxParams(grammarName = args[0], grammarDir = wdir, outputDir = wdir.resolve("gen"))
+        val typeHierarchy = ctx.jjtxOptsModel.typeHierarchy
+
+        ctx.io.stdout.println(SimpleTreePrinter(TreeLikeWitness).dumpSubtree(typeHierarchy))
+    }
+}
+
+
+data class GenerateVisitorsTask(val outputDir: Path) : JjtxTask() {
+
+    override fun execute(ctx: JjtxContext) {
+
+        val globalCtx = VelocityContext()
+        globalCtx["grammar"] = GrammarBean.create(ctx)
+        globalCtx["global"] = ctx.jjtxOptsModel.templateContext
+        globalCtx["H"] = "#"
+
+
+        for ((id, visitor) in ctx.jjtxOptsModel.visitors) {
+
+            if (!visitor.execute) {
+                ctx.errorCollector.handleError(
+                    "Visitor $id is not configured for execution",
+                    ErrorCategory.VISITOR_NOT_RUN
+                )
+                continue
+            }
+
+            try {
+                visitor.execute(ctx, globalCtx, outputDir)
+            } catch (e: Exception) {
+                // FIXME report cleanly
+                e.printStackTrace()
+            }
         }
-
-        fun defaultConfigChain(grammarDir: Path, grammarName: String) = listOf(
-            grammarDir.resolve("$grammarName.jjtopts.yaml")
-            // FIXME
-            // grammarDir.resolve("$grammarName.jjtopts.json")
-        )
-
     }
 }

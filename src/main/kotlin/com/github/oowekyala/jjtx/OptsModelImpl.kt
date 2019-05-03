@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
-import com.github.oowekyala.jjtx.ErrorCollector.Category.*
+import com.github.oowekyala.jjtx.util.ErrorCategory.*
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree

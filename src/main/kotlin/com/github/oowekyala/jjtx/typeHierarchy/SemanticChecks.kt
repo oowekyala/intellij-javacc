@@ -1,9 +1,9 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
-import com.github.oowekyala.jjtx.ErrorCollector.Category.UNCOVERED_NODE
-import com.github.oowekyala.jjtx.ErrorCollector.Severity.FAIL
-import com.github.oowekyala.jjtx.ErrorCollector.Severity.INFO
+import com.github.oowekyala.jjtx.util.ErrorCategory.UNCOVERED_NODE
+import com.github.oowekyala.jjtx.util.Severity.FAIL
+import com.github.oowekyala.jjtx.util.Severity.INFO
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.util.position
 

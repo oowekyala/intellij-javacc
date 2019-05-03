@@ -1,9 +1,8 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
-import com.github.oowekyala.jjtx.ErrorCollector
-import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.JjtxRunContext
-import com.github.oowekyala.jjtx.addPackage
+import com.github.oowekyala.jjtx.*
+import com.github.oowekyala.jjtx.util.ErrorCategory
+import com.github.oowekyala.jjtx.util.Severity
 import java.util.regex.PatternSyntaxException
 
 
@@ -34,7 +33,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         } catch (e: PatternSyntaxException) {
             ctx.errorCollector.handleError(
                 e.message.orEmpty(),
-                ErrorCollector.Category.EXACT_NODE_NOT_IN_GRAMMAR,
+                ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
                 null,
                 positionInfo
             )
@@ -66,7 +65,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
     if (prodName !in grammarNodeNames) {
         ctx.errorCollector.handleError(
             qname,
-            ErrorCollector.Category.EXACT_NODE_NOT_IN_GRAMMAR,
+            ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
             null,
             positionInfo
         )
@@ -93,14 +92,14 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 
 
     if (children.isNotEmpty()) {
-        val override = if (matching.size == 1) null else ErrorCollector.Severity.FAIL
+        val override = if (matching.size == 1) null else Severity.FAIL
         ctx.errorCollector.handleError(
             extractedRegex.pattern,
-            ErrorCollector.Category.REGEX_SHOULD_BE_LEAF,
+            ErrorCategory.REGEX_SHOULD_BE_LEAF,
             override,
             positionInfo
         )
-        if (override == ErrorCollector.Severity.FAIL) {
+        if (override == Severity.FAIL) {
             return emptyList()
         }
     }
@@ -109,7 +108,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
     if (matching.isEmpty()) {
         ctx.errorCollector.handleError(
             extractedRegex.pattern,
-            ErrorCollector.Category.UNMATCHED_HIERARCHY_REGEX,
+            ErrorCategory.UNMATCHED_HIERARCHY_REGEX,
             null,
             positionInfo
         )

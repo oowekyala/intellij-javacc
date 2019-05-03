@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.jjtx.JjtxParams
 import com.github.oowekyala.jjtx.JjtxRunContext
+import com.github.oowekyala.jjtx.util.Io
 import java.nio.file.Path
 
 /**
@@ -21,23 +22,26 @@ open class JjtxTestBase : JccTestBase() {
     )
 
     fun CtxBuilder.newCtx(): JjtxRunContext {
-        val params = JjtxParams(
-            grammarName = grammarName,
-            grammarDir = testGrammarDir,
-            outputDir = testOutputDir
-        )
+
 
         val optsFile =
             if (opts is YamlOpts) "$grammarName.jjtopts.yaml"
             else "$grammarName.jjtopts.json"
 
-        val f = testGrammarDir.resolve(optsFile).toFile()
+        val optsPath = testGrammarDir.resolve(optsFile)
+        val f = optsPath.toFile()
 
         f.writeText(opts.str)
 
+        val params = JjtxParams(
+            io = Io(),
+            mainGrammarFile = jccFile.asJccFile(),
+            outputRoot = testOutputDir,
+            configChain = listOf(optsPath)
+        )
+
         return JjtxRunContext(
-            params,
-            jccFile.asJccFile()
+            params
         )
     }
 
