@@ -1,0 +1,109 @@
+@file:Suppress("PropertyName", "LocalVariableName")
+
+import org.jetbrains.grammarkit.tasks.GenerateLexer
+import org.jetbrains.grammarkit.tasks.GenerateParser
+
+plugins {
+    id("org.jetbrains.grammarkit") version "2018.2.2"
+}
+
+val PackageRoot = "/com/github/oowekyala/ijcc"
+val PathToPsiRoot = "$PackageRoot/lang/psi"
+val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
+
+
+
+dependencies {
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
+    compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation(kotlin("reflect")) // this could be avoided
+
+    // this is for JJTX
+    compile("com.google.guava:guava:23.5-jre")
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
+    compile("org.apache.velocity:velocity:1.6.2")
+    implementation("org.yaml:snakeyaml:1.24")
+    implementation("com.google.googlejavaformat:google-java-format:1.7")
+    implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
+    implementation("com.xenomachina:kotlin-argparser:2.0.7")
+
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("$buildDir/gen")
+            srcDirs("src/main/kotlin")
+            srcDirs("src/main/java")
+        }
+    }
+}
+
+
+
+tasks {
+
+    val GenerationTaskGroup = "Code generation"
+
+    val generateParser by creating(GenerateParser::class) {
+        group = GenerationTaskGroup
+        description = "Generate the parser and PSI hierarchy"
+
+
+        source = "src/main/grammars/JavaCC.bnf"
+        targetRoot = "$buildDir/gen"
+        pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
+        pathToPsiRoot = PathToPsiRoot
+        purgeOldFiles = true
+
+
+        doLast {
+            // Eliminate the duplicate PSI classes found in the generated and main source tree
+
+            val deletedNames = listOf("JccRegularExpressionOwnerImpl.java")
+
+            fun getPsiFiles(root: String): FileCollection {
+
+                val psiInterfaces = "$root$PathToPsiRoot"
+                val psiImpl = "$psiInterfaces/impl"
+
+                return layout.files(file(psiInterfaces).listFiles()) + layout.files(file(psiImpl).listFiles())
+            }
+
+
+            val userPsiFiles = getPsiFiles("src/main/kotlin").map { it.nameWithoutExtension }
+
+            val genPsiFileDups = getPsiFiles("$buildDir/gen").filter { genFile ->
+                // in this source tree they're .java
+                genFile.isFile && (userPsiFiles.any { it == genFile.nameWithoutExtension } || genFile.name in deletedNames)
+            }
+            logger.info("Detected ${genPsiFileDups.count()} generated PSI files overridden by sources in the main source tree:")
+            genPsiFileDups.sorted().forEach { logger.info(it.name) }
+
+            delete(genPsiFileDups)
+            logger.info("Deleted.")
+        }
+    }
+
+
+    val generateLexer by creating(GenerateLexer::class) {
+        group = GenerationTaskGroup
+        description = "Generate the JFlex lexer used by the parser"
+
+        source = "src/main/grammars/JavaCC.flex"
+        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
+        targetClass = "JavaccLexer"
+        purgeOldFiles = true
+    }
+
+
+    compileJava {
+        dependsOn(generateParser, generateLexer)
+    }
+
+    compileKotlin {
+        dependsOn(generateLexer, generateParser)
+    }
+}

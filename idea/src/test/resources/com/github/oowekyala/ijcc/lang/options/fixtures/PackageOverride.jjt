@@ -1,0 +1,23 @@
+options {
+    LOOKAHEAD = 4;
+    NODE_PACKAGE = "org.foo";
+    MULTI = true;
+}
+
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+      void jjtreeOpenNodeScope(Node n) {
+        ((JJTreeNode)n).setFirstToken(getToken(1));
+      }
+
+    }
+
+PARSER_END(JJTreeParser)
+
+

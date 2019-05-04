@@ -1,0 +1,124 @@
+options {
+    LOOKAHEAD = 4;
+    MULTI = true;
+}
+
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+      void jjtreeOpenNodeScope(Node n) {
+        ((JJTreeNode)n).setFirstToken(getToken(1));
+      }
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+
+void option_binding() #OptionBinding :
+	{
+	  Token o, v;
+	}
+{
+  ( o=<IDENTIFIER> | o="LOOKAHEAD" | o="IGNORE_CASE" | o="static" )
+  "="
+  (  v=IntegerLiteral()
+   | v=BooleanLiteral()
+   | v=StringLiteral()
+  ) ";"
+}
+
+
+JAVACODE
+void node_descriptor_expression() #NodeDescriptorExpression
+{
+  Token tok;
+  int nesting = 1;
+  while (true) {
+    tok = getToken(1);
+    if (tok.kind == 0) {
+      throw new ParseException();
+    }
+    if (tok.kind == LPAREN) nesting++;
+    if (tok.kind == RPAREN) {
+      nesting--;
+      if (nesting == 0) break;
+    }
+    tok = getNextToken();
+  }
+}
+
+
+
+String ComparisonOperator() #void:
+{}
+{
+   ( <COMP> | <NE> | <EQ> | <LT> | <LE> | <GT> | <GE> | <IS> )
+   { return token.getImage(); }
+}
+
+
+
+void StringConcatExpr() #StringConcatExpr(>1):
+{}
+{
+  RangeExpr() ( "||" RangeExpr() )*
+}
+
+void RangeExpr() #RangeExpr(>1):
+{}
+{
+  AdditiveExpr() ( <TO> AdditiveExpr() )?
+}
+
+// In the following, we use nodes to represent the operators because there may be several expressions chained.
+// e.g. E1 + E2 - E3 ~> E1 PlusOperator E2 MinusOperator E3
+
+void AdditiveExpr() #AdditiveExpr(>1):
+{}
+{
+  MultiplicativeExpr() (AdditiveOperator() MultiplicativeExpr() )*
+}
+
+void AdditiveOperator():
+{}
+{
+    ( "+" | "-" ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+
+void MultiplicativeExpr() #MultiplicativeExpr(>1):
+{}
+{
+  UnionExpr() (MultiplicativeOperator() UnionExpr())*
+}
+
+void MultiplicativeOperator():
+{}
+{
+    (   <STAR>
+      | <DIV>
+      | <IDIV>
+      | <MOD>
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}
+
+void UnionExpr() #UnionExpr(>1):
+{}
+{
+  IntersectExceptExpr() ( UnionOperator() IntersectExceptExpr() )*
+}
+
+void UnionOperator():
+{}
+{
+    ( <UNION>
+    | "|" { jjtThis.setShorthand(true); }
+    ) { jjtThis.setImage(getToken(0).getImage()); }
+}

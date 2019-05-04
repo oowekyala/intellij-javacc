@@ -1,0 +1,27 @@
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+
+void named(): {}
+{
+   < foo:
+}
+
+void ref(): {}
+{
+   < foo
+}
+void inline(): {}
+{
+   <
+}

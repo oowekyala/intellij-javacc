@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <g fill-rule="evenodd" fill="#6E6E6E">
+        <!-- Center node -->
+        <circle cx="8" cy="2" r="2"/>
+        <!-- right node -->
+        <circle cx="13" cy="8" r="2"/>
+        <!-- top left node -->
+        <circle cx="3" cy="8" r="2"/>
+        <!-- bottom left node -->
+        <circle cx="3" cy="14" r="2"/>
+        <!-- / -->
+        <rect width="1" height="8" x="3" y="2" transform="rotate(45,8,8)"/>
+        <!-- \ -->
+        <rect width="1" height="8" x="3" y="2" transform="rotate(-45,3,2) translate(3 2)"/>
+        <!-- | -->
+        <rect width="1" height="8" x="2.5" y="7.419" transform=""/>
+    </g>
+</svg>

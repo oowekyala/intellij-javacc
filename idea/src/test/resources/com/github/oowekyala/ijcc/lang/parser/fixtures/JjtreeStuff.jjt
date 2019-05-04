@@ -1,0 +1,39 @@
+PARSER_BEGIN(JJTreeParser)
+
+    package org.javacc.jjtree;
+    /**
+     *  This is my parser declaration
+     */
+    public class JJTreeParser {
+
+    }
+
+PARSER_END(JJTreeParser)
+
+
+void parens() #Bar :
+{}
+{
+ ("foo" "bar") #Foo
+}
+
+void parens2() #Bar :
+{}
+{
+"a" | ("foo" "bar") #Foo
+}
+
+void parens3() #Bar :
+{}
+{
+"a"
+}
+
+void parens4() #Bar :
+{}
+{
+"a" "b"
+}
+
+
+

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+
+
+    <mask id="modifierClip">
+        <!--
+          Everything outside the circle will be
+          clipped and therefore invisible.
+        -->
+        <rect width="12" height="12" fill="white" transform="translate(-1,-1)"/>
+        <!--<rect width="8" height="8" fill="black" transform="translate(8.5,8.5)"/>-->
+        <circle cx="9" cy="9" r="3.5" fill="black"/>
+    </mask>
+
+
+    <g mask="url(#modifierClip)">
+        <circle cx="4" cy="6" r="4" fill="#74bd59" fill-opacity=".7"/>
+        <text x="2" y="12" fill="#231f20" opacity="0.7" transform="scale(.7)">n</text>
+    </g>
+
+    <g fill="#AFB1B3" fill-rule="evenodd" transform="translate(6,6)scale(.4)">
+        <path d="M8,15 C4.13400675,15 1,11.8659932 1,8 C1,4.13400675 4.13400675,1 8,1 C11.8659932,1 15,4.13400675 15,8 C15,11.8659932 11.8659932,15 8,15 Z M8,13.5 C11.0375661,13.5 13.5,11.0375661 13.5,8 C13.5,4.96243388 11.0375661,2.5 8,2.5 C4.96243388,2.5 2.5,4.96243388 2.5,8 C2.5,11.0375661 4.96243388,13.5 8,13.5 Z"/>
+        <rect width="2" height="4" x="7" y="2"/>
+        <rect width="4" height="2" x="2" y="7"/>
+        <rect width="4" height="2" x="10" y="7"/>
+        <rect width="2" height="4" x="7" y="10"/>
+    </g>
+
+
+    <!--&lt;!&ndash; The green modifier &ndash;&gt;-->
+    <!--<path fill-rule="evenodd" transform="scale(.5)rotate(180,8,8)translate(-16,-16)"-->
+    <!--fill="#74bd59" fill-opacity=".6"-->
+    <!--d="M12.9969818,6.69999695 L13,6.69999695 L13,13 L6.50616488,12.9999971 C6.50411014,12.999999 6.50205518,13 6.5,13 C2.91014913,13 0,10.0898509 0,6.5 C0,2.91014913 2.91014913,0 6.5,0 C10.0898509,0 13,2.91014913 13,6.5 C13,6.56690657 12.9989891,6.63357703 12.9969818,6.69999695 Z"/>-->
+
+    <!--&lt;!&ndash; The T on the modifier &ndash;&gt;-->
+    <!--<polygon fill="#231F20" fill-opacity=".7"-->
+    <!--points="5.5 1 5.5 0 .5 0 .5 1 2.5 1 2.5 6 3.5 6 3.5 1"-->
+    <!--transform="translate(11 11.4)scale(.5)"/>-->
+
+</svg>

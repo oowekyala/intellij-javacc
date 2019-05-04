@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.iml" filepath="$PROJECT_DIR$/.idea/modules/core.iml" group="intellij-javacc/core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/idea.iml" filepath="$PROJECT_DIR$/.idea/modules/idea.iml" group="intellij-javacc/idea" />
       <module fileurl="file://$PROJECT_DIR$/intellij-javacc.iml" filepath="$PROJECT_DIR$/intellij-javacc.iml" group="intellij-javacc" />
     </modules>
   </component>
