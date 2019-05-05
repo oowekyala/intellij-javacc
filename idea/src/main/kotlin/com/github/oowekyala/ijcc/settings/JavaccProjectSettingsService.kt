@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.settings
 
+import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.intellij.openapi.components.ServiceManager.getService
 import com.intellij.openapi.project.Project
 
@@ -49,3 +50,7 @@ interface JavaccProjectSettingsService {
 val Project.javaccSettings: JavaccProjectSettingsService
     get() = getService(this, JavaccProjectSettingsService::class.java)
         ?: error("Failed to get JavaccProjectSettingsService for $this")
+
+/** Gets the project-specific settings of the plugin. */
+val JccPsiElement.pluginSettings: JavaccProjectSettingsService
+    get() = project.javaccSettings

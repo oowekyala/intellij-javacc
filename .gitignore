@@ -156,3 +156,8 @@ secrets.properties
 # ignore things added to the sandbox unless explicitly added
 sandbox
 .idea/inspectionProfiles/
+dependencies/repo/
+dependencies/build/
+buildSrc/build
+core/build
+idea/build

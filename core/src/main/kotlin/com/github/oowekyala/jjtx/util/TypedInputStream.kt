@@ -9,3 +9,7 @@ data class NamedInputStream(
     val inputStream: InputStream,
     val filename: String
 )
+
+
+val NamedInputStream.extension
+get() = filename.substringAfterLast('.')

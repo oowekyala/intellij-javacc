@@ -1,9 +1,12 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
+import com.github.oowekyala.*
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
 plugins {
+    kotlin("jvm")
+    id("java")
     id("org.jetbrains.grammarkit") version "2018.2.2"
 }
 
@@ -11,19 +14,36 @@ val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
 
+val grammarKit by configurations.creating
 
 
 dependencies {
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
-    // this is for JJTX
+
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
+    compileOnly(intellijDep()) {
+        includeIjCoreDeps(rootProject)
+    }
+
+    grammarKit(intellijDep()) {
+        // Dependencies for the grammar-kit plugin
+        // https://github.com/JetBrains/Grammar-Kit/blob/master/resources/META-INF/MANIFEST.MF
+        includeJars(
+            "annotations", "asm-all", "automaton", "extensions",
+            "guava", "idea", "jdom", "picocontainer", "platform-api",
+            "platform-impl", "trove4j", "util", rootProject = rootProject
+        )
+    }
+
+    // this is for jjtx
     compile("com.google.guava:guava:23.5-jre")
+    compile("org.apache.velocity:velocity:1.6.2")
+
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    compile("org.apache.velocity:velocity:1.6.2")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
@@ -58,6 +78,7 @@ tasks {
         pathToPsiRoot = PathToPsiRoot
         purgeOldFiles = true
 
+        classpath(grammarKit)
 
         doLast {
             // Eliminate the duplicate PSI classes found in the generated and main source tree
@@ -104,6 +125,14 @@ tasks {
     }
 
     compileKotlin {
-        dependsOn(generateLexer, generateParser)
+        dependsOn(generateParser, generateLexer)
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-Xjvm-default=enable",
+                "-Xuse-experimental=kotlin.Experimental"
+            )
+            jvmTarget = "1.8"
+        }
+
     }
 }

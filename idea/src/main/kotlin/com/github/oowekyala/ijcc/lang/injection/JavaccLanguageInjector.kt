@@ -7,9 +7,11 @@ import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
+import com.github.oowekyala.ijcc.settings.pluginSettings
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
+import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 
 /**
@@ -51,3 +53,13 @@ object JavaccLanguageInjector : MultiHostInjector {
 
 
 }
+
+private val LinearStructureKey = Key.create<LinearInjectedStructure>("linearInjectedStructure")
+
+private val JccGrammarFileRoot.linearInjectedStructure: LinearInjectedStructure
+    get() = getUserData(LinearStructureKey)
+        ?: JavaccLanguageInjector.getLinearStructureFor(this)
+            .also {
+                putUserData(LinearStructureKey, it)
+            }
+

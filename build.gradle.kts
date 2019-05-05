@@ -1,14 +1,16 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
+import com.github.oowekyala.localDepsRepo
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import java.net.URI
 
 plugins {
-    kotlin("jvm") version "1.3.10"
+    kotlin("jvm") version "1.3.11"
     java
 }
 
-val KotlinVersion by extra { "1.3.10" } // sync with above
+
+val KotlinVersion by extra { "1.3.11" } // sync with above
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
@@ -17,34 +19,66 @@ val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
 group = "com.github.oowekyala"
 version = "1.4"
 
+extra["customDepsOrg"] = "ijcc.build"
 
-ext { 
-    // creates secret properties
-    set("intellijPublishUsername", "")
-    set("intellijPublishPassword", "")
-    apply(from = "secrets.properties")
+extra["versions.kotlin"] = "1.3.11"
+extra["versions.intellijSdk"] = "2018.2.4"
+
+//extra["versions.jar.asm-all"] = "7.0.1"
+extra["versions.jar.guava"] = "23.6-jre"
+extra["versions.jar.picocontainer"] = "1.2"
+extra["versions.jar.automaton"] = "1.12-1"
+extra["versions.jar.streamex"] = "0.6.5"
+
+extra["verifyDependencyOutput"] = false
+extra["intellijReleaseType"] = if (extra["versions.intellijSdk"]?.toString()?.endsWith("SNAPSHOT") == true)
+    "snapshots"
+else
+    "releases"
+
+extra["IntellijCoreDependencies"] =
+    listOf(
+        "asm-all", // above 2019.1 the jar is versioned 7.0.1
+        "guava",
+        "jdom",
+        "jna",
+        "log4j",
+        "picocontainer",
+//        "snappy-in-java",
+        "streamex",
+        "trove4j"
+    )
+
+
+repositories {
+    jcenter()
+    //    mavenCentral()
+    localDepsRepo(project)
+    maven {
+        url = URI("https://dl.bintray.com/kotlin/kotlinx")
+    }
+    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
 }
+
 
 subprojects {
 
+    val sub = this@subprojects
 
-    apply<KotlinPluginWrapper>()
+    sub.apply<KotlinPluginWrapper>()
 
-    repositories {
-        mavenCentral()
+
+    sub.repositories {
         jcenter()
+        //    mavenCentral()
+        localDepsRepo(project)
         maven {
             url = URI("https://dl.bintray.com/kotlin/kotlinx")
         }
         maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
     }
 
-
-    dependencies {
-
-//        val compile by configurations.creating {}
-//        val testCompile by configurations.creating {}
-//        val testImplementation by configurations.creating {}
+    sub.dependencies {
 
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
         compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
@@ -62,13 +96,13 @@ subprojects {
     }
 
 
-    tasks {
-//
-//
-//        compileJava {
-//            sourceCompatibility = "1.8"
-//            targetCompatibility = "1.8"
-//        }
+    sub.tasks {
+
+
+        compileJava {
+            sourceCompatibility = "1.8"
+            targetCompatibility = "1.8"
+        }
 
         compileKotlin {
             kotlinOptions {

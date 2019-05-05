@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.settings.JavaccProjectSettingsService
-import com.github.oowekyala.ijcc.settings.javaccSettings
 import com.intellij.psi.NavigatablePsiElement
 
 /**
@@ -20,9 +18,5 @@ interface JccPsiElement : NavigatablePsiElement {
     val grammarOptions: IGrammarOptions
         get() = containingFile.grammarOptions
 
-    /** Gets the project-specific settings of the plugin. */
-    @JvmDefault
-    val pluginSettings: JavaccProjectSettingsService
-        get() = project.javaccSettings
 
 }

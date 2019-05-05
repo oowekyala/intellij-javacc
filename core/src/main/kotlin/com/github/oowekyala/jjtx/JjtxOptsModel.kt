@@ -6,7 +6,6 @@ import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
-import org.apache.commons.io.FilenameUtils
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.reader.UnicodeReader
 import java.io.Reader
@@ -36,7 +35,7 @@ interface JjtxOptsModel : IGrammarOptions {
                   file: NamedInputStream,
                   parent: JjtxOptsModel): JjtxOptsModel? {
 
-            return when (FilenameUtils.getExtension(file.filename)) {
+            return when (file.extension) {
                 "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
                 // by default assume it's yaml
                 else   -> parseYaml(ctx, UnicodeReader(file.inputStream).buffered(), parent)

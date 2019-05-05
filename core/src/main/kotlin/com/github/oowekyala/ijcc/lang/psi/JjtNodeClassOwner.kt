@@ -36,11 +36,6 @@ interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 val JjtNodeClassOwner.isNotVoid: Boolean
     get() = !isVoid
 
-/** Gets the Psi class representing the node's class for navigation. */
-val JjtNodeClassOwner.nodeClass: PsiClass?
-    get() = nodeQualifiedName?.let {
-        getJavaClassFromQname(containingFile, it)
-    }
 
 
 /**

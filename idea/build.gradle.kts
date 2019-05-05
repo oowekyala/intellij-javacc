@@ -1,5 +1,6 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
+
 plugins {
     kotlin("jvm")
     id("java")
@@ -7,26 +8,19 @@ plugins {
 }
 
 val PackageRoot = "/com/github/oowekyala/ijcc"
-val PathToPsiRoot = "$PackageRoot/lang/psi"
-val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
-
-
 
 dependencies {
     implementation(kotlin("reflect")) // this could be avoided
 
     compile(project(":core"))
-
-
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs("src/main/kotlin")
-            srcDirs("src/main/java")
-        }
-    }
+
+ext {
+    // creates secret properties
+    set("intellijPublishUsername", "")
+    set("intellijPublishPassword", "")
+    apply(from = "../secrets.properties")
 }
 
 
@@ -62,7 +56,7 @@ tasks {
 
     runIde {
         jvmArgs = listOf("-Xmx2G")
-        setConfigDirectory(projectDir.resolve("sandbox").resolve("config"))
+        setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
 
     buildPlugin {

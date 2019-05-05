@@ -17,6 +17,11 @@ import com.intellij.util.indexing.FileBasedIndex
 fun getJavaClassFromQname(context: JccFile, fqcn: String): PsiClass? =
     JavaPsiFacade.getInstance(context.project).findClass(fqcn, context.grammarSearchScope)
 
+/** Gets the Psi class representing the node's class for navigation. */
+val JjtNodeClassOwner.nodeClass: PsiClass?
+    get() = nodeQualifiedName?.let {
+        getJavaClassFromQname(containingFile, it)
+    }
 
 /**
  * Scope in which a grammar file will be searched for a matching
