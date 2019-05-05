@@ -1,25 +1,22 @@
 package com.github.oowekyala.ijcc.lang.psi.stubs
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.lang.model.AccessModifier
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccBnfProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccJavacodeProductionImpl
 import com.github.oowekyala.ijcc.lang.psi.impl.JccScopedExpansionUnitImpl
-import com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex
-import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.psi.PsiFile
 import com.intellij.psi.StubBuilder
 import com.intellij.psi.stubs.*
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IStubFileElementType
-import com.intellij.util.io.java.AccessModifier
 import readEnum
 import readNullable
 import writeEnum
 import writeNullable
-
 
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
@@ -128,9 +125,7 @@ abstract class NodeClassOwnerStubElementType<TStub : JjtNodeClassOwnerStub<TPsi>
     abstract fun deserializeImpl(dataStream: StubInputStream, parentStub: StubElement<*>, rawName: String?): TStub
 
     override fun indexStub(stub: TStub, sink: IndexSink) {
-        stub.jjtNodeQualifiedName?.runIt {
-            sink.occurrence(JjtreeQNameStubIndex.key, it)
-        }
+        StubIndexService.getInstance().indexJjtreeNodeClassOwner(stub, sink)
     }
 }
 

@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.model
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.github.oowekyala.ijcc.lang.psi.stringValue
+import com.intellij.psi.stubs.StubIndexKey
 
 /**
  * Generic option for JavaCC or its preprocessors.

@@ -129,6 +129,9 @@
         <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
         <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
 
+        <applicationService
+                serviceInterface="com.github.oowekyala.ijcc.lang.psi.stubs.StubIndexService"
+                implementationClass="com.github.oowekyala.ijcc.lang.psi.stubs.indices.IdeStubService"/>
 
         <!-- GUTTER -->
 
