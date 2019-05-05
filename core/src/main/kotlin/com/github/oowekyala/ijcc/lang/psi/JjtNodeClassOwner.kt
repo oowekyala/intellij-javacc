@@ -1,7 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.intellij.psi.PsiClass
-
 /**
  * Node that is tied to a generated node class, assumed to be
  * somewhere in the project. This is used to represent the

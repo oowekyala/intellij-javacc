@@ -8,16 +8,15 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.getProductionByName
-import com.intellij.codeInsight.documentation.DocumentationManager
-import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
+import com.github.oowekyala.ijcc.util.ResourcePrefix
 import com.intellij.codeInsight.javadoc.JavaDocUtil
 import com.intellij.lang.documentation.DocumentationMarkup.*
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.FakePsiElement
-import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
+import java.io.IOException
 
 /**
  * Utilities to build the quickdoc.
@@ -135,72 +134,6 @@ object JccDocUtil {
 }
 
 
-object HtmlUtil {
-
-    val br = "<br/>"
-
-
-    @Language("HTML")
-    fun grayed(it: String) = "$GRAYED_START$it$GRAYED_END"
-
-    @Language("HTML")
-    fun emph(it: String) = "<i>$it</i>"
-
-    @Language("HTML")
-    fun bold(it: String) = "<b>$it</b>"
-
-    @Language("HTML")
-    fun angles(it: String) = "&lt;$it&gt;"
-
-    @Language("HTML")
-    fun code(it: String) = "<code>$it</code>"
-
-    @Language("HTML")
-    fun pre(it: String) = "<pre>$it</pre>"
-
-    @Language("HTML")
-    fun link(target: String, text: String) = "<a href=\"$target\">$text</a>"
-
-    /**
-     * Kotlin wrapper around [DocumentationManager.createHyperlink]
-     * @param isCodeLink Whether the [linkText] should be wrapped into `<code>` tags
-     */
-    @Language("HTML")
-    fun psiLink(builder: StringBuilder = StringBuilder(),
-                linkTarget: String?,
-                @Language("HTML") linkText: String,
-                isCodeLink: Boolean = true) {
-        createHyperlinkImpl(buffer = builder, label = linkText, refText = linkTarget, plainLink = !isCodeLink)
-    }
-
-    // copy pasted from DocumentationManagerUtil because the component service cannot be
-    // created during tests..
-    private fun createHyperlinkImpl(buffer: StringBuilder,
-                                    refText: String?,
-                                    label: String,
-                                    plainLink: Boolean) {
-        buffer.append("<a href=\"")
-        buffer.append(DocumentationManagerProtocol.PSI_ELEMENT_PROTOCOL) // :-)
-        buffer.append(refText)
-        buffer.append("\">")
-        if (!plainLink) {
-            buffer.append("<code>")
-        }
-        buffer.append(label)
-        if (!plainLink) {
-            buffer.append("</code>")
-        }
-        buffer.append("</a>")
-    }
-
-    @Language("HTML")
-    fun psiLink(linkTarget: String?,
-                @Language("HTML") linkText: String,
-                isCodeLink: Boolean = true): String =
-        StringBuilder().also { psiLink(it, linkTarget, linkText, isCodeLink) }.toString()
-}
-
-
 private val FakeDefaultStateEltKey = Key.create<PsiElement>("jcc.fake.default.state")
 // Keys use reference identity so we must use a map within
 private val FakeOptionEltsKey = Key.create<MutableMap<String, PsiElement>>("jcc.fake.option.elts")
@@ -257,3 +190,31 @@ fun JccFile.realOrFakeOptionNodeFor(optionName: String): PsiElement? {
         }
     }
 }
+
+private val OptionDocCache = mutableMapOf<GenericOption<*>, String?>()
+
+/**
+ * Returns the documentable description of the option if it could be found.
+ */
+val GenericOption<*>.description: String?
+    get()  = OptionDocCache.computeIfAbsent(this) { option->
+
+        // link options between them
+        fun String.escapeMarkup(): String =
+            replace(OptionLinkRegex) {
+                val name = it.groupValues[1]
+                HtmlUtil.psiLink(linkTarget = JccDocUtil.linkRefToOption(name), linkText = name)
+            }
+
+        try {
+            // try jjtree first
+            val resource = JccDocUtil::class.java.getResource("$ResourcePrefix/optionDescriptions/jjtree/${option.name}.html")
+                ?: JccDocUtil::class.java.getResource("$ResourcePrefix/optionDescriptions/${option.name}.html")
+
+            resource?.readText()?.escapeMarkup()
+        } catch (e: IOException) {
+            null
+        }
+    }
+
+private val OptionLinkRegex = Regex("""\{\s*option_link\s*(\w+)\s*}""")

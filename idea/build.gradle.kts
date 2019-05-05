@@ -28,6 +28,17 @@ ext {
 
 tasks {
 
+
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-Xjvm-default=enable",
+                "-Xuse-experimental=kotlin.Experimental"
+            )
+            jvmTarget = "1.8"
+        }
+    }
+
     // compresses the icons and replaces them in the copied resource directory
     // the icons in the source dir are "optimised for maintainability", which means
     // much bigger than needed

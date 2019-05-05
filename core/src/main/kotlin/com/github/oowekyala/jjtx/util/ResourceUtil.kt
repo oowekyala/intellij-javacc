@@ -1,6 +1,5 @@
 package com.github.oowekyala.jjtx.util
 
-import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.IOException
 import java.net.MalformedURLException
@@ -73,11 +72,11 @@ private fun pathsInResource(classLoader: ClassLoader,
 /** Maps paths to classes.  */
 private fun toClass(path: Path?, packageName: String, filter: (String) -> Boolean = { true }): Class<*>? {
     return path
-        ?.takeIf { p -> "class".equals(FilenameUtils.getExtension(path.toString()), ignoreCase = true) }
+        ?.takeIf { p -> "class".equals(path.extension, ignoreCase = true) }
         ?.takeIf { p -> filter(p.fileName.toFile().nameWithoutExtension) }
         ?.let { p ->
             try {
-                Class.forName(packageName + "." + FilenameUtils.getBaseName(path.fileName.toString()))
+                Class.forName(packageName + "." + path.baseName)
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
                 null

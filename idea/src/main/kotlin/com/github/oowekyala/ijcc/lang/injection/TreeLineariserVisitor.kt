@@ -10,7 +10,7 @@ import com.github.oowekyala.ijcc.util.removeLast
  * [HostSpec]s.
  */
 class TreeLineariserVisitor private constructor(knownPrefixBuilder: StringBuilder)
-    : InjectionStructureTree.Companion.PrefixVisitor() {
+    : Companion.PrefixVisitor() {
 
     // The known prefix builder transmits prefix context to children visitors when crossing a structural boundary
     // It's shared for all spawned subvisitors, to avoid clearing the prefix in case
@@ -109,3 +109,4 @@ class TreeLineariserVisitor private constructor(knownPrefixBuilder: StringBuilde
 
     }
 }
+

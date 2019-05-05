@@ -103,6 +103,7 @@ class LinearInjectedStructure(hostSpecs: List<HostSpec>) {
 /**
  * One host with its prefix and suffix, resilient to local replacements
  * (ie mods in the injected file).
+ * Part of the linear injected structure.
  */
 class HostSpec(val prefix: String?, val suffix: String?,
                host: PsiLanguageInjectionHost,
@@ -167,3 +168,4 @@ class HostSpec(val prefix: String?, val suffix: String?,
         }
     }
 }
+

@@ -3,12 +3,12 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.util.createFile
+import com.github.oowekyala.jjtx.util.exists
+import com.github.oowekyala.jjtx.util.isDirectory
 import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
-import com.intellij.util.io.createFile
-import com.intellij.util.io.exists
-import com.intellij.util.io.isDirectory
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.io.StringWriter
@@ -161,7 +161,7 @@ data class VisitorGenerationTask(
             throw java.lang.IllegalStateException("'genClassName' should be a fully qualified class name, but was $templated")
         }
 
-        val o = outputDir.resolve(templated.replace('.', '/') + ".java")
+        val o: Path = outputDir.resolve(templated.replace('.', '/') + ".java")
 
         if (o.isDirectory()) {
             throw IllegalStateException("Output file ${this.genFqcn} is directory")

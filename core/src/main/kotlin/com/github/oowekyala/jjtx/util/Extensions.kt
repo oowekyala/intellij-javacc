@@ -4,6 +4,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
 import java.io.Reader
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.properties.ReadOnlyProperty
@@ -27,7 +28,17 @@ fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<St
 val Path.extension: String?
     get() = toFile().extension.takeIf { it.isNotEmpty() }
 
+val Path.baseName: String
+    get() = fileName.toString().substringBefore('.')
+
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
+fun Path.isDirectory() : Boolean = Files.isDirectory(this)
+fun Path.exists() : Boolean = Files.exists(this)
+fun Path.isFile() : Boolean = Files.isRegularFile(this)
+fun Path.createFile() {
+    Files.createDirectories(parent)
+    Files.createFile(this)
+}
 
 fun String.wrap(lineLength: Int, indent: Int = 0): String =
     WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)

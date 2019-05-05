@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.Jjtricks.Companion.WRONG_PARAMS_CODE
 import com.github.oowekyala.jjtx.util.*
-import com.intellij.util.io.isFile
 import com.xenomachina.argparser.*
 import java.net.URL
 import java.nio.file.Path

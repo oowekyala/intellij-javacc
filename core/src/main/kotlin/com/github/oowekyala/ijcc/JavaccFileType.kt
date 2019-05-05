@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.icons.JccIcons
-import com.intellij.openapi.fileTypes.FileTypeConsumer
-import com.intellij.openapi.fileTypes.FileTypeFactory
+import com.github.oowekyala.ijcc.icons.JccCoreIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
@@ -10,7 +8,7 @@ import javax.swing.Icon
  * @since inception
  */
 object JavaccFileType : LanguageFileType(JavaccLanguage) {
-    override fun getIcon(): Icon = JccIcons.JAVACC_FILE
+    override fun getIcon(): Icon = JccCoreIcons.JAVACC_FILE
 
     override fun getName(): String = "JAVACC_GRAMMAR"
 
@@ -25,20 +23,11 @@ object JavaccFileType : LanguageFileType(JavaccLanguage) {
  * @since 1.2
  */
 object JjtreeFileType : LanguageFileType(JavaccLanguage) {
-    override fun getIcon(): Icon = JccIcons.JJTREE_FILE
+    override fun getIcon(): Icon = JccCoreIcons.JJTREE_FILE
 
     override fun getName(): String = "JJTREE_GRAMMAR"
 
     override fun getDefaultExtension(): String = "jjt"
 
     override fun getDescription(): String = "JJTree grammar"
-}
-
-
-/** FileTypeFactory extension point. */
-class JavaccFileTypeFactory : FileTypeFactory() {
-    override fun createFileTypes(consumer: FileTypeConsumer) {
-        consumer.consume(JavaccFileType, "jj")
-        consumer.consume(JjtreeFileType, "jjt")
-    }
 }
