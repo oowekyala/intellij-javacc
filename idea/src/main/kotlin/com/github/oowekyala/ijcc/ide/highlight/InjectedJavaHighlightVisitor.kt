@@ -1,7 +1,8 @@
-package com.github.oowekyala.ijcc.lang.injection
+package com.github.oowekyala.ijcc.ide.highlight
 
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
+import com.github.oowekyala.ijcc.settings.pluginSettings
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiFile
@@ -22,6 +23,7 @@ class InjectedJavaHighlightVisitor(private val resolveHelper: PsiResolveHelper) 
             }
         }
 
-    override fun clone(): HighlightVisitorImpl = InjectedJavaHighlightVisitor(resolveHelper)
+    override fun clone(): HighlightVisitorImpl =
+        InjectedJavaHighlightVisitor(resolveHelper)
 
 }

@@ -1,7 +1,5 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor.Companion.getInjectedSubtreeFor
-import com.github.oowekyala.ijcc.lang.injection.TreeLineariserVisitor.Companion.linearise
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
@@ -11,7 +9,6 @@ import com.github.oowekyala.ijcc.settings.pluginSettings
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 
 /**
@@ -38,7 +35,9 @@ object JavaccLanguageInjector : MultiHostInjector {
     private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
         startInjecting(JavaLanguage.INSTANCE)
 
-        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(jcu.containingFile) + "}"
+        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(
+            jcu.containingFile
+        ) + "}"
 
         addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
         doneInjecting()
@@ -47,19 +46,4 @@ object JavaccLanguageInjector : MultiHostInjector {
     private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
         context.linearInjectedStructure.register(this)
     }
-
-    fun getLinearStructureFor(grammarFileRoot: JccGrammarFileRoot): LinearInjectedStructure =
-        linearise(getInjectedSubtreeFor(grammarFileRoot))
-
-
 }
-
-private val LinearStructureKey = Key.create<LinearInjectedStructure>("linearInjectedStructure")
-
-private val JccGrammarFileRoot.linearInjectedStructure: LinearInjectedStructure
-    get() = getUserData(LinearStructureKey)
-        ?: JavaccLanguageInjector.getLinearStructureFor(this)
-            .also {
-                putUserData(LinearStructureKey, it)
-            }
-

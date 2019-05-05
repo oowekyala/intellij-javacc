@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.settings
 
-import com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor
+import com.github.oowekyala.ijcc.ide.highlight.InjectedJavaHighlightVisitor
 import com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector
 import org.intellij.lang.annotations.Language
 

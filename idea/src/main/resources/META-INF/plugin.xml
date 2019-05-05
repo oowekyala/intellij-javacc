@@ -73,7 +73,7 @@
         <additionalTextAttributes scheme="Default" file="com/github/oowekyala/ijcc/colorSchemes/Default_Javacc.xml"/>
 
         <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor"/>
-        <highlightVisitor implementation="com.github.oowekyala.ijcc.lang.injection.InjectedJavaHighlightVisitor"/>
+        <highlightVisitor implementation="com.github.oowekyala.ijcc.ide.highlight.InjectedJavaHighlightVisitor"/>
         <colorSettingsPage implementation="com.github.oowekyala.ijcc.ide.highlight.JavaccColorSettingsPage"/>
 
         <lang.syntaxHighlighterFactory
