@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.JjtreeFileType
-import com.github.oowekyala.ijcc.ide.highlight.JccHighlightVisitor
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub

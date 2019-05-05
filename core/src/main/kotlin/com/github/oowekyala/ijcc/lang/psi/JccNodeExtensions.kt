@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.intellij.util.io.java.AccessModifier
+import com.github.oowekyala.ijcc.lang.model.AccessModifier
 
 /*
     Miscellaneous semantic extensions for jcc nodes.
