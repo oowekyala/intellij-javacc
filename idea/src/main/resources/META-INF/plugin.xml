@@ -156,6 +156,11 @@
         <!-- MISC -->
 
 
+        <applicationService
+                serviceInterface="com.github.oowekyala.ijcc.ide.refs.JccRefVariantService"
+                implementationClass="com.github.oowekyala.ijcc.ide.refs.IdeRefVariantsService"/>
+
+
         <completion.contributor
                 language="JavaCC"
                 implementationClass="com.github.oowekyala.ijcc.ide.completion.JccCompletionContributor"/>

@@ -1,12 +1,9 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.github.oowekyala.ijcc.ide.completion.withTail
-import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -31,8 +28,6 @@ import com.intellij.psi.PsiReferenceBase
 class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     PsiReferenceBase<JccTokenReferenceRegexUnit>(referenceUnit) {
 
-    private val canReferencePrivate = referenceUnit.canReferencePrivate
-
     // doesn't need to query the lexical grammar
     // used by find usages
     override fun isReferenceTo(target: PsiElement): Boolean =
@@ -50,21 +45,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     }
 
     override fun getVariants(): Array<Any> =
-        element.containingFile
-            .lexicalGrammar
-            .allTokens
-            .asSequence()
-            .filter { canReferencePrivate || !it.isPrivate }
-            .mapNotNull { token ->
-                token.name?.let { name ->
-                    LookupElementBuilder
-                        .create(name)
-                        .withIcon(token.psiElement?.presentationIcon)
-                        .withTail("> ")
-
-                }
-            }.toList()
-            .toTypedArray()
+        JccRefVariantService.getInstance().terminalVariants(this)
 
 
     override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent

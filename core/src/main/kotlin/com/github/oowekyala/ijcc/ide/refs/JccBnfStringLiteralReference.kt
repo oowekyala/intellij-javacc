@@ -1,15 +1,11 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.github.oowekyala.ijcc.ide.completion.withTail
-import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccRegexSpec
 import com.github.oowekyala.ijcc.lang.psi.innerRange
-import com.github.oowekyala.ijcc.icons.JccIcons
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
@@ -47,38 +43,7 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
     /**
      * Enables autocompletion. Only tokens from the default state are considered.
      */
-    override fun getVariants(): Array<Any> = element.containingFile
-        .lexicalGrammar
-        .defaultState
-        .tokens
-        .asSequence()
-        .filter { !it.isPrivate && it.regexKind == RegexKind.TOKEN }
-        .mapNotNull { token ->
-            val asString = token.asStringToken ?: return@mapNotNull null
-
-            LookupElementBuilder
-                .create(asString.text.removeSuffix("\""))
-                .withPsiElement(token.psiElement)
-                .withPresentableText(asString.text)
-                .withIcon(JccIcons.TOKEN)
-                .withTypeText(token.let {
-                    buildString {
-                        if (it.lexicalStatesOrEmptyForAll != LexicalState.JustDefaultState) {
-                            // <A, B>
-                            it.lexicalStatesOrEmptyForAll.joinTo(
-                                this,
-                                separator = ", ",
-                                prefix = "<",
-                                postfix = ">"
-                            )
-                        }
-                        it.lexicalStateTransition?.let {
-                            append(" -> ")
-                            append(it)
-                        }
-                    }
-                }, true)
-                .withTail("\" ")
-        }.toList().toTypedArray()
+    override fun getVariants(): Array<Any> =
+        JccRefVariantService.getInstance().stringLiteralVariants(this)
 
 }
