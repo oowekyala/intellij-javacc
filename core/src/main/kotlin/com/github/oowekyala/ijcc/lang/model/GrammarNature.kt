@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.icons.JccIcons
+import com.github.oowekyala.ijcc.icons.JccCoreIcons
 import com.intellij.icons.AllIcons
 import javax.swing.Icon
 
@@ -23,9 +23,9 @@ import javax.swing.Icon
 enum class GrammarNature(val displayName: String,
                          val conventionalExtension: String,
                          val icon: Icon) {
-    JAVACC("JavaCC", "jj", JccIcons.JAVACC_FILE),
-    JJTREE("JJTree", "jjt", JccIcons.JJTREE_FILE),
-    JJTRICKS("JJTricks", "jjtx", JccIcons.JJTREE_FILE),
+    JAVACC("JavaCC", "jj", JccCoreIcons.JAVACC_FILE),
+    JJTREE("JJTree", "jjt", JccCoreIcons.JJTREE_FILE),
+    JJTRICKS("JJTricks", "jjtx", JccCoreIcons.JJTREE_FILE),
 
     /**
      * Special nature in which all features are enabled,
