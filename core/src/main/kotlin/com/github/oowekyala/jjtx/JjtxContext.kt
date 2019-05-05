@@ -1,11 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.jjtx.util.ErrorCollector
-import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.NamedInputStream
-import com.intellij.util.io.inputStream
-import com.intellij.util.io.isFile
+import com.github.oowekyala.jjtx.util.*
 import java.nio.file.Path
 import java.nio.file.Paths
 

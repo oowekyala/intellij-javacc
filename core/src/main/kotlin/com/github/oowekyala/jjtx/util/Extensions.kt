@@ -3,6 +3,8 @@ package com.github.oowekyala.jjtx.util
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
+import java.io.FileInputStream
+import java.io.InputStream
 import java.io.Reader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -32,6 +34,7 @@ val Path.baseName: String
     get() = fileName.toString().substringBefore('.')
 
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
+fun Path.inputStream(): InputStream = FileInputStream(toFile())
 fun Path.isDirectory() : Boolean = Files.isDirectory(this)
 fun Path.exists() : Boolean = Files.exists(this)
 fun Path.isFile() : Boolean = Files.isRegularFile(this)
