@@ -1,6 +1,4 @@
-package com.github.oowekyala.jjtx.cli.configDump
-
-import com.github.oowekyala.jjtx.cli.JjtxCliTestBase
+package com.github.oowekyala.jjtx.cli
 
 /**
  * @author Clément Fournier

@@ -111,7 +111,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = buildOptions(); myGrammarOptionsImpl!! }
 
     private fun buildOptions(): IGrammarOptions =
-        GrammarOptionsService.getInstance().buildOptions(this)
+        project.grammarOptionsService.buildOptions(this)
 
     override fun getContainingFile(): JccFile = this
 

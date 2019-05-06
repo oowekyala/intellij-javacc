@@ -1,0 +1,13 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: true
+    parameterlessVisitor:
+      execute: true
+
+  nodePrefix: AST
+  nodePackage: "net.sourceforge.pmd.lang.java.ast"
+  typeHierarchy:
+    "%JavaNode":
+      - "ImportDeclaration"

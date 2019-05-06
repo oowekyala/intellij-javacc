@@ -1,17 +1,29 @@
 package com.github.oowekyala.jjtx.samples
 
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.lang.util.JccTestBase
+import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.jjtx.JjtxParams
 import com.github.oowekyala.jjtx.JjtxRunContext
 import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
+import com.intellij.openapi.project.Project
+import junit.framework.TestCase
+import org.junit.runner.RunWith
+import org.junit.runner.Runner
+import org.junit.runners.BlockJUnit4ClassRunner
+import org.junit.runners.JUnit4
+import org.junit.runners.ParentRunner
+import org.junit.runners.Suite
 import java.nio.file.Path
 
 /**
  * @author Clément Fournier
  */
-open class JjtxTestBase : JccTestBase() {
+abstract class JjtxTestBase : TestCase(), ParseUtilsMixin {
 
+    private val myEnv = JjtxCoreEnvironment.createTestEnvironment()
+
+    override fun getProject(): Project = myEnv.project
 
     data class CtxBuilder(
         var grammarName: String = "Sample",

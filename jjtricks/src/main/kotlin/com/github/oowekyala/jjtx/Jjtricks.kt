@@ -2,7 +2,9 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.tasks.DumpConfigTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.util.*
@@ -73,14 +75,14 @@ class Jjtricks(
 
     private val configFiles: List<Path> by args.adding(
         "-p", "--opts",
-        help = "Option files to chain, from lowest to highest priority. The options specified inline in the grammar file always have the lowest priority.",
+        help = "Option files to chain, from highest to lowest priority. The options specified inline in the grammar file always have the lowest priority.",
         argName = "OPTS"
     ) {
         toPath()
     }
 
 
-    private fun produceContext(project: Project): JjtxContext {
+    private fun produceContext(project: Project): JjtxRunContext {
 
         args.force()
 
@@ -103,11 +105,15 @@ class Jjtricks(
     }
 
 
-    fun doExecute(project: Project) {
+    fun doExecute(env: JjtxCoreEnvironment) {
 
         val ctx = catchException("Exception while building run context") {
-            produceContext(project)
+            produceContext(env.project)
         }
+
+        env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
+
+//        env.applicationEnvironment.registerApplicationService(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
         if (isDumpConfig) {
             catchException("Exception while dumping configuration task") {
@@ -222,7 +228,7 @@ class Jjtricks(
 
             // environment is open until the end of the CLI run
             JjtxCoreEnvironment.withEnvironment {
-                jjtx.doExecute(project)
+                jjtx.doExecute(this)
             }
 
         }

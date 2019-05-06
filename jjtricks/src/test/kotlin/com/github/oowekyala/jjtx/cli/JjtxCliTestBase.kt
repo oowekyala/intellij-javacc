@@ -12,6 +12,8 @@ import junit.framework.Assert.assertEquals
 import org.apache.commons.io.FileUtils.copyDirectory
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintStream
@@ -44,7 +46,7 @@ abstract class JjtxCliTestBase {
     protected var expectedOutputRoot = "gen"
 
     private val myTmpDir = createTempDirectory("jjtx-test")
-    private val myResourceDir = SrcTestResources.resolve(javaClass.`package`.name.replace('.', '/'))
+    private val myResourceDir = findTestDir(javaClass)
 
     private val myExpectedStdout = myResourceDir.resolve("stdout.txt").takeIf { it.exists() }
     private val myExpectedStderr = myResourceDir.resolve("stderr.txt").takeIf { it.exists() }
@@ -101,6 +103,15 @@ abstract class JjtxCliTestBase {
 
 
     companion object {
+
+        private fun findTestDir(javaClass: Class<*>): Path {
+
+            val name = javaClass.simpleName.removeSuffix("CliTest").decapitalize()
+
+            val path = JjtxCliTestBase::class.java.`package`.name.replace('.', '/')
+
+            return SrcTestResources.resolve("$path/$name")
+        }
 
         private val SrcTestResources =
             Paths.get(System.getProperty("jjtx.testEnv.jjtricks.testResDir")).toAbsolutePath()

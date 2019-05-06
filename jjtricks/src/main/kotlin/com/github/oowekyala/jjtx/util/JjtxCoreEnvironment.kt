@@ -3,8 +3,6 @@ package com.github.oowekyala.jjtx.util
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.JjtreeFileType
-import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
-import com.github.oowekyala.jjtx.ide.JjtxOptionsService
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.openapi.Disposable
@@ -21,7 +19,7 @@ import java.nio.file.Path
  */
 class JjtxCoreEnvironment private constructor(
     parentDisposable: Disposable,
-    private val applicationEnvironment: CoreApplicationEnvironment
+    val applicationEnvironment: CoreApplicationEnvironment
 ) : CoreProjectEnvironment(parentDisposable, applicationEnvironment) {
 
 
@@ -34,9 +32,14 @@ class JjtxCoreEnvironment private constructor(
         private val APPLICATION_LOCK = Object()
         private var ourApplicationEnvironment: CoreApplicationEnvironment? = null
 
+
         private fun createRootEnv(parentDisposable: Disposable): JjtxCoreEnvironment =
             JjtxCoreEnvironment(parentDisposable, getOrCreateAppCoreEnv())
 
+        fun createTestEnvironment(): JjtxCoreEnvironment {
+            val disposable = Disposer.newDisposable()
+            return createRootEnv(disposable)
+        }
 
         fun withEnvironment(action: JjtxCoreEnvironment.() -> Unit) {
             val disposable = Disposer.newDisposable()
@@ -76,7 +79,7 @@ class JjtxCoreEnvironment private constructor(
             registerFileType(JavaccFileType, "jj")
             registerFileType(JjtreeFileType, "jjt")
             registerParserDefinition(JavaccParserDefinition)
-            registerApplicationService(GrammarOptionsService::class.java, JjtxOptionsService())
+            // registerApplicationService(GrammarOptionsService::class.java, JjtxOptionsService())
         }
     }
 }

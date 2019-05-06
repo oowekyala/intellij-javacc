@@ -1,0 +1,183 @@
+# Fully resolved JJTricks configuration
+# Config file chain: Java.jjtopts.yaml -> JavaParent.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> Java.jjt
+jjtx:
+  nodePrefix: AST
+  nodePackage: net.sourceforge.pmd.lang.java.ast
+  visitors:
+    defaultJjtreeVisitor:
+      execute: 'true'
+      templateFile: /jjtx/templates/Visitor.java.vm
+      genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
+      formatter: java
+      context:
+        methodTemplate: |
+          #macro( methodAnchor $n)
+          visit($n.classSimpleName,Object)
+          #end
+
+          #evaluate($global.visitorMethodComment)
+          default Object visit($node.classSimpleName node, Object data) {
+              #if ($node.superNode)
+              return visit(($node.superNode.classSimpleName) node, data);
+              #else
+              return node.childrenAccept(this, data);
+              #end
+          }
+    parameterlessVisitor:
+      execute: 'true'
+      templateFile: /jjtx/templates/Visitor.java.vm
+      genClassName: ${grammar.nodePackage}.${grammar.name}Visitor
+      context:
+        methodTemplate: |
+          #macro( methodAnchor $node)
+          visit($node.classSimpleName)
+          #end
+
+          #evaluate($global.visitorMethodComment)
+          default void visit($node.classSimpleName node) {
+              #if ($node.superNode)
+              visit(($node.superNode.classSimpleName) node);
+              #else
+              node.childrenAccept(this, data);
+              #end
+          }
+  templateContext:
+    visitorMethodComment: |
+      /**
+       * Visits {@linkplain $node.classSimpleName $node.name}.
+         #if ( $node.superNode )
+       * Delegates to {@link $H#methodAnchor($node.superNode)}
+       * if unimplemented.
+       *
+        #if ( !$node.subNodes.empty )
+       * This method is delegated to by:
+       * <ul>
+          #foreach($sub in $node.subNodes)
+       *   <li>{@link $H#methodAnchor($sub)}</li>
+          #end
+       * </ul>
+        #end
+        #else
+       *   This is the root of the delegation chain.
+        #end
+       *
+       */
+  typeHierarchy:
+    net.sourceforge.pmd.lang.java.ast.JavaNode:
+    - net.sourceforge.pmd.lang.java.ast.ASTImportDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTConditionalExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTArgumentList
+    - net.sourceforge.pmd.lang.java.ast.ASTForUpdate
+    - net.sourceforge.pmd.lang.java.ast.ASTEmptyStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTForStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceBodyDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTLiteral
+    - net.sourceforge.pmd.lang.java.ast.ASTMethodReference
+    - net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer
+    - net.sourceforge.pmd.lang.java.ast.ASTMemberValueArrayInitializer
+    - net.sourceforge.pmd.lang.java.ast.ASTConditionalOrExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTFinallyStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTContinueStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTExplicitConstructorInvocation
+    - net.sourceforge.pmd.lang.java.ast.ASTConstructorDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTUnaryExpressionNotPlusMinus
+    - net.sourceforge.pmd.lang.java.ast.ASTEnumBody
+    - net.sourceforge.pmd.lang.java.ast.ASTReferenceType
+    - net.sourceforge.pmd.lang.java.ast.ASTMultiplicativeExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTExtendsList
+    - net.sourceforge.pmd.lang.java.ast.ASTPostfixExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTShiftExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTAssertStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTAllocationExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTAnnotationTypeBody
+    - net.sourceforge.pmd.lang.java.ast.ASTBlock
+    - net.sourceforge.pmd.lang.java.ast.ASTMethodDeclarator
+    - net.sourceforge.pmd.lang.java.ast.ASTInclusiveOrExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTType
+    - net.sourceforge.pmd.lang.java.ast.ASTSingleMemberAnnotation
+    - net.sourceforge.pmd.lang.java.ast.ASTIfStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTCompilationUnit
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeParameter
+    - net.sourceforge.pmd.lang.java.ast.ASTMemberValue
+    - net.sourceforge.pmd.lang.java.ast.ASTLabeledStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTAdditiveExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTFormalParameter
+    - net.sourceforge.pmd.lang.java.ast.ASTResource
+    - net.sourceforge.pmd.lang.java.ast.ASTSwitchStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTModuleName
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeArguments
+    - net.sourceforge.pmd.lang.java.ast.ASTLambdaExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTNullLiteral
+    - net.sourceforge.pmd.lang.java.ast.ASTAssignmentOperator
+    - net.sourceforge.pmd.lang.java.ast.ASTConditionalAndExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTWhileStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTCatchStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator
+    - net.sourceforge.pmd.lang.java.ast.ASTReturnStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTInstanceOfExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTWildcardBounds
+    - net.sourceforge.pmd.lang.java.ast.ASTLocalVariableDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTCastExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTInitializer
+    - net.sourceforge.pmd.lang.java.ast.ASTFieldDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeBound
+    - net.sourceforge.pmd.lang.java.ast.ASTThrowStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceBody
+    - net.sourceforge.pmd.lang.java.ast.ASTBooleanLiteral
+    - net.sourceforge.pmd.lang.java.ast.ASTMethodDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTMarkerAnnotation
+    - net.sourceforge.pmd.lang.java.ast.ASTStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTMemberValuePair
+    - net.sourceforge.pmd.lang.java.ast.ASTMemberSelector
+    - net.sourceforge.pmd.lang.java.ast.ASTForInit
+    - net.sourceforge.pmd.lang.java.ast.ASTEqualityExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTPrimaryPrefix
+    - net.sourceforge.pmd.lang.java.ast.ASTAnnotation
+    - net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType
+    - net.sourceforge.pmd.lang.java.ast.ASTExclusiveOrExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeParameters
+    - net.sourceforge.pmd.lang.java.ast.ASTPackageDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTArguments
+    - net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTStatementExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTRelationalExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTTypeArgument
+    - net.sourceforge.pmd.lang.java.ast.ASTPreIncrementExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTPreDecrementExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTAnnotationTypeMemberDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTArrayInitializer
+    - net.sourceforge.pmd.lang.java.ast.ASTBreakStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTAnnotationTypeDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTModuleDirective
+    - net.sourceforge.pmd.lang.java.ast.ASTTryStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTPrimitiveType
+    - net.sourceforge.pmd.lang.java.ast.ASTRSIGNEDSHIFT
+    - net.sourceforge.pmd.lang.java.ast.ASTEnumDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTAndExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTFormalParameters
+    - net.sourceforge.pmd.lang.java.ast.ASTSynchronizedStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTResources
+    - net.sourceforge.pmd.lang.java.ast.ASTResourceSpecification
+    - net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId
+    - net.sourceforge.pmd.lang.java.ast.ASTDoStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTUnaryExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTSwitchLabel
+    - net.sourceforge.pmd.lang.java.ast.ASTResultType
+    - net.sourceforge.pmd.lang.java.ast.ASTPrimarySuffix
+    - net.sourceforge.pmd.lang.java.ast.ASTStatementExpressionList
+    - net.sourceforge.pmd.lang.java.ast.ASTAnnotationMethodDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression
+    - net.sourceforge.pmd.lang.java.ast.ASTNormalAnnotation
+    - net.sourceforge.pmd.lang.java.ast.ASTNameList
+    - net.sourceforge.pmd.lang.java.ast.ASTRUNSIGNEDSHIFT
+    - net.sourceforge.pmd.lang.java.ast.ASTModuleDeclaration
+    - net.sourceforge.pmd.lang.java.ast.ASTName
+    - net.sourceforge.pmd.lang.java.ast.ASTArrayDimsAndInits
+    - net.sourceforge.pmd.lang.java.ast.ASTMemberValuePairs
+    - net.sourceforge.pmd.lang.java.ast.ASTBlockStatement
+    - net.sourceforge.pmd.lang.java.ast.ASTImplementsList
+    - net.sourceforge.pmd.lang.java.ast.ASTEnumConstant
+    - net.sourceforge.pmd.lang.java.ast.ASTDefaultValue
+
