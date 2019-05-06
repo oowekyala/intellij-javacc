@@ -278,9 +278,10 @@ private fun validateConfigFiles(io: Io,
     val grammarName = grammarPath.toFile().nameWithoutExtension
 
     val defaulted =
-        if (paths.isEmpty())
-            listOf(grammarPath.resolveSibling("$grammarName.jjtopts"))
-        else paths
+        when {
+            paths.isEmpty() -> listOf(grammarPath.resolveSibling("$grammarName.jjtopts"))
+            else            -> paths
+        }
 
     val resolved = defaulted.associateWith { p ->
 

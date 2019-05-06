@@ -7,7 +7,6 @@ import org.junit.Test
  */
 class OptsChainingCliTest : JjtxCliTestBase() {
 
-    // TODO allow referring to them as just JavaParent, Java
     @Test
     fun testFullParentChaining() = doTest(
         "Java",
@@ -15,7 +14,17 @@ class OptsChainingCliTest : JjtxCliTestBase() {
         "--opts",
         "Java.jjtopts.yaml",
         "--opts",
-        "JavaParent.jjtopts.yaml"
+        "./JavaParent.jjtopts.yaml"
+    )
+
+    @Test
+    fun testShortnames() = doTest(
+        "Java",
+        "--dump-config",
+        "--opts",
+        "Java",
+        "--opts",
+        "./JavaParent"
     )
 
 
