@@ -82,7 +82,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      * heuristic for that is the highlight passes (it's done in the init
      * routine of [JccHighlightVisitor]).
      */
-    internal fun invalidateCachedStructures() {
+    // should be internal but whatever
+    fun invalidateCachedStructures() {
         myLexGrammarImpl = null
         myGrammarOptionsImpl = null
         mySyntaxGrammarImpl = null

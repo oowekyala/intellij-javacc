@@ -19,7 +19,7 @@ val grammarKit by configurations.creating
 
 dependencies {
     compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
 

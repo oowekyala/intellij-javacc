@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.ide.intentions
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.github.oowekyala.ijcc.lang.psi.getJavaClassFromQname
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
