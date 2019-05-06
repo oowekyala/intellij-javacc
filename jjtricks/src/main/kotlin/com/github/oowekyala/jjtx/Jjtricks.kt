@@ -24,7 +24,6 @@ class Jjtricks(
     private val io: Io = Io()
 ) {
 
-
     private val grammarPath: Path by args.positional(
         name = "GRAMMAR",
         help = "Path to a grammar file (the extension can be omitted)"

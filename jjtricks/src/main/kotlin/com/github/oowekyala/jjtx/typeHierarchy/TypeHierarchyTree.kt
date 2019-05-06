@@ -1,22 +1,34 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
-import com.github.oowekyala.jjtx.util.ErrorCategory.*
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.util.JsonPosition
-import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.ErrorCategory.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
 /**
+ * Tree representing a node from the grammar, holding
+ * information about its subtypes and supertype.
+ *
+ * The construction process of the tree is iterative,
+ * and creates a new tree at each step. Those intermediary
+ * representations are not made visible to a consumer of the API.
+ * The documentation of this class assumes the finished
+ * form of the tree.
+ *
+ * @property nodeName The fully qualified name of the represented node
+ * @property positionInfo The position in the jjtopts file where this node was defined, or null
+ * @property children The children (subtypes) of this node
+ * @property parent The direct supertype of this node, or null if this is the root
+ *
  * @author Clément Fournier
  */
-class TypeHierarchyTree(
+class TypeHierarchyTree internal constructor(
     val nodeName: String,
     val positionInfo: Position?,
     children: List<TypeHierarchyTree>,
-    val specificity: Specificity = Specificity.UNKNOWN
+    internal val specificity: Specificity = Specificity.UNKNOWN
 ) : TreeOps<TypeHierarchyTree> {
 
 
@@ -52,10 +64,10 @@ class TypeHierarchyTree(
         )
     }
 
-    fun copy(nodeName: String = this.nodeName,
-             positionInfo: Position? = this.positionInfo,
-             children: List<TypeHierarchyTree> = this.children,
-             specificity: Specificity = this.specificity): TypeHierarchyTree =
+    internal fun copy(nodeName: String = this.nodeName,
+                      positionInfo: Position? = this.positionInfo,
+                      children: List<TypeHierarchyTree> = this.children,
+                      specificity: Specificity = this.specificity): TypeHierarchyTree =
         TypeHierarchyTree(
             nodeName, positionInfo, children, specificity
         )

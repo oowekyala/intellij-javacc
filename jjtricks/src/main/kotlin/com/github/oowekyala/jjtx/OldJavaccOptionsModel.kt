@@ -11,11 +11,11 @@ import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
  *
  * @author Clément Fournier
  */
-class OldJavaccOptionsModel(
+internal class OldJavaccOptionsModel(
     grammarFile: JccFile
 ) : JjtxOptsModel {
 
-    val grammarOptions = InlineGrammarOptions(grammarFile)
+    private val grammarOptions = InlineGrammarOptions(grammarFile)
 
     override val inlineBindings: InlineGrammarOptions = grammarOptions
 

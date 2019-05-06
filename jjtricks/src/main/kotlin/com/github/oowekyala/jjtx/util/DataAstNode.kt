@@ -1,8 +1,7 @@
 package com.github.oowekyala.jjtx.util
 
 /**
- * Abstract AST, common denominator between JSON
- * and YAML.
+ * Abstract AST, common denominator between JSON and YAML.
  */
 sealed class DataAstNode {
     abstract val position: Position?

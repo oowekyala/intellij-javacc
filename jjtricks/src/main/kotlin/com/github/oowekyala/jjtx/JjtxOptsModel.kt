@@ -9,6 +9,7 @@ import com.google.gson.stream.JsonReader
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.reader.UnicodeReader
 import java.io.Reader
+import java.nio.file.Path
 
 /**
  * Models a jjtopts configuration file.
@@ -17,14 +18,31 @@ import java.io.Reader
  */
 interface JjtxOptsModel : IGrammarOptions {
 
+    /**
+     * The parent model in the chain. Properties that
+     * are not found in this model are delegated to the parent.
+     */
     val parentModel: JjtxOptsModel?
+
     override val nodePrefix: String
+
     override val nodePackage: String
+
     override val isDefaultVoid: Boolean
+
+    /**
+     * The fully resolved type hierarchy tree.
+     */
     val typeHierarchy: TypeHierarchyTree
 
+    /**
+     * Global template variables, merged with the parent maps.
+     */
     val templateContext: Map<String, Any>
 
+    /**
+     * Map of ids to runnable visitor generation tasks.
+     */
     val visitors: Map<String, VisitorGenerationTask>
 
     companion object {
@@ -32,7 +50,38 @@ interface JjtxOptsModel : IGrammarOptions {
         const val DefaultRootNodeName = "Node"
 
         /**
-         * Throws exceptions on parsing errors.
+         * Parses and chains a full chain of paths, throwing an
+         * exception if one model can't be parsed. The context
+         * must be initialised (constructor must have completed).
+         *
+         * @param ctx Context
+         * @param configChain In decreasing precedence order. The default root file
+         *                    and the inline options will be added to the top of the chain.
+         *
+         */
+        fun parseChain(ctx: JjtxContext, configChain: List<Path>): JjtxOptsModel =
+            // they're in decreasing precedence order
+            configChain
+                .filter { it.isFile() }
+                .map { NamedInputStream(it.inputStream(), it.toString()) }
+                .plus(RootJjtOpts)
+                // but we fold them from least important to most important
+                .asReversed()
+                .fold<NamedInputStream, JjtxOptsModel>(OldJavaccOptionsModel(ctx.grammarFile)) { model, path ->
+                    try {
+                        parse(ctx, path, model)
+                    } catch (e: Exception) {
+                        throw RuntimeException("Exception parsing file ${path.filename} : ${e.message}")
+                    }
+                }
+
+        /**
+         * Parse a single jjtopts [file] into a [JjtxOptsModel].
+         * Supported models are JSON and Yaml. Yaml is much more
+         * convenient, if only because it allows inputting multiline
+         * strings.
+         *
+         * @throws Exception on parsing errors.
          */
         fun parse(ctx: JjtxContext,
                   file: NamedInputStream,
@@ -46,18 +95,18 @@ interface JjtxOptsModel : IGrammarOptions {
         }
 
 
-        fun parseYaml(ctx: JjtxContext,
-                      reader: Reader,
-                      parent: JjtxOptsModel): JjtxOptsModel {
+        private fun parseYaml(ctx: JjtxContext,
+                              reader: Reader,
+                              parent: JjtxOptsModel): JjtxOptsModel {
 
             val json = Yaml().compose(reader).yamlToData()
 
             return fromElement(ctx, json, parent)
         }
 
-        fun parseJson(ctx: JjtxContext,
-                      reader: Reader,
-                      parent: JjtxOptsModel): JjtxOptsModel {
+        private fun parseJson(ctx: JjtxContext,
+                              reader: Reader,
+                              parent: JjtxOptsModel): JjtxOptsModel {
 
             val jsonReader = JsonReader(reader)
             jsonReader.isLenient = true

@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.github.oowekyala.jjtx.JjtxContext
 
 
-fun TypeHierarchyTree.removeDuplicates(ctx: JjtxContext): TypeHierarchyTree {
+internal fun TypeHierarchyTree.removeDuplicates(ctx: JjtxContext): TypeHierarchyTree {
 
     val copy = deepCopy()
 

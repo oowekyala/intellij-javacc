@@ -5,7 +5,6 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
-import com.google.googlejavaformat.java.Formatter
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.io.StringWriter
@@ -15,6 +14,19 @@ import java.util.*
 
 // The field names of this class are public API, because they're serialized
 // They're decoupled from the real VisitorConfig though
+/**
+ * Configuration of a visitor generation task, as input under `jjtx.visitors`.
+ * `jjtx.visitors` is a map of ids to [VisitorConfigBean]. If a configuration
+ * with the same id is found in the parent [JjtxOptsModel], the child configuration
+ * is completed by the parent configuration.
+ *
+ * @property execute Whether the task will be run by JJTricks
+ * @property templateFile The path to a file containing the template. Can be a classpath resource.
+ * @property template The source of a template, if present, overrides [templateFile]
+ * @property formatter The name of a formatter to use, available formatters are listed in [FormatterChoice]
+ * @property genClassName A template evaluating to the FQCN of the class to generate.
+ * @property context A map of additional context variables available in the template
+ */
 data class VisitorConfigBean(
     val execute: Boolean?,
     val templateFile: String?,
@@ -42,6 +54,15 @@ data class VisitorConfigBean(
         )
 
 
+    /**
+     * Creates a runnable [VisitorGenerationTask] from this configuration,
+     * validating the parameters.
+     *
+     * @return A generation task if all parameters are valid. If [execute] is
+     *  false, returns null.
+     *
+     * @throws IllegalStateException if this config is invalid
+     */
     fun toConfig(id: String): VisitorGenerationTask? {
 
         if (execute == false) {
@@ -66,27 +87,16 @@ data class VisitorConfigBean(
             id = id,
             execute = execute ?: true,
             template = t,
-            formatter = FormatterOpt.select(formatter ?: "java"),
+            formatter = FormatterChoice.select(formatter ?: "java"),
             genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )
     }
 }
 
-enum class FormatterOpt(private val doFormat: (String) -> String) {
-    JAVA({ Formatter().formatSource(it) });
-
-
-    fun format(source: String) = doFormat(source)
-
-    companion object {
-        fun select(key: String?): FormatterOpt? {
-            val k = key?.toUpperCase() ?: return null
-            return values().firstOrNull { it.name == k }
-        }
-    }
-}
-
+/**
+ * Type of source for a [VisitorGenerationTask].
+ */
 sealed class TemplateSource {
 
     data class File(val fname: String) : TemplateSource()
@@ -118,7 +128,7 @@ data class VisitorGenerationTask(
     val id: String,
     val execute: Boolean,
     val template: TemplateSource,
-    val formatter: FormatterOpt?,
+    val formatter: FormatterChoice?,
     val genFqcn: String,
     val context: Map<String, Any?>
 ) {

@@ -7,7 +7,7 @@ import com.github.oowekyala.jjtx.util.Severity
 import java.util.regex.PatternSyntaxException
 
 
-fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
+internal fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
                                      ctx: JjtxContext): TypeHierarchyTree =
     resolveAgainst(grammarNodeNames, ctx).first()
 
@@ -123,7 +123,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 }
 
 
-enum class Specificity {
+internal enum class Specificity {
     UNKNOWN,
     REGEX,
     RESOLVED,

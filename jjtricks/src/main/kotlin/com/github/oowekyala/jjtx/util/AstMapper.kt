@@ -19,10 +19,10 @@ import java.util.*
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
-val YamlNode.position: Position
+internal val YamlNode.position: Position
     get() = YamlPosition(startMark, endMark)
 
-fun YamlNode.yamlToData(): DataAstNode =
+internal fun YamlNode.yamlToData(): DataAstNode =
     when (this) {
         is ScalarNode   ->
             AstScalar(
@@ -44,7 +44,7 @@ fun YamlNode.yamlToData(): DataAstNode =
     }
 
 
-fun JsonElement.jsonToData(): DataAstNode {
+internal fun JsonElement.jsonToData(): DataAstNode {
 
     fun JsonElement.jsonReal(parentPosition: JsonPosition): DataAstNode {
         val myPosition = parentPosition.resolve(this.toString())
@@ -104,7 +104,7 @@ fun JsonElement.jsonToData(): DataAstNode {
 
 
 
-fun DataAstNode.toJson(): JsonElement =
+internal fun DataAstNode.toJson(): JsonElement =
     when (this) {
 
         is AstScalar ->
@@ -140,7 +140,7 @@ fun DataAstNode.toJson(): JsonElement =
     }
 
 
-fun OptsModelImpl.toDataNode(): DataAstNode {
+internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
     val visitors = visitorBeans.toDataNode()
 
@@ -161,7 +161,7 @@ fun OptsModelImpl.toDataNode(): DataAstNode {
     )
 }
 
-fun DataAstNode.toYaml(): YamlNode = when (this) {
+internal fun DataAstNode.toYaml(): YamlNode = when (this) {
     is AstScalar -> ScalarNode(
         yamlTag,
         any,
@@ -176,20 +176,20 @@ fun DataAstNode.toYaml(): YamlNode = when (this) {
     is AstSeq    -> SequenceNode(yamlTag, list.map { it.toYaml() }, DumperOptions.FlowStyle.BLOCK)
 }
 
-val DataAstNode.yamlTag: Tag
+internal val DataAstNode.yamlTag: Tag
     get() = when (this) {
         is AstScalar -> Tag.STR
         is AstMap    -> Tag.MAP
         is AstSeq    -> Tag.SEQ
     }
 
-fun TypeHierarchyTree.toDataNode(): DataAstNode =
+internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
     if (children.isEmpty())
         AstScalar(nodeName, STRING)
     else
         AstMap(mapOf(nodeName to AstSeq(children.map { it.toDataNode() })))
 
-fun YamlNode.toYamlString(): String {
+internal fun YamlNode.toYamlString(): String {
     val opts = DumperOptions()
     val sw = StringWriter()
     val serializer = Serializer(Emitter(sw, opts), Resolver(), opts, Tag.MAP)
@@ -205,9 +205,9 @@ fun YamlNode.toYamlString(): String {
 }
 
 
-fun OptsModelImpl.toYaml(): YamlNode = toDataNode().toYaml()
+internal fun OptsModelImpl.toYaml(): YamlNode = toDataNode().toYaml()
 
-fun Any?.toDataNode(): DataAstNode {
+internal fun Any?.toDataNode(): DataAstNode {
     return when (this) {
         null             -> AstScalar("null", NULL)
         is String        -> AstScalar(this, STRING)
@@ -233,12 +233,12 @@ private inline fun <reified T : Any> T.propertiesMap(): Map<String, DataAstNode>
 // avoids endless loop in the case of cycle
 private val propertyMapCache = WeakHashMap<Class<*>, List<JProperty<*, *>>>()
 
-val <T : Any> Class<T>.properties: List<JProperty<T, *>>
+private val <T : Any> Class<T>.properties: List<JProperty<T, *>>
     get() = propertyMapCache.computeIfAbsent(this) {
         methods.toList().mapNotNull { JProperty.toPropertyOrNull(it) }
     } as List<JProperty<T, *>>
 
-class JProperty<in T : Any, out V> private constructor(
+private class JProperty<in T : Any, out V> private constructor(
     val name: String,
     val getter: (T) -> V?
 ) {

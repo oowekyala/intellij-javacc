@@ -9,7 +9,7 @@ import java.nio.file.Paths
 
 
 /**
- * TODO remove, doesn't know the full config chain
+ * TODO doesn't know the full config chain, not great
  *
  * @author Clément Fournier
  */

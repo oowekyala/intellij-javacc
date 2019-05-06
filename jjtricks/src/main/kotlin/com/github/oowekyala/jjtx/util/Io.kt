@@ -34,7 +34,9 @@ data class Io(
 val workingDirectory: Path
     get() = Paths.get(System.getProperty("user.dir"))
 
-
+/**
+ * Exit code of the app.
+ */
 enum class ExitCode {
     OK,
     ERROR;

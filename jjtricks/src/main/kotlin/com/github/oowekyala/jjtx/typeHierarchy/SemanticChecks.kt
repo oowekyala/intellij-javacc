@@ -7,7 +7,7 @@ import com.github.oowekyala.jjtx.util.Severity.FAIL
 import com.github.oowekyala.jjtx.util.position
 
 
-fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>, ctx: JjtxContext): TypeHierarchyTree {
+internal fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>, ctx: JjtxContext): TypeHierarchyTree {
 
     val remaining = names.groupByTo(mutableMapOf()) { it.nodeQualifiedName }
 

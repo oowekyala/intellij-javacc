@@ -10,7 +10,7 @@ import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import org.apache.velocity.VelocityContext
 
 /*
-    Beans used to present data insidea Velocity context.
+    Beans used to present data inside a Velocity context.
  */
 
 
@@ -112,6 +112,9 @@ data class NodeBean(
     }
 }
 
+/**
+ * Represents a file.
+ */
 data class FileBean(
     val fileName: String,
     val absolutePath: String,

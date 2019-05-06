@@ -16,9 +16,9 @@ import kotlin.reflect.KProperty
  *
  * @author Clément Fournier
  */
-class OptsModelImpl(val ctx: JjtxContext,
-                    override val parentModel: JjtxOptsModel,
-                    json: AstMap) : JjtxOptsModel {
+internal class OptsModelImpl(val ctx: JjtxContext,
+                             override val parentModel: JjtxOptsModel,
+                             json: AstMap) : JjtxOptsModel {
 
 
     private val jjtx: Namespacer = json namespace "jjtx"
@@ -76,8 +76,8 @@ class OptsModelImpl(val ctx: JjtxContext,
 
 }
 
-inline fun <reified T> Namespacer.withDefault(propName: String? = null,
-                                              crossinline default: () -> T): ReadOnlyProperty<Any, T> =
+private inline fun <reified T> Namespacer.withDefault(propName: String? = null,
+                                                      crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this, propName)
         .map {
             it?.let {
@@ -90,7 +90,8 @@ inline fun <reified T> Namespacer.withDefault(propName: String? = null,
         }.lazily()
 
 
-class JsonProperty(private val namespacer: Namespacer, val name: String? = null) : ReadOnlyProperty<Any, DataAstNode?> {
+private class JsonProperty(private val namespacer: Namespacer, val name: String? = null) :
+    ReadOnlyProperty<Any, DataAstNode?> {
     override fun getValue(thisRef: Any, property: KProperty<*>): DataAstNode? = namespacer[name ?: property.name]
 }
 
