@@ -20,7 +20,7 @@ import java.nio.file.Path
  * @author Clément Fournier
  */
 class Jjtricks(
-    args: ArgParser,
+    private val args: ArgParser,
     private val io: Io = Io()
 ) {
 
@@ -51,21 +51,25 @@ class Jjtricks(
 
     private val isDumpConfig by args.flagging(
         "--dump-config",
-        help = "Print the fully resolved jjtopts file, and exits"
+        help = "Print the fully resolved jjtopts file and exits"
     )
     private val isNoVisitors by args.flagging(
         "--no-visitors",
         help = "Don't generate any visitors"
     )
 
-    private val minSeverity by args.mapping(
-        "--quiet" to Severity.FAIL,
-        "-q" to Severity.FAIL,
-        "--debug" to Severity.INFO,
-        "-X" to Severity.INFO,
+    private val severityAndAggregate by args.mapping(
+        // turn off warnings
+        "--quiet" to (Severity.FAIL to false),
+        "-q" to (Severity.FAIL to false),
+        // print info messages
+        "--debug" to (Severity.INFO to false),
+        "-X" to (Severity.INFO to false),
+        // stop aggregating warnings
+        "--warn" to (Severity.WARNING to false),
         help = "Amount of log output to issue"
     ).default {
-        Severity.WARN
+        (Severity.WARNING to true)
     }
 
     private val configFiles: List<Path> by args.adding(
@@ -79,6 +83,8 @@ class Jjtricks(
 
     private fun produceContext(project: Project): JjtxContext {
 
+        args.force()
+
         val grammarFile = findGrammarFile(io, grammarPath)
         val configChain = validateConfigFiles(io, grammarFile, configFiles)
         val jccFile = parseGrammarFile(io, grammarFile, project)
@@ -90,26 +96,44 @@ class Jjtricks(
             configChain = configChain
         )
 
+        val (minSeverity, isAggregateEntries) = severityAndAggregate
+
         return JjtxRunContext(params) {
-            MessageCollectorImpl(it, minSeverity)
+            MessageCollectorImpl(it, isAggregateEntries, minSeverity)
         }
     }
 
 
     fun doExecute(project: Project) {
 
-        val ctx = produceContext(project)
+        val ctx = catchException("Exception while building run context") {
+            produceContext(project)
+        }
 
         if (isDumpConfig) {
-            DumpConfigTask(io.stdout).execute(ctx)
+            catchException("Exception while dumping configuration task") {
+                DumpConfigTask(io.stdout).execute(ctx)
+            }
+            io.stdout.flush()
+            ctx.messageCollector.printReport(io.stderr)
             io.exit(ExitCode.OK)
         }
 
         if (!isNoVisitors) {
-            GenerateVisitorsTask(outputRoot).execute(ctx)
+            catchException("Exception while generating visitors") {
+                GenerateVisitorsTask(outputRoot).execute(ctx)
+                ctx.messageCollector.printReport(io.stderr)
+            }
         }
 
     }
+
+    private fun <T> catchException(errorCase: String, block: () -> T): T =
+        try {
+            block()
+        } catch (e: Exception) {
+            io.bail(e.message ?: errorCase)
+        }
 
 
     companion object {

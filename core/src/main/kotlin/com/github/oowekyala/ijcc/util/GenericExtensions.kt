@@ -82,7 +82,7 @@ fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
     }
 }
 
-fun String.indent(level: Int) = prependIndent("    ".repeat(level))
+fun String.indent(level: Int, indentStr: String = "    ") = prependIndent(indentStr.repeat(level))
 
 fun <T> MutableList<T>.removeLast(): T = removeAt(lastIndex)
 

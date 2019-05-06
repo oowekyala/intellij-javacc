@@ -1,7 +1,9 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.MessageCollector
+import com.github.oowekyala.jjtx.util.isFile
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -15,16 +17,7 @@ class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, grammarF
 
     override val io: Io = Io()
 
-    override val messageCollector = object : MessageCollector {
-        override fun report(message: String,
-                            category: ErrorCategory,
-                            severityOverride: Severity?,
-                            vararg sourcePosition: Position?): Severity {
-            // do nothing
-            return severityOverride ?: category.minSeverity
-        }
-
-    }
+    override val messageCollector = MessageCollector()
 
 }
 

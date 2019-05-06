@@ -17,9 +17,9 @@ abstract class JjtxContext(val grammarFile: JccFile,
 
     val project: Project = grammarFile.project
 
-    abstract val messageCollector: MessageCollector
-
     abstract val io: Io
+
+    abstract val messageCollector: MessageCollector
 
     val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 
@@ -32,6 +32,9 @@ abstract class JjtxContext(val grammarFile: JccFile,
      * user-specified chain.
      */
     val jjtxOptsModel: JjtxOptsModel by lazy {
+        // This uses the run context so should only be executed after the constructor returns
+        // hence the lazyness
+
         // they're in decreasing precedence order
         configChain
             .filter { it.isFile() }
@@ -40,7 +43,11 @@ abstract class JjtxContext(val grammarFile: JccFile,
             // but we fold them from least important to most important
             .asReversed()
             .fold<NamedInputStream, JjtxOptsModel>(OldJavaccOptionsModel(grammarFile)) { model, path ->
-                JjtxOptsModel.parse(this, path, model) ?: model
+                try {
+                    JjtxOptsModel.parse(this, path, model)
+                } catch (e: Exception) {
+                    throw RuntimeException("Exception parsing file ${path.filename} : ${e.message}")
+                }
             }
     }
 

@@ -31,9 +31,12 @@ interface JjtxOptsModel : IGrammarOptions {
 
         const val DefaultRootNodeName = "Node"
 
+        /**
+         * Throws exceptions on parsing errors.
+         */
         fun parse(ctx: JjtxContext,
                   file: NamedInputStream,
-                  parent: JjtxOptsModel): JjtxOptsModel? {
+                  parent: JjtxOptsModel): JjtxOptsModel {
 
             return when (file.extension) {
                 "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
@@ -45,29 +48,31 @@ interface JjtxOptsModel : IGrammarOptions {
 
         fun parseYaml(ctx: JjtxContext,
                       reader: Reader,
-                      parent: JjtxOptsModel): JjtxOptsModel? {
+                      parent: JjtxOptsModel): JjtxOptsModel {
+
             val json = Yaml().compose(reader).yamlToData()
 
-            // TODO don't swallow errors
             return fromElement(ctx, json, parent)
         }
 
         fun parseJson(ctx: JjtxContext,
                       reader: Reader,
-                      parent: JjtxOptsModel): JjtxOptsModel? {
+                      parent: JjtxOptsModel): JjtxOptsModel {
 
             val jsonReader = JsonReader(reader)
             jsonReader.isLenient = true
 
-            // TODO don't swallow errors
             val jsonParser = JsonParser()
-            return fromElement(ctx, jsonParser.parse(jsonReader).jsonToData(), parent)
+
+            val elt = jsonParser.parse(jsonReader).jsonToData()
+
+            return fromElement(ctx, elt, parent)
         }
 
         private fun fromElement(ctx: JjtxContext,
-                                jsonElement: DataAstNode?,
+                                jsonElement: DataAstNode,
                                 parent: JjtxOptsModel) =
-            jsonElement?.let { it as? AstMap }?.let { OptsModelImpl(ctx, parent, it) }
+            OptsModelImpl(ctx, parent, jsonElement.let { it as AstMap })
 
     }
 }
