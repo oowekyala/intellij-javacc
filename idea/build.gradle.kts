@@ -13,6 +13,7 @@ dependencies {
     implementation(kotlin("reflect")) // this could be avoided
 
     compile(project(":core"))
+    testCompile(project(":core").dependencyProject.sourceSets["test"].output)
 }
 
 

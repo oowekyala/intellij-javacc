@@ -26,6 +26,8 @@ dependencies {
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)
+        // TODO this is weird
+        includeJars("java-impl", "java-api", "openapi")
     }
 
     grammarKit(intellijDep()) {
@@ -49,6 +51,13 @@ dependencies {
     implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
+
+    testImplementation(grammarKit)
+    testImplementation(intellijDep()) {
+        includeJars("openapi")
+    }
+
+    testCompile("junit:junit:4.12")
 }
 
 sourceSets {

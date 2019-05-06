@@ -5,23 +5,16 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import java.net.URI
 
 plugins {
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.11" // sync with extra property below
     java
 }
-
-
-val KotlinVersion by extra { "1.3.11" } // sync with above
-val PackageRoot = "/com/github/oowekyala/ijcc"
-val PathToPsiRoot = "$PackageRoot/lang/psi"
-val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
-
 
 group = "com.github.oowekyala"
 version = "1.4"
 
 extra["customDepsOrg"] = "ijcc.build"
 
-extra["versions.kotlin"] = "1.3.11"
+extra["versions.kotlin"] = "1.3.11" // sync with above plugin version
 extra["versions.intellijSdk"] = "2018.2.4"
 
 //extra["versions.jar.asm-all"] = "7.0.1"
@@ -48,6 +41,13 @@ extra["IntellijCoreDependencies"] =
         "streamex",
         "trove4j"
     )
+
+
+val KotlinVersion = extra["versions.kotlin"]
+val PackageRoot = "/com/github/oowekyala/ijcc"
+val PathToPsiRoot = "$PackageRoot/lang/psi"
+val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
+
 
 
 repositories {

@@ -85,7 +85,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
             .let {
                 Pair(
                     getInjectedSubtreeFor(it.grammarFileRoot!!),
-                    JavaccLanguageInjector.getLinearStructureFor(it.grammarFileRoot!!)
+                    it.grammarFileRoot!!.linearInjectedStructure
                 )
             }
 

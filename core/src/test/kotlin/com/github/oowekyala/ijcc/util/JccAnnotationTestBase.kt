@@ -1,8 +1,6 @@
 package com.github.oowekyala.ijcc.util
 
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
-import com.github.oowekyala.ijcc.settings.InjectionSupportLevel
-import com.github.oowekyala.ijcc.settings.javaccSettings
 import org.intellij.lang.annotations.Language
 
 /**
@@ -102,16 +100,17 @@ abstract class JccAnnotationTestBase : JccTestBase() {
         configure: (String) -> T
 
     ) {
-        disableInjection()
+//        disableInjection()
         configure(text)
         myFixture.checkHighlighting(checkWarn, checkInfo, checkWeakWarn, ignoreExtraHighlighting)
     }
 
-    private fun disableInjection() {
-        val settingsState = myFixture.project.javaccSettings.myState
-        myFixture.project.javaccSettings.myState =
-            settingsState.copy(injectionSupportLevel = InjectionSupportLevel.DISABLED)
-    }
+//    FIXME
+//    private fun disableInjection() {
+//        val settingsState = myFixture.project.javaccSettings.myState
+//        myFixture.project.javaccSettings.myState =
+//            settingsState.copy(injectionSupportLevel = InjectionSupportLevel.DISABLED)
+//    }
 
     private fun <T> checkFix(
         fixName: String,
