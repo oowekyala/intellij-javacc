@@ -19,26 +19,26 @@ import java.util.*
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
-internal val YamlNode.position: Position
+internal val YamlNode.position: YamlPosition
     get() = YamlPosition(startMark, endMark)
 
-internal fun YamlNode.yamlToData(): DataAstNode =
+internal fun YamlNode.yamlToData(fileName: String? = null): DataAstNode =
     when (this) {
         is ScalarNode   ->
             AstScalar(
                 any = value,
                 type = STRING,
-                position = position
+                position = position.addName(fileName)
             )
         is SequenceNode ->
             AstSeq(
-                list = value.map { it.yamlToData() },
-                position = position
+                list = value.map { it.yamlToData(fileName) },
+                position = position.addName(fileName)
             )
         is MappingNode  ->
             AstMap(
-                map = this.value.map { Pair(it.keyNode.yamlToData(), it.valueNode.yamlToData()) }.toMap(),
-                position = position
+                map = this.value.map { Pair(it.keyNode.yamlToData(fileName), it.valueNode.yamlToData(fileName)) }.toMap(),
+                position = position.addName(fileName)
             )
         else            -> throw IllegalStateException("Unknown node type")
     }

@@ -90,16 +90,18 @@ interface JjtxOptsModel : IGrammarOptions {
             return when (file.extension) {
                 "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
                 // by default assume it's yaml
-                else   -> parseYaml(ctx, UnicodeReader(file.inputStream).buffered(), parent)
+                else   -> parseYaml(ctx, file, parent)
             }
         }
 
 
         private fun parseYaml(ctx: JjtxContext,
-                              reader: Reader,
+                              file: NamedInputStream,
                               parent: JjtxOptsModel): JjtxOptsModel {
 
-            val json = Yaml().compose(reader).yamlToData()
+            val reader = UnicodeReader(file.inputStream).buffered()
+
+            val json = Yaml().compose(reader).yamlToData(file.filename)
 
             return fromElement(ctx, json, parent)
         }

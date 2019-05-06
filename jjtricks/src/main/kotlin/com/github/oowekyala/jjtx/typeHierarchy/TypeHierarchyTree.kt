@@ -82,7 +82,7 @@ class TypeHierarchyTree internal constructor(
         return adopted
     }
 
-    companion object {
+    internal companion object {
 
         fun default() =
             default(JjtxOptsModel.DefaultRootNodeName)
@@ -94,7 +94,7 @@ class TypeHierarchyTree internal constructor(
         /**
          * First construction pass, from a Json object.
          */
-        fun fromJson(json: DataAstNode?, ctx: JjtxContext): TypeHierarchyTree = when (json) {
+        fun fromData(json: DataAstNode?, ctx: JjtxContext): TypeHierarchyTree = when (json) {
             null -> default()
             else ->
                 json.toTree(ctx)?.copy(specificity = Specificity.ROOT) ?: default()

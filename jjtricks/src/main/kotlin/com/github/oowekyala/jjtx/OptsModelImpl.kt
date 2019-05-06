@@ -66,7 +66,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
-        TypeHierarchyTree.fromJson(it, ctx)
+        TypeHierarchyTree.fromData(it, ctx)
     }
 
     override val typeHierarchy: TypeHierarchyTree by lazy {

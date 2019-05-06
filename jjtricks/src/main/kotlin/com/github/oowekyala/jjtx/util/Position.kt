@@ -24,6 +24,23 @@ data class YamlPosition(
     override fun toString(): String = startMark.toString()
 }
 
+fun YamlPosition.addName(name: String?) = YamlPosition(
+    startMark?.addName(name),
+    endMark?.addName(name)
+)
+
+private fun Mark.addName(name: String?): Mark =
+    name?.let {
+        Mark(
+            it,
+            this.index,
+            this.line,
+            this.column,
+            this.buffer,
+            this.pointer
+        )
+    } ?: this
+
 
 data class JsonPosition(val path: List<String>) : Position {
 
