@@ -11,7 +11,6 @@ import com.intellij.util.io.readText
 import junit.framework.Assert.assertEquals
 import org.apache.commons.io.FileUtils.copyDirectory
 import org.junit.Before
-import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintStream
@@ -114,34 +113,69 @@ abstract class JjtxCliTestBase {
         private val SrcTestResources =
             Paths.get(System.getProperty("jjtx.testEnv.jjtricks.testResDir")).toAbsolutePath()
 
-        private fun assertDirEquals(expected: Path, actual: Path) {
-            Files.walkFileTree(expected, object : SimpleFileVisitor<Path>() {
-                @Throws(IOException::class)
-                override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-                    val result = super.visitFile(file, attrs)
-
-                    // get the relative file name from path "one"
-                    val relativize = expected.relativize(file)
-                    // construct the path for the counterpart file in "other"
-                    val actualFile = actual.resolve(relativize)
-
-
-                    val actualText = actualFile.readText()
-                    val expectedText = file.readText()
-
-                    if (!Comparing.equal(expectedText, actualText)) {
-                        throw FileComparisonFailure(
-                            "Text mismatch in file $actualFile",
-                            expectedText,
-                            actualText,
-                            file.toString()
-                        )
-                    }
-
-                    return result
-                }
-            })
-        }
     }
 
 }
+
+
+private fun assertDirEquals(expected: Path, actual: Path) {
+
+    /**
+     * Returns the set of paths that exist in the [reference] and
+     * can be found in the [inspected] directory under the same path.
+     * Throws [FileComparisonFailure] if some files in [reference]
+     * don't match their [inspected] counterpart.
+     */
+    fun walk(reference: Path, inspected: Path): Set<Path> {
+        val found = mutableSetOf<Path>()
+
+        if (!reference.exists()) {
+            return emptySet()
+        }
+
+        Files.walkFileTree(reference, object : SimpleFileVisitor<Path>() {
+            @Throws(IOException::class)
+            override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+                val result = super.visitFile(file, attrs)
+
+                // get the relative file name from path "one"
+                val relativize = reference.relativize(file)
+                // construct the path for the counterpart file in "other"
+                val actualFile = inspected.resolve(relativize)
+
+                val expectedText = file.readText()
+
+                if (!actualFile.exists()) {
+                    throw FileComparisonFailure(
+                        "File $relativize missing in $inspected",
+                        expectedText,
+                        "",
+                        actualFile.toString()
+                    )
+                }
+
+                val actualText = actualFile.readText()
+
+                if (!Comparing.equal(expectedText, actualText)) {
+                    throw FileComparisonFailure(
+                        "Text mismatch in file $actualFile",
+                        expectedText,
+                        actualText,
+                        file.toString()
+                    )
+                }
+
+                found.add(relativize)
+
+                return result
+            }
+        })
+
+        return found
+    }
+
+    val expectedInActual = walk(expected, actual)
+    val actualInExpected = walk(actual, expected)
+    assertEquals(expectedInActual, actualInExpected)
+}
+

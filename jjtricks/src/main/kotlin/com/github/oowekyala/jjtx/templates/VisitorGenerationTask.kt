@@ -123,7 +123,7 @@ sealed class TemplateSource {
  *
  * @author Clément Fournier
  */
-data class VisitorGenerationTask(
+data class VisitorGenerationTask internal constructor(
     private val myBean: VisitorConfigBean,
     val id: String,
     val execute: Boolean,
@@ -153,6 +153,10 @@ data class VisitorGenerationTask(
         }
     }
 
+    /**
+     * Returns a pair (fqcn, path) of the FQCN of the generated class
+     * and the path where the file should be put in the [outputDir].
+     */
     private fun resolveOutput(velocityContext: VelocityContext,
                               outputDir: Path): Pair<String, Path> {
 
@@ -227,6 +231,10 @@ data class VisitorGenerationTask(
         val formatted = try {
             formatter?.format(rendered)
         } catch (e: Exception) {
+            ctx.messageCollector.report(
+                "Exception applying formatter '${formatter!!.name.toLowerCase()}': ${e.message}",
+                ErrorCategory.FORMATTER_ERROR
+            )
             null
         } ?: rendered
 

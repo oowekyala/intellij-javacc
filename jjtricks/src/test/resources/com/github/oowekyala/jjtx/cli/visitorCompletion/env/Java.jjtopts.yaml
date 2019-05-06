@@ -6,7 +6,7 @@ jjtx:
     parameterlessVisitor:
       execute: true
       genClassName: "${grammar.name}VisitorX"
-
+      formatter: java
 
   nodePrefix: VF
   nodePackage: "net.ast"

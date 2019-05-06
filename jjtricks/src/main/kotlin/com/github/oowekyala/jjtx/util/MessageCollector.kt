@@ -127,6 +127,7 @@ enum class ErrorCategory(val minSeverity: Severity) {
 
     MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
     PARSING_ERROR(Severity.FAIL),
+    FORMATTER_ERROR(Severity.FAIL),
 
     DUPLICATE_MATCH(Severity.WARNING),
     INVALID_REGEX(Severity.WARNING),

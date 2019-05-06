@@ -3,7 +3,7 @@
  * Not intended for manual editing.
  */
 
-#if( ! $package.isEmpty )
+#if( !$package.empty )
 package $package;
 #end
 
