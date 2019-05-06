@@ -15,6 +15,7 @@ import org.yaml.snakeyaml.serializer.Serializer
 import java.io.IOException
 import java.io.StringWriter
 import java.lang.reflect.Method
+import java.util.*
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
@@ -228,13 +229,16 @@ fun Any?.toDataNode(): DataAstNode {
 private inline fun <reified T : Any> T.propertiesMap(): Map<String, DataAstNode> =
     javaClass.properties.map { Pair(it.name, it.getter(this).toDataNode()) }.toMap()
 
-val <T> Class<T>.properties: List<JProperty<T, *>>
-    get() {
-        return methods.toList()
-            .mapNotNull { JProperty.toPropertyOrNull(it) as JProperty<T, *> }
-    }
 
-data class JProperty<in T, out V> private constructor(
+// avoids endless loop in the case of cycle
+private val propertyMapCache = WeakHashMap<Class<*>, List<JProperty<*, *>>>()
+
+val <T : Any> Class<T>.properties: List<JProperty<T, *>>
+    get() = propertyMapCache.computeIfAbsent(this) {
+        methods.toList().mapNotNull { JProperty.toPropertyOrNull(it) }
+    } as List<JProperty<T, *>>
+
+class JProperty<in T : Any, out V> private constructor(
     val name: String,
     val getter: (T) -> V?
 ) {
@@ -248,7 +252,7 @@ data class JProperty<in T, out V> private constructor(
 
         fun toPropertyOrNull(method: Method): JProperty<*, *>? {
             return method.propertyName?.let {
-                JProperty<Any?, Any?>(it) {
+                JProperty<Any, Any?>(it) {
                     try {
                         method.invoke(it)
                     } catch (e: Exception) {
@@ -261,15 +265,17 @@ data class JProperty<in T, out V> private constructor(
         private val Method.propertyName: String?
             get() {
 
+                if (this == java.lang.Object::class.java.getDeclaredMethod("getClass")) return null
+
                 if (parameterCount != 0 || isBridge) return null
 
                 GetterRegex.matchEntire(name)?.groupValues?.get(1)?.let {
-                    return it
+                    return it.decapitalize()
                 }
 
                 if (returnType == Boolean::class.java || returnType == java.lang.Boolean.TYPE) {
                     BoolGetterRegex.matchEntire(name)?.groupValues?.get(0)?.let {
-                        return it
+                        return it.decapitalize()
                     }
                 }
                 return null

@@ -1,6 +1,9 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.*
+import com.github.oowekyala.includeIjCoreDeps
+import com.github.oowekyala.includeJars
+import com.github.oowekyala.intellijCoreDep
+import com.github.oowekyala.intellijDep
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -8,6 +11,7 @@ plugins {
     kotlin("jvm")
     id("java")
     id("org.jetbrains.grammarkit") version "2018.2.2"
+    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 val PackageRoot = "/com/github/oowekyala/ijcc"
@@ -43,14 +47,14 @@ dependencies {
     }
 
     // this is for jjtx
-    compile("com.google.guava:guava:23.5-jre")
+    compile("com.google.guava:guava:27.0.1-jre")
     compile("org.apache.velocity:velocity:1.6.2")
 
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
-    implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
+    // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
 
@@ -145,5 +149,27 @@ tasks {
             jvmTarget = "1.8"
         }
 
+    }
+
+    shadowJar {
+        baseName = "jjtricks-min"
+        appendix = ""
+
+        mergeServiceFiles()
+
+        minimize {
+            exclude(dependency("org.apache.velocity:velocity:.*"))
+            exclude(dependency("org.jetbrains.kotlin:.*:.*"))
+            exclude(dependency("com.google.googlejavaformat:.*:.*"))
+            exclude(dependency("com.google.guava:.*:.*"))
+            exclude(dependency("com.google.guava:.*:.*"))
+            exclude(dependency("com.google.errorprone:javac-shaded:.*"))
+        }
+
+        manifest {
+            attributes(
+                "Main-Class" to "com.github.oowekyala.jjtx.Jjtricks"
+            )
+        }
     }
 }
