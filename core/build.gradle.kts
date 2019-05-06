@@ -26,12 +26,14 @@ dependencies {
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
 
     // FIXME this is for GeneratedParserUtilBase
-    runtimeOnly("com.github.JetBrains:Grammar-Kit:2017.1.6")
+    // runtimeOnly("com.github.JetBrains:Grammar-Kit:2017.1.6")
 
     compile(intellijCoreDep()) { includeJars("intellij-core") }
     compile(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        includeJars("platform-api") // FIXME this is just for GeneratedParserUtilBase
+        // the platform-impl is just for GeneratedParserUtilBase...
+        includeJars("platform-api", "platform-impl")
+
         // FIXME PsiClassOwnerNotResolved!!
         // includeJars("java-impl", "java-api", "openapi")
     }
