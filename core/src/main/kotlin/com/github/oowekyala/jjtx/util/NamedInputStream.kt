@@ -8,8 +8,9 @@ import java.io.InputStream
 data class NamedInputStream(
     val inputStream: InputStream,
     val filename: String
-)
+) {
+    val extension
+        get() = filename.substringAfterLast('.')
+}
 
 
-val NamedInputStream.extension
-get() = filename.substringAfterLast('.')

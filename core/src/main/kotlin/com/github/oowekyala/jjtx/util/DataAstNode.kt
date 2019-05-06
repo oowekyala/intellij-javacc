@@ -30,11 +30,6 @@ data class AstSeq(
 ) : DataAstNode(), List<DataAstNode> by list
 
 
-/**
- * Model of a yaml node / json node.
- *
- * @author Clément Fournier
- */
 data class AstMap(
     val map: Map<String, DataAstNode>,
     override val position: Position? = null

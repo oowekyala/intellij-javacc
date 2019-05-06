@@ -1,6 +1,18 @@
 package com.github.oowekyala.jjtx.util
 
 /**
+ * Namespacer allows structuring config files in a flat
+ * or structured format. E.g.
+ *
+ * jjtx.visitors:
+ *
+ * is equivalent to
+ *
+ * jjtx:
+ *      visitors:
+ *
+ *
+ *
  * @author Clément Fournier
  */
 data class Namespacer(val namespace: String, val json: AstMap) {

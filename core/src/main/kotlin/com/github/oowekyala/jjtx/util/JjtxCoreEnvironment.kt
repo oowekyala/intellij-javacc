@@ -12,11 +12,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import java.nio.file.Path
 
 /**
- * Used for CLI execution.
+ * IntelliJ environment that provides a project and other facilities
+ * of the intellij platform when executing from CLI.
  *
  * @author Clément Fournier
  */
-class JccCoreEnvironment private constructor(
+class JjtxCoreEnvironment private constructor(
     parentDisposable: Disposable,
     private val applicationEnvironment: CoreApplicationEnvironment
 ) : CoreProjectEnvironment(parentDisposable, applicationEnvironment) {
@@ -31,11 +32,11 @@ class JccCoreEnvironment private constructor(
         private val APPLICATION_LOCK = Object()
         private var ourApplicationEnvironment: CoreApplicationEnvironment? = null
 
-        private fun createRootEnv(parentDisposable: Disposable): JccCoreEnvironment =
-            JccCoreEnvironment(parentDisposable, getOrCreateAppCoreEnv())
+        private fun createRootEnv(parentDisposable: Disposable): JjtxCoreEnvironment =
+            JjtxCoreEnvironment(parentDisposable, getOrCreateAppCoreEnv())
 
 
-        fun withEnvironment(action: JccCoreEnvironment.() -> Unit) {
+        fun withEnvironment(action: JjtxCoreEnvironment.() -> Unit) {
             val disposable = Disposer.newDisposable()
             val env = createRootEnv(disposable)
 

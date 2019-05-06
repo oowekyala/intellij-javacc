@@ -78,12 +78,6 @@ fun JsonObject.asMap(): Map<String, JsonElement> {
 }
 
 
-inline fun <reified T> ReadOnlyProperty<Any, *>.coerce(): ReadOnlyProperty<Any, T?> =
-    object : ReadOnlyProperty<Any, T?> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T? =
-            this@coerce.getValue(thisRef, property) as? T
-    }
-
 
 fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     object : ReadOnlyProperty<R, T> {

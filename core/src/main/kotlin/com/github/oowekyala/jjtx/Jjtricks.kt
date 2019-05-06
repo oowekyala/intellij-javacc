@@ -128,7 +128,7 @@ class Jjtricks(
                     .parseInto { Jjtricks(io = io, args = it) }
 
             // environment is open until the end of the CLI run
-            JccCoreEnvironment.withEnvironment {
+            JjtxCoreEnvironment.withEnvironment {
                 jjtx.doExecute(project)
             }
 
