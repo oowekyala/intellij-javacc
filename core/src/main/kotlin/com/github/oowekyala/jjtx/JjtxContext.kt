@@ -17,7 +17,7 @@ abstract class JjtxContext(val grammarFile: JccFile,
 
     val project: Project = grammarFile.project
 
-    abstract val errorCollector: ErrorCollector
+    abstract val messageCollector: MessageCollector
 
     abstract val io: Io
 

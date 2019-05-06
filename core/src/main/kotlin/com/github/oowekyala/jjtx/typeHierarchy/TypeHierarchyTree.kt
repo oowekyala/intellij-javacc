@@ -96,7 +96,7 @@ class TypeHierarchyTree(
                 is AstMap    -> this.fromJsonObject(ctx)
                 is AstScalar -> this.fromJsonPrimitive(ctx)
                 else         -> {
-                    ctx.errorCollector.handleError(
+                    ctx.messageCollector.report(
                         "expected string or object, got $this",
                         WRONG_TYPE,
                         null,
@@ -111,7 +111,7 @@ class TypeHierarchyTree(
             return if (type == ScalarType.STRING) {
                 TypeHierarchyTree(any, position, emptyList())
             } else {
-                ctx.errorCollector.handleError("expected string, got ${this}", WRONG_TYPE, null, position)
+                ctx.messageCollector.report("expected string, got ${this}", WRONG_TYPE, null, position)
                 null
             }
         }
@@ -119,10 +119,10 @@ class TypeHierarchyTree(
         private fun AstMap.fromJsonObject(ctx: JjtxContext): TypeHierarchyTree? {
 
             if (size > 1) {
-                ctx.errorCollector.handleError("$size", MULTIPLE_HIERARCHY_ROOTS, null, position)
+                ctx.messageCollector.report("$size", MULTIPLE_HIERARCHY_ROOTS, null, position)
                 return null
             } else if (size == 0) {
-                ctx.errorCollector.handleError("", NO_HIERARCHY_ROOTS, null, position)
+                ctx.messageCollector.report("", NO_HIERARCHY_ROOTS, null, position)
                 return null
             }
 
@@ -140,7 +140,7 @@ class TypeHierarchyTree(
                     positionInfo = position
                 )
                 else         -> {
-                    ctx.errorCollector.handleError(
+                    ctx.messageCollector.report(
                         "expected array or string, got $children",
                         WRONG_TYPE,
                         null,

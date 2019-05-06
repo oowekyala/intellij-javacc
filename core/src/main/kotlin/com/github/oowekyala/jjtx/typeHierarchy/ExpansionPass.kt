@@ -31,7 +31,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         val r = try {
             Regex(value)
         } catch (e: PatternSyntaxException) {
-            ctx.errorCollector.handleError(
+            ctx.messageCollector.report(
                 e.message.orEmpty(),
                 ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
                 null,
@@ -63,7 +63,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
     }
 
     if (prodName !in grammarNodeNames) {
-        ctx.errorCollector.handleError(
+        ctx.messageCollector.report(
             qname,
             ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
             null,
@@ -93,7 +93,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 
     if (children.isNotEmpty()) {
         val override = if (matching.size == 1) null else Severity.FAIL
-        ctx.errorCollector.handleError(
+        ctx.messageCollector.report(
             extractedRegex.pattern,
             ErrorCategory.REGEX_SHOULD_BE_LEAF,
             override,
@@ -106,7 +106,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 
 
     if (matching.isEmpty()) {
-        ctx.errorCollector.handleError(
+        ctx.messageCollector.report(
             extractedRegex.pattern,
             ErrorCategory.UNMATCHED_HIERARCHY_REGEX,
             null,

@@ -15,11 +15,11 @@ class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, grammarF
 
     override val io: Io = Io()
 
-    override val errorCollector = object : ErrorCollector {
-        override fun handleError(message: String,
-                                 category: ErrorCategory,
-                                 severityOverride: Severity?,
-                                 vararg sourcePosition: Position?): Severity {
+    override val messageCollector = object : MessageCollector {
+        override fun report(message: String,
+                            category: ErrorCategory,
+                            severityOverride: Severity?,
+                            vararg sourcePosition: Position?): Severity {
             // do nothing
             return severityOverride ?: category.minSeverity
         }

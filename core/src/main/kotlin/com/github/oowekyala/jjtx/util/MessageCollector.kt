@@ -3,11 +3,11 @@ package com.github.oowekyala.jjtx.util
 import com.github.oowekyala.jjtx.JjtxRunContext
 
 
-interface ErrorCollector {
-    fun handleError(message: String,
-                    category: ErrorCategory,
-                    severityOverride: Severity? = null,
-                    vararg sourcePosition: Position?): Severity
+interface MessageCollector {
+    fun report(message: String,
+               category: ErrorCategory,
+               severityOverride: Severity? = null,
+               vararg sourcePosition: Position?): Severity
 
 }
 
@@ -17,8 +17,8 @@ interface ErrorCollector {
  *
  * @author Clément Fournier
  */
-class ErrorCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Severity)
-    : ErrorCollector {
+class MessageCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Severity)
+    : MessageCollector {
 
 
     /**
@@ -29,10 +29,10 @@ class ErrorCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Sever
      *
      * @return The actual severity reported
      */
-    override fun handleError(message: String,
-                             category: ErrorCategory,
-                             severityOverride: Severity?,
-                             vararg sourcePosition: Position?): Severity {
+    override fun report(message: String,
+                        category: ErrorCategory,
+                        severityOverride: Severity?,
+                        vararg sourcePosition: Position?): Severity {
 
         val realSeverity = severityOverride ?: category.minSeverity
 

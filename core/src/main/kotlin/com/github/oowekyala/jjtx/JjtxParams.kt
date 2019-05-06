@@ -61,7 +61,7 @@ data class GenerateVisitorsTask(val outputDir: Path) : JjtxTask() {
         for ((id, visitor) in ctx.jjtxOptsModel.visitors) {
 
             if (!visitor.execute) {
-                ctx.errorCollector.handleError(
+                ctx.messageCollector.report(
                     "Visitor $id is not configured for execution",
                     ErrorCategory.VISITOR_NOT_RUN
                 )

@@ -55,7 +55,7 @@ class OptsModelImpl(val ctx: JjtxContext,
                 bean.toConfig(id)
             } catch (e: IllegalStateException) {
                 // todo don't swallow
-                ctx.errorCollector.handleError(e.message ?: "", INCOMPLETE_VISITOR_SPEC)
+                ctx.messageCollector.report(e.message ?: "", INCOMPLETE_VISITOR_SPEC)
                 null
             }
         }
