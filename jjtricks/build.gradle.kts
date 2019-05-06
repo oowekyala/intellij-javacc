@@ -3,6 +3,7 @@ import com.github.oowekyala.includeJars
 import com.github.oowekyala.intellijCoreDep
 import com.github.oowekyala.intellijDep
 
+
 plugins {
     kotlin("jvm")
     id("java")
@@ -23,14 +24,19 @@ val compileOnly by configurations
 dependencies {
     api(project(":core"))
 
-    // TODO make compileOnly for the IDE plugin to depend on it
-    compile(intellijCoreDep()) { includeJars("intellij-core") }
-    compile(intellijDep()) {
+    val ijdeps by configurations.creating
+
+    ijdeps(intellijCoreDep()) { includeJars("intellij-core") }
+    ijdeps(intellijDep()) {
         includeIjCoreDeps(rootProject)
         includeJars("platform-api")
     }
 
-    // this is for jjtx
+    // trick Idea into putting those on the classpath when
+    // running app inside IDE
+    compileOnly(ijdeps)
+    runtimeOnly(ijdeps)
+
     api("com.google.guava:guava:27.0.1-jre")
     api("org.apache.velocity:velocity:1.6.2")
 
@@ -54,8 +60,6 @@ sourceSets {
     }
 }
 
-
-
 tasks {
 
     compileJava {}
@@ -72,9 +76,11 @@ tasks {
     }
 
     shadowJar {
-        baseName = "jjtricks-min"
-        appendix = ""
+        archiveBaseName.set("jjtricks")
+        archiveAppendix.set("")
+        archiveClassifier.set("standalone")
 
+        configurations.add(compileOnly)
 
         mergeServiceFiles()
 
