@@ -1,5 +1,7 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
+import com.github.oowekyala.ijccResource
+
 
 plugins {
     kotlin("jvm")
@@ -8,6 +10,8 @@ plugins {
 }
 
 val PackageRoot = "/com/github/oowekyala/ijcc"
+
+version = "1.4"
 
 dependencies {
     implementation(kotlin("reflect")) // this could be avoided
@@ -47,12 +51,10 @@ tasks {
     val compressIcons by creating(Exec::class.java) {
         dependsOn("processResources")
 
-        val iconsDir = "${buildDir.absolutePath}/resources/main$PackageRoot/icons"
-
         commandLine(
             "svgo",
             "-f",
-            iconsDir
+            ijccResource("/icons")
         )
     }
 
@@ -73,6 +75,10 @@ tasks {
 
     buildPlugin {
         dependsOn(compressIcons)
+
+        archiveVersion.set(project.version.toString())
+        archiveBaseName.set("intellij-javacc")
+
     }
 
     publishPlugin {

@@ -17,9 +17,9 @@ open class JccRefVariantService {
     companion object {
         @JvmStatic
         fun getInstance(): JccRefVariantService =
-            ServiceManager.getService(JccRefVariantService::class.java) ?: NO_INDEX
+            ServiceManager.getService(JccRefVariantService::class.java) ?: NO_VARIANTS
 
-        private val NO_INDEX = JccRefVariantService()
+        private val NO_VARIANTS = JccRefVariantService()
     }
 
 }

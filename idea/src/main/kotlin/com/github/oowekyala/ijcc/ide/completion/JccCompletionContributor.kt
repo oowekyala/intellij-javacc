@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.completion
 
+import com.github.oowekyala.ijcc.icons.icon
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionNamePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionValuePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern

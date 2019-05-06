@@ -1,9 +1,6 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.includeIjCoreDeps
-import com.github.oowekyala.includeJars
-import com.github.oowekyala.intellijCoreDep
-import com.github.oowekyala.intellijDep
+import com.github.oowekyala.*
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -14,24 +11,21 @@ plugins {
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
-val PackageRoot = "/com/github/oowekyala/ijcc"
-val PathToPsiRoot = "$PackageRoot/lang/psi"
-val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
 
-val grammarKit by configurations.creating
+val grammarKit: Configuration by configurations.creating
 
 
 dependencies {
     compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
 
-    // FIXME this is for GeneratedParserUtilBase
-    // runtimeOnly("com.github.JetBrains:Grammar-Kit:2017.1.6")
+    // TODO move those to compileOnly, extract JJTricks into submodule
 
     compile(intellijCoreDep()) { includeJars("intellij-core") }
     compile(intellijDep()) {
         includeIjCoreDeps(rootProject)
         // the platform-impl is just for GeneratedParserUtilBase...
+        // it's huge but eliminated by the shadow task
         includeJars("platform-api", "platform-impl")
 
         // FIXME PsiClassOwnerNotResolved!!
@@ -88,7 +82,8 @@ tasks {
         group = GenerationTaskGroup
         description = "Generate the parser and PSI hierarchy"
 
-
+        val PathToPsiRoot = "$IjccPackage/lang/psi"
+        
         source = "src/main/grammars/JavaCC.bnf"
         targetRoot = "$buildDir/gen"
         pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
