@@ -1,7 +1,4 @@
-import com.github.oowekyala.includeIjCoreDeps
-import com.github.oowekyala.includeJars
-import com.github.oowekyala.intellijCoreDep
-import com.github.oowekyala.intellijDep
+import com.github.oowekyala.*
 
 
 plugins {
@@ -49,6 +46,7 @@ dependencies {
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)
+    testImplementation("commons-io:commons-io:2.6")
 }
 
 sourceSets {
@@ -73,6 +71,13 @@ tasks {
             jvmTarget = "1.8"
         }
 
+    }
+
+    test {
+        systemProperties(
+            "jjtx.testEnv.jjtricks.testResDir" to "$projectDir/src/test/resources",
+            "idea.home.path" to ideaBin()
+        )
     }
 
     shadowJar {

@@ -29,6 +29,8 @@ fun RepositoryHandler.localDepsRepo(project: Project): IvyArtifactRepository = i
     }
 }
 
+fun Project.ideaBin() = "${rootProject.rootDir}/dependencies/repo/ijcc.build/ideaIC/${rootProject.extra["versions.intellijSdk"]}/artifacts/bin"
+
 fun Project.intellijDep() = "ijcc.build:ideaIC:${rootProject.extra["versions.intellijSdk"]}"
 
 fun Project.intellijCoreDep() = "ijcc.build:intellij-core:${rootProject.extra["versions.intellijSdk"]}"

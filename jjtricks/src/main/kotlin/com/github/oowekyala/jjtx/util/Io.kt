@@ -16,8 +16,7 @@ data class Io(
     val wd: Path = workingDirectory,
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
-    private val exit: (String, Int) -> Nothing = { _, code -> exitProcess(code) },
-    val rootLogger: Logger = Logger.getLogger("jjtricks")
+    private val exit: (String, Int) -> Nothing = { _, code -> exitProcess(code) }
 ) {
 
     fun exit(code: ExitCode): Nothing = exit("", code.toInt)
