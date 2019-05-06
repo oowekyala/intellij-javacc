@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import com.xenomachina.argparser.*
+import java.io.OutputStreamWriter
 import java.net.URL
 import java.nio.file.Path
 
@@ -220,7 +221,7 @@ class Jjtricks(
         fun main(args: Array<String>): Unit = main(Io(), *args)
 
         @JvmStatic
-        fun main(io: Io, vararg args: String): Unit = mainBody(programName = "jjtricks") {
+        fun main(io: Io, vararg args: String): Unit = mainBody(io = io, programName = "jjtricks") {
 
             val jjtx =
                 ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
@@ -232,6 +233,25 @@ class Jjtricks(
             }
 
         }
+
+        private fun <R> mainBody(io: Io, programName: String, body: () -> R): R {
+            try {
+                return body()
+            } catch (e: SystemExitException) {
+
+                val writer = OutputStreamWriter(if (e.returnCode == 0) io.stdout else io.stderr)
+                val columns = System.getenv("COLUMNS")?.toInt() ?: 80
+                e.printUserMessage(writer, programName, columns)
+
+                val ex = when (e.returnCode) {
+                    0    -> ExitCode.OK
+                    else -> ExitCode.ERROR
+                }
+
+                io.exit(ex)
+            }
+        }
+
 
         fun getResource(path: String): URL? = Jjtricks::class.java.getResource(expandResourcePath(path))
 

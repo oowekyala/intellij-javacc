@@ -25,6 +25,7 @@ data class Io(
 
     fun bail(message: String): Nothing {
         stderr.println(message)
+        stderr.flush()
         exit(message, ExitCode.ERROR)
     }
 }
