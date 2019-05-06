@@ -39,11 +39,6 @@ dependencies {
     }
 
     testImplementation(grammarKit)
-    testImplementation(intellijDep()) {
-        includeJars("openapi", "idea_rt")
-    }
-
-    testCompile("junit:junit:4.12")
 }
 
 sourceSets {

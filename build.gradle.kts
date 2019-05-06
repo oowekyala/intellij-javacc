@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.localDepsRepo
+import com.github.oowekyala.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import java.net.URI
 
@@ -90,6 +90,21 @@ subprojects {
         testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
         testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
         testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
+
+        testImplementation(intellijCoreDep()) {
+            includeJars("intellij-core")
+        }
+
+        testImplementation("junit:junit:4.12")
+        testImplementation(intellijDep()) {
+            includeIjCoreDeps(project)
+            includeJars(
+                "openapi", "bootstrap", "idea_rt",
+                "annotations", "asm-all", "automaton", "extensions",
+                "guava", "idea", "jdom", "picocontainer", "platform-api",
+                "platform-impl", "trove4j", "util", rootProject = rootProject
+            )
+        }
 
         constraints {
             testImplementation("org.jetbrains.kotlin:kotlin-stdlib:$KotlinVersion")
