@@ -213,11 +213,12 @@ private fun findGrammarFile(io: Io, path: Path): Path {
 }
 
 private fun parseGrammarFile(io: Io, file: Path): JccFile {
-    val jcc = JjtxLightPsi.parseFile(file.toFile(), JavaccParserDefinition) as? JccFile
-        ?: io.bail("File isn't a JJTree file, or internal error")
-
-
-    (jcc as JccFileImpl).grammarNature = GrammarNature.JJTRICKS
-
-    return jcc
+    TODO("FOFOFFOF")
+//    val jcc = JjtxLightPsi.parseFile(file.toFile(), JavaccParserDefinition) as? JccFile
+//        ?: io.bail("File isn't a JJTree file, or internal error")
+//
+//
+//    (jcc as JccFileImpl).grammarNature = GrammarNature.JJTRICKS
+//
+//    return jcc
 }

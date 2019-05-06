@@ -179,6 +179,9 @@
 javacc_input 	    ::=
     grammar_file_root
 
+// Root node of the grammar. Used in place of [JccFile]
+// because the file element is not injectable. This allows
+// file-wide Java injection.
 grammar_file_root   ::=
     option_section?
     parser_declaration
