@@ -1,9 +1,9 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
+import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.util.ErrorCategory.UNCOVERED_NODE
 import com.github.oowekyala.jjtx.util.Severity.FAIL
-import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.util.position
 
 
@@ -18,11 +18,13 @@ fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>, ctx
     if (remaining.isNotEmpty()) {
 
         val remainingShortNames =
-            remaining.values.flatMap { it }.map { it.nodeRawName }.distinct()
+            remaining.values.flatten().map { it.nodeRawName }.distinct()
 
-        val severity = ctx.messageCollector.report("${remainingShortNames.size} nodes are not mentioned in the type hierarchy",
-            UNCOVERED_NODE
-        )
+        val severity =
+            ctx.messageCollector.report(
+                "${remainingShortNames.size} nodes are not mentioned in the type hierarchy",
+                UNCOVERED_NODE
+            )
 
         if (severity < FAIL) {
 

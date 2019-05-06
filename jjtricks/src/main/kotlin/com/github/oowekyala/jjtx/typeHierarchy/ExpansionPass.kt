@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
-import com.github.oowekyala.jjtx.*
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.addPackage
 import com.github.oowekyala.jjtx.util.ErrorCategory
 import com.github.oowekyala.jjtx.util.Severity
 import java.util.regex.PatternSyntaxException
@@ -33,8 +34,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         } catch (e: PatternSyntaxException) {
             ctx.messageCollector.report(
                 e.message.orEmpty(),
-                ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
-                null,
+                ErrorCategory.INVALID_REGEX,
                 positionInfo
             )
             return listOf()
@@ -64,9 +64,8 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
 
     if (prodName !in grammarNodeNames) {
         ctx.messageCollector.report(
-            qname,
+            "The node $qname is not in the grammar (can be generated anyway)",
             ErrorCategory.EXACT_NODE_NOT_IN_GRAMMAR,
-            null,
             positionInfo
         )
     }
@@ -94,7 +93,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
     if (children.isNotEmpty()) {
         val override = if (matching.size == 1) null else Severity.FAIL
         ctx.messageCollector.report(
-            extractedRegex.pattern,
+            "Regex patterns should only be used as leaves, this pattern matches ${matching.size} nodes",
             ErrorCategory.REGEX_SHOULD_BE_LEAF,
             override,
             positionInfo
@@ -107,9 +106,8 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 
     if (matching.isEmpty()) {
         ctx.messageCollector.report(
-            extractedRegex.pattern,
+            "Regex pattern matches no nodes",
             ErrorCategory.UNMATCHED_HIERARCHY_REGEX,
-            null,
             positionInfo
         )
     }

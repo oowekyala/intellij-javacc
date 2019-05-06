@@ -4,22 +4,6 @@ import com.github.oowekyala.jjtx.JjtxRunContext
 
 
 interface MessageCollector {
-    fun report(message: String,
-               category: ErrorCategory,
-               severityOverride: Severity? = null,
-               vararg sourcePosition: Position?): Severity
-
-}
-
-
-/**
- * @property minSeverity Minimum severity on which to report
- *
- * @author Clément Fournier
- */
-class MessageCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Severity)
-    : MessageCollector {
-
 
     /**
      * @param message arg for the message
@@ -29,6 +13,30 @@ class MessageCollectorImpl(val ctx: JjtxRunContext, private val minSeverity: Sev
      *
      * @return The actual severity reported
      */
+    fun report(message: String,
+               category: ErrorCategory,
+               severityOverride: Severity? = null,
+               vararg sourcePosition: Position?): Severity
+
+    fun report(message: String,
+               category: ErrorCategory,
+               vararg sourcePosition: Position?): Severity =
+        report(message, category, severityOverride = null, sourcePosition = *sourcePosition)
+
+}
+
+
+/**
+ *
+ * @property minSeverity Minimum severity on which to report
+ *
+ * @author Clément Fournier
+ */
+class MessageCollectorImpl(val ctx: JjtxRunContext,
+                           private val minSeverity: Severity) : MessageCollector {
+
+
+
     override fun report(message: String,
                         category: ErrorCategory,
                         severityOverride: Severity?,
@@ -71,13 +79,14 @@ enum class ErrorCategory(val minSeverity: Severity) {
 
     MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
 
-    NO_HIERARCHY_ROOTS(Severity.INFO),
-    WRONG_TYPE(Severity.INFO),
 
     DUPLICATE_MATCH(Severity.WARN),
     INVALID_REGEX(Severity.WARN),
     FILE_NOT_FOUND(Severity.WARN),
 
+    NO_HIERARCHY_ROOTS(Severity.INFO),
+    WRONG_TYPE(Severity.INFO),
     VISITOR_NOT_RUN(Severity.INFO),
+    VISITOR_GENERATED(Severity.INFO),
     INCOMPLETE_VISITOR_SPEC(Severity.INFO),
 }

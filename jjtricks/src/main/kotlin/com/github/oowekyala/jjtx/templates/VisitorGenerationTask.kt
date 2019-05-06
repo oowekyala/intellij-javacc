@@ -3,10 +3,7 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.util.createFile
-import com.github.oowekyala.jjtx.util.exists
-import com.github.oowekyala.jjtx.util.isDirectory
-import com.github.oowekyala.jjtx.util.splitAroundLast
+import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import com.google.googlejavaformat.java.Formatter
 import org.apache.velocity.VelocityContext
@@ -227,7 +224,7 @@ data class VisitorGenerationTask(
             it.write(formatted)
         }
 
-        ctx.io.stdout.println("Generated visitor '$id' into $o")
+        ctx.messageCollector.report("Generated visitor '$id' into $o", ErrorCategory.VISITOR_GENERATED)
     }
 
 

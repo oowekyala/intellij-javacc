@@ -3,6 +3,8 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
+import com.github.oowekyala.jjtx.tasks.DumpConfigTask
+import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
@@ -49,7 +51,7 @@ class Jjtricks(
 
     private val isDumpConfig by args.flagging(
         "--dump-config",
-        help = "Print the fully resolved jjtopts file"
+        help = "Print the fully resolved jjtopts file, and exits"
     )
     private val isNoVisitors by args.flagging(
         "--no-visitors",
@@ -98,13 +100,15 @@ class Jjtricks(
 
         val ctx = produceContext(project)
 
+        if (isDumpConfig) {
+            DumpConfigTask(io.stdout).execute(ctx)
+            io.exit(ExitCode.OK)
+        }
+
         if (!isNoVisitors) {
             GenerateVisitorsTask(outputRoot).execute(ctx)
         }
 
-        if (isDumpConfig) {
-            DumpConfigTask(io.stdout).execute(ctx)
-        }
     }
 
 
