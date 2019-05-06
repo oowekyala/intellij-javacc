@@ -22,10 +22,12 @@ dependencies {
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
+    runtimeOnly("com.github.JetBrains:Grammar-Kit:2017.1.6")
 
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
-    compileOnly(intellijDep()) {
+    compile(intellijCoreDep()) { includeJars("intellij-core") }
+    compile(intellijDep()) {
         includeIjCoreDeps(rootProject)
+        includeJars("platform-api")
         // FIXME PsiClassOwnerNotResolved!!
         // includeJars("java-impl", "java-api", "openapi")
     }

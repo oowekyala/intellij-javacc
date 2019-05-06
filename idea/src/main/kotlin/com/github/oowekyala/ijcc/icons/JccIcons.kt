@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.icons
 
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.GrammarNature.*
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.PlatformIcons
@@ -36,8 +38,8 @@ enum class JccIcons(icon: Icon) : Icon by icon {
     GUTTER_NAVIGATE_TO_JJTREE_NODE("jccNavigateToNode.svg"),
     GUTTER_RECURSION(AllIcons.Gutter.RecursiveMethod),
     /** File type icon.  */
-    JAVACC_FILE("jccFile.svg"),
-    JJTREE_FILE("jjtreeFile.svg"),
+    JAVACC_FILE(JccCoreIcons.JAVACC_FILE),
+    JJTREE_FILE(JccCoreIcons.JJTREE_FILE),
     ;
 
     constructor(fname: String) : this(IconLoader.getIcon(fname))
@@ -47,4 +49,13 @@ enum class JccIcons(icon: Icon) : Icon by icon {
         fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg")
     }
 }
+
+
+val GrammarNature.icon: Icon
+    get() = when (this) {
+        JAVACC   -> JccIcons.JAVACC_FILE
+        JJTREE   -> JccIcons.JJTREE_FILE
+        JJTRICKS -> JccIcons.JJTREE_FILE // TODO
+        UNKNOWN  -> AllIcons.FileTypes.Unknown
+    }
 

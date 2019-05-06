@@ -87,7 +87,7 @@ fun JccFile.getProductionByName(name: String): JccNonTerminalProduction? =
 fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
     (this as JccFileImpl).syntaxGrammar.getProductionByNameMulti(name)
 
-
+// careful here, uses platform-impl
 val PsiElement.isInInjection: Boolean
     get() = when (this) {
         is PsiFile -> InjectedLanguageManager.getInstance(project).isInjectedFragment(this)

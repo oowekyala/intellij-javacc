@@ -1,17 +1,19 @@
 package com.github.oowekyala.jjtx
 
-import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.github.oowekyala.jjtx.Jjtricks.Companion.WRONG_PARAMS_CODE
 import com.github.oowekyala.jjtx.util.*
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.StandardFileSystems
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.psi.PsiManager
 import com.xenomachina.argparser.*
 import java.net.URL
 import java.nio.file.Path
 
 /**
- * A JJTX run.
+ * The CLI of JJTricks.
  *
  * @author Clément Fournier
  */
@@ -73,11 +75,11 @@ class Jjtricks(
     }
 
 
-    private fun produceContext(): JjtxContext {
+    private fun produceContext(project: Project): JjtxContext {
 
         val grammarFile = findGrammarFile(io, grammarPath)
         val configChain = validateConfigFiles(io, grammarFile, configFiles)
-        val jccFile = parseGrammarFile(io, grammarFile)
+        val jccFile = parseGrammarFile(io, grammarFile, project)
 
         val params = JjtxParams(
             io = io,
@@ -92,9 +94,9 @@ class Jjtricks(
     }
 
 
-    fun runTasks() {
+    fun doExecute(project: Project) {
 
-        val ctx = produceContext()
+        val ctx = produceContext(project)
 
         if (!isNoVisitors) {
             GenerateVisitorsTask(outputRoot).execute(ctx)
@@ -107,8 +109,6 @@ class Jjtricks(
 
 
     companion object {
-
-        const val WRONG_PARAMS_CODE = -1
 
         private val DESCRIPTION = """
             A java code generator for JJTree grammars.
@@ -123,9 +123,15 @@ class Jjtricks(
         @JvmStatic
         fun main(io: Io, vararg args: String): Unit = mainBody(programName = "jjtricks") {
 
-            ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
-                .parseInto { Jjtricks(io = io, args = it) }
-                .runTasks()
+            val jjtx =
+                ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
+                    .parseInto { Jjtricks(io = io, args = it) }
+
+            // environment is open until the end of the CLI run
+            JccCoreEnvironment.withEnvironment {
+                jjtx.doExecute(project)
+            }
+
         }
 
         fun getResource(path: String): URL? = Jjtricks::class.java.getResource(expandResourcePath(path))
@@ -184,16 +190,10 @@ private fun validateConfigFiles(io: Io,
             prefix = "Cannot resolve option files: \n\t",
             separator = "\n\t"
         )
-
-        io.stdout.println(message)
-        io.exit(WRONG_PARAMS_CODE)
+        io.bail(message)
     }
 }
 
-
-private fun Io.bail(message: String): Nothing {
-    exit(message, WRONG_PARAMS_CODE)
-}
 
 private fun findGrammarFile(io: Io, path: Path): Path {
 
@@ -212,13 +212,23 @@ private fun findGrammarFile(io: Io, path: Path): Path {
     }
 }
 
-private fun parseGrammarFile(io: Io, file: Path): JccFile {
-    TODO("FOFOFFOF")
-//    val jcc = JjtxLightPsi.parseFile(file.toFile(), JavaccParserDefinition) as? JccFile
-//        ?: io.bail("File isn't a JJTree file, or internal error")
-//
-//
-//    (jcc as JccFileImpl).grammarNature = GrammarNature.JJTRICKS
-//
-//    return jcc
+private fun parseGrammarFile(io: Io, file: Path, project: Project): JccFile {
+
+    val localFileSystem =
+        VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
+
+    val psiManager = PsiManager.getInstance(project)
+
+    val virtualFile =
+        localFileSystem.findFileByPath(file.toAbsolutePath().toString())
+            ?: io.bail("Cannot find file in filesystem: $file")
+
+    val jccFile = psiManager.findFile(virtualFile) as? JccFile
+        ?: io.bail("Find was not a JJTree/JavaCC grammar")
+
+    return jccFile.also {
+        (it as JccFileImpl).grammarNature = GrammarNature.JJTRICKS
+    }
 }
+
+

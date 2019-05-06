@@ -16,14 +16,28 @@ data class Io(
     val wd: Path = workingDirectory,
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
-    val exit: (String, Int) -> Nothing = { _, code -> exitProcess(code) },
+    private val exit: (String, Int) -> Nothing = { _, code -> exitProcess(code) },
     val rootLogger: Logger = Logger.getLogger("jjtricks")
 ) {
 
-    fun exit(code: Int): Nothing = exit("", code)
+    fun exit(code: ExitCode): Nothing = exit("", code.toInt)
+
+    fun exit(message: String, code: ExitCode): Nothing = exit(message, code.toInt)
+
+    fun bail(message: String): Nothing {
+        stderr.println(message)
+        exit(message, ExitCode.ERROR)
+    }
 }
 
 
 val workingDirectory: Path
     get() = Paths.get(System.getProperty("user.dir"))
 
+
+enum class ExitCode {
+    OK,
+    ERROR;
+
+    val toInt = ordinal
+}

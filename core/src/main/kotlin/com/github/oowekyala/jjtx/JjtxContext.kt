@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.util.*
+import com.intellij.openapi.project.Project
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -11,7 +12,10 @@ import java.nio.file.Paths
  *
  * @author Clément Fournier
  */
-abstract class JjtxContext(val grammarFile: JccFile, val configChain: List<Path>) {
+abstract class JjtxContext(val grammarFile: JccFile,
+                           val configChain: List<Path>) {
+
+    val project: Project = grammarFile.project
 
     abstract val errorCollector: ErrorCollector
 

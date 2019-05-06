@@ -1,9 +1,5 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.icons.JccCoreIcons
-import com.intellij.icons.AllIcons
-import javax.swing.Icon
-
 /**
  * Type of preprocessor used by a grammar. JJTree is a superset
  * of JavaCC so we can implement both with the exact same PSI.
@@ -21,17 +17,16 @@ import javax.swing.Icon
  */
 @Suppress("MemberVisibilityCanBePrivate")
 enum class GrammarNature(val displayName: String,
-                         val conventionalExtension: String,
-                         val icon: Icon) {
-    JAVACC("JavaCC", "jj", JccCoreIcons.JAVACC_FILE),
-    JJTREE("JJTree", "jjt", JccCoreIcons.JJTREE_FILE),
-    JJTRICKS("JJTricks", "jjtx", JccCoreIcons.JJTREE_FILE),
+                         val conventionalExtension: String) {
+    JAVACC("JavaCC", "jj"),
+    JJTREE("JJTree", "jjt"),
+    JJTRICKS("JJTricks", "jjtx"),
 
     /**
      * Special nature in which all features are enabled,
      * used in injection. Higher than all features.
      */
-    UNKNOWN("unknown", "", AllIcons.FileTypes.Unknown);
+    UNKNOWN("unknown", "");
 
     val dotAndExtension = ".$conventionalExtension"
 }
