@@ -48,4 +48,4 @@ val RootJjtOpts: NamedInputStream
     get() = Jjtricks.getResourceAsStream("/jjtx/Root.jjtopts.yaml")!!
 
 val JccFile.path: Path
-    get() = Paths.get(virtualFile.path)
+    get() = Paths.get(virtualFile.path).normalize()

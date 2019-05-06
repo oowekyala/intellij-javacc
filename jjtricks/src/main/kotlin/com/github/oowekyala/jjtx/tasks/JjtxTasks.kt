@@ -31,9 +31,11 @@ data class DumpConfigTask(private val out: PrintStream) : JjtxTask() {
 
         val chainDump =
             ctx.configChain
-                .map { ctx.io.wd.relativize(it) }
+                .map { ctx.io.wd.relativize(it).normalize() }
                 .plus("/jjtx/Root.jjtopts.yaml")
-                .plus(ctx.io.wd.relativize(ctx.grammarFile.path))
+                // the "element =" here is not optional, since Path <: Iterable<Path>,
+                // it could append all segments if not disambiguated
+                .plus(element = ctx.io.wd.relativize(ctx.grammarFile.path))
                 .joinToString(separator = " -> ", prefix = "Config file chain: ")
 
         out.println("# Fully resolved JJTricks configuration")

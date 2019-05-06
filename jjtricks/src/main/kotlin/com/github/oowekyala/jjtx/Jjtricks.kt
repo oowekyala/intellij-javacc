@@ -30,7 +30,7 @@ class Jjtricks(
         name = "GRAMMAR",
         help = "Path to a grammar file (the extension can be omitted)"
     ) {
-        toPath()
+        toPath().normalize()
     }.addValidator {
         val myIo = io.copy(exit = { m, c -> throw SystemExitException(m, c) })
         findGrammarFile(myIo, value)
@@ -41,7 +41,7 @@ class Jjtricks(
         "-o", "--output",
         help = "Output directory. Files are generated in a package tree rooted in this directory."
     ) {
-        toPath()
+        toPath().normalize()
     }.default(io.wd.resolve("gen")).addValidator {
         if (value.isFile()) {
             throw InvalidArgumentException(
@@ -78,7 +78,7 @@ class Jjtricks(
         help = "Option files to chain, from highest to lowest priority. The options specified inline in the grammar file always have the lowest priority.",
         argName = "OPTS"
     ) {
-        toPath()
+        toPath().normalize()
     }
 
 
@@ -297,7 +297,7 @@ private fun validateConfigFiles(io: Io,
 private fun findGrammarFile(io: Io, path: Path): Path {
 
 
-    val absPath = io.wd.resolve(path)
+    val absPath = io.wd.resolve(path).normalize()
 
     return if (path.extension == null) {
         val parent = absPath.parent

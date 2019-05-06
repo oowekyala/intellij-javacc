@@ -12,8 +12,6 @@ import junit.framework.Assert.assertEquals
 import org.apache.commons.io.FileUtils.copyDirectory
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintStream
@@ -41,7 +39,6 @@ import java.nio.file.attribute.BasicFileAttributes
 abstract class JjtxCliTestBase {
 
 
-    protected var args = listOf<String>()
     protected var expectedExitCode = ExitCode.OK
     protected var expectedOutputRoot = "gen"
 
@@ -64,8 +61,7 @@ abstract class JjtxCliTestBase {
 
     }
 
-    @Test
-    fun doTest() {
+    fun doTest(vararg args: String) {
 
         val myIo = Io(
             wd = myTmpDir,
@@ -75,7 +71,7 @@ abstract class JjtxCliTestBase {
         )
 
         try {
-            Jjtricks.main(myIo, *args.toTypedArray())
+            Jjtricks.main(myIo, *args)
         } catch (stop: StopError) {
             assertEquals(expectedExitCode, ExitCode.values()[stop.code])
         }
