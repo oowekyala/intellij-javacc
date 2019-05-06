@@ -170,7 +170,7 @@ internal fun DataAstNode.toYaml(): YamlNode = when (this) {
         if ('\n' in any) DumperOptions.ScalarStyle.LITERAL else DumperOptions.ScalarStyle.PLAIN
     )
     is AstMap    -> MappingNode(
-        yamlTag, map.map { (k, v) -> NodeTuple(Yaml().represent(k), v.toYaml()) },
+        yamlTag, map.map { (k, v) -> NodeTuple(Yaml().represent(k), v.toYaml()) }.sortedBy { (it.keyNode as ScalarNode).value },
         DumperOptions.FlowStyle.BLOCK
     )
     is AstSeq    -> SequenceNode(yamlTag, list.map { it.toYaml() }, DumperOptions.FlowStyle.BLOCK)

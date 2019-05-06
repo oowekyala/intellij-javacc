@@ -1,5 +1,7 @@
 package com.github.oowekyala.jjtx.util
 
+import java.util.*
+
 /**
  * Abstract AST, common denominator between JSON and YAML.
  */
@@ -38,14 +40,14 @@ data class AstMap(
 
         operator fun invoke(map: Map<DataAstNode, DataAstNode>, position: Position? = null): AstMap {
 
-            val strMap = map.mapKeysTo(mutableMapOf()) { (k, _) ->
+            val strMap = map.mapKeysTo(TreeMap(String::compareTo)) { (k, _) ->
                 when {
                     k is AstScalar && k.type == ScalarType.STRING -> k.any
                     else                                          -> null
                 }
             }
 
-            strMap.remove(null)
+            //            strMap.remove(null)
 
             @Suppress("UNCHECKED_CAST")
             return AstMap(

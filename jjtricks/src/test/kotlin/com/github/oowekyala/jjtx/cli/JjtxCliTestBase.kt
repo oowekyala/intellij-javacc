@@ -93,7 +93,9 @@ abstract class JjtxCliTestBase {
         assertEquals(myExpectedStderr, myStderr)
 
         if (myExpectedOutput != null) {
+            // TODO make symmetric
             assertDirEquals(myExpectedOutput, myTmpDir.resolve(expectedOutputRoot))
+            // assertDirEquals(myTmpDir.resolve(expectedOutputRoot), myExpectedOutput)
         }
     }
 

@@ -1,0 +1,25 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: true
+    parameterlessVisitor:
+      execute: true
+      genClassName: "${grammar.name}VisitorX"
+
+
+  nodePrefix: VF
+  nodePackage: "net.ast"
+  typeHierarchy:
+    "%JavaNode":
+      - "ImportDeclaration"
+      - "Declaration":
+          - "r:.+Declaration"
+          - "BodyDeclaration"
+          - "EnumConstant"
+          - "TypeDeclaration":
+              - "AnonymousClassDeclaration"
+              - "NamedTypeDeclaration":
+                  - "EnumDeclaration"
+                  - "AnnotationTypeDeclaration"
+                  - "ClassOrInterfaceDeclaration"

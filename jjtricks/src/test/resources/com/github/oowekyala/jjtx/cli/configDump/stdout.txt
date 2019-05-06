@@ -1,46 +1,8 @@
 # Fully resolved JJTricks configuration
 # Config file chain: Java.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> Java.jjt
 jjtx:
-  nodePrefix: AST
   nodePackage: net.sourceforge.pmd.lang.java.ast
-  visitors:
-    defaultJjtreeVisitor:
-      execute: 'true'
-      templateFile: /jjtx/templates/Visitor.java.vm
-      genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
-      formatter: java
-      context:
-        methodTemplate: |
-          #macro( methodAnchor $n)
-          visit($n.classSimpleName,Object)
-          #end
-
-          #evaluate($global.visitorMethodComment)
-          default Object visit($node.classSimpleName node, Object data) {
-              #if ($node.superNode)
-              return visit(($node.superNode.classSimpleName) node, data);
-              #else
-              return node.childrenAccept(this, data);
-              #end
-          }
-    parameterlessVisitor:
-      execute: 'true'
-      templateFile: /jjtx/templates/Visitor.java.vm
-      genClassName: ${grammar.nodePackage}.${grammar.name}Visitor
-      context:
-        methodTemplate: |
-          #macro( methodAnchor $node)
-          visit($node.classSimpleName)
-          #end
-
-          #evaluate($global.visitorMethodComment)
-          default void visit($node.classSimpleName node) {
-              #if ($node.superNode)
-              visit(($node.superNode.classSimpleName) node);
-              #else
-              node.childrenAccept(this, data);
-              #end
-          }
+  nodePrefix: AST
   templateContext:
     visitorMethodComment: |
       /**
@@ -186,4 +148,42 @@ jjtx:
     - net.sourceforge.pmd.lang.java.ast.ASTMemberValuePairs
     - net.sourceforge.pmd.lang.java.ast.ASTImplementsList
     - net.sourceforge.pmd.lang.java.ast.ASTDefaultValue
+  visitors:
+    defaultJjtreeVisitor:
+      context:
+        methodTemplate: |
+          #macro( methodAnchor $n)
+          visit($n.classSimpleName,Object)
+          #end
+
+          #evaluate($global.visitorMethodComment)
+          default Object visit($node.classSimpleName node, Object data) {
+              #if ($node.superNode)
+              return visit(($node.superNode.classSimpleName) node, data);
+              #else
+              return node.childrenAccept(this, data);
+              #end
+          }
+      execute: 'true'
+      formatter: java
+      genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
+      templateFile: /jjtx/templates/Visitor.java.vm
+    parameterlessVisitor:
+      context:
+        methodTemplate: |
+          #macro( methodAnchor $node)
+          visit($node.classSimpleName)
+          #end
+
+          #evaluate($global.visitorMethodComment)
+          default void visit($node.classSimpleName node) {
+              #if ($node.superNode)
+              visit(($node.superNode.classSimpleName) node);
+              #else
+              node.childrenAccept(this, data);
+              #end
+          }
+      execute: 'true'
+      genClassName: ${grammar.nodePackage}.${grammar.name}Visitor
+      templateFile: /jjtx/templates/Visitor.java.vm
 
