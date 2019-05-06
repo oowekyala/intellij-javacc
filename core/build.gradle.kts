@@ -20,14 +20,14 @@ val grammarKit by configurations.creating
 dependencies {
     compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
     compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
-    implementation(kotlin("reflect")) // this could be avoided
 
+    // FIXME this is for GeneratedParserUtilBase
     runtimeOnly("com.github.JetBrains:Grammar-Kit:2017.1.6")
 
     compile(intellijCoreDep()) { includeJars("intellij-core") }
     compile(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        includeJars("platform-api")
+        includeJars("platform-api") // FIXME this is just for GeneratedParserUtilBase
         // FIXME PsiClassOwnerNotResolved!!
         // includeJars("java-impl", "java-api", "openapi")
     }

@@ -14,8 +14,7 @@ import org.yaml.snakeyaml.resolver.Resolver
 import org.yaml.snakeyaml.serializer.Serializer
 import java.io.IOException
 import java.io.StringWriter
-import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
+import java.lang.reflect.Method
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
@@ -93,7 +92,7 @@ fun JsonElement.jsonToData(): DataAstNode {
                 )
             }
 
-            else             -> throw IllegalStateException("Unknown node type ${this.toString()}")
+            else             -> throw IllegalStateException("Unknown node type $this")
         }
 
 
@@ -226,7 +225,55 @@ fun Any?.toDataNode(): DataAstNode {
     }
 }
 
-private inline fun <reified T : Any> T.propertiesMap(): Map<String, DataAstNode> {
-    val kclass: KClass<T> = this::class as KClass<T>
-    return kclass.memberProperties.map { Pair(it.name, it.get(this).toDataNode()) }.toMap()
+private inline fun <reified T : Any> T.propertiesMap(): Map<String, DataAstNode> =
+    javaClass.properties.map { Pair(it.name, it.getter(this).toDataNode()) }.toMap()
+
+val <T> Class<T>.properties: List<JProperty<T, *>>
+    get() {
+        return methods.toList()
+            .mapNotNull { JProperty.toPropertyOrNull(it) as JProperty<T, *> }
+    }
+
+data class JProperty<in T, out V> private constructor(
+    val name: String,
+    val getter: (T) -> V?
+) {
+
+
+    companion object {
+
+        private val GetterRegex = Regex("get([A-Z].*)")
+        private val BoolGetterRegex = Regex("is[A-Z].*")
+
+
+        fun toPropertyOrNull(method: Method): JProperty<*, *>? {
+            return method.propertyName?.let {
+                JProperty<Any?, Any?>(it) {
+                    try {
+                        method.invoke(it)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            }
+        }
+
+        private val Method.propertyName: String?
+            get() {
+
+                if (parameterCount != 0 || isBridge) return null
+
+                GetterRegex.matchEntire(name)?.groupValues?.get(1)?.let {
+                    return it
+                }
+
+                if (returnType == Boolean::class.java || returnType == java.lang.Boolean.TYPE) {
+                    BoolGetterRegex.matchEntire(name)?.groupValues?.get(0)?.let {
+                        return it
+                    }
+                }
+                return null
+            }
+
+    }
 }
