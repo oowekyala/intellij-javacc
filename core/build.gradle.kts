@@ -26,8 +26,8 @@ dependencies {
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        // TODO this is weird
-        includeJars("java-impl", "java-api", "openapi")
+        // FIXME PsiClassOwnerNotResolved!!
+        // includeJars("java-impl", "java-api", "openapi")
     }
 
     grammarKit(intellijDep()) {
@@ -54,7 +54,7 @@ dependencies {
 
     testImplementation(grammarKit)
     testImplementation(intellijDep()) {
-        includeJars("openapi")
+        includeJars("openapi", "idea_rt")
     }
 
     testCompile("junit:junit:4.12")
