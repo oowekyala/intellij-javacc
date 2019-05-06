@@ -6,7 +6,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/intellij-javacc.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/intellij-javacc.buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/intellij-javacc.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/intellij-javacc.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/idea/intellij-javacc.idea.iml" filepath="$PROJECT_DIR$/.idea/modules/idea/intellij-javacc.idea.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jjtricks/intellij-javacc.jjtricks.iml" filepath="$PROJECT_DIR$/.idea/modules/jjtricks/intellij-javacc.jjtricks.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/prepare-deps/intellij-javacc.prepare-deps.iml" filepath="$PROJECT_DIR$/.idea/modules/prepare-deps/intellij-javacc.prepare-deps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jjtricks.iml" filepath="$PROJECT_DIR$/.idea/modules/jjtricks.iml" />
     </modules>
   </component>
 </project>

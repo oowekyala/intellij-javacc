@@ -16,20 +16,16 @@ val grammarKit: Configuration by configurations.creating
 
 
 dependencies {
-    compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
-    compile("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
 
-    // TODO move those to compileOnly, extract JJTricks into submodule
+    // this is for the parser util
+    compile("com.github.JetBrains:Grammar-Kit:2017.1.7")
 
-    compile(intellijCoreDep()) { includeJars("intellij-core") }
-    compile(intellijDep()) {
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
+    compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        // the platform-impl is just for GeneratedParserUtilBase...
-        // it's huge but eliminated by the shadow task
-        includeJars("platform-api", "platform-impl")
-
-        // FIXME PsiClassOwnerNotResolved!!
-        // includeJars("java-impl", "java-api", "openapi")
+        includeJars("platform-api")
     }
 
     grammarKit(intellijDep()) {
@@ -41,18 +37,6 @@ dependencies {
             "platform-impl", "trove4j", "util", rootProject = rootProject
         )
     }
-
-    // this is for jjtx
-    compile("com.google.guava:guava:27.0.1-jre")
-    compile("org.apache.velocity:velocity:1.6.2")
-
-    implementation("com.google.code.gson:gson:2.8.5")
-    implementation("com.github.oowekyala.treeutils:tree-printers:2.0.2")
-    implementation("org.yaml:snakeyaml:1.24")
-    implementation("com.google.googlejavaformat:google-java-format:1.7")
-    // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
-    implementation("com.xenomachina:kotlin-argparser:2.0.7")
-
 
     testImplementation(grammarKit)
     testImplementation(intellijDep()) {
@@ -83,7 +67,7 @@ tasks {
         description = "Generate the parser and PSI hierarchy"
 
         val PathToPsiRoot = "$IjccPackage/lang/psi"
-        
+
         source = "src/main/grammars/JavaCC.bnf"
         targetRoot = "$buildDir/gen"
         pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
@@ -146,27 +130,5 @@ tasks {
             jvmTarget = "1.8"
         }
 
-    }
-
-    shadowJar {
-        baseName = "jjtricks-min"
-        appendix = ""
-
-        mergeServiceFiles()
-
-        minimize {
-            exclude(dependency("org.apache.velocity:velocity:.*"))
-            exclude(dependency("org.jetbrains.kotlin:.*:.*"))
-            exclude(dependency("com.google.googlejavaformat:.*:.*"))
-            exclude(dependency("com.google.guava:.*:.*"))
-            exclude(dependency("com.google.guava:.*:.*"))
-            exclude(dependency("com.google.errorprone:javac-shaded:.*"))
-        }
-
-        manifest {
-            attributes(
-                "Main-Class" to "com.github.oowekyala.jjtx.Jjtricks"
-            )
-        }
     }
 }

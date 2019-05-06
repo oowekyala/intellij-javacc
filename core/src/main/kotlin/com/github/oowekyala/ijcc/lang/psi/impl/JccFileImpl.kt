@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
-import com.github.oowekyala.jjtx.JjtxLightContext
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
@@ -111,13 +110,8 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     override val grammarOptions: IGrammarOptions
         get() = myGrammarOptionsImpl ?: let { myGrammarOptionsImpl = buildOptions(); myGrammarOptionsImpl!! }
 
-    private fun buildOptions(): IGrammarOptions {
-        return if (grammarNature < GrammarNature.JJTRICKS) {
-            InlineGrammarOptions(this)
-        } else {
-            JjtxLightContext(this).jjtxOptsModel
-        }
-    }
+    private fun buildOptions(): IGrammarOptions =
+        GrammarOptionsService.getInstance().buildOptions(this)
 
     override fun getContainingFile(): JccFile = this
 

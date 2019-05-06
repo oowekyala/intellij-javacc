@@ -3,4 +3,5 @@ rootProject.name = 'intellij-javacc'
 include 'idea'
 include 'core'
 include 'prepare-deps'
+include 'jjtricks'
 

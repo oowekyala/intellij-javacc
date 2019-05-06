@@ -6,8 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import org.apache.commons.lang.StringEscapeUtils
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringEscapeUtils
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 

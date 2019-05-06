@@ -161,3 +161,7 @@ dependencies/build/
 buildSrc/build
 core/build
 idea/build
+
+velocity.log
+velocity.log.*
+jjtricks/build

@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.lang.injection.InjectedLanguageManager
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -16,7 +17,9 @@ import com.intellij.psi.tree.IFileElementType
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
+interface JccFile : PsiFile, JccPsiElement
+//    FIXME
+//    , PsiClassOwner
 {
 
     /** The unique parser declaration of this file. */
@@ -54,6 +57,16 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
 
 
     val grammarNature: GrammarNature
+
+
+    // FIXME PsiClassOwnerNotResolved!!
+
+    fun getClasses(): Array<PsiClass>
+
+    fun getPackageName(): String
+
+    fun setPackageName(var1: String?)
+
 
     companion object {
         /** Element type. */

@@ -1,17 +1,14 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.ide.refs.JccBnfStringLiteralReference
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
-import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.SearchScope
 

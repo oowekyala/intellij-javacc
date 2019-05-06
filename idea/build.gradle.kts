@@ -14,6 +14,7 @@ val PackageRoot = "/com/github/oowekyala/ijcc"
 version = "1.4"
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
     compile(project(":core"))

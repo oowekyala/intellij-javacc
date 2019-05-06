@@ -3,6 +3,8 @@ package com.github.oowekyala.jjtx.util
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccParserDefinition
 import com.github.oowekyala.ijcc.JjtreeFileType
+import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
+import com.github.oowekyala.jjtx.ide.JjtxOptionsService
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.openapi.Disposable
@@ -74,6 +76,7 @@ class JjtxCoreEnvironment private constructor(
             registerFileType(JavaccFileType, "jj")
             registerFileType(JjtreeFileType, "jjt")
             registerParserDefinition(JavaccParserDefinition)
+            registerApplicationService(GrammarOptionsService::class.java, JjtxOptionsService())
         }
     }
 }

@@ -57,6 +57,9 @@ repositories {
     maven {
         url = URI("https://dl.bintray.com/kotlin/kotlinx")
     }
+    maven {
+        url = URI("https://jitpack.io")
+    }
     maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
 }
 
