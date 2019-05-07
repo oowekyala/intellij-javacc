@@ -3,7 +3,6 @@ package com.github.oowekyala.jjtx.util
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.logging.Logger
 import kotlin.system.exitProcess
 
 
@@ -16,7 +15,7 @@ data class Io(
     val wd: Path = workingDirectory,
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
-    private val exit: (String, Int) -> Nothing = { _, code -> exitProcess(code) }
+    private val exit: (String, Int) -> Nothing = { m, code -> stderr.println(m); stderr.flush(); exitProcess(code) }
 ) {
 
     fun exit(code: ExitCode): Nothing = exit("", code.toInt)
@@ -24,8 +23,6 @@ data class Io(
     fun exit(message: String, code: ExitCode): Nothing = exit(message, code.toInt)
 
     fun bail(message: String): Nothing {
-        stderr.println(message)
-        stderr.flush()
         exit(message, ExitCode.ERROR)
     }
 }
