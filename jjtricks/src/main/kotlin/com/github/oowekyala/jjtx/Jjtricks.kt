@@ -44,11 +44,12 @@ class Jjtricks(
         "-o", "--output",
         help = "Output directory. Files are generated in a package tree rooted in this directory."
     ) {
-        toPath().normalize()
+        toPath().normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen")).addValidator {
         if (value.isFile()) {
-            throw InvalidArgumentException(
-                "-o $value is not a directory"
+            throw SystemExitException(
+                "-o $value is not a directory",
+                ExitCode.ERROR.toInt
             )
         }
     }

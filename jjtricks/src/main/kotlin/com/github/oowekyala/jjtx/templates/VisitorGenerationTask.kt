@@ -173,7 +173,7 @@ data class VisitorGenerationTask internal constructor(
             throw java.lang.IllegalStateException("'genClassName' should be a fully qualified class name, but was $templated")
         }
 
-        val o: Path = outputDir.resolve(templated.replace('.', '/') + ".java")
+        val o: Path = outputDir.resolve(templated.replace('.', '/') + ".java").toAbsolutePath()
 
         if (o.isDirectory()) {
             throw IllegalStateException("Output file ${this.genFqcn} is directory")
