@@ -57,6 +57,21 @@ class Jjtricks(
         }
     }
 
+    private val sourceRoots by args.adding(
+        "-s", "--source",
+        help = "Other source roots. Node files that are already in those roots are not generated."
+    ) {
+        toPath().normalize().toAbsolutePath()
+    }.default(io.wd.resolve("gen")).addValidator {
+        for (d in value) {
+            if (d.isFile())
+                throw SystemExitException(
+                    "-s $d is not a directory",
+                    ExitCode.ERROR.toInt
+                )
+        }
+    }
+
     private val isDumpConfig by args.flagging(
         "--dump-config",
         help = "Print the fully resolved jjtopts file and exits"
