@@ -14,7 +14,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
-import com.xenomachina.argparser.*
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.DefaultHelpFormatter
+import com.xenomachina.argparser.SystemExitException
+import com.xenomachina.argparser.default
 import java.io.OutputStreamWriter
 import java.net.URL
 import java.nio.file.Path
@@ -115,7 +118,7 @@ class Jjtricks(
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
-//        env.applicationEnvironment.registerApplicationService(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
+        //        env.applicationEnvironment.registerApplicationService(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
         if (isDumpConfig) {
             catchException("Exception while dumping configuration task") {
@@ -157,6 +160,7 @@ class Jjtricks(
             # CLI behaviour
 
             * Return code: 0 if everything is alright, 1 if an error occurred
+            
             * IO: standard error stream is used for *every* message from JJTricks.
                 Standard output is only used when asked to dump useful info, eg
                 with `--dump-config`
@@ -186,27 +190,29 @@ class Jjtricks(
         fun main(args: Array<String>): Unit = main(Io(), *args)
 
         @JvmStatic
-        fun main(io: Io, vararg args: String): Unit = mainBody(io = io, programName = "jjtricks") {
+        fun main(io: Io, vararg args: String): Unit =
+            myMainBody(io = io, programName = "jjtricks") {
 
-            val jjtx =
-                ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION, epilogue = EXAMPLES))
-                    .parseInto { Jjtricks(io = io, args = it) }
+                val jjtx =
+                    ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION, epilogue = EXAMPLES))
+                        .parseInto { Jjtricks(io = io, args = it) }
 
-            // environment is open until the end of the CLI run
-            JjtxCoreEnvironment.withEnvironment {
-                jjtx.doExecute(this)
+                // environment is open until the end of the CLI run
+                JjtxCoreEnvironment.withEnvironment {
+                    jjtx.doExecute(this)
+                }
+
             }
 
-        }
-
-        private fun <R> mainBody(io: Io, programName: String, body: () -> R): R {
+        private fun <R> myMainBody(io: Io, programName: String, body: () -> R): R {
             try {
                 return body()
             } catch (e: SystemExitException) {
 
-                val writer = OutputStreamWriter(if (e.returnCode == 0) io.stdout else io.stderr)
+                val writer = OutputStreamWriter(io.stderr)
                 val columns = System.getenv("COLUMNS")?.toInt() ?: 80
                 e.printUserMessage(writer, programName, columns)
+                writer.flush()
 
                 val ex = when (e.returnCode) {
                     0    -> ExitCode.OK

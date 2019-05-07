@@ -12,8 +12,11 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintStream
 import java.nio.charset.Charset
-import java.nio.file.*
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
 import java.nio.file.Files.createTempDirectory
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 
 
@@ -50,11 +53,10 @@ abstract class JjtxCliTestBase {
 
     private data class StopError(override val message: String, val code: Int) : Error()
 
+
     @Before
-    fun setup() {
-
+    fun setUp() {
         copyDirectory(myResourceDir.resolve("env").toFile(), myTmpDir.toFile())
-
     }
 
     fun doTest(vararg args: String) {
