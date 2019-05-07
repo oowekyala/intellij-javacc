@@ -1,8 +1,8 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.MessageCollector
 import com.github.oowekyala.jjtx.util.isFile
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -13,13 +13,8 @@ import java.nio.file.Paths
  *
  * @author Clément Fournier
  */
-class JjtxLightContext(grammarFile: JccFile) : JjtxContext(grammarFile, grammarFile.defaultJjtopts()) {
-
-    override val io: Io = Io()
-
-    override val messageCollector = MessageCollector()
-
-}
+class JjtxLightContext(grammarFile: JccFile)
+    : JjtxContext(grammarFile, grammarFile.defaultJjtopts(), MessageCollector.noop(), Io())
 
 fun JccFile.defaultJjtopts(): List<Path> {
 

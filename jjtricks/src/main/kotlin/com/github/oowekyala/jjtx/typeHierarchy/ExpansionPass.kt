@@ -2,8 +2,8 @@ package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.addPackage
-import com.github.oowekyala.jjtx.util.ErrorCategory
-import com.github.oowekyala.jjtx.util.Severity
+import com.github.oowekyala.jjtx.reporting.ErrorCategory
+import com.github.oowekyala.jjtx.reporting.Severity
 import java.util.regex.PatternSyntaxException
 
 

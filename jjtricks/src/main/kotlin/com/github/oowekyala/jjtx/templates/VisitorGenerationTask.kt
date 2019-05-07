@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.reporting.ErrorCategory
 import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
@@ -242,7 +243,7 @@ data class VisitorGenerationTask internal constructor(
             it.write(formatted)
         }
 
-        ctx.messageCollector.report("Generated visitor '$id' into $o", ErrorCategory.VISITOR_GENERATED)
+        ctx.messageCollector.reportNormal("Generated visitor '$id' into ${ctx.io.wd.relativize(o)}")
     }
 
 

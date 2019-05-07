@@ -5,7 +5,7 @@ import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
-import com.github.oowekyala.jjtx.util.ErrorCategory.INCOMPLETE_VISITOR_SPEC
+import com.github.oowekyala.jjtx.reporting.ErrorCategory.INCOMPLETE_VISITOR_SPEC
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty

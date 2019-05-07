@@ -5,7 +5,7 @@ import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.path
 import com.github.oowekyala.jjtx.templates.GrammarBean
 import com.github.oowekyala.jjtx.templates.set
-import com.github.oowekyala.jjtx.util.ErrorCategory
+import com.github.oowekyala.jjtx.reporting.ErrorCategory
 import com.github.oowekyala.jjtx.util.toYaml
 import com.github.oowekyala.jjtx.util.toYamlString
 import org.apache.velocity.VelocityContext
@@ -41,6 +41,7 @@ data class DumpConfigTask(private val out: PrintStream) : JjtxTask() {
         out.println("# Fully resolved JJTricks configuration")
         out.println("# $chainDump")
         out.println(opts.toYaml().toYamlString())
+        out.flush()
     }
 }
 

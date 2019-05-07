@@ -1,8 +1,8 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.MessageCollector
 import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.intellij.openapi.project.Project
 import java.nio.file.Path
@@ -17,13 +17,13 @@ import java.nio.file.Paths
  * @author Clément Fournier
  */
 abstract class JjtxContext internal constructor(val grammarFile: JccFile,
-                                                val configChain: List<Path>) {
+                                                val configChain: List<Path>,
+                                                val messageCollector: MessageCollector,
+                                                val io: Io) {
 
     val project: Project = grammarFile.project
 
-    abstract val io: Io
 
-    abstract val messageCollector: MessageCollector
 
     val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 

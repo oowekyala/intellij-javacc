@@ -4,16 +4,12 @@ import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.jjtx.JjtxParams
 import com.github.oowekyala.jjtx.JjtxRunContext
+import com.github.oowekyala.jjtx.reporting.MessageCollector
+import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
 import com.intellij.openapi.project.Project
 import junit.framework.TestCase
-import org.junit.runner.RunWith
-import org.junit.runner.Runner
-import org.junit.runners.BlockJUnit4ClassRunner
-import org.junit.runners.JUnit4
-import org.junit.runners.ParentRunner
-import org.junit.runners.Suite
 import java.nio.file.Path
 
 /**
@@ -53,7 +49,8 @@ abstract class JjtxTestBase : TestCase(), ParseUtilsMixin {
         )
 
         return JjtxRunContext(
-            params
+            params,
+            MessageCollector.create(params.io, false, Severity.FINE)
         )
     }
 

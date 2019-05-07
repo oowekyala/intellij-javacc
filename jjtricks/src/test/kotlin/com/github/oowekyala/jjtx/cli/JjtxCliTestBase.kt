@@ -110,7 +110,8 @@ abstract class JjtxCliTestBase {
         private val SrcTestResources = let {
             System.getProperty("jjtx.testEnv.jjtricks.testResDir")?.let { it.toPath().toAbsolutePath() }
                 // that's for when the tests are run inside the IDE
-                ?: JjtxCliTestBase::class.java.protectionDomain.codeSource.location.file.toPath().resolveSibling("resources")
+                ?: JjtxCliTestBase::class.java.protectionDomain.codeSource.location.file.toPath()
+                    .resolve("../../../src/test/resources").normalize()
         }
 
     }

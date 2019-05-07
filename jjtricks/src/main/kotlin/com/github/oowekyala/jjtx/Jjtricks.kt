@@ -5,6 +5,8 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
+import com.github.oowekyala.jjtx.reporting.MessageCollector
+import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.tasks.DumpConfigTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.util.*
@@ -60,18 +62,18 @@ class Jjtricks(
         help = "Don't generate any visitors"
     )
 
-    private val severityAndAggregate by args.mapping(
+    private val minReportSeverity by args.mapping(
         // turn off warnings
-        "--quiet" to (Severity.FAIL to false),
-        "-q" to (Severity.FAIL to false),
+        "--quiet" to Severity.FAIL,
+        "-q" to Severity.FAIL,
         // print info messages
-        "--debug" to (Severity.INFO to false),
-        "-X" to (Severity.INFO to false),
+        "--debug" to Severity.FINE,
+        "-X" to Severity.FINE,
         // stop aggregating warnings
-        "--warn" to (Severity.WARNING to false),
+        "--warn" to Severity.WARNING,
         help = "Amount of log output to issue"
     ).default {
-        (Severity.WARNING to true)
+        Severity.NORMAL
     }
 
     private val configFiles: List<Path> by args.adding(
@@ -98,11 +100,9 @@ class Jjtricks(
             configChain = configChain
         )
 
-        val (minSeverity, isAggregateEntries) = severityAndAggregate
+        val collector = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
-        return JjtxRunContext(params) {
-            MessageCollectorImpl(it, isAggregateEntries, minSeverity)
-        }
+        return JjtxRunContext(params, collector)
     }
 
 
@@ -120,15 +120,14 @@ class Jjtricks(
             catchException("Exception while dumping configuration task") {
                 DumpConfigTask(io.stdout).execute(ctx)
             }
-            io.stdout.flush()
-            ctx.messageCollector.printReport(io.stderr)
+            ctx.messageCollector.concludeReport()
             io.exit(ExitCode.OK)
         }
 
         if (!isNoVisitors) {
             catchException("Exception while generating visitors") {
                 GenerateVisitorsTask(outputRoot).execute(ctx)
-                ctx.messageCollector.printReport(io.stderr)
+                ctx.messageCollector.concludeReport()
             }
         }
 
