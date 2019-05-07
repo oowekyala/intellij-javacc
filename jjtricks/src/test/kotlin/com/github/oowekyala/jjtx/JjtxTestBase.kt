@@ -8,7 +8,6 @@ import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
-import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
@@ -45,9 +44,7 @@ abstract class JjtxTestBase : TestCase() {
                 return psiManager.findFile(virtualFile) as JccFile
             }
 
-            val myCtx: JjtxRunContext by lazy {
-
-
+            val myCtx: JjtxContext by lazy {
                 val optsFile =
                     if (opts is YamlOpts) "$grammarName.jjtopts.yaml"
                     else "$grammarName.jjtopts.json"
@@ -57,17 +54,10 @@ abstract class JjtxTestBase : TestCase() {
 
                 f.writeText(opts.str)
 
-                val params = JjtxParams(
-                    io = Io(),
-                    mainGrammarFile = jccFile.asJccFile(),
-                    outputRoot = testOutputDir,
-                    configChain = listOf(optsPath)
-                )
-
-                JjtxRunContext(
-                    params,
-                    MessageCollector.create(params.io, false, Severity.FINE)
-                )
+                JjtxContext.buildCtx(jccFile.asJccFile()) {
+                    it.messageCollector = MessageCollector.create(it.io, false, Severity.FINE)
+                    it.configChain = listOf(optsPath)
+                }
             }
 
 

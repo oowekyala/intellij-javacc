@@ -10,6 +10,9 @@ import kotlin.system.exitProcess
  * Encapsulates the IO context of a running app.
  * Can be used to start several instances of the app
  * in the same VM, or eg to redirect the output streams.
+ *
+ * The default constructor parameters represent the standard
+ * JVM IO context.
  */
 data class Io(
     val wd: Path = workingDirectory,

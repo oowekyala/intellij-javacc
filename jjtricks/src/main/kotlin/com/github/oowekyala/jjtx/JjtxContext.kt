@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.NamedInputStream
+import com.github.oowekyala.jjtx.util.isFile
 import com.intellij.openapi.project.Project
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -16,14 +17,12 @@ import java.nio.file.Paths
  *
  * @author Clément Fournier
  */
-abstract class JjtxContext internal constructor(val grammarFile: JccFile,
-                                                val configChain: List<Path>,
-                                                val messageCollector: MessageCollector,
-                                                val io: Io) {
+class JjtxContext internal constructor(val grammarFile: JccFile,
+                                       val configChain: List<Path>,
+                                       val messageCollector: MessageCollector,
+                                       val io: Io) {
 
     val project: Project = grammarFile.project
-
-
 
     val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 
@@ -40,6 +39,44 @@ abstract class JjtxContext internal constructor(val grammarFile: JccFile,
         // hence the lazyness
         JjtxOptsModel.parseChain(this, configChain)
     }
+
+    companion object {
+
+
+        data class CtxBuilder internal constructor(
+            val grammarFile: JccFile,
+            var configChain: List<Path> = grammarFile.defaultJjtopts(),
+            var io: Io = Io(),
+            var messageCollector: MessageCollector = MessageCollector.default(io)
+        )
+
+        /**
+         * Build a context for the given grammar file.
+         */
+        fun buildCtx(grammarFile: JccFile, config: (CtxBuilder) -> Unit = {}): JjtxContext =
+            CtxBuilder(grammarFile).also {
+                config(it)
+            }.let {
+                JjtxContext(
+                    grammarFile = it.grammarFile,
+                    configChain = it.configChain,
+                    io = it.io,
+                    messageCollector = it.messageCollector
+                )
+            }
+    }
+}
+
+fun JccFile.defaultJjtopts(): List<Path> {
+
+    val myPath = path
+    val grammarName = myPath.fileName
+
+    val opts =
+        myPath.resolveSibling("$grammarName.jjtopts").takeIf { it.isFile() }
+            ?: myPath.resolveSibling("$grammarName.jjtopts.yaml").takeIf { it.isFile() }
+
+    return listOfNotNull(opts)
 
 }
 

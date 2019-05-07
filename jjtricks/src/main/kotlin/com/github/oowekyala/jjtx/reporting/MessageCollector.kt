@@ -54,6 +54,8 @@ interface MessageCollector {
             }
         }
 
+        fun default(io: Io): MessageCollector = create(io, true, Severity.NORMAL)
+
         fun create(io: Io, aggregate: Boolean, minSeverity: Severity): MessageCollector {
 
             val output = io.stderr

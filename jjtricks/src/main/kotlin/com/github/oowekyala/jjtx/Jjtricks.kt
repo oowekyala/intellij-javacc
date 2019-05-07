@@ -89,7 +89,7 @@ class Jjtricks(
     }
 
 
-    private fun produceContext(project: Project): JjtxRunContext {
+    private fun produceContext(project: Project): JjtxContext {
 
         args.force()
 
@@ -97,16 +97,13 @@ class Jjtricks(
         val configChain = validateConfigFiles(io, grammarFile, configFiles)
         val jccFile = parseGrammarFile(io, grammarFile, project)
 
-        val params = JjtxParams(
-            io = io,
-            mainGrammarFile = jccFile,
-            outputRoot = outputRoot,
-            configChain = configChain
-        )
-
         val collector = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
-        return JjtxRunContext(params, collector)
+        return JjtxContext.buildCtx(jccFile) {
+            it.configChain = configChain
+            it.io = io
+            it.messageCollector = collector
+        }
     }
 
 
@@ -117,8 +114,6 @@ class Jjtricks(
         }
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
-
-        //        env.applicationEnvironment.registerApplicationService(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
         if (isDumpConfig) {
             catchException("Exception while dumping configuration task") {
@@ -160,7 +155,7 @@ class Jjtricks(
             # CLI behaviour
 
             * Return code: 0 if everything is alright, 1 if an error occurred
-            
+
             * IO: standard error stream is used for *every* message from JJTricks.
                 Standard output is only used when asked to dump useful info, eg
                 with `--dump-config`
@@ -184,11 +179,14 @@ class Jjtricks(
         """.trimIndent()
 
         /**
-         * CLI execution.
+         * CLI execution, with JVM [Io].
          */
         @JvmStatic
         fun main(args: Array<String>): Unit = main(Io(), *args)
 
+        /**
+         * CLI execution with a custom [Io]
+         */
         @JvmStatic
         fun main(io: Io, vararg args: String): Unit =
             myMainBody(io = io, programName = "jjtricks") {
