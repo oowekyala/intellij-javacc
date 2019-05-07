@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.intellij.codeInsight.FileModificationService
 import com.intellij.codeInsight.intention.IntentionAction
@@ -30,7 +30,7 @@ class ReplaceSupersedingUsageWithReferenceIntentionFix(private val toReplace: Jc
 
 
         FileModificationService.getInstance().prepareFileForWrite(toReplace.containingFile)
-        val newRegexUnit: JccTokenReferenceRegexUnit = JccElementFactory.createRegexElement(project, "<$tokenName>")
+        val newRegexUnit: JccTokenReferenceRegexUnit = project.jccEltFactory.createRegexElement("<$tokenName>")
 
         toReplace.safeReplace(newRegexUnit)
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)

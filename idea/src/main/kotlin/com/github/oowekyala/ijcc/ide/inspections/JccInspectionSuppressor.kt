@@ -86,7 +86,7 @@ object JccInspectionSuppressor : InspectionSuppressor {
 
         override fun createSuppression(project: Project, element: PsiElement, container: PsiElement) {
             val text = SuppressionUtilCore.SUPPRESS_INSPECTIONS_TAG_NAME + " " + myID
-            JccElementFactory.insertEolCommentBefore(project, container, text)
+            JccElementFactory(project).insertEolCommentBefore(container, text)
         }
     }
 

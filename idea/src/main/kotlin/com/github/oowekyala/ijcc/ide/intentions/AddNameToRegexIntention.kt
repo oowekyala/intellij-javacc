@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.intentions
 import com.github.oowekyala.ijcc.lang.psi.JccContainerRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.intellij.codeInsight.daemon.impl.quickfix.CreateFromUsageBaseFix
 import com.intellij.codeInsight.intention.LowPriorityAction
@@ -27,7 +27,7 @@ class AddNameToRegexIntention :
         } ?: ""
 
 
-        val newExpr = createRegex<JccNamedRegularExpression>(element.project, "< FOO: $regexText >")
+        val newExpr = element.project.jccEltFactory.createRegex<JccNamedRegularExpression>("< FOO: $regexText >")
         return {
             val replaced = element.safeReplace(newExpr)
             startTemplate(project, editor, replaced)

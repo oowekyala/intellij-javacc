@@ -6,7 +6,7 @@ import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.util.foreachAndBetween
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
@@ -33,7 +33,7 @@ object JccNonTerminalDocMaker {
     }
 
     private fun StringBuilder.appendHeader(header: JccJavaNonTerminalProductionHeader) {
-        val psiMethod = JccElementFactory.createJavaMethodForNonterminal(header.project, header)
+        val psiMethod = header.project.jccEltFactory.createJavaMethodForNonterminal(header)
 
         PsiFormatUtil.formatMethod(
             psiMethod,

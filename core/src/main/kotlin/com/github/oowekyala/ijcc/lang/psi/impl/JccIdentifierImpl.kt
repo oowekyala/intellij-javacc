@@ -18,7 +18,7 @@ class JccIdentifierImpl(node: ASTNode) : JccPsiElementImpl(node), JccIdentifier 
     override val leaf: PsiElement
         get() = findNotNullChildByType(JCC_IDENT)
 
-    override fun setName(name: String): PsiElement = replace(JccElementFactory.createIdentifier(project, name))
+    override fun setName(name: String): PsiElement = replace(project.jccEltFactory.createIdentifier(name))
 
     override fun getName(): String = text
 

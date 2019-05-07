@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.structureview
 import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.navigation.ItemPresentation
@@ -99,8 +99,7 @@ private val JccNonTerminalProduction.presentableText: String
     get() {
         val header = header
 
-        val psiMethod = JccElementFactory.createJavaMethodForNonterminal(
-            header.project,
+        val psiMethod = header.project.jccEltFactory.createJavaMethodForNonterminal(
             header
         )
 

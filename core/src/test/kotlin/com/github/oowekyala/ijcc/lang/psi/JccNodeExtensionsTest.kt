@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.parser.ParserTestDsl
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexSpec
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import io.kotlintest.shouldBe
 
 /**
@@ -14,7 +14,7 @@ class JccNodeExtensionsTest : ParserTestDsl() {
 
     fun `test JccRegexSpec isPrivate`() {
 
-        val spec = createRegexSpec(project, RegexKind.TOKEN, "<#FOO: \"f\" >")
+        val spec = project.jccEltFactory.createRegexSpec(RegexKind.TOKEN, "<#FOO: \"f\" >")
 
         spec.isPrivate shouldBe true
 

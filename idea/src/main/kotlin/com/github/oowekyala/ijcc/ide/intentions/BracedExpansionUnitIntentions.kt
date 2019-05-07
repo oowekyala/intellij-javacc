@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccOptionalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccParenthesizedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccZeroOrOne
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction
 import com.intellij.openapi.editor.Editor
@@ -34,7 +35,7 @@ class ReplaceParenthesizedOptionalWithBracedIntention : PsiElementBaseIntentionA
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         val ref = getParenthesizedParent(element)!!
         val expansionText = ref.expansion?.text ?: ""
-        ref.safeReplace(createExpansion<JccOptionalExpansionUnit>(project, "[$expansionText]"))
+        ref.safeReplace(project.jccEltFactory.createExpansion<JccOptionalExpansionUnit>("[$expansionText]"))
     }
 
     override fun getFamilyName(): String = text
@@ -58,7 +59,7 @@ class ReplaceBracedExpansionUnitWithParenthesizedIntention : PsiElementBaseInten
     override fun invoke(project: Project, editor: Editor?, element: PsiElement) {
         val ref = element.parent as JccOptionalExpansionUnit
         val expansionText = ref.expansion?.text ?: ""
-        ref.safeReplace(createExpansion<JccParenthesizedExpansionUnit>(project, "($expansionText)?"))
+        ref.safeReplace(project.jccEltFactory.createExpansion<JccParenthesizedExpansionUnit>("($expansionText)?"))
     }
 
     override fun getFamilyName(): String = text

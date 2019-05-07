@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.injection.MultilineTextEscaper
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost
 
@@ -32,7 +32,7 @@ interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageIn
 
     @JvmDefault
     override fun updateText(text: String): PsiLanguageInjectionHost =
-        this.replace(JccElementFactory.createJavaNonterminalHeader(project, text)) as PsiLanguageInjectionHost
+        this.replace(project.jccEltFactory.createJavaNonterminalHeader(text)) as PsiLanguageInjectionHost
 
 
 }

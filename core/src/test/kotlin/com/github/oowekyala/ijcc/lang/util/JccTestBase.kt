@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.lang.util
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.lang.LanguageCommenters
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
@@ -160,7 +160,7 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     inline fun <reified R : JccExpansion> String.asExpansionOfType(): R =
         asExpansion().also { check(it is R) }.let { it as R }
 
-    inline fun <reified R : JccRegularExpression> String.asRegex(): R = JccElementFactory.createRegex(project, this)
+    inline fun <reified R : JccRegularExpression> String.asRegex(): R = project.jccEltFactory.createRegex(this)
 
 
     companion object {

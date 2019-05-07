@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexElement
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 
 /**
@@ -19,11 +18,11 @@ class JccElementFactoryTest : LightCodeInsightFixtureTestCase() {
     }
 
     fun testCreateRegexReference() {
-        createRegexElement<JccTokenReferenceRegexUnit>(project, "<FOO>")
+        project.jccEltFactory.createRegexElement<JccTokenReferenceRegexUnit>("<FOO>")
     }
 
     fun testCreateLiteralRegexUnit() {
-        createRegexElement<JccLiteralRegexUnit>(project, "\"foo\"")
+        project.jccEltFactory.createRegexElement<JccLiteralRegexUnit>("\"foo\"")
     }
 
     fun testCreateBnfExpansion() {
@@ -31,23 +30,22 @@ class JccElementFactoryTest : LightCodeInsightFixtureTestCase() {
     }
 
     fun testCreateIdentifier() {
-        JccElementFactory.createIdentifier(project, "mlady")
+        project.jccEltFactory.createIdentifier("mlady")
     }
 
 
     fun testCreateJavaExpression() {
-        JccElementFactory.createJavaExpression(project, "1+2")
+        project.jccEltFactory.createJavaExpression("1+2")
     }
 
 
     fun testCreateJavaBlock() {
-        JccElementFactory.createJavaBlock(project, "{ hey(); }")
+        project.jccEltFactory.createJavaBlock("{ hey(); }")
     }
 
 
     fun testCreateAssignmentLhs() {
-
-        JccElementFactory.createAssignmentLhs(project, "foo.bar")
+        project.jccEltFactory.createAssignmentLhs("foo.bar")
     }
 
 

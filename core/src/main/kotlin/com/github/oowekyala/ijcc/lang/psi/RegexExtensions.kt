@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegex
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
@@ -428,9 +428,9 @@ val JccCharacterListRegexUnit.isAnyMatch: Boolean
  * brackets if needed.
  */
 fun JccRegexElement.promoteToRegex(): JccRegularExpression = when (this) {
-    is JccTokenReferenceRegexUnit -> createRegex<JccRefRegularExpression>(project, text)
-    is JccLiteralRegexUnit        -> createRegex<JccLiteralRegularExpression>(project, text)
-    else                          -> createRegex<JccContainerRegularExpression>(project, "< $text >")
+    is JccTokenReferenceRegexUnit -> project.jccEltFactory.createRegex<JccRefRegularExpression>(text)
+    is JccLiteralRegexUnit        -> project.jccEltFactory.createRegex<JccLiteralRegularExpression>(text)
+    else                          -> project.jccEltFactory.createRegex<JccContainerRegularExpression>("< $text >")
 }
 
 // constrain the hierarchies to be the same to avoid some confusions

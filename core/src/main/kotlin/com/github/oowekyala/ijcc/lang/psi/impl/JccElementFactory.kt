@@ -21,7 +21,9 @@ import org.intellij.lang.annotations.Language
  * @since 1.0
  */
 
-object JccElementFactory {
+open class JccElementFactory(val project: Project) {
+
+
     private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
         PsiTreeUtil.findChildOfType(this, clazz)
 
@@ -30,7 +32,7 @@ object JccElementFactory {
         get() = PsiFileFactory.getInstance(this)
 
 
-    fun insertEolCommentBefore(project: Project, anchor: PsiElement, name: String) {
+    fun insertEolCommentBefore(anchor: PsiElement, name: String) {
         val parserFacade = PsiParserFacade.SERVICE.getInstance(project)
 
         val comment = parserFacade.createLineCommentFromText(JavaccFileType, name)
@@ -40,7 +42,7 @@ object JccElementFactory {
     }
 
 
-    fun createOptionValue(project: Project, name: String): JccOptionValue {
+    fun createOptionValue(name: String): JccOptionValue {
         val fileText = """
             options {
              FOO = $name;
@@ -48,32 +50,32 @@ object JccElementFactory {
             $DummyHeader
 
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.options!!.optionBindingList[0].optionValue!!
     }
 
 
-    fun createIdentifier(project: Project, name: String): JccIdentifier {
+    fun createIdentifier(name: String): JccIdentifier {
         val fileText = """
             $DummyHeader
 
             void $name() {} { "dummy" }
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first().nameIdentifier
     }
 
     inline fun <reified T : JccExpansion>
-        createExpansion(project: Project, text: String): T {
+        createExpansion(text: String): T {
 
         val fileText = """
             $DummyHeader
 
             void foo(): {} { $text }
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
@@ -82,15 +84,15 @@ object JccElementFactory {
 
 
     inline fun <reified T : JccRegularExpression>
-        createRegex(project: Project, text: String): T =
-        createRegexSpec(project, RegexKind.TOKEN, text).regularExpression as T
+        createRegex(text: String): T =
+        createRegexSpec(RegexKind.TOKEN, text).regularExpression as T
 
     inline fun <reified T : JccRegexElement>
-        createRegexElement(project: Project, text: String): T =
-        createRegex<JccContainerRegularExpression>(project, "< $text >").regexElement as T
+        createRegexElement(text: String): T =
+        createRegex<JccContainerRegularExpression>("< $text >").regexElement as T
 
 
-    fun createRegexSpec(project: Project, kind: RegexKind, text: String): JccRegexSpec {
+    fun createRegexSpec(kind: RegexKind, text: String): JccRegexSpec {
         val fileText = """
             $DummyHeader
 
@@ -99,36 +101,36 @@ object JccElementFactory {
             }
 
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.globalTokenSpecs.first()
     }
 
-    fun createJavaExpression(project: Project, text: String): JccJavaExpression {
+    fun createJavaExpression(text: String): JccJavaExpression {
         val fileText = """
             $DummyHeader
 
             void foo() {} { LOOKAHEAD({$text}) "dummy" }
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first().findChildOfType(JccLocalLookaheadUnit::class.java)!!.javaExpression!!
     }
 
 
-    fun createJavaBlock(project: Project, text: String): JccJavaBlock {
+    fun createJavaBlock(text: String): JccJavaBlock {
         val fileText = """
             $DummyHeader
 
             JAVACODE void foo() $text
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first().javaBlock!!
     }
 
 
-    fun createAssignmentLhs(project: Project, text: String): JccJavaAssignmentLhs {
+    fun createAssignmentLhs(text: String): JccJavaAssignmentLhs {
         val fileText = """
             $DummyHeader
 
@@ -136,7 +138,7 @@ object JccElementFactory {
                 $text = hello()
             }
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first()
             .let { it as JccBnfProduction }
@@ -146,29 +148,29 @@ object JccElementFactory {
     }
 
 
-    fun createJavaNonterminalHeader(project: Project, text: String): JccJavaNonTerminalProductionHeader {
+    fun createJavaNonterminalHeader(text: String): JccJavaNonTerminalProductionHeader {
         val fileText = """
             $DummyHeader
 
             JAVACODE $text {}
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.nonTerminalProductions.first().header
     }
 
-    fun createJcu(project: Project, text: String): JccJavaCompilationUnit {
+    fun createJcu(text: String): JccJavaCompilationUnit {
         val fileText = """
             PARSER_BEGIN(dummy)
                 $text
             PARSER_END(dummy)
         """.trimIndent()
-        val file = createFile(project, fileText)
+        val file = createFile(fileText)
 
         return file.parserDeclaration!!.javaCompilationUnit!!
     }
 
-    fun createJavaMethodForNonterminal(project: Project, header: JccJavaNonTerminalProductionHeader): PsiMethod {
+    fun createJavaMethodForNonterminal(header: JccJavaNonTerminalProductionHeader): PsiMethod {
         val text = """
             class Foo {
                 ${header.toJavaMethodHeader()} {
@@ -181,7 +183,7 @@ object JccElementFactory {
             .findChildOfType(PsiMethod::class.java)!!
     }
 
-    fun createFile(project: Project, text: String): JccFile =
+    fun createFile(text: String): JccFile =
         project.psiFileFactory.createFileFromText("dummy.jjt", JjtreeFileType, text) as JccFile
 
     /**
@@ -190,8 +192,9 @@ object JccElementFactory {
     fun createElement(node: ASTNode): PsiElement = JccTypes.Factory.createElement(node)
 
 
-    @Language("JavaCC")
-    const val DummyHeader = """
+    companion object {
+        @Language("JavaCC")
+        const val DummyHeader = """
                 PARSER_BEGIN(dummy)
 
                 public class dummy {}
@@ -199,6 +202,16 @@ object JccElementFactory {
                 PARSER_END(dummy)
                 """
 
+
+        /**
+         * Create from an AST node, used by the parser.
+         */
+        fun createElement(node: ASTNode): PsiElement = JccTypes.Factory.createElement(node)
+
+    }
+
 }
 
 
+val Project.jccEltFactory: JccElementFactory
+    get() = JccElementFactory(this)

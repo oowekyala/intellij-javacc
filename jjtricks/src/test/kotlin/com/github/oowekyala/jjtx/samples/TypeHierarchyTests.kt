@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.samples
 
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.DummyHeader
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.Companion.DummyHeader
 import com.github.oowekyala.ijcc.util.indent
 import io.kotlintest.should
 

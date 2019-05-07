@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.ide.intentions
 
 import com.github.oowekyala.ijcc.lang.psi.JccLiteralRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createRegexElement
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.intellij.openapi.editor.Editor
@@ -28,7 +28,7 @@ class TokenInliningIntention
                 .resolveToken()!!
                 .asStringToken!!
                 .text
-                .let { createRegexElement(project, it) }
+                .let { project.jccEltFactory.createRegexElement(it) }
 
         return {
             element.safeReplace(newLiteral)
@@ -54,7 +54,7 @@ class ReplaceLiteralWithReferenceIntention :
             element.typedReference!!
                 .resolveToken(exact = true)!!
                 .name!!
-                .let { createRegexElement(project, "<$it>") }
+                .let { project.jccEltFactory.createRegexElement("<$it>") }
 
         return {
             element.safeReplace(newRegexUnit)

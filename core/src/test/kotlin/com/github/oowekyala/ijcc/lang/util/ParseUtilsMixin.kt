@@ -1,8 +1,7 @@
 package com.github.oowekyala.ijcc.lang.util
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
+import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.openapi.project.Project
 import org.intellij.lang.annotations.Language
 
@@ -41,15 +40,15 @@ interface ParseUtilsMixin {
                 $this
             """
 
-    fun String.asExpansion(): JccExpansion = createExpansion(getProject(), this)
+    fun String.asExpansion(): JccExpansion = getProject().jccEltFactory.createExpansion(this)
 
     fun String.asProduction(): JccProductionLike =
         asJccGrammar().grammarFileRoot!!.childrenSequence().filterIsInstance<JccProductionLike>().first()
 
-    fun String.asJccFile(): JccFile = JccElementFactory.createFile(getProject(), this)
+    fun String.asJccFile(): JccFile = getProject().jccEltFactory.createFile(this)
 
     fun String.asJccGrammar(): JccFile =
-        JccElementFactory.createFile(getProject(), "${JccTestBase.DummyHeader}$this")
+        getProject().jccEltFactory.createFile("${JccTestBase.DummyHeader}$this")
 
     companion object {
         @Language("JavaCC")
