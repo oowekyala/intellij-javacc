@@ -1,12 +1,10 @@
-package com.github.oowekyala.jjtx.samples
+package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
-import com.github.oowekyala.jjtx.JjtxParams
-import com.github.oowekyala.jjtx.JjtxRunContext
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity

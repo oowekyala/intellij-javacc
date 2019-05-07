@@ -1,6 +1,10 @@
-package com.github.oowekyala.jjtx.samples
+package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.util.indent
+import com.github.oowekyala.jjtx.JjtxTestBase
+import com.github.oowekyala.jjtx.JsonOpts
+import com.github.oowekyala.jjtx.YamlOpts
+import com.github.oowekyala.jjtx.util.*
 import io.kotlintest.should
 
 /**

@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.samples
+package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
 import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
