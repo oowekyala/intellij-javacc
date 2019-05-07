@@ -153,6 +153,29 @@ class Jjtricks(
             should be conventionally "Java.jjtopts.yaml". Additional config files
             may be added with the `--opts` CLI option.
 
+            # CLI behaviour
+
+            * Return code: 0 if everything is alright, 1 if an error occurred
+            * IO: standard error stream is used for *every* message from JJTricks.
+                Standard output is only used when asked to dump useful info, eg
+                with `--dump-config`
+
+        """.trimIndent()
+
+        private val EXAMPLES = """
+
+            # Examples
+
+            `jjtricks Java`
+
+                Picks up on a Java.jjt file, and Java.jjtopts.yaml if it exists, runs the
+                visitors declared for execution in the options file.
+
+            `jjtricks Java --dump-config`
+
+                Same as above, prints the resolved full configuration file (flattening the
+                whole `--opts` chain) to standard output.
+
         """.trimIndent()
 
         /**
@@ -165,7 +188,7 @@ class Jjtricks(
         fun main(io: Io, vararg args: String): Unit = mainBody(io = io, programName = "jjtricks") {
 
             val jjtx =
-                ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION))
+                ArgParser(args, helpFormatter = DefaultHelpFormatter(prologue = DESCRIPTION, epilogue = EXAMPLES))
                     .parseInto { Jjtricks(io = io, args = it) }
 
             // environment is open until the end of the CLI run
