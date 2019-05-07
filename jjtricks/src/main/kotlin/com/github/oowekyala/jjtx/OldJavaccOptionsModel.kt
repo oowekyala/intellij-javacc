@@ -29,7 +29,7 @@ internal class OldJavaccOptionsModel(
 
     override val visitors: Map<String, VisitorGenerationTask> = emptyMap()
 
-    override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default()
+    override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default(grammarOptions.rootNodeClass)
 
     override val templateContext: Map<String, Any> = emptyMap()
 }

@@ -29,7 +29,14 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
     object NODE_DEFAULT_VOID : JjtOption<Boolean>(BOOLEAN, false)
 
     /** If set defines the name of a user-supplied class that will extend SimpleNode. Any tree nodes created will then be subclasses of NODE_CLASS. */
-    object NODE_CLASS : JjtOption<String>(RefinedOptionType.TYPE, "")
+    object NODE_CLASS : JjtOption<String>(RefinedOptionType.TYPE, "") {
+        override fun contextualDefaultValue(config: IGrammarOptions): String {
+            return config.nodePackage.let {
+                if (it.isEmpty()) "SimpleNode"
+                else "$it.SimpleNode"
+            }
+        }
+    }
 
     /**
      *  Specify a class containing a factory method with following signature

@@ -95,6 +95,7 @@ subprojects {
             includeJars("intellij-core")
         }
 
+        testImplementation(kotlin("test"))
         testImplementation("junit:junit:4.12")
         testImplementation(intellijDep()) {
             includeIjCoreDeps(project)

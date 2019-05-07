@@ -1,6 +1,5 @@
 package com.github.oowekyala.jjtx.samples
 
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.Companion.DummyHeader
 import com.github.oowekyala.ijcc.util.indent
 import io.kotlintest.should
 
@@ -9,10 +8,15 @@ import io.kotlintest.should
  */
 class TypeHierarchyTests : JjtxTestBase() {
 
-    val baseCtx = contextBuilder {
+    private val baseCtx = testBuilder {
         jccFile =
             """
-                $DummyHeader
+
+                PARSER_BEGIN(dummy)
+
+                public class dummy {}
+
+                PARSER_END(dummy)
 
                 void Foo(): {} {}
                 void SomeExpr(): {} {}
@@ -23,57 +27,87 @@ class TypeHierarchyTests : JjtxTestBase() {
 
 
     fun `test empty config adopts nodes`() {
-
-        val ctx = baseCtx.copy(opts = JsonOpts("{}")).newCtx()
-
-        ctx.jjtxOptsModel.typeHierarchy should matchRoot("Node") {
-            node("Foo")
-            node("SomeExpr")
-            node("BarExpr")
+        baseCtx
+            .copy(opts = JsonOpts("{\"jjtx.nodePrefix\": \"\"}"))
+            .doTest {
+                myCtx.jjtxOptsModel.typeHierarchy should matchRoot("Node") {
+                    node("SomeExpr")
+                    node("Foo")
+                    node("BarExpr")
+                }
         }
     }
 
     fun `test different root`() {
 
-        val ctx = baseCtx.withYamlOpts {
+        baseCtx.withYamlOpts {
             """
         jjtx:
+            nodePackage: "dummy.grammar"
+            nodePrefix: ""
             typeHierarchy:
               "MyRoot"
 
             """.trimIndent()
+        }.doTest {
+            myCtx.jjtxOptsModel.typeHierarchy should matchRoot("dummy.grammar.MyRoot") {
+                node("dummy.grammar.SomeExpr")
+                node("dummy.grammar.Foo")
+                node("dummy.grammar.BarExpr")
+            }
         }
 
-        ctx.jjtxOptsModel.typeHierarchy should matchRoot("dummy.grammar.MyRoot") {
-            node("dummy.grammar.Foo")
-            node("dummy.grammar.SomeExpr")
-            node("dummy.grammar.BarExpr")
-        }
+
     }
 
     fun `test package discrepancy`() {
+        baseCtx.copy(
 
-        val ctx = baseCtx.withYamlOpts {
+            jccFile = "options { NODE_PACKAGE =\"dummy.grammar\" } " + baseCtx.jccFile,
+            opts =
             """
         jjtx:
             nodePackage: "com.overrides"
+            nodePrefix: ""
             typeHierarchy:
               "MyRoot"
 
-            """.trimIndent()
-        }
+            """.trimIndent().asYamlOpts()
+        )
+            .doTest {
+                myCtx.jjtxOptsModel.typeHierarchy should matchRoot("com.overrides.MyRoot") {
+                    node("com.overrides.SomeExpr")
+                    node("com.overrides.Foo")
+                    node("com.overrides.BarExpr")
+                }
+            }
+    }
 
-        ctx.jjtxOptsModel.typeHierarchy should matchRoot("dummy.grammar.MyRoot") {
-            node("dummy.grammar.Foo")
-            node("dummy.grammar.SomeExpr")
-            node("dummy.grammar.BarExpr")
-        }
+    fun `test prefix override`() {
+        baseCtx.copy(
+            opts =
+            """
+        jjtx:
+            nodePackage: "com.overrides"
+            nodePrefix: "P"
+            typeHierarchy:
+              "%MyRoot"
+
+            """.trimIndent().asYamlOpts()
+        )
+            .doTest {
+                myCtx.jjtxOptsModel.typeHierarchy should matchRoot("com.overrides.MyRoot") {
+                    node("com.overrides.PSomeExpr")
+                    node("com.overrides.PFoo")
+                    node("com.overrides.PBarExpr")
+                }
+            }
     }
 
 
-    infix fun CtxBuilder.withYamlOpts(opts: () -> String) = this.copy(
+    infix fun CtxTestBuilder.withYamlOpts(opts: () -> String) = this.copy(
         opts = opts().asYamlOpts()
-    ).newCtx()
+    )
 }
 
 fun String.asYamlTh(): YamlOpts =

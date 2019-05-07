@@ -18,6 +18,8 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
 
     override val inlineBindings: InlineGrammarOptions = this
 
+    val rootNodeClass : String by lazy { getOptionValueOrDefault(JjtOption.NODE_CLASS) }
+
     override val nodePackage: String by lazy { getOptionValueOrDefault(JjtOption.NODE_PACKAGE) }
 
     val outputDirectory: String by lazy { getOptionValueOrDefault(JccOption.OUTPUT_DIRECTORY) }
