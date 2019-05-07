@@ -1,0 +1,17 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: true
+    parameterlessVisitor:
+      execute: true
+
+  nodePrefix: AST
+  nodePackage: "org.parent"
+  typeHierarchy:
+    "%MyNodeParent":
+      - "Expression":
+          - "r:.*Expression"
+          - Literal:
+              - NullLiteral
+              - IntegerLiteral

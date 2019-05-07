@@ -8,10 +8,10 @@ import org.junit.Test
 class ConfigDumpCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleArg() = doTest("Java", "--dump-config")
+    fun testSimpleArg() = doTest("DummyExpr", "--dump-config")
     @Test
-    fun testQual() = doTest("Java.jjt", "--dump-config")
+    fun testQual() = doTest("DummyExpr.jjt", "--dump-config")
     @Test
-    fun testPath() = doTest("././Java.jjt", "--dump-config")
+    fun testPath() = doTest("././DummyExpr.jjt", "--dump-config")
 
 }

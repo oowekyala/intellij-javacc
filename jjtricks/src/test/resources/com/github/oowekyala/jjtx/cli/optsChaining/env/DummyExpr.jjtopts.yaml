@@ -6,8 +6,7 @@ jjtx:
     parameterlessVisitor:
       execute: true
 
-  nodePrefix: AST
-  nodePackage: "net.sourceforge.pmd.lang.java.ast"
+  nodePrefix: Ex
+  nodePackage: "org.expr"
   typeHierarchy:
-    "%JavaNode":
-      - "ImportDeclaration"
+    Expression: "r:.*"

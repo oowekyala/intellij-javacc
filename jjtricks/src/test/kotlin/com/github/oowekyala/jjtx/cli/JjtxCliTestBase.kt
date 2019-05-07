@@ -1,10 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.Jjtricks
-import com.github.oowekyala.jjtx.util.ExitCode
-import com.github.oowekyala.jjtx.util.Io
-import com.github.oowekyala.jjtx.util.exists
-import com.github.oowekyala.jjtx.util.isDirectory
+import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
@@ -51,7 +48,7 @@ abstract class JjtxCliTestBase {
     private val myStdout = ByteArrayOutputStream()
     private val myStderr = ByteArrayOutputStream()
 
-    private data class StopError(val code: Int) : Error()
+    private data class StopError(override val message: String, val code: Int) : Error()
 
     @Before
     fun setup() {
@@ -66,13 +63,14 @@ abstract class JjtxCliTestBase {
             wd = myTmpDir,
             stdout = PrintStream(myStdout),
             stderr = PrintStream(myStderr),
-            exit = { _, code -> throw StopError(code) }
+            exit = { m, code -> throw StopError(m, code) }
         )
 
-        try {
+        val code = try {
             Jjtricks.main(myIo, *args)
+            ExitCode.OK
         } catch (stop: StopError) {
-            assertEquals(expectedExitCode, ExitCode.values()[stop.code])
+            ExitCode.values()[stop.code]
         }
 
         fun assertEquals(expectedFile: Path?,
@@ -90,11 +88,10 @@ abstract class JjtxCliTestBase {
 
         assertEquals(myExpectedStdout, myStdout)
         assertEquals(myExpectedStderr, myStderr)
+        assertEquals(expectedExitCode, code)
 
         if (myExpectedOutput != null) {
-            // TODO make symmetric
             assertDirEquals(myExpectedOutput, myTmpDir.resolve(expectedOutputRoot))
-            // assertDirEquals(myTmpDir.resolve(expectedOutputRoot), myExpectedOutput)
         }
     }
 
@@ -107,11 +104,14 @@ abstract class JjtxCliTestBase {
 
             val path = JjtxCliTestBase::class.java.`package`.name.replace('.', '/')
 
-            return SrcTestResources.resolve("$path/$name")
+            return SrcTestResources.resolve("$path/$name").also { assert(it.isDirectory()) }
         }
 
-        private val SrcTestResources =
-            Paths.get(System.getProperty("jjtx.testEnv.jjtricks.testResDir")).toAbsolutePath()
+        private val SrcTestResources = let {
+            System.getProperty("jjtx.testEnv.jjtricks.testResDir")?.let { it.toPath().toAbsolutePath() }
+                // that's for when the tests are run inside the IDE
+                ?: JjtxCliTestBase::class.java.protectionDomain.codeSource.location.file.toPath().resolveSibling("resources")
+        }
 
     }
 

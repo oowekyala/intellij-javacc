@@ -78,10 +78,10 @@ class JavaccColorSettingsPage : ColorSettingsPage {
 <<lexstate>DEFAULT</lexstate>>
 <jcckeyword>TOKEN</jcckeyword> :
 {
-| < <token>PLUS</token>: "+" >
+  < <token>PLUS</token>: "+" >
 | < <token>MINUS</token>: "-" >
 | < <token>NULL</token>: "null" >
-| < <token>INTEGER</token>: ["+" | "-"] <<token-ref>DIGITS</token-ref>> >
+| < <token>INTEGER</token>: ["+", "-"] <<token-ref>DIGITS</token-ref>> >
 | < <priv-token>#DIGITS</priv-token>: (["0"-"9"])+ >
 }
 
