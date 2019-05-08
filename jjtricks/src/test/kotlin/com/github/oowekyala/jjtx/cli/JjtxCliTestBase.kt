@@ -7,7 +7,6 @@ import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
 import junit.framework.Assert.assertEquals
 import org.apache.commons.io.FileUtils.copyDirectory
-import org.junit.Before
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.PrintStream
@@ -36,31 +35,49 @@ import java.util.*
 abstract class JjtxCliTestBase {
 
 
-    protected var expectedExitCode = ExitCode.OK
-    protected var expectedOutputRoot = "gen"
+    inner class TestBuilder {
+        var expectedExitCode: ExitCode = ExitCode.OK
 
-    private val myTmpDir = createTempDirectory(TmpPrefix)
-    private val myResourceDir = findTestDir(javaClass)
+        /**
+         * Directory to check in the tmp dir.
+         */
+        var outputRoot: String = "gen"
 
-    private val myExpectedStdout = myResourceDir.resolve("stdout.txt").takeIf { it.exists() }
-    private val myExpectedStderr = myResourceDir.resolve("stderr.txt").takeIf { it.exists() }
-    private val myExpectedOutput = myResourceDir.resolve("expected").takeIf { it.isDirectory() }
+        /**
+         * Set it to use the environment of another [JjtxCliTestBase].
+         */
+        var envOwner: Class<out JjtxCliTestBase> = this@JjtxCliTestBase.javaClass
+    }
 
-    private val myStdout = ByteArrayOutputStream()
-    private val myStderr = ByteArrayOutputStream()
+    private class MyTestCase(params: TestBuilder) {
+
+        val tmpDir: Path = createTempDirectory(TmpPrefix)
+        val resDir: Path = findTestDir(javaClass)
+        val env: Path = findTestDir(params.envOwner).resolve("env").also { assert(it.isDirectory()) }
+        val expectedStdout: Path? = resDir.resolve("stdout.txt").takeIf { it.exists() }
+        val expectedStderr: Path? = resDir.resolve("stderr.txt").takeIf { it.exists() }
+        val expectedOutput: Path? = resDir.resolve("expected").takeIf { it.isDirectory() }
+        val actualOutput: Path = tmpDir.resolve(params.outputRoot)
+        val expectedExitCode: ExitCode = params.expectedExitCode
+
+        init {
+            copyDirectory(env.toFile(), tmpDir.toFile())
+        }
+
+    }
 
     private data class StopError(override val message: String, val code: Int) : Error()
 
 
-    @Before
-    fun setUp() {
-        copyDirectory(myResourceDir.resolve("env").toFile(), myTmpDir.toFile())
-    }
+    fun doTest(vararg args: String, conf: TestBuilder.() -> Unit = {}) {
 
-    fun doTest(vararg args: String) {
+        val test = MyTestCase(TestBuilder().also(conf))
+
+        val myStdout = ByteArrayOutputStream()
+        val myStderr = ByteArrayOutputStream()
 
         val myIo = Io(
-            wd = myTmpDir,
+            wd = test.tmpDir,
             stdout = PrintStream(myStdout),
             stderr = PrintStream(myStderr),
             dateGetter = { Date(0) }, // invariant date
@@ -78,9 +95,11 @@ abstract class JjtxCliTestBase {
                          actual: ByteArrayOutputStream) {
 
             if (expectedFile != null) {
-                val actualText = actual.toString(Charset.defaultCharset().name()).let {
-                    it.replace(Regex("$TmpPrefix\\d+"), TmpPrefix)
-                }
+                val actualText =
+                    // remove non-determinism by truncating tmp dir name
+                    actual.toString(Charset.defaultCharset().name())
+                        .replace(Regex("$TmpPrefix\\d+"), TmpPrefix)
+
                 val expectedText = expectedFile.readText()
                 if (!Comparing.equal(expectedText, actualText)) {
                     throw FileComparisonFailure("Text mismatch", expectedText, actualText, expectedFile.toString())
@@ -89,12 +108,12 @@ abstract class JjtxCliTestBase {
 
         }
 
-        assertEquals(myExpectedStdout, myStdout)
-        assertEquals(myExpectedStderr, myStderr)
-        assertEquals(expectedExitCode, code)
+        assertEquals(test.expectedStdout, myStdout)
+        assertEquals(test.expectedStderr, myStderr)
+        assertEquals(test.expectedExitCode, code)
 
-        if (myExpectedOutput != null) {
-            assertDirEquals(myExpectedOutput, myTmpDir.resolve(expectedOutputRoot))
+        if (test.expectedOutput != null) {
+            assertDirEquals(test.expectedOutput, test.actualOutput)
         }
     }
 
