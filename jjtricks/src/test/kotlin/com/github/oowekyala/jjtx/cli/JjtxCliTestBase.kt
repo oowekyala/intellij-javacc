@@ -152,6 +152,7 @@ private fun assertDirEquals(expected: Path, actual: Path) {
                 val expectedText = file.readText()
 
                 if (!actualFile.exists()) {
+
                     throw FileComparisonFailure(
                         "File $relativize missing in $inspected",
                         expectedText,

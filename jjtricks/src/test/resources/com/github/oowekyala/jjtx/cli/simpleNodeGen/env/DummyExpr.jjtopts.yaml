@@ -21,21 +21,20 @@ jjtx:
             }
 
           formatter: "java"
-      "v: !$node.subNodes.empty":
+      "v: !$node.subNodes.isEmpty()":
         - template: |
-            #if( !$node.class.package.empty )
-            package $node.class.package;
+            #if( !$package.empty )
+            package $package;
             #end
-            public abstract class ${node.class.simpleName} {
+            public abstract class $simpleName {
 
             }
-          genClassName: "${node.class.qualifiedName}"
           formatter: "java"
         - template: |
-            #if( !$node.class.package.empty )
-            package ${node.class.package}.impl;
+            #if( !$package.empty )
+            package $package;
             #end
-            public class ${node.class.simpleName}Impl extends ${grammar.nodePackage}.{node.class.simpleName} {
+            public class $simpleName extends ${node.class.qualifiedName} {
 
             }
           genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"

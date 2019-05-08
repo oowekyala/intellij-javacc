@@ -51,7 +51,7 @@ interface MessageCollector {
      * Report a non-fatal error, probably followed later by termination anyway.
      */
     fun reportNonFatal(throwable: Throwable) {
-        report(throwable.message ?: "", MessageCategory.NON_FATAL)
+        report(throwable.javaClass.canonicalName + ": " + throwable.message ?: "", MessageCategory.NON_FATAL)
     }
 
 

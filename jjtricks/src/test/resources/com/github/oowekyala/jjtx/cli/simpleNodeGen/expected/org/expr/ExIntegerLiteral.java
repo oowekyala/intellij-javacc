@@ -5,25 +5,23 @@
 
 package org.expr;
 
-
 public class ExIntegerLiteral extends ExLiteral {
 
+  public ExIntegerLiteral(int id) {
+    super(id);
+  }
 
-    public ExIntegerLiteral(int id) {
-        super(id)
-    }
+  public ExIntegerLiteral(DummyExprParser parser, int id) {
+    super(parser, id);
+  }
 
-    public ExIntegerLiteral(DummyExprParser parser, int id) {
-        super(parser, id)
-    }
+  @Override
+  public Object jjtAccept(org.expr.DummyExprParserVisitor visitor, Object data) {
+    return visitor.visit(this, data);
+  }
 
-        @Override
-public Object jjtAccept(org.expr.DummyExprParserVisitor visitor, Object data) {
-   return visitor.visit(this, data);
-}
-        @Override
-public void jjtAccept(org.expr.DummyExprVisitor visitor) {
-   visitor.visit(this);
-}
-
+  @Override
+  public void jjtAccept(org.expr.DummyExprVisitor visitor) {
+    visitor.visit(this);
+  }
 }

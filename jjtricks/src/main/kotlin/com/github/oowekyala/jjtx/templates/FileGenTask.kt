@@ -8,6 +8,7 @@ import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
+import java.lang.RuntimeException
 import java.nio.file.Path
 import java.util.*
 
@@ -153,16 +154,13 @@ open class FileGenTask internal constructor(
                 "timestamp" to ctx.io.now()
             )
 
-        val rendered = engine.evaluate(fullCtx, template)
+        val rendered = engine.evaluate(fullCtx, logId = o.toString(), template = template)
 
 
         val formatted = try {
             formatter?.format(rendered)
         } catch (e: Exception) {
-            ctx.messageCollector.report(
-                "Exception applying formatter '${formatter!!.name.toLowerCase()}': ${e.message}",
-                MessageCategory.FORMATTER_ERROR
-            )
+            ctx.messageCollector.reportNonFatal(RuntimeException("Exception applying formatter '${formatter!!.name.toLowerCase()}'", e))
             null
         } ?: rendered
 

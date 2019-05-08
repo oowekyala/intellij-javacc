@@ -12,11 +12,11 @@ public class ${simpleName} extends ${node.superNode.class.simpleName} {
 
 
     public ${simpleName}(int id) {
-        super(id)
+        super(id);
     }
 
     public ${simpleName}(${grammar.parser.class.simpleName} parser, int id) {
-        super(parser, id)
+        super(parser, id);
     }
 
     #foreach($visitor in $run.visitors.values())
