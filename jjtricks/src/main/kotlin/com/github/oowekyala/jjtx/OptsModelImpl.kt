@@ -1,11 +1,12 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
+import com.github.oowekyala.jjtx.reporting.ErrorCategory.INCOMPLETE_VISITOR_SPEC
+import com.github.oowekyala.jjtx.templates.NodeBean
 import com.github.oowekyala.jjtx.templates.VisitorConfigBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
-import com.github.oowekyala.jjtx.reporting.ErrorCategory.INCOMPLETE_VISITOR_SPEC
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
@@ -69,9 +70,9 @@ internal class OptsModelImpl(val ctx: JjtxContext,
         TypeHierarchyTree.fromData(it, ctx)
     }
 
-    override val typeHierarchy: TypeHierarchyTree by lazy {
+    override val typeHierarchy: NodeBean by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        th.process(ctx)
+        NodeBean.toBean(th.process(ctx), ctx)
     }
 
 }
@@ -80,14 +81,15 @@ private inline fun <reified T> Namespacer.withDefault(propName: String? = null,
                                                       crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this, propName)
         .map {
-            it?.let {
-                val type = object : TypeLiteral<T>() {}
-
-                val any = Gson().fromJson<Any>(it.toJson(), type.type)
-                any as T
-            }
-                ?: default()
+            it?.parse<T>() ?: default()
         }.lazily()
+
+
+internal inline fun <reified T> DataAstNode.parse(): T {
+    val type = object : TypeLiteral<T>() {}
+    val any = Gson().fromJson<Any>(toJson(), type.type)
+    return any as T
+}
 
 
 private class JsonProperty(private val namespacer: Namespacer, val name: String? = null) :

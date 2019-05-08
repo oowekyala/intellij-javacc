@@ -1,7 +1,5 @@
 package com.github.oowekyala.jjtx.util
 
-import java.util.*
-
 /**
  * Abstract AST, common denominator between JSON and YAML.
  */
@@ -33,6 +31,7 @@ data class AstSeq(
 
 data class AstMap(
     val map: Map<String, DataAstNode>,
+    val keyPositions: Map<String, Position?> = emptyMap(),
     override val position: Position? = null
 ) : DataAstNode(), Map<String, DataAstNode> by map {
 
@@ -40,18 +39,22 @@ data class AstMap(
 
         operator fun invoke(map: Map<DataAstNode, DataAstNode>, position: Position? = null): AstMap {
 
-            val strMap = map.mapKeysTo(TreeMap(String::compareTo)) { (k, _) ->
+            val strMap = map.mapKeysTo(LinkedHashMap()) { (k, _) ->
                 when {
-                    k is AstScalar && k.type == ScalarType.STRING -> k.any
+                    k is AstScalar && k.type == ScalarType.STRING -> Pair(k.any, k.position)
                     else                                          -> null
                 }
             }
 
-            //            strMap.remove(null)
+            strMap.remove(null)
+
+            val posMap = strMap.keys.associate { it!! }
+
 
             @Suppress("UNCHECKED_CAST")
             return AstMap(
-                map = strMap as Map<String, DataAstNode>,
+                map = strMap.mapKeys { it.key } as Map<String, DataAstNode>,
+                keyPositions = posMap,
                 position = position
             )
         }

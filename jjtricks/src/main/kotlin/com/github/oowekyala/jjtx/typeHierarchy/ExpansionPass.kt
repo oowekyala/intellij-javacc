@@ -8,7 +8,7 @@ import java.util.regex.PatternSyntaxException
 
 
 internal fun TypeHierarchyTree.expandAllNames(grammarNodeNames: Set<String>,
-                                     ctx: JjtxContext): TypeHierarchyTree =
+                                              ctx: JjtxContext): TypeHierarchyTree =
     resolveAgainst(grammarNodeNames, ctx).first()
 
 /**
@@ -32,15 +32,13 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         val r = try {
             Regex(value)
         } catch (e: PatternSyntaxException) {
-            ctx.messageCollector.report(
-                e.message.orEmpty(),
-                ErrorCategory.INVALID_REGEX,
+            ctx.messageCollector.reportError(
+                e.message ?: "Invalid regex",
                 positionInfo
             )
-            return listOf()
         }
 
-        return resolveRegex(grammarNodeNames,r , ctx) // TODO invalid regex?
+        return resolveRegex(grammarNodeNames, r, ctx)
     }
 
     val (qname, prodName, spec) = when {

@@ -3,8 +3,8 @@ package com.github.oowekyala.jjtx.typeHierarchy
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.reporting.ErrorCategory.*
+import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
 /**
@@ -24,7 +24,7 @@ import com.github.oowekyala.treeutils.TreeLikeAdapter
  *
  * @author Clément Fournier
  */
-class TypeHierarchyTree internal constructor(
+internal class TypeHierarchyTree internal constructor(
     val nodeName: String,
     val positionInfo: Position?,
     children: List<TypeHierarchyTree>,
@@ -44,7 +44,6 @@ class TypeHierarchyTree internal constructor(
         get() = realChildren
 
     private var processed = false
-
 
     internal fun removeFromParent() {
         this.parent?.realChildren?.remove(this)
@@ -163,7 +162,7 @@ class TypeHierarchyTree internal constructor(
     }
 }
 
-object TreeLikeWitness : TreeLikeAdapter<TypeHierarchyTree> {
+private object TreeLikeWitness : TreeLikeAdapter<TypeHierarchyTree> {
     override fun getChildren(node: TypeHierarchyTree): List<TypeHierarchyTree> = node.children
 
     override fun nodeName(node: TypeHierarchyTree): String = node.nodeName

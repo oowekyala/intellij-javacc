@@ -3,9 +3,12 @@ package com.github.oowekyala.jjtx.util
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.Reader
+import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -77,6 +80,10 @@ fun JsonObject.asMap(): Map<String, JsonElement> {
     }
 }
 
+fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
+    StringWriter().also {
+        this.evaluate(ctx, it, logId, template)
+    }.toString()
 
 
 fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =

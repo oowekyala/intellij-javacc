@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.templates.NodeBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 
@@ -29,7 +30,12 @@ internal class OldJavaccOptionsModel(
 
     override val visitors: Map<String, VisitorGenerationTask> = emptyMap()
 
-    override val typeHierarchy: TypeHierarchyTree = TypeHierarchyTree.default(grammarOptions.rootNodeClass)
+    override val typeHierarchy: NodeBean = NodeBean(
+        name = grammarOptions.rootNodeClass.substringAfterLast('.'),
+        classQualifiedName = grammarOptions.rootNodeClass,
+        superNode = null,
+        subNodes = emptyList()
+    )
 
     override val templateContext: Map<String, Any> = emptyMap()
 }

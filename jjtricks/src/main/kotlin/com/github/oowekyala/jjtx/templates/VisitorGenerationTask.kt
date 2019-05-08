@@ -8,7 +8,6 @@ import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import java.io.StringWriter
 import java.nio.file.Path
 import java.util.*
 
@@ -80,7 +79,7 @@ data class VisitorConfigBean(
         }
 
         if (genClassName == null) {
-            throw java.lang.IllegalStateException("Visitor spec '$id' must mention 'genClassName', the a fully qualified class name of the generated class")
+            throw java.lang.IllegalStateException("Visitor spec '$id' must mention 'genClassName', the template for the fully qualified class name of the generated class")
         }
 
         return VisitorGenerationTask(
@@ -163,10 +162,7 @@ data class VisitorGenerationTask internal constructor(
 
         val engine = VelocityEngine()
 
-        val templated = StringWriter().also {
-            engine.evaluate(velocityContext, it, "visitor-output", genFqcn)
-        }.toString()
-
+        val templated = engine.evaluate(velocityContext, genFqcn)
 
         val fqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
         if (!templated.matches(fqcnRegex)) {
@@ -224,9 +220,7 @@ data class VisitorGenerationTask internal constructor(
                 "timestamp" to Date()
             )
 
-        val rendered = StringWriter().also {
-            engine.evaluate(fullCtx, it, id, template)
-        }.toString()
+        val rendered = engine.evaluate(fullCtx, id, template)
 
 
         val formatted = try {

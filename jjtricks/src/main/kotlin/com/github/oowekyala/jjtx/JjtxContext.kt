@@ -2,10 +2,13 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.MessageCollector
+import com.github.oowekyala.jjtx.templates.GrammarBean
+import com.github.oowekyala.jjtx.templates.set
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.github.oowekyala.jjtx.util.isFile
 import com.intellij.openapi.project.Project
+import org.apache.velocity.VelocityContext
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -38,6 +41,18 @@ class JjtxContext internal constructor(val grammarFile: JccFile,
         // This uses the run context so should only be executed after the constructor returns
         // hence the lazyness
         JjtxOptsModel.parseChain(this, configChain)
+    }
+
+    internal val grammarBean: GrammarBean by lazy {
+        GrammarBean.create(this)
+    }
+
+    val globalVelocityContext: VelocityContext by lazy {
+        VelocityContext().also {
+            it["grammar"] = grammarBean
+            it["global"] = jjtxOptsModel.templateContext
+            it["H"] = "#"
+        }
     }
 
     companion object {

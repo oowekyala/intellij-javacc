@@ -16,6 +16,7 @@ import java.io.IOException
 import java.io.StringWriter
 import java.lang.reflect.Method
 import java.util.*
+import kotlin.collections.LinkedHashMap
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
@@ -35,11 +36,18 @@ internal fun YamlNode.yamlToData(fileName: String? = null): DataAstNode =
                 list = value.map { it.yamlToData(fileName) },
                 position = position.addName(fileName)
             )
-        is MappingNode  ->
+        is MappingNode  -> {
+            // preserve order!
+            val values =
+                this.value.map {
+                    Pair(it.keyNode.yamlToData(fileName), it.valueNode.yamlToData(fileName))
+                }.toMap(LinkedHashMap())
+
             AstMap(
-                map = this.value.map { Pair(it.keyNode.yamlToData(fileName), it.valueNode.yamlToData(fileName)) }.toMap(),
+                map = values,
                 position = position.addName(fileName)
             )
+        }
         else            -> throw IllegalStateException("Unknown node type")
     }
 

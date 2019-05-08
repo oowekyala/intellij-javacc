@@ -4,9 +4,12 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
+import com.github.oowekyala.jjtx.util.TreeOps
+import com.github.oowekyala.jjtx.util.splitAroundLast
+import com.github.oowekyala.treeutils.DoublyLinkedTreeLikeAdapter
+import com.github.oowekyala.treeutils.TreeLikeAdapter
 import org.apache.velocity.VelocityContext
 
 /*
@@ -29,11 +32,13 @@ data class NodeBean(
     val name: String,
     val classQualifiedName: String,
     val superNode: NodeBean?,
-    val subNodes: MutableList<NodeBean>
-) {
+    val subNodes: List<NodeBean>
+) : TreeOps<NodeBean> {
 
     val classSimpleName: String
     val classPackage: String
+
+    override val adapter: TreeLikeAdapter<NodeBean> = TreeLikeWitness
 
     init {
 
@@ -43,7 +48,7 @@ data class NodeBean(
         classPackage = pack
 
         superNode?.let {
-            it.subNodes += this
+            it.subNodes.let { it as MutableList } += this
         }
     }
 
@@ -74,6 +79,14 @@ data class NodeBean(
 
     companion object {
 
+        private object TreeLikeWitness : DoublyLinkedTreeLikeAdapter<NodeBean> {
+            override fun nodeName(node: NodeBean): String = node.name
+
+            override fun getChildren(node: NodeBean): List<NodeBean> = node.subNodes
+
+            override fun getParent(node: NodeBean): NodeBean? = node.superNode
+        }
+
         // stack has the parent of the receiver
         private fun TypeHierarchyTree.dumpInternal(ctx: JjtxContext,
                                                    stack: MutableList<NodeBean>,
@@ -103,11 +116,10 @@ data class NodeBean(
         }
 
 
-        fun dump(tree: TypeHierarchyTree, ctx: JjtxContext): List<NodeBean> {
-
+        internal fun toBean(tree: TypeHierarchyTree, ctx: JjtxContext): NodeBean {
             val total = mutableListOf<NodeBean>()
             tree.dumpInternal(ctx, mutableListOf(), total)
-            return total
+            return total.first()
         }
     }
 }
@@ -141,6 +153,7 @@ data class GrammarBean(
     val name: String,
     val file: FileBean,
     val nodePackage: String,
+    val rootNode: NodeBean,
     val typeHierarchy: List<NodeBean>
 ) {
 
@@ -149,7 +162,8 @@ data class GrammarBean(
             name = ctx.grammarName,
             file = FileBean.create(ctx.grammarFile),
             nodePackage = ctx.jjtxOptsModel.nodePackage,
-            typeHierarchy = NodeBean.dump(ctx.jjtxOptsModel.typeHierarchy, ctx)
+            rootNode = ctx.jjtxOptsModel.typeHierarchy,
+            typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
         )
     }
 }

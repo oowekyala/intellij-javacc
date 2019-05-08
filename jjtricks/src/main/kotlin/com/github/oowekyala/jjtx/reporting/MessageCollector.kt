@@ -32,6 +32,20 @@ interface MessageCollector {
         report(message, ErrorCategory.NORMAL_EXEC_MESSAGE, severityOverride = null)
     }
 
+    /**
+     * Report a normal execution trace.
+     */
+    fun reportError(message: String, position: Position?): Nothing {
+        throw java.lang.IllegalStateException(message + "\n" + position.toString())
+    }
+
+    /**
+     * Report a normal execution trace.
+     */
+    fun reportNonFatal(message: String, position: Position?) {
+        report(message, ErrorCategory.NON_FATAL, position)
+    }
+
 
     fun concludeReport()
 
@@ -111,12 +125,17 @@ private class MessageCollectorImpl(
     }
 }
 
-enum class Severity {
+enum class Severity(dName: String? = null) {
+    /** Special severity */
     IGNORE,
-    FINE,
+    FINE("DEBUG"),
     WARNING,
+    /** Normal execution messages. */
     NORMAL,
-    FAIL
+    NON_FATAL("ERROR"),
+    FAIL;
+
+    val displayName = dName ?: name
 }
 
 enum class ErrorCategory(val minSeverity: Severity) {
@@ -142,11 +161,12 @@ enum class ErrorCategory(val minSeverity: Severity) {
 
 
     NO_HIERARCHY_ROOTS(Severity.FINE),
-    WRONG_TYPE(Severity.FINE),
+    WRONG_TYPE(Severity.NON_FATAL),
     VISITOR_NOT_RUN(Severity.FINE),
     VISITOR_GENERATED(Severity.FINE),
     INCOMPLETE_VISITOR_SPEC(Severity.FINE),
 
 
-    NORMAL_EXEC_MESSAGE(Severity.NORMAL)
+    NORMAL_EXEC_MESSAGE(Severity.NORMAL),
+    NON_FATAL(Severity.NON_FATAL)
 }
