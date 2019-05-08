@@ -16,7 +16,7 @@ jjtx:
           formatter: "java"
       "v: !$node.subnodes.empty":
         - templateFile: "/jjtx/templates/NodeInterface.java.vm"
-          genClassName: "$node.classQualifiedName"
+          genClassName: "$node.class.qualifiedName"
           formatter: "java"
         - templateFile: "/jjtx/templates/NodeAbstractClass.java.vm"
           genClassName: "${grammar.nodePackage}.Abstract${node.name}"

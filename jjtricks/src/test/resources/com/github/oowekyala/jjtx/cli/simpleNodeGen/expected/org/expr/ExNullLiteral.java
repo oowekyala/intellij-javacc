@@ -1,3 +1,2 @@
-package org.expr;
-
-public abstract class ExNullLiteral {}
+// Me node
+class ExNullLiteral {}

@@ -13,35 +13,38 @@ jjtx:
       # v:X template X with node generation context
       "v: $node == $grammar.rootNode":
         - template: |
-            #if( !$node.classPackage.empty )
-            package $node.classPackage;
+            #if( !$node.class.package.empty )
+            package $node.class.package;
             #end
-            public interface ${node.simpleName} {
+            public interface ${node.class.simpleName} {
 
             }
 
           formatter: "java"
-      "v: !$node.subnodes.empty":
+      "v: !$node.subNodes.empty":
         - template: |
-            #if( !$node.classPackage.empty )
-            package $node.classPackage;
+            #if( !$node.class.package.empty )
+            package $node.class.package;
             #end
-            public abstract class ${node.classSimpleName} {
+            public abstract class ${node.class.simpleName} {
 
             }
-          genClassName: "${node.classQualifiedName}"
+          genClassName: "${node.class.qualifiedName}"
           formatter: "java"
         - template: |
-            #if( !$node.classPackage.empty )
-            package ${node.classPackage}.impl;
+            #if( !$node.class.package.empty )
+            package ${node.class.package}.impl;
             #end
-            public class ${node.classSimpleName}Impl extends ${grammar.nodePackage}.{node.classSimpleName} {
+            public class ${node.class.simpleName}Impl extends ${grammar.nodePackage}.{node.class.simpleName} {
 
             }
-          genClassName: "${node.classPackage}.impl.${node.classSimpleName}Impl"
+          genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
           formatter: "java"
       "r:.*":
-        - templateFile: "/jjtx/templates/Node.java.vm"
+        - template: |
+            // Me node
+            class $node.class.simpleName {}
+        # - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
           formatter: "java"
 
   nodePrefix: Ex

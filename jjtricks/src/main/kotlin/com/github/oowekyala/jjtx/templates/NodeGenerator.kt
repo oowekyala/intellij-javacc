@@ -19,7 +19,7 @@ import java.util.regex.PatternSyntaxException
 //        formatter: "java"
 //    "v: !$node.subnodes.empty":
 //      - templateFile: "/jjtx/templates/NodeInterface.java.vm"
-//        genClassName: "$node.classQualifiedName"
+//        genClassName: "$node.class.qualifiedName"
 //        formatter: "java"
 //      - templateFile: "/jjtx/templates/NodeAbstractClass.java.vm"
 //        genClassName: "${grammar.nodePackage}.Abstract${node.name}"
@@ -264,7 +264,7 @@ data class NodeGenerationScheme(
                 template = template,
                 context = mapOf("node" to it).plus(context),
                 formatter = formatter,
-                genFqcn = genClassTemplate ?: it.classQualifiedName
+                genFqcn = genClassTemplate ?: it.klass.qualifiedName
             )
         }
 

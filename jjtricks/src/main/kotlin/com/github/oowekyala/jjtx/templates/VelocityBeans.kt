@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.TreeOps
@@ -23,30 +24,24 @@ import org.apache.velocity.VelocityContext
  * Represents a JJTree node.
  *
  * @property name Simple name of the node, unprefixed, as occurring in the grammar
- * @property classSimpleName Simple name of the class (prefixed)
- * @property classQualifiedName Fully qualified name of the node class ([classPackage] + [classSimpleName])
+ * @property class.simpleName Simple name of the class (prefixed)
+ * @property classQualifiedName Fully qualified name of the node class ([classPackage] + [class.simpleName])
  * @property classPackage Package name of the class (may be the empty string)
  * @property superNode Node bean describing the node which this node extends directly, as defined by [JjtxOptsModel.typeHierarchy]
  * @property subNodes List of node beans for which [superNode] is this
  */
 data class NodeBean(
     val name: String,
-    val classQualifiedName: String,
+    val `class`: ClassVBean,
     val superNode: NodeBean?,
     val subNodes: List<NodeBean>
 ) : TreeOps<NodeBean> {
 
-    val classSimpleName: String
-    val classPackage: String
-
     override val adapter: TreeLikeAdapter<NodeBean> = TreeLikeWitness
 
+    val klass = `class`
+
     init {
-
-        val (pack, simpleName) = classQualifiedName.splitAroundLast('.', firstBias = false)
-
-        classSimpleName = simpleName
-        classPackage = pack
 
         superNode?.let {
             it.subNodes.let { it as MutableList } += this
@@ -56,7 +51,7 @@ data class NodeBean(
     // those methods should not include both subNodes & supernodes,
     // otherwise we run into infinite loop
 
-    override fun toString(): String = "NodeBean($classQualifiedName)"
+    override fun toString(): String = "NodeBean(${`class`.qualifiedName})"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -65,7 +60,7 @@ data class NodeBean(
         other as NodeBean
 
         if (name != other.name) return false
-        if (classQualifiedName != other.classQualifiedName) return false
+        if (`class` != other.`class`) return false
         if (superNode != other.superNode) return false
 
         return true
@@ -73,7 +68,7 @@ data class NodeBean(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + classQualifiedName.hashCode()
+        result = 31 * result + `class`.hashCode()
         return result
     }
 
@@ -103,7 +98,7 @@ data class NodeBean(
 
             val bean = NodeBean(
                 name = name,
-                classQualifiedName = nodeName,
+                `class` = ClassVBean(nodeName),
                 superNode = stack.lastOrNull(),
                 subNodes = mutableListOf()
             )
@@ -142,6 +137,61 @@ data class FileBean(
     }
 }
 
+data class VisitorVBean(
+    val id: String,
+    val `class`: ClassVBean,
+    val context: Map<String, Any?>
+) {
+
+    companion object {
+        fun fromVisitorBean(id: String, bean: VisitorConfigBean) = VisitorVBean(
+            id = id,
+            `class` = ClassVBean(bean.genClassName!!),
+            context = bean.context ?: emptyMap()
+        )
+    }
+
+}
+
+
+data class ClassVBean(
+    val qualifiedName: String
+) {
+    val simpleName: String
+    val `package`: String
+
+    init {
+        val (pack, n) = qualifiedName.splitAroundLast('.', firstBias = false)
+
+        simpleName = n
+        `package` = pack
+    }
+}
+
+data class ParserVBean(
+    val `class`: ClassVBean
+)
+
+data class RunVBean(
+    val visitors: Map<String, VisitorVBean>
+) {
+    companion object {
+        fun create(ctx: JjtxContext): RunVBean {
+            val visitors =
+                ctx.jjtxOptsModel
+                    .let { it as? OptsModelImpl }
+                    ?.visitorBeans
+                    ?.filterValues { it.execute ?: true }
+                    ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
+                    ?: emptyMap()
+
+            return RunVBean(
+                visitors = visitors
+            )
+        }
+    }
+}
+
 /**
  * Presents information about the whole grammar.
  *
@@ -154,34 +204,30 @@ data class GrammarBean(
     val name: String,
     val file: FileBean,
     val nodePackage: String,
-    val parserQualifiedName: String,
+    val parser: ParserVBean,
     val rootNode: NodeBean,
     val typeHierarchy: List<NodeBean>
-) {
-
-
-    val parserSimpleName: String
-    val parserPackage: String
-
-    init {
-
-        val (pack, simpleName) = parserQualifiedName.splitAroundLast('.', firstBias = false)
-
-        parserSimpleName = simpleName
-        parserPackage = pack
-
-    }
-
+    ) {
 
     companion object {
-        fun create(ctx: JjtxContext): GrammarBean = GrammarBean(
-            name = ctx.grammarName,
-            file = FileBean.create(ctx.grammarFile),
-            nodePackage = ctx.jjtxOptsModel.nodePackage,
-            parserQualifiedName = ctx.jjtxOptsModel.inlineBindings.parserQualifiedName,
-            rootNode = ctx.jjtxOptsModel.typeHierarchy,
-            typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
-        )
+        fun create(ctx: JjtxContext): GrammarBean {
+            val visitors =
+                ctx.jjtxOptsModel
+                    .let { it as? OptsModelImpl }
+                    ?.visitorBeans
+                    ?.filterValues { it.execute ?: true }
+                    ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
+                    ?: emptyMap()
+
+            return GrammarBean(
+                name = ctx.grammarName,
+                file = FileBean.create(ctx.grammarFile),
+                nodePackage = ctx.jjtxOptsModel.nodePackage,
+                parser = ParserVBean(ClassVBean(ctx.jjtxOptsModel.inlineBindings.parserQualifiedName)),
+                rootNode = ctx.jjtxOptsModel.typeHierarchy,
+                typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
+            )
+        }
     }
 }
 

@@ -2,8 +2,9 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.jjtx.templates.NodeBean
+import com.github.oowekyala.jjtx.templates.ClassVBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
+import com.github.oowekyala.jjtx.templates.NodeBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 
 /**
@@ -36,7 +37,7 @@ internal class OldJavaccOptionsModel(
 
     override val typeHierarchy: NodeBean = NodeBean(
         name = grammarOptions.rootNodeClass.substringAfterLast('.'),
-        classQualifiedName = grammarOptions.rootNodeClass,
+        `class` = ClassVBean(grammarOptions.rootNodeClass),
         superNode = null,
         subNodes = emptyList()
     )

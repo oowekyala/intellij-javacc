@@ -3,26 +3,24 @@
  * Not intended for manual editing.
  */
 
-#if( !$node.package.empty )
-package $node.package;
+#if( !$package.empty )
+package $package;
 #end
 
 
-public class ${simpleName} extends ${node.superNode.classSimpleName} {
+public class ${simpleName} extends ${node.superNode.class.simpleName} {
 
 
     public ${simpleName}(int id) {
         super(id)
     }
 
-    public ${simpleName}(${grammar.parserSimpleName} parser, int id) {
+    public ${simpleName}(${grammar.parser.class.simpleName} parser, int id) {
         super(parser, id)
     }
 
-    #foreach($visit in $grammar.visitors.visitMethod)
-
-        #evaluate($visit)
-
+    #foreach($visitor in $run.visitors.values)
+    #evaluate($visitor.context.acceptMethod)
     #end
 
 }

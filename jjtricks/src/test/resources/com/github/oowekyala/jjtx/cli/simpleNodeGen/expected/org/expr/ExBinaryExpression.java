@@ -1,3 +1,2 @@
-package org.expr;
-
-public abstract class ExBinaryExpression {}
+// Me node
+class ExBinaryExpression {}

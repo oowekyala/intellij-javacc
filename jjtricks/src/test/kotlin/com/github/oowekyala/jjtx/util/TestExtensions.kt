@@ -28,14 +28,14 @@ fun matchRoot(fqcn: String, nodeSpec: TypeHSpec)
         false
 
     ) {
-        this.it.classQualifiedName shouldBe fqcn
+        this.it.klass.qualifiedName shouldBe fqcn
         nodeSpec()
     }
 }
 
 fun TypeHWrapper.node(fqcn: String, nodeSpec: TypeHSpec = EmptySpec) {
     child<NodeBean> {
-        it.classQualifiedName shouldBe fqcn
+        this.it.klass.qualifiedName shouldBe fqcn
         nodeSpec()
     }
 }

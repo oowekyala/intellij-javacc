@@ -1,4 +1,4 @@
 package org.expr.impl;
-public class ExExpressionImpl extends org.expr.{node.classSimpleName} {
+public class ExExpressionImpl extends org.expr.{node.class.simpleName} {
 
 }
