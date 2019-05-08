@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.templates
 
+import com.github.oowekyala.ijcc.util.deleteWhitespace
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
@@ -8,9 +9,7 @@ import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
-import java.lang.RuntimeException
 import java.nio.file.Path
-import java.util.*
 
 
 /**
@@ -39,6 +38,10 @@ open class FileGenTask internal constructor(
     val context: Map<String, Any?>
 ) {
 
+    // somewhat lenient to catch stupid empty package errors
+    private fun recogniseQname(fqcn: String): String =
+        fqcn.deleteWhitespace().removePrefix(".").replace(Regex("\\.+"), ".")
+
 
     /**
      * Returns a pair (fqcn, path) of the FQCN of the generated class
@@ -53,16 +56,15 @@ open class FileGenTask internal constructor(
 
         val templated = engine.evaluate(velocityContext, genFqcn)
 
-        // TODO be more lenient
-        val fqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
-        if (!templated.matches(fqcnRegex)) {
+        val fqcn = recogniseQname(templated)
+        if (!fqcn.matches(StrictFqcnRegex)) {
             ctx.messageCollector.reportError("'genClassName' should be a fully qualified class name, but was $templated")
         }
 
-        val o: Path = outputDir.resolve(templated.replace('.', '/') + ".java").toAbsolutePath()
+        val o: Path = outputDir.resolve(fqcn.replace('.', '/') + ".java").toAbsolutePath()
 
         if (o.isDirectory()) {
-            ctx.messageCollector.reportError("Output file $templated is directory")
+            ctx.messageCollector.reportError("Output file $o is a directory")
         }
 
         if (!o.exists()) {
@@ -176,6 +178,9 @@ open class FileGenTask internal constructor(
         return Triple(Status.Generated, fqcn, o)
     }
 
+    companion object {
+        private val StrictFqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
+    }
 }
 
 
