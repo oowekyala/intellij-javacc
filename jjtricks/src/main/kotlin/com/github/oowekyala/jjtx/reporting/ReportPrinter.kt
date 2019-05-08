@@ -1,8 +1,6 @@
 package com.github.oowekyala.jjtx.reporting
 
-import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.indent
-import com.intellij.util.containers.MostlySingularMultiMap
 import java.io.PrintStream
 
 /**
@@ -44,8 +42,6 @@ object NoopReportPrinter : ReportPrinter {
 class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     private val collected = mutableListOf<ReportEntry>()
-    private val mergedExceptions = MostlySingularMultiMap<ExceptionMergeKey, ExceptionEntry>()
-    private val unmergedExceptions = mutableListOf<ExceptionEntry>()
 
     data class ExceptionMergeKey(
         val message: String,
@@ -56,15 +52,6 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
     override fun onEnd() {
 
         val warnings = collected.filter { it.severity == Severity.WARNING }
-
-        mergedExceptions.asMap()
-            .values
-            .map { it.first() to it.size }
-            .plus(unmergedExceptions.map { it to 1 })
-            .sortedBy { it.first.timeStamp }
-            .forEach { (e, n) ->
-                e.printSingleException(n)
-            }
 
         if (warnings.isEmpty()) {
             return
@@ -99,17 +86,9 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
     }
 
     override fun printEntry(reportEntry: ExceptionEntry) {
-        with(reportEntry) {
-            if (thrown.message != null) {
-                val k = ExceptionMergeKey(thrown.message!!, contextStr, thrown.javaClass)
-                mergedExceptions.add(k, reportEntry)
-            } else {
-                unmergedExceptions += reportEntry
-            }
-        }
+        reportEntry.printSingleException(1)
 
         if (reportEntry.doFail) {
-            reportEntry.printSingleException(1)
             stream.println("Run with --warn to examine the stack trace")
             stream.flush()
             throw DoExitNowError()

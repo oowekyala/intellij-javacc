@@ -1,5 +1,3 @@
-[NODE_GEN]: myGen
-6 classes were not generated because of an exception
 Exception while generating nodes (org.apache.velocity.exception.ParseErrorException)
     Encountered "package" at /tmp/jjtx-test/gen/org/expr/Root.java[line 1, column 7]
     Was expecting one of:
@@ -96,3 +94,5 @@ Exception while generating nodes (org.apache.velocity.exception.ParseErrorExcept
         "{" ...
         <LOGICAL_NOT> ...
 
+[NODE_GEN]: myGen
+6 classes were not generated because of an exception
