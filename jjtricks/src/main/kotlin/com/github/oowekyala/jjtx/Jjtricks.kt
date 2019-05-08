@@ -140,18 +140,18 @@ class Jjtricks(
 
         if (isDumpConfig) {
             catchException("Exception while dumping configuration task") {
-                DumpConfigTask(io.stdout).execute(ctx)
+                DumpConfigTask(ctx, io.stdout).execute()
             }
             ctx.messageCollector.concludeReport()
             io.exit(ExitCode.OK)
         }
 
         catchException("Exception while generating visitors") {
-            GenerateVisitorsTask(outputRoot).execute(ctx)
+            GenerateVisitorsTask(ctx, outputRoot).execute()
         }
 
         catchException("Exception while generating node files") {
-            GenerateNodesTask(outputRoot, sourceRoots.toList(), activeGenProfile).execute(ctx)
+            GenerateNodesTask(ctx, outputRoot, sourceRoots.toList(), activeGenProfile).execute()
         }
 
         ctx.messageCollector.concludeReport()

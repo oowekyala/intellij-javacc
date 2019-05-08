@@ -1,2 +1,3 @@
-Generated visitor 'defaultJjtreeVisitor' into gen/org/exprs/ast/DummyExprParserVisitor.java
-Generated visitor 'parameterlessVisitor' into gen/DummyExprVisitorX.java
+[VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
+Generated 2 classes in /tmp/jjtx-test/gen
+No node generation schemes configured

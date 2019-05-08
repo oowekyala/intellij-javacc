@@ -31,9 +31,6 @@ import java.util.*
  * - stdout.txt
  * - stderr.txt
  *
- *
- *
- *
  * @author Clément Fournier
  */
 abstract class JjtxCliTestBase {
@@ -42,7 +39,7 @@ abstract class JjtxCliTestBase {
     protected var expectedExitCode = ExitCode.OK
     protected var expectedOutputRoot = "gen"
 
-    private val myTmpDir = createTempDirectory("jjtx-test")
+    private val myTmpDir = createTempDirectory(TmpPrefix)
     private val myResourceDir = findTestDir(javaClass)
 
     private val myExpectedStdout = myResourceDir.resolve("stdout.txt").takeIf { it.exists() }
@@ -81,7 +78,9 @@ abstract class JjtxCliTestBase {
                          actual: ByteArrayOutputStream) {
 
             if (expectedFile != null) {
-                val actualText = actual.toString(Charset.defaultCharset().name())
+                val actualText = actual.toString(Charset.defaultCharset().name()).let {
+                    it.replace(Regex("$TmpPrefix\\d+"), TmpPrefix)
+                }
                 val expectedText = expectedFile.readText()
                 if (!Comparing.equal(expectedText, actualText)) {
                     throw FileComparisonFailure("Text mismatch", expectedText, actualText, expectedFile.toString())
@@ -101,6 +100,8 @@ abstract class JjtxCliTestBase {
 
 
     companion object {
+
+        private const val TmpPrefix = "jjtx-test"
 
         private fun findTestDir(javaClass: Class<*>): Path {
 

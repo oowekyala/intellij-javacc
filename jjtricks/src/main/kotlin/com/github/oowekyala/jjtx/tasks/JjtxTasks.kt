@@ -4,7 +4,9 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.path
 import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.Status
+import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.toYaml
 import com.github.oowekyala.jjtx.util.toYamlString
 import java.io.PrintStream
@@ -13,7 +15,7 @@ import java.nio.file.Path
 
 sealed class JjtxTask {
 
-    abstract fun execute(ctx: JjtxContext)
+    abstract fun execute()
 
 }
 
@@ -21,9 +23,10 @@ sealed class JjtxTask {
 /**
  * Dumps the flattened configuration as a YAML file to stdout.
  */
-data class DumpConfigTask(private val out: PrintStream) : JjtxTask() {
+class DumpConfigTask(private val ctx: JjtxContext,
+                     private val out: PrintStream) : JjtxTask() {
 
-    override fun execute(ctx: JjtxContext) {
+    override fun execute() {
 
         val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
 
@@ -43,66 +46,23 @@ data class DumpConfigTask(private val out: PrintStream) : JjtxTask() {
     }
 }
 
-/**
- * Generate the visitors marked for execution in the opts file.
- */
-data class GenerateVisitorsTask(private val outputDir: Path) : JjtxTask() {
+abstract class GenerationTaskBase(
+    val ctx: JjtxContext,
+    val outputDir: Path,
+    val otherSourceRoots: List<Path>
+) : JjtxTask() {
 
-    override fun execute(ctx: JjtxContext) {
+    final override fun execute() {
 
-        val globalCtx = ctx.globalVelocityContext
+        val tasks = generationTasks
 
-        for ((id, visitor) in ctx.jjtxOptsModel.visitors) {
-
-            if (!visitor.execute) {
-                ctx.messageCollector.report(
-                    "Visitor $id is not configured for execution",
-                    MessageCategory.VISITOR_NOT_RUN
-                )
-                continue
-            }
-
-            try {
-                val (_, _, o) = visitor.execute(ctx, globalCtx, outputDir, emptyList())
-            } catch (e: Exception) {
-                // FIXME report cleanly
-                e.printStackTrace()
-            }
-        }
-    }
-}
-
-/**
- * Generate the visitors marked for execution in the opts file.
- */
-data class GenerateNodesTask(private val outputDir: Path,
-                             private val otherSourceRoots: List<Path>,
-                             private val activeIdOverride: String?) : JjtxTask() {
-
-    override fun execute(ctx: JjtxContext) {
-
-        val activeId = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme
-        val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
-
-        if (activeId == null) {
-            ctx.messageCollector.reportNormal("No node generation schemes configured")
-            return
-        }
-
-        val scheme = schemes[activeId] ?: run {
-            ctx.messageCollector.reportNonFatal(
-                "Node generation scheme '$activeId' not found, available ones are ${schemes.keys}",
-                null
-            )
-            return
-        }
-
+        if (tasks.isEmpty()) return
 
         var generated = 0
         var aborted = 0
         var ex = 0
 
-        for (gen in scheme.templates.flatMap { it.toFileGenTasks() }) {
+        for (gen in tasks) {
 
             try {
                 val (st, _, _) = gen.execute(
@@ -122,11 +82,89 @@ data class GenerateNodesTask(private val outputDir: Path,
             }
         }
 
+        ctx.messageCollector.reportNormal("[$header]: $configString")
         if (generated > 0)
             ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
         if (aborted > 0)
             ctx.messageCollector.reportNormal("$aborted classes were not generated because found in other output roots")
         if (ex > 0)
             ctx.messageCollector.reportNormal("$ex classes were not generated because of an exception")
+
     }
+
+    protected abstract val generationTasks: List<FileGenTask>
+    protected abstract val header: String
+    protected abstract val configString: String
+
+}
+
+/**
+ * Generate the visitors marked for execution in the opts file.
+ */
+class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path) :
+    GenerationTaskBase(
+        ctx,
+        outputDir,
+        emptyList()
+    ) {
+
+
+    override val header: String = "VISITOR_GEN"
+
+
+    override val generationTasks: List<VisitorGenerationTask> by lazy {
+
+        val (doExec, dont) = ctx.jjtxOptsModel.visitors.values.partition { it.execute }
+
+        dont.forEach {
+            ctx.messageCollector.report(
+                "Visitor ${it.id} is not configured for execution",
+                MessageCategory.VISITOR_NOT_RUN
+            )
+        }
+
+        doExec
+    }
+
+    override val configString: String by lazy {
+        generationTasks.joinToString { it.id }
+    }
+
+
+}
+
+/**
+ * Generate the visitors marked for execution in the opts file.
+ */
+class GenerateNodesTask(ctx: JjtxContext,
+                        outputDir: Path,
+                        otherSourceRoots: List<Path>,
+                        private val activeIdOverride: String?) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
+
+    override val generationTasks: List<FileGenTask> by lazy {
+        val activeId = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme
+        val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
+
+        if (activeId == null) {
+            ctx.messageCollector.reportNormal("No node generation schemes configured")
+            return@lazy emptyList<FileGenTask>()
+        }
+
+        val scheme = schemes[activeId] ?: run {
+            ctx.messageCollector.reportNonFatal(
+                "Node generation scheme '$activeId' not found, available ones are ${schemes.keys}",
+                null
+            )
+            return@lazy emptyList<FileGenTask>()
+        }
+
+        scheme.templates.flatMap { it.toFileGenTasks() }
+    }
+
+
+    override val header: String = "NODE_GEN"
+
+    override val configString: String
+        get() = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
+
 }
