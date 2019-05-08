@@ -19,7 +19,7 @@ public class ${simpleName} extends ${node.superNode.class.simpleName} {
         super(parser, id)
     }
 
-    #foreach($visitor in $run.visitors.values)
+    #foreach($visitor in $run.visitors.values())
     #evaluate($visitor.context.acceptMethod)
     #end
 

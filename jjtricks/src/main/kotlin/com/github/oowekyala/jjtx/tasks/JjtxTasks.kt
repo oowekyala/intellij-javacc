@@ -5,10 +5,12 @@ import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.path
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.templates.FileGenTask
+import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.toYaml
 import com.github.oowekyala.jjtx.util.toYamlString
+import org.apache.velocity.VelocityContext
 import java.io.PrintStream
 import java.nio.file.Path
 
@@ -62,12 +64,14 @@ abstract class GenerationTaskBase(
         var aborted = 0
         var ex = 0
 
+        val rootCtx = rootCtx()
+
         for (gen in tasks) {
 
             try {
                 val (st, _, _) = gen.execute(
                     ctx,
-                    ctx.globalVelocityContext,
+                    rootCtx,
                     outputDir,
                     otherSourceRoots
                 )
@@ -96,6 +100,7 @@ abstract class GenerationTaskBase(
     protected abstract val header: String
     protected abstract val configString: String
 
+    protected open fun rootCtx(): VelocityContext = ctx.globalVelocityContext
 }
 
 /**
@@ -160,6 +165,9 @@ class GenerateNodesTask(ctx: JjtxContext,
 
         scheme.templates.flatMap { it.toFileGenTasks() }
     }
+
+    override fun rootCtx(): VelocityContext =
+        VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
 
 
     override val header: String = "NODE_GEN"

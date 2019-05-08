@@ -41,10 +41,7 @@ jjtx:
           genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
           formatter: "java"
       "r:.*":
-        - template: |
-            // Me node
-            class $node.class.simpleName {}
-        # - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
           formatter: "java"
 
   nodePrefix: Ex
