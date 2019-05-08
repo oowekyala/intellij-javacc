@@ -1,0 +1,31 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: false
+    parameterlessVisitor:
+      execute: false
+
+  activeGenScheme: myGen
+  nodeGenerationSchemes:
+    myGen:
+      "r:.*":
+        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+          template: |
+            #if( !package.empty )
+            package $package;
+            #end
+            public class $simpleName extends ${node.class.qualifiedName} {
+
+            }
+          formatter: "none"
+
+  nodePrefix: Ex
+  nodePackage: "org.expr"
+  typeHierarchy:
+    "%Root":
+      - "Expression":
+          - "r:.*Expression"
+          - Literal:
+              - NullLiteral
+              - IntegerLiteral

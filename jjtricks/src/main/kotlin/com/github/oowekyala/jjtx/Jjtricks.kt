@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
+import com.github.oowekyala.jjtx.reporting.DoExitNowError
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.tasks.DumpConfigTask
@@ -107,12 +108,7 @@ class Jjtricks(
         toPath().normalize()
     }
 
-
-    private val showStackTrace: Boolean
-        get() = minReportSeverity <= Severity.NORMAL
-
-
-    private fun produceContext(project: Project): JjtxContext {
+    private fun produceContext(project: Project, collector: MessageCollector): JjtxContext {
 
         args.force()
 
@@ -120,7 +116,6 @@ class Jjtricks(
         val configChain = validateConfigFiles(io, grammarFile, configFiles)
         val jccFile = parseGrammarFile(io, grammarFile, project)
 
-        val collector = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
         return JjtxContext.buildCtx(jccFile) {
             it.configChain = configChain
@@ -132,36 +127,42 @@ class Jjtricks(
 
     fun doExecute(env: JjtxCoreEnvironment) {
 
-        val ctx = catchException("Exception while building run context") {
-            produceContext(env.project)
+        val err = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
+
+        val ctx = err.catchException("Exception while building run context", fatal = true) {
+            produceContext(env.project, err)
         }
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
         if (isDumpConfig) {
-            catchException("Exception while dumping configuration task") {
+            err.catchException("Exception while dumping configuration task") {
                 DumpConfigTask(ctx, io.stdout).execute()
             }
             ctx.messageCollector.concludeReport()
             io.exit(ExitCode.OK)
         }
 
-        catchException("Exception while generating visitors") {
+        err.catchException("Exception while generating visitors") {
             GenerateVisitorsTask(ctx, outputRoot).execute()
         }
 
-        catchException("Exception while generating node files") {
+        err.catchException("Exception while generating node files") {
             GenerateNodesTask(ctx, outputRoot, sourceRoots.toList(), activeGenProfile).execute()
         }
 
         ctx.messageCollector.concludeReport()
     }
 
-    private fun <T> catchException(errorCase: String, block: () -> T): T =
+    private fun <T> MessageCollector.catchException(ctxStr: String?, fatal: Boolean = false, block: () -> T): T =
         try {
             block()
         } catch (e: Exception) {
-            io.bail(RuntimeException(errorCase, e), showStackTrace)
+            catchException(null, fatal = true) {
+                this.reportException(e, ctxStr, fatal) as T
+            }
+        } catch (e: DoExitNowError) {
+            io.exit(ExitCode.ERROR)
         }
 
 

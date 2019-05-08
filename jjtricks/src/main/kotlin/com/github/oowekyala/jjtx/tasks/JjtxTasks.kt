@@ -81,7 +81,7 @@ abstract class GenerationTaskBase(
                     Status.Generated -> generated++
                 }
             } catch (e: Exception) {
-                ctx.messageCollector.reportNonFatal(e)
+                ctx.messageCollector.reportException(e, exceptionCtx, fatal = false)
                 ex++
             }
         }
@@ -99,6 +99,7 @@ abstract class GenerationTaskBase(
     protected abstract val generationTasks: List<FileGenTask>
     protected abstract val header: String
     protected abstract val configString: String
+    protected abstract val exceptionCtx: String
 
     protected open fun rootCtx(): VelocityContext = ctx.globalVelocityContext
 }
@@ -115,7 +116,7 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path) :
 
 
     override val header: String = "VISITOR_GEN"
-
+    override val exceptionCtx: String = "Generating visitor"
 
     override val generationTasks: List<VisitorGenerationTask> by lazy {
 
@@ -175,4 +176,5 @@ class GenerateNodesTask(ctx: JjtxContext,
     override val configString: String
         get() = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
 
+    override val exceptionCtx: String = "Generating nodes"
 }

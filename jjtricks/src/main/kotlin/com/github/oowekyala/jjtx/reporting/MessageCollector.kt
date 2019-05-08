@@ -32,6 +32,14 @@ interface MessageCollector {
         report(message, MessageCategory.NORMAL_EXEC_MESSAGE, severityOverride = null)
     }
 
+
+    /**
+     * Report a non-fatal error, probably followed later by termination anyway.
+     */
+    fun reportNonFatal(message: String, position: Position?) {
+        report(message, MessageCategory.NON_FATAL, position)
+    }
+
     /**
      * Report a normal execution trace.
      */
@@ -43,17 +51,11 @@ interface MessageCollector {
     /**
      * Report a non-fatal error, probably followed later by termination anyway.
      */
-    fun reportNonFatal(message: String, position: Position?) {
-        report(message, MessageCategory.NON_FATAL, position)
-    }
-
-    /**
-     * Report a non-fatal error, probably followed later by termination anyway.
-     */
     fun reportNonFatal(throwable: Throwable) {
-        report(throwable.javaClass.canonicalName + ": " + throwable.message ?: "", MessageCategory.NON_FATAL)
+        reportException(throwable, null, fatal = false)
     }
 
+    fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean)
 
     fun concludeReport()
 
@@ -71,6 +73,10 @@ interface MessageCollector {
                     severityOverride ?: category.minSeverity
 
                 override fun concludeReport() {
+                    // do nothing
+                }
+
+                override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
                     // do nothing
                 }
             }
@@ -104,6 +110,18 @@ private class MessageCollectorImpl(
 
     override fun concludeReport() {
         reportPrinter.onEnd()
+    }
+
+    override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
+
+        reportPrinter.printEntry(
+            ExceptionEntry(
+                thrown = throwable,
+                doFail = fatal,
+                timeStamp = Date(),
+                contextStr = contextStr
+            )
+        )
     }
 
     override fun report(message: String,

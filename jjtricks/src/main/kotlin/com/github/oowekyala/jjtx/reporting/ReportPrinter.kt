@@ -16,6 +16,8 @@ interface ReportPrinter {
 
     fun printEntry(reportEntry: ReportEntry)
 
+    fun printEntry(reportEntry: ExceptionEntry)
+
 }
 
 
@@ -27,8 +29,16 @@ object NoopReportPrinter : ReportPrinter {
     override fun printEntry(reportEntry: ReportEntry) {
         // do nothing
     }
+
+    override fun printEntry(reportEntry: ExceptionEntry) {
+        // do nothing
+    }
 }
 
+/**
+ * This is the default output printer.
+ * Aggregates warnings, and hides exception stack traces.
+ */
 class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     private val collected = mutableListOf<ReportEntry>()
@@ -55,6 +65,26 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
             collected += reportEntry
         }
     }
+
+    override fun printEntry(reportEntry: ExceptionEntry) {
+        with(reportEntry) {
+            if (contextStr != null) {
+                stream.println("Exception while ${contextStr.decapitalize()} (${thrown.javaClass.name})")
+            } else {
+                stream.println("Exception (${thrown.javaClass.name})")
+            }
+            if (thrown.message != null) {
+                stream.println(thrown.message!!.trim().indent(1))
+                stream.println()
+            }
+        }
+
+        if (reportEntry.doFail) {
+            stream.println("Run with --warn to examine the stack trace")
+            stream.flush()
+            throw DoExitNowError()
+        }
+    }
 }
 
 class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
@@ -71,6 +101,18 @@ class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
         stream.println(logLine)
         positions.forEach {
             stream.println(it.toString().indent(padding, indentStr = " "))
+        }
+    }
+
+    override fun printEntry(reportEntry: ExceptionEntry) {
+        with(reportEntry) {
+            stream.println("Exception while $contextStr")
+            reportEntry.thrown.printStackTrace(stream)
+        }
+
+        if (reportEntry.doFail) {
+            stream.flush()
+            throw DoExitNowError()
         }
     }
 }
