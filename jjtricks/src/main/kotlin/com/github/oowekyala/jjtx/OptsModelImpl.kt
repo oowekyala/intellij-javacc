@@ -78,10 +78,19 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     }
 
 
-    private val ngs: DataAstNode? by JsonProperty(jjtx, "nodeGeneration")
+    private val ngs: DataAstNode? by JsonProperty(jjtx, "nodeGenerationSchemes")
 
-    override val grammarGenerationScheme: GrammarGenerationScheme? by lazy {
-        ngs?.toNodeGenerationScheme(ctx) ?: parentModel.grammarGenerationScheme
+    private val myGenSchemes: Map<String, GrammarGenerationScheme> by lazy {
+        ngs?.toNodeGenerationSchemes(ctx) ?: emptyMap()
+    }
+
+    override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> by lazy {
+        // keep all parent keys, but override them
+        parentModel.grammarGenerationSchemes + myGenSchemes
+    }
+
+    override val activeNodeGenerationScheme: String? by jjtx.withDefault<String?>("activeGenScheme") {
+        null
     }
 
 }

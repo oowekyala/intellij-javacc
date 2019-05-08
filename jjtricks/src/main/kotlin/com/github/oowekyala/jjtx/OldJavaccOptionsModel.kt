@@ -30,7 +30,9 @@ internal class OldJavaccOptionsModel(
 
     override val visitors: Map<String, VisitorGenerationTask> = emptyMap()
 
-    override val grammarGenerationScheme: GrammarGenerationScheme? = null // TODO JJTree generation scheme
+    override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> = emptyMap() // TODO JJTree generation scheme
+
+    override val activeNodeGenerationScheme: String? = null
 
     override val typeHierarchy: NodeBean = NodeBean(
         name = grammarOptions.rootNodeClass.substringAfterLast('.'),

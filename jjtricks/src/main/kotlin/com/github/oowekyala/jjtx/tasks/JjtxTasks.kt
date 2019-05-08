@@ -76,16 +76,27 @@ data class GenerateVisitorsTask(private val outputDir: Path) : JjtxTask() {
  * Generate the visitors marked for execution in the opts file.
  */
 data class GenerateNodesTask(private val outputDir: Path,
-                             private val otherSourceRoots: List<Path>) : JjtxTask() {
+                             private val otherSourceRoots: List<Path>,
+                             private val activeIdOverride: String?) : JjtxTask() {
 
     override fun execute(ctx: JjtxContext) {
 
-        val scheme = ctx.jjtxOptsModel.grammarGenerationScheme
+        val activeId = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme
+        val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
 
-        if (scheme == null) {
+        if (activeId == null) {
             ctx.messageCollector.reportNormal("No node generation schemes configured")
             return
         }
+
+        val scheme = schemes[activeId] ?: run {
+            ctx.messageCollector.reportNonFatal(
+                "Node generation scheme '$activeId' not found, available ones are ${schemes.keys}",
+                null
+            )
+            return
+        }
+
 
         var generated = 0
         var aborted = 0

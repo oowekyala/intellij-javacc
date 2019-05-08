@@ -58,6 +58,13 @@ class Jjtricks(
         }
     }
 
+    private val activeGenProfile: String? by args.storing(
+        "--gen",
+        help = "ID of the node generation scheme to use. Can also be configured with the jjtx.activeGenScheme key."
+    ).default {
+        null
+    }
+
     private val sourceRoots by args.adding(
         "-s", "--source",
         help = "Other source roots. Node files that are already in those roots are not generated."
@@ -144,7 +151,7 @@ class Jjtricks(
         }
 
         catchException("Exception while generating node files") {
-            GenerateNodesTask(outputRoot, sourceRoots.toList()).execute(ctx)
+            GenerateNodesTask(outputRoot, sourceRoots.toList(), activeGenProfile).execute(ctx)
         }
 
         ctx.messageCollector.concludeReport()

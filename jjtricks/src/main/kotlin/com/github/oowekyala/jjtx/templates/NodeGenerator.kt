@@ -29,10 +29,20 @@ import java.util.regex.PatternSyntaxException
 //        formatter: "java"
 
 
-fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): GrammarGenerationScheme {
+internal fun DataAstNode.toNodeGenerationSchemes(ctx: JjtxContext): Map<String, GrammarGenerationScheme> =
+    when (this) {
+        is AstMap -> this.mapValues { (id, node) -> node.toSingleNodeGenerationScheme(ctx, id) }
+        else      -> {
+            ctx.messageCollector.report(
+                "Expected map of ids to node generation schemes",
+                MessageCategory.WRONG_TYPE,
+                position
+            )
+            emptyMap()
+        }
+    }
 
-    // Here we're a bit more lenient
-
+private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: String): GrammarGenerationScheme {
 
     val normalisedMap = when (this) {
         is AstMap    -> this
@@ -46,11 +56,11 @@ fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): GrammarGenerationSchem
         }
     }
 
-    return normalisedMap.toNodeGenerationSchemeImpl(ctx)
-
+    return normalisedMap.toNodeGenerationSchemeImpl(ctx, id)
 }
 
-private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerationScheme {
+
+private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): GrammarGenerationScheme {
 
     val found = mutableSetOf<NodeBean>()
 
@@ -120,7 +130,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerati
         )
     }
 
-    return GrammarGenerationScheme(allSchemes)
+    return GrammarGenerationScheme(allSchemes, id)
 }
 
 fun String.findMatchingNodes(ctx: JjtxContext, positionInfo: Position?): List<NodeBean> {
@@ -261,4 +271,8 @@ data class NodeGenerationScheme(
 }
 
 
-data class GrammarGenerationScheme(val templates: List<NodeGenerationScheme>)
+data class GrammarGenerationScheme(
+    val templates: List<NodeGenerationScheme>,
+    val id: String
+
+)
