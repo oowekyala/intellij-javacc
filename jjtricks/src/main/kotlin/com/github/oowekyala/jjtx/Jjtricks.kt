@@ -8,6 +8,7 @@ import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.tasks.DumpConfigTask
+import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.project.Project
@@ -76,10 +77,6 @@ class Jjtricks(
         "--dump-config",
         help = "Print the fully resolved jjtopts file and exits"
     )
-    private val isNoVisitors by args.flagging(
-        "--no-visitors",
-        help = "Don't generate any visitors"
-    )
 
     private val minReportSeverity by args.mapping(
         // turn off warnings
@@ -102,6 +99,10 @@ class Jjtricks(
     ) {
         toPath().normalize()
     }
+
+
+    private val showStackTrace: Boolean
+        get() = minReportSeverity <= Severity.WARNING
 
 
     private fun produceContext(project: Project): JjtxContext {
@@ -138,20 +139,22 @@ class Jjtricks(
             io.exit(ExitCode.OK)
         }
 
-        if (!isNoVisitors) {
-            catchException("Exception while generating visitors") {
-                GenerateVisitorsTask(outputRoot).execute(ctx)
-                ctx.messageCollector.concludeReport()
-            }
+        catchException("Exception while generating visitors") {
+            GenerateVisitorsTask(outputRoot).execute(ctx)
         }
 
+        catchException("Exception while generating node files") {
+            GenerateNodesTask(outputRoot, sourceRoots.toList()).execute(ctx)
+        }
+
+        ctx.messageCollector.concludeReport()
     }
 
     private fun <T> catchException(errorCase: String, block: () -> T): T =
         try {
             block()
         } catch (e: Exception) {
-            io.bail(e.message ?: errorCase)
+            io.bail(RuntimeException(errorCase, e), showStackTrace)
         }
 
 

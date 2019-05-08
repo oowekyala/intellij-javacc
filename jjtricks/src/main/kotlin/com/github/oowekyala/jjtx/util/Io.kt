@@ -28,6 +28,15 @@ data class Io(
     fun bail(message: String): Nothing {
         exit(message, ExitCode.ERROR)
     }
+
+    fun bail(throwable: Throwable, showStackTrace: Boolean): Nothing {
+        if (showStackTrace) {
+            throwable.printStackTrace(stderr)
+            exit("", ExitCode.ERROR)
+        } else {
+            exit(throwable.message ?: "", ExitCode.ERROR)
+        }
+    }
 }
 
 
