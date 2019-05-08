@@ -43,6 +43,8 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     private val collected = mutableListOf<ReportEntry>()
 
+    private var hadExceptions = false
+
     data class ExceptionMergeKey(
         val message: String,
         val ctxString: String?,
@@ -58,8 +60,13 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
         } else {
             val sizes = warnings.size
             stream.println("There are $sizes JJTricks warnings")
-            stream.println("Rerun with --warn option to examine them")
+            stream.println("Rerun with --warn option for more details")
         }
+
+        if (hadExceptions) {
+            stream.println("Rerun with --warn option to inspect the stack trace of exceptions")
+        }
+
         stream.flush()
     }
 
@@ -87,6 +94,7 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     override fun printEntry(reportEntry: ExceptionEntry) {
         reportEntry.printSingleException(1)
+        hadExceptions = true
 
         if (reportEntry.doFail) {
             stream.println("Run with --warn to examine the stack trace")
