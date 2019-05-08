@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.NodeBean
+import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
@@ -31,7 +32,8 @@ interface JjtxOptsModel : IGrammarOptions {
     override val isDefaultVoid: Boolean
 
     /**
-     * The fully resolved type hierarchy tree.
+     * The fully resolved type hierarchy tree,
+     * not inherited.
      */
     val typeHierarchy: NodeBean
 
@@ -44,6 +46,11 @@ interface JjtxOptsModel : IGrammarOptions {
      * Map of ids to runnable visitor generation tasks.
      */
     val visitors: Map<String, VisitorGenerationTask>
+
+    /**
+     * The node generation scheme, not merged if provided.
+     */
+    val grammarGenerationScheme: GrammarGenerationScheme?
 
     companion object {
 

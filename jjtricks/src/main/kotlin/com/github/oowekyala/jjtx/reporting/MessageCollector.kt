@@ -16,12 +16,12 @@ interface MessageCollector {
      * @return The actual severity reported
      */
     fun report(message: String,
-               category: ErrorCategory,
+               category: MessageCategory,
                severityOverride: Severity? = null,
                vararg sourcePosition: Position?): Severity
 
     fun report(message: String,
-               category: ErrorCategory,
+               category: MessageCategory,
                vararg sourcePosition: Position?): Severity =
         report(message, category, severityOverride = null, sourcePosition = *sourcePosition)
 
@@ -29,21 +29,22 @@ interface MessageCollector {
      * Report a normal execution trace.
      */
     fun reportNormal(message: String) {
-        report(message, ErrorCategory.NORMAL_EXEC_MESSAGE, severityOverride = null)
+        report(message, MessageCategory.NORMAL_EXEC_MESSAGE, severityOverride = null)
     }
 
     /**
      * Report a normal execution trace.
      */
-    fun reportError(message: String, position: Position?): Nothing {
-        throw java.lang.IllegalStateException(message + "\n" + position.toString())
+    fun reportError(message: String, position: Position? = null): Nothing {
+        val m = if (position == null) message else message + "\n" + position.toString()
+        throw IllegalStateException(m)
     }
 
     /**
      * Report a normal execution trace.
      */
     fun reportNonFatal(message: String, position: Position?) {
-        report(message, ErrorCategory.NON_FATAL, position)
+        report(message, MessageCategory.NON_FATAL, position)
     }
 
 
@@ -56,7 +57,7 @@ interface MessageCollector {
             return object : MessageCollector {
 
                 override fun report(message: String,
-                                    category: ErrorCategory,
+                                    category: MessageCategory,
                                     severityOverride: Severity?,
                                     vararg sourcePosition: Position?): Severity =
                     // do nothing
@@ -99,7 +100,7 @@ private class MessageCollectorImpl(
     }
 
     override fun report(message: String,
-                        category: ErrorCategory,
+                        category: MessageCategory,
                         severityOverride: Severity?,
                         vararg sourcePosition: Position?): Severity {
 
@@ -138,7 +139,7 @@ enum class Severity(dName: String? = null) {
     val displayName = dName ?: name
 }
 
-enum class ErrorCategory(val minSeverity: Severity) {
+enum class MessageCategory(val minSeverity: Severity) {
     /** Regex pattern in jjtopts doesn't match any jjtree node in grammar. */
     UNMATCHED_HIERARCHY_REGEX(Severity.WARNING),
     /** Exact node name in jjtopts doesn't match any jjtree node in grammar. */
@@ -150,13 +151,14 @@ enum class ErrorCategory(val minSeverity: Severity) {
     REGEX_SHOULD_BE_LEAF(Severity.WARNING),
 
     UNCOVERED_NODE(Severity.WARNING),
+    DUPLICATE_MATCH(Severity.WARNING),
+    NO_MATCH(Severity.WARNING),
 
     MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
     PARSING_ERROR(Severity.FAIL),
-    FORMATTER_ERROR(Severity.FAIL),
+    FORMATTER_ERROR(Severity.NON_FATAL),
 
-    DUPLICATE_MATCH(Severity.WARNING),
-    INVALID_REGEX(Severity.WARNING),
+    INVALID_REGEX(Severity.NON_FATAL),
     FILE_NOT_FOUND(Severity.WARNING),
 
 
@@ -166,6 +168,8 @@ enum class ErrorCategory(val minSeverity: Severity) {
     VISITOR_GENERATED(Severity.FINE),
     INCOMPLETE_VISITOR_SPEC(Severity.FINE),
 
+    CLASS_GENERATED(Severity.FINE),
+    CLASS_NOT_GENERATED(Severity.FINE),
 
     NORMAL_EXEC_MESSAGE(Severity.NORMAL),
     NON_FATAL(Severity.NON_FATAL)

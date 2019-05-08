@@ -1,15 +1,9 @@
 package com.github.oowekyala.jjtx.templates
 
-import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.reporting.ErrorCategory
-import com.github.oowekyala.jjtx.util.*
-import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
-import org.apache.velocity.app.VelocityEngine
 import java.nio.file.Path
-import java.util.*
 
 
 // The field names of this class are public API, because they're serialized
@@ -123,122 +117,23 @@ sealed class TemplateSource {
  *
  * @author Clément Fournier
  */
-data class VisitorGenerationTask internal constructor(
+class VisitorGenerationTask internal constructor(
     private val myBean: VisitorConfigBean,
     val id: String,
     val execute: Boolean,
-    val template: TemplateSource,
-    val formatter: FormatterChoice?,
-    val genFqcn: String,
-    val context: Map<String, Any?>
-) {
+    template: TemplateSource,
+    formatter: FormatterChoice?,
+    genFqcn: String,
+    context: Map<String, Any?>
+) : FileGenTask(template, formatter, genFqcn, context) {
 
-
-    private fun resolveTemplate(ctx: JjtxContext): String {
-
-        return when (template) {
-
-            is TemplateSource.Source -> template.source
-
-            is TemplateSource.File   -> {
-
-                fun fromResource() = Jjtricks.getResource(template.fname)?.let {
-                    Resources.toString(it, Charsets.UTF_8)
-                }
-
-                fun fromFile() = ctx.grammarDir.resolve(template.fname).toFile().readText()
-
-                fromResource() ?: fromFile()
-            }
-        }
+    override fun execute(ctx: JjtxContext,
+                         sharedCtx: VelocityContext,
+                         outputDir: Path,
+                         otherSourceRoots: List<Path>): Triple<Status, String, Path> {
+        val ret = super.execute(ctx, sharedCtx, outputDir, otherSourceRoots)
+        myBean.genClassName = ret.second
+        return ret
     }
-
-    /**
-     * Returns a pair (fqcn, path) of the FQCN of the generated class
-     * and the path where the file should be put in the [outputDir].
-     */
-    private fun resolveOutput(velocityContext: VelocityContext,
-                              outputDir: Path): Pair<String, Path> {
-
-        val engine = VelocityEngine()
-
-        val templated = engine.evaluate(velocityContext, genFqcn)
-
-        val fqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
-        if (!templated.matches(fqcnRegex)) {
-            throw java.lang.IllegalStateException("'genClassName' should be a fully qualified class name, but was $templated")
-        }
-
-        val o: Path = outputDir.resolve(templated.replace('.', '/') + ".java").toAbsolutePath()
-
-        if (o.isDirectory()) {
-            throw IllegalStateException("Output file ${this.genFqcn} is directory")
-        }
-
-        if (!o.exists()) {
-            // todo log
-            o.createFile()
-        }
-
-        // The beans are dumped, so we update it with the final value
-        myBean.genClassName = templated
-
-        return Pair(templated, o)
-    }
-
-    private fun withLocalBindings(sharedCtx: VelocityContext,
-                                  vararg additionalBindings: Pair<String, Any>): VelocityContext {
-
-        val local = VelocityContext(additionalBindings.toMap(), sharedCtx)
-
-        return VelocityContext(context, local)
-    }
-
-    /**
-     * Executes the visitor run.
-     *
-     * @param [ctx] Run context
-     * @param [sharedCtx] Global velocity context, the local properties will be chained
-     * @param [outputDir] Root directory where the visitors should be generated
-     */
-    fun execute(ctx: JjtxContext, sharedCtx: VelocityContext, outputDir: Path) {
-
-        val tmpCtx = withLocalBindings(sharedCtx)
-
-        val template = resolveTemplate(ctx)
-        val engine = VelocityEngine()
-
-        val (fqcn, o) = resolveOutput(tmpCtx, outputDir)
-
-        val (pack, simpleName) = fqcn.splitAroundLast('.')
-
-        val fullCtx =
-            withLocalBindings(
-                sharedCtx,
-                "package" to pack,
-                "simpleName" to simpleName,
-                "timestamp" to Date()
-            )
-
-        val rendered = engine.evaluate(fullCtx, id, template)
-
-
-        val formatted = try {
-            formatter?.format(rendered)
-        } catch (e: Exception) {
-            ctx.messageCollector.report(
-                "Exception applying formatter '${formatter!!.name.toLowerCase()}': ${e.message}",
-                ErrorCategory.FORMATTER_ERROR
-            )
-            null
-        } ?: rendered
-
-        o.toFile().bufferedWriter().use {
-            it.write(formatted)
-        }
-
-        ctx.messageCollector.reportNormal("Generated visitor '$id' into ${ctx.io.wd.relativize(o)}")
-    }
-
-
 }
+

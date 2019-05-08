@@ -1,10 +1,8 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
-import com.github.oowekyala.jjtx.reporting.ErrorCategory.INCOMPLETE_VISITOR_SPEC
-import com.github.oowekyala.jjtx.templates.NodeBean
-import com.github.oowekyala.jjtx.templates.VisitorConfigBean
-import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
+import com.github.oowekyala.jjtx.reporting.MessageCategory.INCOMPLETE_VISITOR_SPEC
+import com.github.oowekyala.jjtx.templates.*
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.Gson
@@ -73,6 +71,13 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     override val typeHierarchy: NodeBean by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
         NodeBean.toBean(th.process(ctx), ctx)
+    }
+
+
+    private val ngs: DataAstNode? by JsonProperty(jjtx, "nodeGeneration")
+
+    override val grammarGenerationScheme: GrammarGenerationScheme? by lazy {
+        ngs?.toNodeGenerationScheme(ctx) ?: parentModel.grammarGenerationScheme
     }
 
 }

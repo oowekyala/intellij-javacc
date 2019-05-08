@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.parse
-import com.github.oowekyala.jjtx.reporting.ErrorCategory
+import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.util.*
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
@@ -29,7 +29,7 @@ import java.util.regex.PatternSyntaxException
 //        formatter: "java"
 
 
-fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): NodeGenerationScheme {
+fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): GrammarGenerationScheme {
 
     // Here we're a bit more lenient
 
@@ -50,11 +50,11 @@ fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): NodeGenerationScheme {
 
 }
 
-private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): NodeGenerationScheme {
+private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerationScheme {
 
     val found = mutableSetOf<NodeBean>()
 
-    val allSchemes = mutableListOf<SingleNodeGenerationScheme>()
+    val allSchemes = mutableListOf<NodeGenerationScheme>()
 
     for ((k, node) in this) {
 
@@ -66,7 +66,15 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): NodeGenerationS
             ctx.messageCollector.report(
                 "Pattern '$k' matched ${alreadyMatched.size} nodes that are already matched by some rules: "
                     + alreadyMatched.joinToString { it.name },
-                ErrorCategory.DUPLICATE_MATCH,
+                MessageCategory.DUPLICATE_MATCH,
+                keyPositions[k]
+            )
+        }
+
+        if (newMatches.isEmpty()) {
+            ctx.messageCollector.report(
+                "Pattern '$k' matched no nodes",
+                MessageCategory.NO_MATCH,
                 keyPositions[k]
             )
         }
@@ -82,11 +90,12 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): NodeGenerationS
                 if (notMaps.isNotEmpty()) {
                     ctx.messageCollector.report(
                         "Expected a map",
-                        ErrorCategory.WRONG_TYPE,
+                        MessageCategory.WRONG_TYPE,
                         *notMaps.map { it.position }.toTypedArray()
                     )
                 }
 
+                // handles nothing after colon with empty map I think
                 maps.mapNotNull {
                     val b = node.parse<NodeGenerationBean>()
                     b.promote(ctx, node.position, newMatches)
@@ -106,12 +115,12 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): NodeGenerationS
     if (remaining.isNotEmpty()) {
         ctx.messageCollector.report(
             "Some nodes matched no generation patterns: " + remaining.joinToString { it.name },
-            ErrorCategory.UNCOVERED_NODE,
+            MessageCategory.UNCOVERED_NODE,
             position
         )
     }
 
-    return NodeGenerationScheme(allSchemes)
+    return GrammarGenerationScheme(allSchemes)
 }
 
 fun String.findMatchingNodes(ctx: JjtxContext, positionInfo: Position?): List<NodeBean> {
@@ -157,7 +166,7 @@ private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateSt
         if (it.isEmpty()) {
             ctx.messageCollector.report(
                 "Template pattern matches no nodes",
-                ErrorCategory.UNMATCHED_HIERARCHY_REGEX,
+                MessageCategory.UNMATCHED_HIERARCHY_REGEX,
                 positionInfo
             )
         }
@@ -185,7 +194,7 @@ private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: Str
     if (matching.isEmpty()) {
         ctx.messageCollector.report(
             "Regex pattern matches no nodes",
-            ErrorCategory.UNMATCHED_HIERARCHY_REGEX,
+            MessageCategory.UNMATCHED_HIERARCHY_REGEX,
             positionInfo
         )
     }
@@ -201,7 +210,7 @@ data class NodeGenerationBean(
     var context: Map<String, Any>
 ) {
 
-    fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeBean>): SingleNodeGenerationScheme? {
+    fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeBean>): NodeGenerationScheme? {
 
 
         if (templateFile == null) {
@@ -223,7 +232,7 @@ data class NodeGenerationBean(
 
         val formatterChoice = FormatterChoice.select(formatter)
 
-        return SingleNodeGenerationScheme(
+        return NodeGenerationScheme(
             nodeBeans,
             genClassName!!,
             templateFile!!,
@@ -235,13 +244,25 @@ data class NodeGenerationBean(
 
 }
 
-data class SingleNodeGenerationScheme(
+data class NodeGenerationScheme(
     val nodeBeans: List<NodeBean>,
     val genClassTemplate: String,
     val templateFile: String,
     val context: Map<String, Any>,
     val formatter: FormatterChoice?
-)
+) {
+
+    fun toFileGenTasks(): List<FileGenTask> =
+        nodeBeans.map {
+            FileGenTask(
+                template = TemplateSource.File(templateFile),
+                context = mapOf("node" to it).plus(context),
+                formatter = formatter,
+                genFqcn = genClassTemplate
+            )
+        }
+
+}
 
 
-data class NodeGenerationScheme(val templates: List<SingleNodeGenerationScheme>)
+data class GrammarGenerationScheme(val templates: List<NodeGenerationScheme>)
