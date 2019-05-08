@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx.util
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -18,6 +19,7 @@ data class Io(
     val wd: Path = workingDirectory,
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
+    private val dateGetter: () -> Date = { Date() },
     private val exit: (String, Int) -> Nothing = { m, code -> stderr.println(m); stderr.flush(); exitProcess(code) }
 ) {
 
@@ -37,6 +39,9 @@ data class Io(
             exit(throwable.message ?: "", ExitCode.ERROR)
         }
     }
+
+    fun now(): Date = dateGetter()
+
 }
 
 

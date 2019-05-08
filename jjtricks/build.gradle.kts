@@ -42,7 +42,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
     // for debugging only, this pulls in a huge IBM dependency
-    // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.1")
+    // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)

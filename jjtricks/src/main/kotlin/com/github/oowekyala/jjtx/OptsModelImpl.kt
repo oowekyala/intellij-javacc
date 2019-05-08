@@ -17,13 +17,13 @@ import kotlin.reflect.KProperty
  */
 internal class OptsModelImpl(val ctx: JjtxContext,
                              override val parentModel: JjtxOptsModel,
-                             json: AstMap) : JjtxOptsModel {
+                             data: AstMap) : JjtxOptsModel {
 
 
-    private val jjtx: Namespacer = json namespace "jjtx"
+    private val jjtx: Namespacer = data namespace "jjtx"
 
     override val inlineBindings: InlineGrammarOptions by lazy {
-        generateSequence(parentModel) { it.parentModel }.filterIsInstance<InlineGrammarOptions>().first()
+        parentModel.inlineBindings
     }
 
     override val nodePrefix: String by jjtx.withDefault { parentModel.nodePrefix }
@@ -68,9 +68,13 @@ internal class OptsModelImpl(val ctx: JjtxContext,
         TypeHierarchyTree.fromData(it, ctx)
     }
 
+    internal val rawTypeHierarchy: TypeHierarchyTree by lazy {
+        th.process(ctx)
+    }
+
     override val typeHierarchy: NodeBean by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        NodeBean.toBean(th.process(ctx), ctx)
+        NodeBean.toBean(rawTypeHierarchy, ctx)
     }
 
 

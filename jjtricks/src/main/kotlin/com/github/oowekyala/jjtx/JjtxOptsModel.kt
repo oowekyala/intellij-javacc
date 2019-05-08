@@ -1,9 +1,10 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.jjtx.templates.NodeBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
+import com.github.oowekyala.jjtx.templates.NodeBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
+import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader

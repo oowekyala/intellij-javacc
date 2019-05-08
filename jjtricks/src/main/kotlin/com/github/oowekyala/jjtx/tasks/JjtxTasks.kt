@@ -89,23 +89,33 @@ data class GenerateNodesTask(private val outputDir: Path,
 
         var generated = 0
         var aborted = 0
+        var ex = 0
 
         for (gen in scheme.templates.flatMap { it.toFileGenTasks() }) {
 
-            val (st, _, _) = gen.execute(
-                ctx,
-                ctx.globalVelocityContext,
-                outputDir,
-                otherSourceRoots
-            )
+            try {
+                val (st, _, _) = gen.execute(
+                    ctx,
+                    ctx.globalVelocityContext,
+                    outputDir,
+                    otherSourceRoots
+                )
 
-            when (st) {
-                Status.Aborted   -> aborted++
-                Status.Generated -> generated++
+                when (st) {
+                    Status.Aborted   -> aborted++
+                    Status.Generated -> generated++
+                }
+            } catch (e: Exception) {
+                ctx.messageCollector.reportNonFatal(e)
+                ex++
             }
         }
 
-        ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
-        ctx.messageCollector.reportNormal("$aborted classes were not generated because found in other output roots")
+        if (generated > 0)
+            ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
+        if (aborted > 0)
+            ctx.messageCollector.reportNormal("$aborted classes were not generated because found in other output roots")
+        if (ex > 0)
+            ctx.messageCollector.reportNormal("$ex classes were not generated because of an exception")
     }
 }

@@ -1,0 +1,54 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: true
+    parameterlessVisitor:
+      execute: true
+
+
+  nodeGeneration:
+    # Match predicates in order
+    # v:X template X with node generation context
+    "v: $node == $grammar.rootNode":
+      - template: |
+          #if( !$node.classPackage.empty )
+          package $node.classPackage;
+          #end
+          public interface ${node.simpleName} {
+
+          }
+
+        formatter: "java"
+    "v: !$node.subnodes.empty":
+      - template: |
+          #if( !$node.classPackage.empty )
+          package $node.classPackage;
+          #end
+          public abstract class ${node.classSimpleName} {
+
+          }
+        genClassName: "${node.classQualifiedName}"
+        formatter: "java"
+      - template: |
+          #if( !$node.classPackage.empty )
+          package ${node.classPackage}.impl;
+          #end
+          public class ${node.classSimpleName}Impl extends ${grammar.nodePackage}.{node.classSimpleName} {
+
+          }
+        genClassName: "${node.classPackage}.impl.${node.classSimpleName}Impl"
+        formatter: "java"
+    "r:.*":
+      - templateFile: "/jjtx/templates/Node.java.vm"
+        formatter: "java"
+
+  nodePrefix: Ex
+  nodePackage: "org.expr"
+  typeHierarchy:
+    "%Root":
+      - "Expression":
+          - "r:.*Expression"
+          - Literal:
+              - NullLiteral
+              - IntegerLiteral

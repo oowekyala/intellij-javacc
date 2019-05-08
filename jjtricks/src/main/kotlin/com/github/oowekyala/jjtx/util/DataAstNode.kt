@@ -51,9 +51,8 @@ data class AstMap(
             val posMap = strMap.keys.associate { it!! }
 
 
-            @Suppress("UNCHECKED_CAST")
             return AstMap(
-                map = strMap.mapKeys { it.key } as Map<String, DataAstNode>,
+                map = strMap.mapKeys { (k, _) -> k!!.first },
                 keyPositions = posMap,
                 position = position
             )

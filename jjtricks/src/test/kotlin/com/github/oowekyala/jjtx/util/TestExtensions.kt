@@ -1,8 +1,8 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
-import com.github.oowekyala.jjtx.typeHierarchy.TreeLikeWitness
-import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
+import com.github.oowekyala.jjtx.templates.NodeBean
+import com.github.oowekyala.jjtx.templates.NodeBean.Companion.TreeLikeWitness
 import com.github.oowekyala.treeutils.matchers.MatchingConfig
 import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper
 import com.github.oowekyala.treeutils.matchers.baseShouldMatchSubtree
@@ -14,12 +14,12 @@ import io.kotlintest.shouldBe
  */
 
 
-typealias TypeHWrapper = TreeNodeWrapper<TypeHierarchyTree, TypeHierarchyTree>
+typealias TypeHWrapper = TreeNodeWrapper<NodeBean, NodeBean>
 
 typealias TypeHSpec = TypeHWrapper.() -> Unit
 
 fun matchRoot(fqcn: String, nodeSpec: TypeHSpec)
-    : AssertionMatcher<TypeHierarchyTree?> = {
+    : AssertionMatcher<NodeBean?> = {
     it.baseShouldMatchSubtree(
         MatchingConfig(
             adapter = TreeLikeWitness,
@@ -28,14 +28,14 @@ fun matchRoot(fqcn: String, nodeSpec: TypeHSpec)
         false
 
     ) {
-        this.it.nodeName shouldBe fqcn
+        this.it.classQualifiedName shouldBe fqcn
         nodeSpec()
     }
 }
 
-fun TypeHWrapper.node(fqcn: String, nodeSpec: TypeHSpec = EmptySpec): Unit {
-    child<TypeHierarchyTree> {
-        it.nodeName shouldBe fqcn
+fun TypeHWrapper.node(fqcn: String, nodeSpec: TypeHSpec = EmptySpec) {
+    child<NodeBean> {
+        it.classQualifiedName shouldBe fqcn
         nodeSpec()
     }
 }

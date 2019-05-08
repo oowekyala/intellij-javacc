@@ -152,7 +152,7 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
     val visitors = visitorBeans.toDataNode()
 
-    val th = typeHierarchy.toDataNode()
+    val th = rawTypeHierarchy.toDataNode()
 
     return AstMap(
         mapOf(

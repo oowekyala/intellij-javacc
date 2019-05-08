@@ -97,8 +97,8 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerati
 
                 // handles nothing after colon with empty map I think
                 maps.mapNotNull {
-                    val b = node.parse<NodeGenerationBean>()
-                    b.promote(ctx, node.position, newMatches)
+                    val b = it.parse<NodeGenerationBean>()
+                    b.promote(ctx, it.position, newMatches)
                 }
             }
             else      -> emptyList()
@@ -206,37 +206,33 @@ private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: Str
 data class NodeGenerationBean(
     var formatter: String?,
     var genClassName: String?,
+    var template: String?,
     var templateFile: String?,
-    var context: Map<String, Any>
+    var context: Map<String, Any>?
 ) {
 
     fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeBean>): NodeGenerationScheme? {
 
 
-        if (templateFile == null) {
-            // todo accumulate those
+        val t = if (templateFile == null && template == null) {
             ctx.messageCollector.reportNonFatal(
-                "Node generation spec must mention the requested 'templateFile'",
+                "Node generation spec must mention either 'templateFile' or 'template'",
                 positionInfo
             )
             return null
-        }
-
-        if (genClassName == null) {
-            ctx.messageCollector.reportNonFatal(
-                "Node generation spec must mention 'genClassName', the template for the fully qualified class name of the generated class",
-                positionInfo
-            )
-            return null
+        } else if (template != null) {
+            TemplateSource.Source(template!!)
+        } else {
+            TemplateSource.File(templateFile!!)
         }
 
         val formatterChoice = FormatterChoice.select(formatter)
 
         return NodeGenerationScheme(
             nodeBeans,
-            genClassName!!,
-            templateFile!!,
-            context,
+            genClassName,
+            t,
+            context ?: emptyMap(),
             formatterChoice
         )
 
@@ -246,8 +242,8 @@ data class NodeGenerationBean(
 
 data class NodeGenerationScheme(
     val nodeBeans: List<NodeBean>,
-    val genClassTemplate: String,
-    val templateFile: String,
+    val genClassTemplate: String?,
+    val template: TemplateSource,
     val context: Map<String, Any>,
     val formatter: FormatterChoice?
 ) {
@@ -255,10 +251,10 @@ data class NodeGenerationScheme(
     fun toFileGenTasks(): List<FileGenTask> =
         nodeBeans.map {
             FileGenTask(
-                template = TemplateSource.File(templateFile),
+                template = template,
                 context = mapOf("node" to it).plus(context),
                 formatter = formatter,
-                genFqcn = genClassTemplate
+                genFqcn = genClassTemplate ?: it.classQualifiedName
             )
         }
 

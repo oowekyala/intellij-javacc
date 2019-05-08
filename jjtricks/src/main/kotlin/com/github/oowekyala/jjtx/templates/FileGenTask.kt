@@ -79,11 +79,20 @@ open class FileGenTask internal constructor(
             is TemplateSource.File   -> {
 
 
-                fun fromResource() = Jjtricks.getResource(template.fname)?.let {
+                fun fromResource(): String? = Jjtricks.getResource(template.fname)?.let {
                     Resources.toString(it, Charsets.UTF_8)
                 }
 
-                fun fromFile() = ctx.grammarDir.resolve(template.fname).toFile().readText()
+                fun fromFile(): String {
+
+                    val file = ctx.grammarDir.resolve(template.fname).toFile()
+
+                    if (!file.isFile) {
+                        ctx.messageCollector.reportError("File not found $file")
+                    }
+
+                    return file.readText()
+                }
 
                 return fromResource() ?: fromFile()
             }
@@ -141,7 +150,7 @@ open class FileGenTask internal constructor(
                 sharedCtx,
                 "package" to pack,
                 "simpleName" to simpleName,
-                "timestamp" to Date()
+                "timestamp" to ctx.io.now()
             )
 
         val rendered = engine.evaluate(fullCtx, template)

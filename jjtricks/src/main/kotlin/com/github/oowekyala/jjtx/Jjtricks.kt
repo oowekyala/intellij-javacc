@@ -102,7 +102,7 @@ class Jjtricks(
 
 
     private val showStackTrace: Boolean
-        get() = minReportSeverity <= Severity.WARNING
+        get() = minReportSeverity <= Severity.NORMAL
 
 
     private fun produceContext(project: Project): JjtxContext {

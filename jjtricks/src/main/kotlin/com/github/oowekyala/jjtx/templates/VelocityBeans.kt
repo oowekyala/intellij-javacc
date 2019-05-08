@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.templates
 
+import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
@@ -79,7 +80,7 @@ data class NodeBean(
 
     companion object {
 
-        private object TreeLikeWitness : DoublyLinkedTreeLikeAdapter<NodeBean> {
+        internal object TreeLikeWitness : DoublyLinkedTreeLikeAdapter<NodeBean> {
             override fun nodeName(node: NodeBean): String = node.name
 
             override fun getChildren(node: NodeBean): List<NodeBean> = node.subNodes
@@ -153,15 +154,31 @@ data class GrammarBean(
     val name: String,
     val file: FileBean,
     val nodePackage: String,
+    val parserQualifiedName: String,
     val rootNode: NodeBean,
     val typeHierarchy: List<NodeBean>
 ) {
+
+
+    val parserSimpleName: String
+    val parserPackage: String
+
+    init {
+
+        val (pack, simpleName) = parserQualifiedName.splitAroundLast('.', firstBias = false)
+
+        parserSimpleName = simpleName
+        parserPackage = pack
+
+    }
+
 
     companion object {
         fun create(ctx: JjtxContext): GrammarBean = GrammarBean(
             name = ctx.grammarName,
             file = FileBean.create(ctx.grammarFile),
             nodePackage = ctx.jjtxOptsModel.nodePackage,
+            parserQualifiedName = ctx.jjtxOptsModel.inlineBindings.parserQualifiedName,
             rootNode = ctx.jjtxOptsModel.typeHierarchy,
             typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
         )

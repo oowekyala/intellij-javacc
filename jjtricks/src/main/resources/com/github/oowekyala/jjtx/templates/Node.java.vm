@@ -8,14 +8,14 @@ package $node.package;
 #end
 
 
-public class ${node.simpleName} extends ${node.superNode.simpleName} {
+public class ${simpleName} extends ${node.superNode.classSimpleName} {
 
 
-    public ${node.simpleName}(int id) {
+    public ${simpleName}(int id) {
         super(id)
     }
 
-    public ${node.simpleName}(${grammar.parserSimpleName} parser, int id) {
+    public ${simpleName}(${grammar.parserSimpleName} parser, int id) {
         super(parser, id)
     }
 

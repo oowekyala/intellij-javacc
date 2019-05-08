@@ -1,0 +1,15 @@
+
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      execute: false
+    parameterlessVisitor:
+      execute: false
+
+
+  nodeTemplates:
+
+  nodePrefix: Ex
+  nodePackage: "org.expr"
+  typeHierarchy:
+    Expression: "r:.*"

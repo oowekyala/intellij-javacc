@@ -41,10 +41,17 @@ interface MessageCollector {
     }
 
     /**
-     * Report a normal execution trace.
+     * Report a non-fatal error, probably followed later by termination anyway.
      */
     fun reportNonFatal(message: String, position: Position?) {
         report(message, MessageCategory.NON_FATAL, position)
+    }
+
+    /**
+     * Report a non-fatal error, probably followed later by termination anyway.
+     */
+    fun reportNonFatal(throwable: Throwable) {
+        report(throwable.message ?: "", MessageCategory.NON_FATAL)
     }
 
 
