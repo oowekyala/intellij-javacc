@@ -72,9 +72,9 @@ internal class OptsModelImpl(val ctx: JjtxContext,
         th.process(ctx)
     }
 
-    override val typeHierarchy: NodeBean by lazy {
+    override val typeHierarchy: NodeVBean by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        NodeBean.toBean(rawTypeHierarchy, ctx)
+        NodeVBean.toBean(rawTypeHierarchy, ctx)
     }
 
 

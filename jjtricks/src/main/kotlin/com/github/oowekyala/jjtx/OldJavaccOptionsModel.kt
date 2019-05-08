@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.templates.ClassVBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeBean
+import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 
 /**
@@ -35,7 +35,7 @@ internal class OldJavaccOptionsModel(
 
     override val activeNodeGenerationScheme: String? = null
 
-    override val typeHierarchy: NodeBean = NodeBean(
+    override val typeHierarchy: NodeVBean = NodeVBean(
         name = grammarOptions.rootNodeClass.substringAfterLast('.'),
         `class` = ClassVBean(grammarOptions.rootNodeClass),
         superNode = null,

@@ -1,8 +1,8 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
-import com.github.oowekyala.jjtx.templates.NodeBean
-import com.github.oowekyala.jjtx.templates.NodeBean.Companion.TreeLikeWitness
+import com.github.oowekyala.jjtx.templates.NodeVBean
+import com.github.oowekyala.jjtx.templates.NodeVBean.Companion.TreeLikeWitness
 import com.github.oowekyala.treeutils.matchers.MatchingConfig
 import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper
 import com.github.oowekyala.treeutils.matchers.baseShouldMatchSubtree
@@ -14,12 +14,12 @@ import io.kotlintest.shouldBe
  */
 
 
-typealias TypeHWrapper = TreeNodeWrapper<NodeBean, NodeBean>
+typealias TypeHWrapper = TreeNodeWrapper<NodeVBean, NodeVBean>
 
 typealias TypeHSpec = TypeHWrapper.() -> Unit
 
 fun matchRoot(fqcn: String, nodeSpec: TypeHSpec)
-    : AssertionMatcher<NodeBean?> = {
+    : AssertionMatcher<NodeVBean?> = {
     it.baseShouldMatchSubtree(
         MatchingConfig(
             adapter = TreeLikeWitness,
@@ -34,7 +34,7 @@ fun matchRoot(fqcn: String, nodeSpec: TypeHSpec)
 }
 
 fun TypeHWrapper.node(fqcn: String, nodeSpec: TypeHSpec = EmptySpec) {
-    child<NodeBean> {
+    child<NodeVBean> {
         this.it.klass.qualifiedName shouldBe fqcn
         nodeSpec()
     }

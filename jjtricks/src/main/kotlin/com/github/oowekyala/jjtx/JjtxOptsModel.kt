@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeBean
+import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.*
 import com.google.gson.JsonParser
@@ -35,7 +35,7 @@ interface JjtxOptsModel : IGrammarOptions {
      * The fully resolved type hierarchy tree,
      * not inherited.
      */
-    val typeHierarchy: NodeBean
+    val typeHierarchy: NodeVBean
 
     /**
      * Global template variables, merged with the parent maps.

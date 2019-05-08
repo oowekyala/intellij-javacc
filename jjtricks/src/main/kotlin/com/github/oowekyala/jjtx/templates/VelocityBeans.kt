@@ -24,20 +24,18 @@ import org.apache.velocity.VelocityContext
  * Represents a JJTree node.
  *
  * @property name Simple name of the node, unprefixed, as occurring in the grammar
- * @property class.simpleName Simple name of the class (prefixed)
- * @property classQualifiedName Fully qualified name of the node class ([classPackage] + [class.simpleName])
- * @property classPackage Package name of the class (may be the empty string)
+ * @property class VBean for the class
  * @property superNode Node bean describing the node which this node extends directly, as defined by [JjtxOptsModel.typeHierarchy]
  * @property subNodes List of node beans for which [superNode] is this
  */
-data class NodeBean(
+data class NodeVBean(
     val name: String,
     val `class`: ClassVBean,
-    val superNode: NodeBean?,
-    val subNodes: List<NodeBean>
-) : TreeOps<NodeBean> {
+    val superNode: NodeVBean?,
+    val subNodes: List<NodeVBean>
+) : TreeOps<NodeVBean> {
 
-    override val adapter: TreeLikeAdapter<NodeBean> = TreeLikeWitness
+    override val adapter: TreeLikeAdapter<NodeVBean> = TreeLikeWitness
 
     val klass = `class`
 
@@ -57,7 +55,7 @@ data class NodeBean(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as NodeBean
+        other as NodeVBean
 
         if (name != other.name) return false
         if (`class` != other.`class`) return false
@@ -75,18 +73,18 @@ data class NodeBean(
 
     companion object {
 
-        internal object TreeLikeWitness : DoublyLinkedTreeLikeAdapter<NodeBean> {
-            override fun nodeName(node: NodeBean): String = node.name
+        internal object TreeLikeWitness : DoublyLinkedTreeLikeAdapter<NodeVBean> {
+            override fun nodeName(node: NodeVBean): String = node.name
 
-            override fun getChildren(node: NodeBean): List<NodeBean> = node.subNodes
+            override fun getChildren(node: NodeVBean): List<NodeVBean> = node.subNodes
 
-            override fun getParent(node: NodeBean): NodeBean? = node.superNode
+            override fun getParent(node: NodeVBean): NodeVBean? = node.superNode
         }
 
         // stack has the parent of the receiver
         private fun TypeHierarchyTree.dumpInternal(ctx: JjtxContext,
-                                                   stack: MutableList<NodeBean>,
-                                                   total: MutableList<NodeBean>) {
+                                                   stack: MutableList<NodeVBean>,
+                                                   total: MutableList<NodeVBean>) {
 
             val simpleName = nodeName.substringAfterLast('.')
 
@@ -96,7 +94,7 @@ data class NodeBean(
                 else              -> simpleName
             }
 
-            val bean = NodeBean(
+            val bean = NodeVBean(
                 name = name,
                 `class` = ClassVBean(nodeName),
                 superNode = stack.lastOrNull(),
@@ -112,8 +110,8 @@ data class NodeBean(
         }
 
 
-        internal fun toBean(tree: TypeHierarchyTree, ctx: JjtxContext): NodeBean {
-            val total = mutableListOf<NodeBean>()
+        internal fun toBean(tree: TypeHierarchyTree, ctx: JjtxContext): NodeVBean {
+            val total = mutableListOf<NodeVBean>()
             tree.dumpInternal(ctx, mutableListOf(), total)
             return total.first()
         }
@@ -123,13 +121,13 @@ data class NodeBean(
 /**
  * Represents a file.
  */
-data class FileBean(
+data class FileVBean(
     val fileName: String,
     val absolutePath: String,
     val extension: String?
 ) {
     companion object {
-        fun create(jccFile: JccFile): FileBean = FileBean(
+        fun create(jccFile: JccFile): FileVBean = FileVBean(
             fileName = jccFile.name,
             absolutePath = jccFile.virtualFile.path,
             extension = jccFile.virtualFile.extension
@@ -196,21 +194,21 @@ data class RunVBean(
  * Presents information about the whole grammar.
  *
  * @property name The name of the grammar
- * @property file A [FileBean] describing the main grammar file
+ * @property file A [FileVBean] describing the main grammar file
  * @property nodePackage The package in which the nodes live, as defined by [JjtxOptsModel.nodePackage]
- * @property typeHierarchy The list of all [NodeBean]s defined in the grammar
+ * @property typeHierarchy The list of all [NodeVBean]s defined in the grammar
  */
-data class GrammarBean(
+data class GrammarVBean(
     val name: String,
-    val file: FileBean,
+    val file: FileVBean,
     val nodePackage: String,
     val parser: ParserVBean,
-    val rootNode: NodeBean,
-    val typeHierarchy: List<NodeBean>
+    val rootNode: NodeVBean,
+    val typeHierarchy: List<NodeVBean>
     ) {
 
     companion object {
-        fun create(ctx: JjtxContext): GrammarBean {
+        fun create(ctx: JjtxContext): GrammarVBean {
             val visitors =
                 ctx.jjtxOptsModel
                     .let { it as? OptsModelImpl }
@@ -219,9 +217,9 @@ data class GrammarBean(
                     ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
                     ?: emptyMap()
 
-            return GrammarBean(
+            return GrammarVBean(
                 name = ctx.grammarName,
-                file = FileBean.create(ctx.grammarFile),
+                file = FileVBean.create(ctx.grammarFile),
                 nodePackage = ctx.jjtxOptsModel.nodePackage,
                 parser = ParserVBean(ClassVBean(ctx.jjtxOptsModel.inlineBindings.parserQualifiedName)),
                 rootNode = ctx.jjtxOptsModel.typeHierarchy,

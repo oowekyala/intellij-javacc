@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.util
 
+import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.apache.commons.lang3.text.WordUtils
@@ -112,3 +113,5 @@ fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
 
 
 fun String.matches(regex: String): Boolean = matches(Regex(regex))
+val JccFile.path: Path
+    get() = Paths.get(virtualFile.path).normalize()

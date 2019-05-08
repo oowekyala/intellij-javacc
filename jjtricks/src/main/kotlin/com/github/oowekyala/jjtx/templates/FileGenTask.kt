@@ -13,14 +13,11 @@ import java.nio.file.Path
 
 
 /**
- * Gathers the info required by a visitor generation task.
- *
- * Visitor generation generates a single file using a velocity
- * template.
+ * Generation task for a single file from a velocity template.
  *
  * The velocity context is build as follows:
  *
- * - The [GrammarBean] is put under key "grammar". This provides
+ * - The [GrammarVBean] is put under key "grammar". This provides
  * access to the full type hierarchy, among other things.
  * - The user can add their own variables shared by all visitor
  * runs by using the "jjtx.templateContext" key in the [JjtxOptsModel].
@@ -115,7 +112,7 @@ open class FileGenTask internal constructor(
 
 
     /**
-     * Executes the visitor run.
+     * Executes the generation.
      *
      * @param [ctx] Run context
      * @param [sharedCtx] Global velocity context, the local properties will be chained

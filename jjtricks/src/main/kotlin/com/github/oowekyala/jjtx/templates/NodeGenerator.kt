@@ -62,7 +62,7 @@ private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: Strin
 
 private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): GrammarGenerationScheme {
 
-    val found = mutableSetOf<NodeBean>()
+    val found = mutableSetOf<NodeVBean>()
 
     val allSchemes = mutableListOf<NodeGenerationScheme>()
 
@@ -118,7 +118,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
 
     }
 
-    val allBeans = ctx.grammarBean.typeHierarchy.toSet()
+    val allBeans = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toSet()
 
     val remaining = allBeans - found
 
@@ -133,7 +133,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
     return GrammarGenerationScheme(allSchemes, id)
 }
 
-fun String.findMatchingNodes(ctx: JjtxContext, positionInfo: Position?): List<NodeBean> {
+fun String.findMatchingNodes(ctx: JjtxContext, positionInfo: Position?): List<NodeVBean> {
 
     RegexPattern.matchEntire(this)?.groups?.get(1)?.run {
         return findByRegex(ctx, positionInfo, value)
@@ -150,11 +150,11 @@ private val RegexPattern = Regex("^r:(.*)")
 private val TemplatePattern = Regex("^v:(.*)")
 
 
-private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateStr: String): List<NodeBean> {
+private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateStr: String): List<NodeVBean> {
 
     val engine = VelocityEngine()
 
-    fun NodeBean.matchesTemplate(): Boolean {
+    fun NodeVBean.matchesTemplate(): Boolean {
 
         val vctx = VelocityContext(ctx.globalVelocityContext).also {
             it["node"] = this@matchesTemplate
@@ -172,7 +172,12 @@ private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateSt
 
 
 
-    return ctx.grammarBean.typeHierarchy.filter { it.matchesTemplate() }.also {
+    return ctx.jjtxOptsModel
+        .typeHierarchy
+        .descendantsOrSelf()
+        .filter { it.matchesTemplate() }
+        .toList()
+        .also {
         if (it.isEmpty()) {
             ctx.messageCollector.report(
                 "Template pattern matches no nodes",
@@ -183,7 +188,7 @@ private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateSt
     }
 }
 
-private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: String): List<NodeBean> {
+private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: String): List<NodeVBean> {
 
     val r = try {
         Regex(regexStr)
@@ -221,7 +226,7 @@ data class NodeGenerationBean(
     var context: Map<String, Any>?
 ) {
 
-    fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeBean>): NodeGenerationScheme? {
+    fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeVBean>): NodeGenerationScheme? {
 
 
         val t = if (templateFile == null && template == null) {
@@ -251,7 +256,7 @@ data class NodeGenerationBean(
 }
 
 data class NodeGenerationScheme(
-    val nodeBeans: List<NodeBean>,
+    val nodeBeans: List<NodeVBean>,
     val genClassTemplate: String?,
     val template: TemplateSource,
     val context: Map<String, Any>,

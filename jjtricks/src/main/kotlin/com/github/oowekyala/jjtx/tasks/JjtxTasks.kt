@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx.tasks
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.OptsModelImpl
-import com.github.oowekyala.jjtx.path
+import com.github.oowekyala.jjtx.util.path
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.RunVBean
@@ -107,12 +107,8 @@ abstract class GenerationTaskBase(
 /**
  * Generate the visitors marked for execution in the opts file.
  */
-class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path) :
-    GenerationTaskBase(
-        ctx,
-        outputDir,
-        emptyList()
-    ) {
+class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path)
+    : GenerationTaskBase(ctx, outputDir, emptyList()) {
 
 
     override val header: String = "VISITOR_GEN"

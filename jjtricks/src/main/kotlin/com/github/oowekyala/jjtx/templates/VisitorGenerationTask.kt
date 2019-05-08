@@ -106,7 +106,7 @@ sealed class TemplateSource {
  *
  * The velocity context is build as follows:
  *
- * - The [GrammarBean] is put under key "grammar". This provides
+ * - The [GrammarVBean] is put under key "grammar". This provides
  * access to the full type hierarchy, among other things.
  * - The user can add their own variables shared by all visitor
  * runs by using the "jjtx.templateContext" key in the [JjtxOptsModel].

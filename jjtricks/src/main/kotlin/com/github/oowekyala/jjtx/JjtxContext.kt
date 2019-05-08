@@ -2,15 +2,18 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.MessageCollector
-import com.github.oowekyala.jjtx.templates.GrammarBean
+import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
+import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
+import com.github.oowekyala.jjtx.templates.GrammarVBean
+import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.set
 import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.NamedInputStream
 import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.path
 import com.intellij.openapi.project.Project
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
-import java.nio.file.Paths
 
 
 /**
@@ -43,13 +46,16 @@ class JjtxContext internal constructor(val grammarFile: JccFile,
         JjtxOptsModel.parseChain(this, configChain)
     }
 
-    internal val grammarBean: GrammarBean by lazy {
-        GrammarBean.create(this)
-    }
-
+    /**
+     * Velocity context shared by every file generation task.
+     * This doesn't contain the visitors, because that would
+     * introduce a cyclic dependency. After the [GenerateVisitorsTask]
+     * is done, the [GenerateNodesTask] uses the completed
+     * visitor beans under the key "run", a [RunVBean].
+     */
     val globalVelocityContext: VelocityContext by lazy {
         VelocityContext().also {
-            it["grammar"] = grammarBean
+            it["grammar"] = GrammarVBean.create(this)
             it["global"] = jjtxOptsModel.templateContext
             it["H"] = "#"
         }
@@ -96,8 +102,6 @@ fun JccFile.defaultJjtopts(): List<Path> {
 }
 
 // TODO there may be some mischief when this is in a jar
-val RootJjtOpts: NamedInputStream
+internal val RootJjtOpts: NamedInputStream
     get() = Jjtricks.getResourceAsStream("/jjtx/Root.jjtopts.yaml")!!
 
-val JccFile.path: Path
-    get() = Paths.get(virtualFile.path).normalize()
