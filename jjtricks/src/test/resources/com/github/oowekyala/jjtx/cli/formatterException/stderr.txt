@@ -1,20 +1,20 @@
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/Root.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/Root.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/ExExpression.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/ExExpression.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/ExBinaryExpression.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/ExBinaryExpression.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/ExLiteral.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/ExLiteral.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/ExNullLiteral.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/ExNullLiteral.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
-Exception while applying formatter 'java' on /tmp/jjtx-test/gen/org/expr/ExIntegerLiteral.java (com.google.googlejavaformat.java.FormatterException)
+Exception while applying formatter 'java' on @output@/org/expr/ExIntegerLiteral.java (com.google.googlejavaformat.java.FormatterException)
     2:14: error: <identifier> expected
 
 [NODE_GEN]: myGen
-Generated 6 classes in /tmp/jjtx-test/gen
+Generated 6 classes in @output@

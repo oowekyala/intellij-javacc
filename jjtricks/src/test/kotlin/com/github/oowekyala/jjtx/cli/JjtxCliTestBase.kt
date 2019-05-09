@@ -98,7 +98,7 @@ abstract class JjtxCliTestBase {
                 val actualText =
                     // remove non-determinism by truncating tmp dir name
                     actual.toString(Charset.defaultCharset().name())
-                        .replace(Regex("$TmpPrefix\\d+"), TmpPrefix)
+                        .replace(Regex("${Regex.escape(test.actualOutput.toString())}\\b"), "@output@")
 
                 val expectedText = expectedFile.readText()
                 if (!Comparing.equal(expectedText, actualText)) {

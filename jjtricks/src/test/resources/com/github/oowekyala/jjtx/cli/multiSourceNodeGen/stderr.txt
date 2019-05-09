@@ -1,6 +1,6 @@
 [VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
-Generated 1 classes in /tmp/jjtx-test/gen
+Generated 1 classes in @output@
 1 classes were not generated because found in other output roots
 [NODE_GEN]: myGen
-Generated 7 classes in /tmp/jjtx-test/gen
+Generated 7 classes in @output@
 1 classes were not generated because found in other output roots

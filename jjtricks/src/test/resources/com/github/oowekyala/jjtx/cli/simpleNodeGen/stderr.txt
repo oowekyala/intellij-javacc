@@ -1,4 +1,4 @@
 [VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
-Generated 2 classes in /tmp/jjtx-test/gen
+Generated 2 classes in @output@
 [NODE_GEN]: myGen
-Generated 8 classes in /tmp/jjtx-test/gen
+Generated 8 classes in @output@

@@ -9,7 +9,10 @@ class SimpleNodeGenCliTest : JjtxCliTestBase() {
 
     @Test
     fun testSimpleArg() = doTest("DummyExpr")
+
     @Test
-    fun testQual() = doTest("DummyExpr.jjt")
+    fun testOtherRoot() = doTest("DummyExpr.jjt", "-o", "flaba") {
+        outputRoot = "flaba"
+    }
 
 }
