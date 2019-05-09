@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.util.StringSource
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
 
@@ -67,9 +68,9 @@ data class VisitorConfigBean(
         val t = if (templateFile == null && template == null) {
             throw java.lang.IllegalStateException("Visitor spec '$id' must mention either 'templateFile' or 'template'")
         } else if (template != null) {
-            TemplateSource.Source(template)
+            StringSource.Str(template)
         } else {
-            TemplateSource.File(templateFile!!)
+            StringSource.File(templateFile!!)
         }
 
         if (genClassName == null) {
@@ -86,16 +87,6 @@ data class VisitorConfigBean(
             context = context ?: emptyMap()
         )
     }
-}
-
-/**
- * Type of source for a [VisitorGenerationTask].
- */
-sealed class TemplateSource {
-
-    data class File(val fname: String) : TemplateSource()
-    data class Source(val source: String) : TemplateSource()
-
 }
 
 /**
@@ -121,7 +112,7 @@ class VisitorGenerationTask internal constructor(
     private val myBean: VisitorConfigBean,
     val id: String,
     val execute: Boolean,
-    template: TemplateSource,
+    template: StringSource,
     formatter: FormatterChoice?,
     genFqcn: String,
     context: Map<String, Any?>

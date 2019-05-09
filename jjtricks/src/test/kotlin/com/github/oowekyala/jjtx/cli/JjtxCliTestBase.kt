@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.Jjtricks
+import com.github.oowekyala.jjtx.util.StringSource
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
@@ -47,6 +48,11 @@ abstract class JjtxCliTestBase {
          * Set it to use the environment of another [JjtxCliTestBase].
          */
         var envOwner: Class<out JjtxCliTestBase> = this@JjtxCliTestBase.javaClass
+
+
+        var expectedErr: StringSource? = StringSource.File("stderr.txt")
+        var expectedOut: StringSource? = StringSource.File("stdout.txt")
+
     }
 
     private inner class MyTestCase(params: TestBuilder) {
@@ -54,9 +60,11 @@ abstract class JjtxCliTestBase {
         val tmpDir: Path = createTempDirectory(TmpPrefix)
         val resDir: Path = findTestDir(this@JjtxCliTestBase.javaClass)
         val env: Path = findTestDir(params.envOwner).resolve("env").also { assert(it.isDirectory()) }
-        val expectedStdout: Path? = resDir.resolve("stdout.txt").takeIf { it.exists() }
-        val expectedStderr: Path? = resDir.resolve("stderr.txt").takeIf { it.exists() }
         val expectedOutput: Path? = resDir.resolve("expected").takeIf { it.isDirectory() }
+
+        val expectedStdout: StringSource? = params.expectedOut
+        val expectedStderr: StringSource? = params.expectedErr
+
         val actualOutput: Path = tmpDir.resolve(params.outputRoot)
         val expectedExitCode: ExitCode = params.expectedExitCode
 
@@ -91,25 +99,35 @@ abstract class JjtxCliTestBase {
             ExitCode.values()[stop.code]
         }
 
-        fun assertEquals(expectedFile: Path?,
-                         actual: ByteArrayOutputStream) {
+        fun myAssertEquals(expectedSource: StringSource?,
+                           actual: ByteArrayOutputStream) {
 
-            if (expectedFile != null) {
+            if (expectedSource != null) {
                 val actualText =
                     // remove non-determinism by truncating tmp dir name
                     actual.toString(Charset.defaultCharset().name())
                         .replace(Regex("${Regex.escape(test.actualOutput.toString())}\\b"), "@output@")
+                        .replace(Regex("${Regex.escape(test.tmpDir.toString())}\\b"), "@tmp@")
 
-                val expectedText = expectedFile.readText()
-                if (!Comparing.equal(expectedText, actualText)) {
-                    throw FileComparisonFailure("Text mismatch", expectedText, actualText, expectedFile.toString())
+
+                val (fpath, expectedText) = when (expectedSource) {
+                    is StringSource.File -> {
+                        val p = test.resDir.resolve(expectedSource.fname).takeIf { it.isFile() }
+                        Pair(p, p?.readText())
+                    }
+                    is StringSource.Str  -> Pair(null, expectedSource.source)
+                }
+
+
+                if (expectedText != null && !Comparing.equal(expectedText.trim(), actualText.trim())) {
+                    throw FileComparisonFailure("Text mismatch", expectedText, actualText, fpath.toString())
                 }
             }
 
         }
 
-        assertEquals(test.expectedStdout, myStdout)
-        assertEquals(test.expectedStderr, myStderr)
+        myAssertEquals(test.expectedStdout, myStdout)
+        myAssertEquals(test.expectedStderr, myStderr)
         assertEquals(test.expectedExitCode, code)
 
         if (test.expectedOutput != null) {

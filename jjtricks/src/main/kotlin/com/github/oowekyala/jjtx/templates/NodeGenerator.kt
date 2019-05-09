@@ -236,9 +236,9 @@ data class NodeGenerationBean(
             )
             return null
         } else if (template != null) {
-            TemplateSource.Source(template!!)
+            StringSource.Str(template!!)
         } else {
-            TemplateSource.File(templateFile!!)
+            StringSource.File(templateFile!!)
         }
 
         val formatterChoice = FormatterChoice.select(formatter)
@@ -258,7 +258,7 @@ data class NodeGenerationBean(
 data class NodeGenerationScheme(
     val nodeBeans: List<NodeVBean>,
     val genClassTemplate: String?,
-    val template: TemplateSource,
+    val template: StringSource,
     val context: Map<String, Any>,
     val formatter: FormatterChoice?
 ) {

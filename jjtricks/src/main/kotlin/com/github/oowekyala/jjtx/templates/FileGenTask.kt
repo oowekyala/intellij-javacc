@@ -29,7 +29,7 @@ import java.nio.file.Path
  * @author Clément Fournier
  */
 open class FileGenTask internal constructor(
-    val template: TemplateSource,
+    val template: StringSource,
     private val formatter: FormatterChoice?,
     private val genFqcn: String,
     val context: Map<String, Any?>
@@ -69,11 +69,11 @@ open class FileGenTask internal constructor(
     }
 
 
-    private fun resolveTemplate(ctx: JjtxContext, template: TemplateSource): String {
+    private fun resolveTemplate(ctx: JjtxContext, template: StringSource): String {
 
         return when (template) {
-            is TemplateSource.Source -> template.source
-            is TemplateSource.File   -> {
+            is StringSource.Str  -> template.source
+            is StringSource.File -> {
 
 
                 fun fromResource(): String? = Jjtricks.getResource(template.fname)?.let {
