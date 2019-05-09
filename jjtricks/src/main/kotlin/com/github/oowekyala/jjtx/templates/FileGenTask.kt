@@ -43,6 +43,7 @@ open class FileGenTask internal constructor(
     /**
      * Returns a pair (fqcn, path) of the FQCN of the generated class
      * and the path where the file should be put in the [outputDir].
+     * The path may not exist.
      */
     private fun resolveOutput(ctx: JjtxContext,
                               genFqcn: String,
@@ -62,10 +63,6 @@ open class FileGenTask internal constructor(
 
         if (o.isDirectory()) {
             ctx.messageCollector.reportError("Output file $o is a directory")
-        }
-
-        if (!o.exists()) {
-            o.createFile()
         }
 
         return Pair(templated, o)
@@ -140,6 +137,11 @@ open class FileGenTask internal constructor(
                 )
                 return Triple(Status.Aborted, fqcn, o)
             }
+        }
+
+
+        if (!o.exists()) {
+            o.createFile()
         }
 
         val (pack, simpleName) = fqcn.splitAroundLast('.')

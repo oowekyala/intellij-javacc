@@ -49,7 +49,7 @@ class Jjtricks(
         "-o", "--output",
         help = "Output directory. Files are generated in a package tree rooted in this directory."
     ) {
-        toPath().normalize().toAbsolutePath()
+        io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen")).addValidator {
         if (value.isFile()) {
             throw SystemExitException(
@@ -70,7 +70,7 @@ class Jjtricks(
         "-s", "--source",
         help = "Other source roots. Node files that are already in those roots are not generated."
     ) {
-        toPath().normalize().toAbsolutePath()
+        io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen")).addValidator {
         for (d in value) {
             if (d.isFile())
@@ -144,7 +144,7 @@ class Jjtricks(
         }
 
         err.catchException("Exception while generating visitors") {
-            GenerateVisitorsTask(ctx, outputRoot).execute()
+            GenerateVisitorsTask(ctx, outputRoot, sourceRoots.toList()).execute()
         }
 
         err.catchException("Exception while generating node files") {

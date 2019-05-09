@@ -49,10 +49,10 @@ abstract class JjtxCliTestBase {
         var envOwner: Class<out JjtxCliTestBase> = this@JjtxCliTestBase.javaClass
     }
 
-    private class MyTestCase(params: TestBuilder) {
+    private inner class MyTestCase(params: TestBuilder) {
 
         val tmpDir: Path = createTempDirectory(TmpPrefix)
-        val resDir: Path = findTestDir(javaClass)
+        val resDir: Path = findTestDir(this@JjtxCliTestBase.javaClass)
         val env: Path = findTestDir(params.envOwner).resolve("env").also { assert(it.isDirectory()) }
         val expectedStdout: Path? = resDir.resolve("stdout.txt").takeIf { it.exists() }
         val expectedStderr: Path? = resDir.resolve("stderr.txt").takeIf { it.exists() }
@@ -128,7 +128,8 @@ abstract class JjtxCliTestBase {
 
             val path = JjtxCliTestBase::class.java.`package`.name.replace('.', '/')
 
-            return SrcTestResources.resolve("$path/$name").also { assert(it.isDirectory()) }
+            return SrcTestResources.resolve("$path/$name")
+                .also { assert(it.isDirectory()) { "$it should have been a directory" } }
         }
 
         private val SrcTestResources = let {
