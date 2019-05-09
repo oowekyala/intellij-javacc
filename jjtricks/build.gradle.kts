@@ -94,7 +94,6 @@ tasks {
             exclude(dependency("org.jetbrains.kotlin:.*:.*"))
             exclude(dependency("com.google.googlejavaformat:.*:.*"))
             exclude(dependency("com.google.guava:.*:.*"))
-            exclude(dependency("com.google.guava:.*:.*"))
             exclude(dependency("com.google.errorprone:javac-shaded:.*"))
         }
 

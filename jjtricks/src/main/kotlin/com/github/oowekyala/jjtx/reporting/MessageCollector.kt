@@ -175,8 +175,9 @@ enum class MessageCategory(val minSeverity: Severity) {
      */
     REGEX_SHOULD_BE_LEAF(Severity.WARNING),
 
-    UNCOVERED_NODE(Severity.WARNING),
-    DUPLICATE_MATCH(Severity.WARNING),
+    UNCOVERED_NODE(Severity.FINE),
+    UNCOVERED_GEN_NODE(Severity.WARNING),
+    DUPLICATE_MATCH(Severity.FINE),
     NO_MATCH(Severity.WARNING),
 
     MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),

@@ -125,7 +125,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
     if (remaining.isNotEmpty()) {
         ctx.messageCollector.report(
             "Some nodes matched no generation patterns: " + remaining.joinToString { it.name },
-            MessageCategory.UNCOVERED_NODE,
+            MessageCategory.UNCOVERED_GEN_NODE,
             position
         )
     }
