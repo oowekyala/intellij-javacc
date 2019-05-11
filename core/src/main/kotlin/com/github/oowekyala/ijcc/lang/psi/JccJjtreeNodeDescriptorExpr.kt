@@ -17,3 +17,6 @@ interface JccJjtreeNodeDescriptorExpr : JccPsiElement {
 
     val javaExpression: JccJavaExpression
 }
+
+val JccJjtreeNodeDescriptorExpr.expressionText: String
+    get() = javaExpression.text
