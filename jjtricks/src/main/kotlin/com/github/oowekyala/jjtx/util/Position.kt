@@ -28,7 +28,22 @@ class PsiFilePosition(
     val textOffset: Int,
     val psiFile: PsiFile
 ) : Position {
-    override fun toString(): String = getSnippet(buffer = psiFile.text, textOffset = textOffset)
+
+    val line: Int
+    val column: Int
+
+    init {
+        val (l, c) = getColAndLine(psiFile, textOffset)
+        line = l
+        column = c
+    }
+
+    override fun toString(): String = buildString {
+        append(" in ")
+        append(psiFile.virtualFile.path)
+        append(":").append(line + 1).append(":").append(column).append(":\n")
+        append(getSnippet(buffer = psiFile.text, textOffset = textOffset))
+    }
 }
 
 
