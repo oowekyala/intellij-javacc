@@ -224,7 +224,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +bgen() + Endl
             }
             emitTryTail(thrownExceptions, nodeVar)
-            bgen()
+            +egen()
         }
 
     private fun OutStream.emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = this.apply {
