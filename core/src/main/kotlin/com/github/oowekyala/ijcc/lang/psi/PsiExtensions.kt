@@ -79,6 +79,9 @@ val PsiElement.lastChildNoError: PsiElement?
     inline get() = childrenSequence(reversed = true).firstOrNull { !it.isError }
 
 
+val PsiElement.indexInParent: Int
+    get() = parent.children.indexOf(this)
+
 fun PsiElement.astChildrenSequence(reversed: Boolean = false,
                                    filter: TokenSet = TokenSet.ANY): Sequence<PsiElement> =
     when (reversed) {

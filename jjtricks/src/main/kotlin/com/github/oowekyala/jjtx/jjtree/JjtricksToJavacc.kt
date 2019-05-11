@@ -138,6 +138,34 @@ private class JjtxCompilVisitor(val file: JccFile,
         out.printWhiteOut(o.text)
     }
 
+    override fun visitParserActionsUnit(o: JccParserActionsUnit) {
+
+        val enclosing = stack.lastOrNull() ?: return super.visitParserActionsUnit(o)
+
+        val endOfSequence =
+            o.ancestors(includeSelf = false)
+                .takeWhile { it != enclosing.owner }
+                .all {
+                    when {
+                        it.parent is JccExpansionSequence   -> it.parent.lastChild == it
+                        it is JccParenthesizedExpansionUnit -> it.occurrenceIndicator == null
+                        else                                -> it !is JccOptionalExpansionUnit
+                    }
+                }
+
+        if (!endOfSequence) {
+            with (out) {
+                -bgen() + Endl
+                +"" + {
+                    emitCloseNodeCode(enclosing, isFinal = false)
+                }
+                -egen()
+            }
+        }
+
+        super.visitParserActionsUnit(o)
+    }
+
     private fun emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = out.apply {
 
         +"try " + {
