@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.JccOptionalExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccParenthesizedExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.JccZeroOrOne
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.safeReplace
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction

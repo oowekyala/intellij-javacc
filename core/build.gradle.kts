@@ -126,4 +126,12 @@ tasks {
         }
 
     }
+
+
+    test {
+        systemProperties(
+            "idea.home.path" to ideaBin(),
+            "idea.home" to ideaBin()
+        )
+    }
 }

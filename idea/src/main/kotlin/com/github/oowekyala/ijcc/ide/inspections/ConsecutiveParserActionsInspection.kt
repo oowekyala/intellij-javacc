@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory.createExpansion
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.codeInspection.LocalQuickFix
