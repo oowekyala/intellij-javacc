@@ -126,6 +126,13 @@ inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -
 fun dump(function: (StringBuilder) -> Unit): String = java.lang.StringBuilder().also { function(it) }.toString()
 
 
+fun <T> List<T>.init(): List<T> =
+    if (isEmpty()) throw NoSuchElementException() else take(size - 1)
+
+fun <T> List<T>.tail(): List<T> =
+    if (isEmpty()) throw NoSuchElementException() else drop(1)
+
+
 // null keys will not be added.
 // values must be checked to be not null by client
 

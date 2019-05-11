@@ -28,7 +28,10 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
     /** Instead of making each non-decorated production an indefinite node, make it void instead. */
     object NODE_DEFAULT_VOID : JjtOption<Boolean>(BOOLEAN, false)
 
-    /** If set defines the name of a user-supplied class that will extend SimpleNode. Any tree nodes created will then be subclasses of NODE_CLASS. */
+    /**
+     * If set defines the name of a user-supplied class that will extend SimpleNode. Any tree nodes created will then be subclasses of NODE_CLASS.
+     * If set, also changes the type of the jjtThis references to only be that.
+     */
     object NODE_CLASS : JjtOption<String>(RefinedOptionType.TYPE, "") {
         override fun contextualDefaultValue(config: IGrammarOptions): String = config.addPackage("SimpleNode")
     }

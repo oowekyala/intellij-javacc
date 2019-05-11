@@ -41,7 +41,6 @@ open class JccElementFactory(val project: Project) {
         anchor.parent.addBefore(eol, anchor)
     }
 
-
     fun createOptionValue(name: String): JccOptionValue {
         val fileText = """
             options {
@@ -162,7 +161,7 @@ open class JccElementFactory(val project: Project) {
     fun createJcu(text: String): JccJavaCompilationUnit {
         val fileText = """
             PARSER_BEGIN(dummy)
-                $text
+            $text
             PARSER_END(dummy)
         """.trimIndent()
         val file = createFile(fileText)

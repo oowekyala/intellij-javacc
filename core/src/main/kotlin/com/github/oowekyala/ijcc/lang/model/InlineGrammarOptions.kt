@@ -16,8 +16,27 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
 
     override val inlineBindings: InlineGrammarOptions = this
 
-
     override val isTrackTokens: Boolean by lazy { getOptionValueOrDefault(JjtOption.TRACK_TOKENS) }
+
+    val jjtNodeFactory: String by lazy {
+        getOptionValueOrDefault(JjtOption.NODE_FACTORY)
+    }
+
+    val jjtMulti: Boolean by lazy {
+        getOptionValueOrDefault(JjtOption.MULTI)
+    }
+
+    val jjtNodeClass: String by lazy {
+        getOptionValueOrDefault(JjtOption.NODE_CLASS)
+    }
+
+    val jjtNodeConstructionUsesParser: Boolean by lazy {
+        getOptionValueOrDefault(JjtOption.NODE_USES_PARSER)
+    }
+    val jjtCustomNodeHooks: Boolean by lazy {
+        getOptionValueOrDefault(JjtOption.NODE_SCOPE_HOOK)
+    }
+
 
     val rootNodeClass : String by lazy { getOptionValueOrDefault(JjtOption.NODE_CLASS) }
 

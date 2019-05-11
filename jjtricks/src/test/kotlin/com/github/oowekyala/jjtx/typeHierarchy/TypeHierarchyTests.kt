@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
 import com.github.oowekyala.ijcc.util.indent
-import com.github.oowekyala.jjtx.JjtxTestBase
+import com.github.oowekyala.jjtx.JjtxContextTestBase
 import com.github.oowekyala.jjtx.JsonOpts
 import com.github.oowekyala.jjtx.YamlOpts
 import com.github.oowekyala.jjtx.util.*
@@ -10,7 +10,7 @@ import io.kotlintest.should
 /**
  * @author Clément Fournier
  */
-class TypeHierarchyTests : JjtxTestBase() {
+class TypeHierarchyTests : JjtxContextTestBase() {
 
     private val baseCtx = testBuilder {
         jccFile =
