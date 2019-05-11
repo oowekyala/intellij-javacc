@@ -184,10 +184,9 @@ class Jjtricks(
 
         private val DESCRIPTION = """
             A code generator for JJTree grammars, with emphasis on very high
-            flexibility. Intended as a replacement for JJTree's inflexible code
-            generator.
+            flexibility. Can be used as a drop-in replacement for JJTree.
 
-            JJTricks is configured via YAML files outside the grammar themselves.
+            JJTricks is configured via YAML files outside of the grammar itself.
             If your grammar is named "Java.jjt", then the default configuration file
             should be conventionally "Java.jjtopts.yaml". Additional config files
             may be added with the `--opts` CLI option.
@@ -209,7 +208,7 @@ class Jjtricks(
             `jjtricks Java`
 
                 Picks up on a Java.jjt file, and Java.jjtopts.yaml if it exists, runs the
-                visitors declared for execution in the options file.
+                'gen:*' tasks configured in the option file.
 
             `jjtricks Java help:dump-config`
 
