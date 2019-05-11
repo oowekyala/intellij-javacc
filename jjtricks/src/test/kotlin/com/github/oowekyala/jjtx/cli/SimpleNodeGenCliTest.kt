@@ -8,10 +8,10 @@ import org.junit.Test
 class SimpleNodeGenCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleArg() = doTest("DummyExpr")
+    fun testSimpleArg() = doTest("DummyExpr", "gen:nodes")
 
     @Test
-    fun testOtherRoot() = doTest("DummyExpr.jjt", "-o", "flaba") {
+    fun testOtherRoot() = doTest("DummyExpr.jjt", "gen:nodes", "-o", "flaba") {
         outputRoot = "flaba"
     }
 

@@ -1,3 +1,5 @@
+JJTricks v1.0
+Running tasks [gen:nodes], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 [VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
 Generated 1 classes in @output@
 1 classes were not generated because found in other output roots

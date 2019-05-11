@@ -10,7 +10,7 @@ class OptsChainingCliTest : JjtxCliTestBase() {
     @Test
     fun testFullParentChaining() = doTest(
         "DummyExpr",
-        "--dump-config",
+        "help:dump-config",
         "--opts",
         "DummyExpr.jjtopts.yaml",
         "--opts",
@@ -20,7 +20,7 @@ class OptsChainingCliTest : JjtxCliTestBase() {
     @Test
     fun testShortnames() = doTest(
         "DummyExpr",
-        "--dump-config",
+        "help:dump-config",
         "--opts",
         "DummyExpr",
         "--opts",

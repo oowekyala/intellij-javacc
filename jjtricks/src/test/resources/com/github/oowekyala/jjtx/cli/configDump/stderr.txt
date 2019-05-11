@@ -1,0 +1,2 @@
+JJTricks v1.0
+Running tasks [help:dump-config], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt

@@ -8,6 +8,6 @@ import org.junit.Test
 class MultiSourceNodeGenCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleArg() = doTest("DummyExpr", "-s", "ignored")
+    fun testSimpleArg() = doTest("DummyExpr", "gen:nodes", "-s", "ignored")
 
 }

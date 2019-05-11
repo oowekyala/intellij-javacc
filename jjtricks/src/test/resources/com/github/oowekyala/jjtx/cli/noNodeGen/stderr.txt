@@ -1,1 +1,3 @@
-No node generation schemes configured
+JJTricks v1.0
+Running tasks [gen:nodes], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+No node generation schemes configured (set jjtx.activeGenScheme)

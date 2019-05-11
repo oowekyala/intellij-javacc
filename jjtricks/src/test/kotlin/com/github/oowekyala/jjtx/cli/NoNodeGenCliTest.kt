@@ -8,8 +8,8 @@ import org.junit.Test
 class NoNodeGenCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleArg() = doTest("DummyExpr")
+    fun testSimpleArg() = doTest("DummyExpr", "gen:nodes")
     @Test
-    fun testQual() = doTest("DummyExpr.jjt")
+    fun testQual() = doTest("DummyExpr.jjt", "gen:nodes")
 
 }

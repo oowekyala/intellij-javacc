@@ -49,6 +49,8 @@ class Jjtricks(
         help = "List of tasks to run, available ones ${values().map { it.ref }}. The syntax 'gen:*' selects all tasks in the 'gen' group"
     ) {
         JjtxTaskKey.parse(this, argCheckIo)
+    }.default {
+        listOf(JjtxTaskKey.parse("gen:*", argCheckIo))
     }
 
     private val myTasks: Set<JjtxTaskKey> get() = tasksImpl.flatten().toSet()
@@ -82,11 +84,6 @@ class Jjtricks(
                 )
         }
     }
-
-    private val isDumpConfig by args.flagging(
-        "--dump-config",
-        help = "Print the fully resolved jjtopts file and exits"
-    )
 
     private val minReportSeverity by args.mapping(
         // turn off warnings
@@ -139,7 +136,8 @@ class Jjtricks(
 
         val tasks = myTasks
 
-        err.reportNormal("JJTricks v$VERSION running with tasks $tasks")
+        err.reportNormal("JJTricks v$VERSION")
+        err.reportNormal("Running tasks $tasks, on ${ctx.chainDump}")
 
         if (DUMP_CONFIG in tasks) {
             err.catchException("Exception while dumping configuration task") {
@@ -202,7 +200,7 @@ class Jjtricks(
 
             * IO: standard error stream is used for *every* message from JJTricks.
                 Standard output is only used when asked to dump useful info, eg
-                with `--dump-config`
+                with `help:dump-config`
 
         """.trimIndent()
 
@@ -215,7 +213,7 @@ class Jjtricks(
                 Picks up on a Java.jjt file, and Java.jjtopts.yaml if it exists, runs the
                 visitors declared for execution in the options file.
 
-            `jjtricks Java --dump-config`
+            `jjtricks Java help:dump-config`
 
                 Same as above, prints the resolved full configuration file (flattening the
                 whole `--opts` chain) to standard output.

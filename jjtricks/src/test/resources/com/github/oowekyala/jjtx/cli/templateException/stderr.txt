@@ -1,3 +1,5 @@
+JJTricks v1.0
+Running tasks [gen:visitors, gen:nodes, gen:javacc], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 Exception while generating nodes (org.apache.velocity.exception.ParseErrorException)
     Encountered "package" at @output@/org/expr/Root.java[line 1, column 7]
     Was expecting one of:
@@ -96,3 +98,4 @@ Exception while generating nodes (org.apache.velocity.exception.ParseErrorExcept
 
 [NODE_GEN]: myGen
 6 classes were not generated because of an exception
+Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj

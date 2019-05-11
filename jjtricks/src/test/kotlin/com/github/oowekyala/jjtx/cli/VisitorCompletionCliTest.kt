@@ -8,6 +8,6 @@ import org.junit.Test
 class VisitorCompletionCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleVisitor() = doTest("DummyExpr")
+    fun testSimpleVisitor() = doTest("DummyExpr", "gen:visitors")
 
 }

@@ -19,7 +19,7 @@ import java.nio.file.Path
 
 
 enum class JjtxTaskKey(val ref: String) {
-    DUMP_CONFIG("dump:config"),
+    DUMP_CONFIG("help:dump-config"),
     GEN_VISITORS("gen:visitors"),
     GEN_NODES("gen:nodes"),
     GEN_JAVACC("gen:javacc");
@@ -76,6 +76,17 @@ sealed class JjtxTask {
 }
 
 
+val JjtxContext.chainDump
+    get() =
+        configChain
+            .map { io.wd.relativize(it).normalize() }
+            .plus("/jjtx/Root.jjtopts.yaml")
+            // the "element =" here is not optional, since Path <: Iterable<Path>,
+            // it could append all segments if not disambiguated
+            .plus(element = io.wd.relativize(grammarFile.path))
+            .joinToString(separator = " -> ")
+
+
 /**
  * Dumps the flattened configuration as a YAML file to stdout.
  */
@@ -86,17 +97,9 @@ class DumpConfigTask(private val ctx: JjtxContext,
 
         val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
 
-        val chainDump =
-            ctx.configChain
-                .map { ctx.io.wd.relativize(it).normalize() }
-                .plus("/jjtx/Root.jjtopts.yaml")
-                // the "element =" here is not optional, since Path <: Iterable<Path>,
-                // it could append all segments if not disambiguated
-                .plus(element = ctx.io.wd.relativize(ctx.grammarFile.path))
-                .joinToString(separator = " -> ", prefix = "Config file chain: ")
 
         out.println("# Fully resolved JJTricks configuration")
-        out.println("# $chainDump")
+        out.println("# Config file chain: ${ctx.chainDump}")
         out.println(opts.toYaml().toYamlString())
         out.flush()
     }

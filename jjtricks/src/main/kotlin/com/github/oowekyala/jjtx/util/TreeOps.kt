@@ -1,16 +1,20 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.treeutils.TreeLikeExtensions
+import com.github.oowekyala.ijcc.util.prepend
+import com.github.oowekyala.treeutils.TreeLikeAdapter
 
 /**
  * @author Clément Fournier
  */
-interface TreeOps<Self : TreeOps<Self>> : TreeLikeExtensions<Self> {
+interface TreeOps<Self : TreeOps<Self>> {
 
 
-    fun children(): Sequence<Self> = myself().children.asSequence()
-    fun descendants(): Sequence<Self> = myself().descendants()
-    fun descendantsOrSelf(): Sequence<Self> = myself().descendantsOrSelf()
+    val adapter: TreeLikeAdapter<Self>
+
+
+    fun children(): Sequence<Self> = adapter.getChildren(myself()).asSequence()
+    fun descendants(): Sequence<Self> = children().flatMap { it.descendantsOrSelf() }
+    fun descendantsOrSelf(): Sequence<Self> = descendants().prepend(myself())
 
     private fun myself(): Self = this as Self
 
