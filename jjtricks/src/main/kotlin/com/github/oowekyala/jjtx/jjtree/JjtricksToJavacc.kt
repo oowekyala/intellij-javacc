@@ -2,13 +2,11 @@ package com.github.oowekyala.jjtx.jjtree
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
-import com.github.oowekyala.ijcc.util.init
-import com.github.oowekyala.jjtx.jjtree.JjtxCompilVisitor.OutStream.Endl
+import com.github.oowekyala.jjtx.jjtree.OutStream.Endl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
-import java.io.PrintStream
 import java.util.*
 
 val bos = ByteArrayOutputStream()
@@ -59,13 +57,6 @@ private fun JccParserDeclaration.addImports(vararg qnames: String) {
 
 private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)\\s*;")
 
-private fun JccJavaCompilationUnit.detectIndent(): String = " ".repeat(text.minCommonIndent())
-private fun JccJavaBlock.detectIndent(): String {
-    val contents = text.removeSurrounding("{", "}").trim()
-    val min = contents.minCommonIndent()
-    return if (min > 0) " ".repeat(min) else "    "
-}
-
 private fun String.minCommonIndent(): Int =
     lines().filter(String::isNotBlank).map(String::indentWidth).min() ?: 0
 
@@ -87,7 +78,7 @@ data class JjtreeCompat(
      * is closed after `{b}`. This doesn't affect the scopes of productions,
      * since the last parser actions can be used to return `jjtThis`.
      */
-    val dontCloseBeforeLastParserAction: Boolean = true,
+    val dontCloseBeforeLastParserAction: Boolean = false,
 
     /**
      * If set to true, jjtThis is available in the closing condition of
@@ -147,6 +138,17 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     }
 
+    override fun visitJavacodeProduction(o: JccJavacodeProduction) {
+        val nodeVar = builder.makeNodeVar(o, null, 0) ?: return super.visitJavacodeProduction(o)
+
+        with(out) {
+            emitTryCatch(nodeVar, o.thrownExceptions) {
+                -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
+            }
+        }
+
+    }
+
     private fun JccJavaBlock.reindentJava(indent: String): String =
         text.removeSurrounding("{", "}").replaceIndent(indent).trim()
 
@@ -201,19 +203,27 @@ private class JjtxCompilVisitor(val file: JccFile,
         super.visitParserActionsUnit(o)
     }
 
-    private fun emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = out.apply {
+    private fun OutStream.emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = this.apply {
 
-        +"try " + {
-            +egen()
+        emitTryCatch(nodeVar, expansion.findThrown()) {
             expansion.accept(this@JjtxCompilVisitor)
-            appendln()
-            +bgen() + Endl
         }
-        emitTryTail(expansion.findThrown(), nodeVar)
-        bgen()
     }
 
-    private fun emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = out.apply {
+
+    private fun OutStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: OutStream.() -> Unit) =
+        this.apply {
+            +"try " + {
+                +egen()
+                insides()
+                appendln()
+                +bgen() + Endl
+            }
+            emitTryTail(thrownExceptions, nodeVar)
+            bgen()
+        }
+
+    private fun OutStream.emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = this.apply {
         if (thrown.isNotEmpty()) {
             -" catch (Throwable " + nodeVar.exceptionVar + ") " + {
                 +"if (" + nodeVar.closedVar + ") " + {
@@ -236,7 +246,7 @@ private class JjtxCompilVisitor(val file: JccFile,
         } + Endl
     }
 
-    private fun emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = out.apply {
+    private fun OutStream.emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = this.apply {
         with(builder) {
 
             fun doSetLastToken() =
@@ -260,7 +270,8 @@ private class JjtxCompilVisitor(val file: JccFile,
         }
     }
 
-    private fun emitOpenNodeCode(nodeVar: NodeVar) = out.apply {
+
+    private fun OutStream.emitOpenNodeCode(nodeVar: NodeVar) {
         with(builder) {
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl
@@ -281,90 +292,18 @@ private class JjtxCompilVisitor(val file: JccFile,
         }
     }
 
-    private class OutStream(
-        outputStream: OutputStream,
-        private val baseIndentString: String
-    ) : PrintStream(outputStream) {
-
-        var indentString: String = ""
-
-
-        fun printSource(str: String) {
-            print(str)
-        }
-
-        fun printWhiteOut(str: String) {
-            val lines = str.lines()
-            if (lines.size <= 1) return
-            else {
-                for (l in lines.init()) {
-                    println()
-                }
-            }
-        }
-
-
-        operator fun String.unaryPlus(): OutStream {
-            print(indentString)
-            print(this)
-            return this@OutStream
-        }
-
-        operator fun String.unaryMinus(): OutStream {
-            print(this)
-            return this@OutStream
-        }
-
-        operator fun plus(other: String): OutStream {
-            print(other)
-            return this@OutStream
-        }
-
-        operator fun plus(endl: Endl): OutStream {
-            println()
-            return this@OutStream
-        }
-
-
-        inline operator fun plus(e: OutStream.() -> Unit): OutStream {
-            println("{")
-            indentString += baseIndentString
-            e()
-            indentString = indentString.removeSuffix(baseIndentString)
-            print(indentString)
-            print("}")
-            return this
-        }
-
-        object Endl
-
-    }
-
 }
 
-
-data class NodeVar(
-    val varName: String,
-    val enclosingVar: NodeVar?,
-    val closedVar: String,
-    val exceptionVar: String,
-    val owner: JjtNodeClassOwner,
-    /** Raw name of the node. */
-    val nodeName: String,
-    /** QName of the class. */
-    val nodeQname: String,
-    /** Type of the jjtThis variable. */
-    val nodeRefType: String = nodeQname
-) {
-    val nodeSimpleName = nodeQname.substringAfterLast('.')
-}
 
 private fun JccExpansion.findThrown(): Set<String> =
     descendantSequence(includeSelf = true)
         .filterIsInstance<JccNonTerminalExpansionUnit>()
         .mapNotNull { it.typedReference.resolveProduction() }
-        .flatMap { it.header.javaThrowsList?.javaNameList?.asSequence() ?: emptySequence() }
-        .map { it.text }
+        .flatMap { it.thrownExceptions.asSequence() }
         .toSet()
         .plus("ParseException")
         .plus("RuntimeException")
+
+
+val JccNonTerminalProduction.thrownExceptions: Set<String>
+    get() = header.javaThrowsList?.javaNameList?.mapTo(mutableSetOf()) { it.text } ?: emptySet()
