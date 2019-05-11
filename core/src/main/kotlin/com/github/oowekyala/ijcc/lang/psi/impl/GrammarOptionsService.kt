@@ -16,4 +16,4 @@ open class GrammarOptionsService {
 }
 
 val Project.grammarOptionsService: GrammarOptionsService
-    get() = getComponent(GrammarOptionsService::class.java)
+    get() = getComponent(GrammarOptionsService::class.java) ?: GrammarOptionsService() // default
