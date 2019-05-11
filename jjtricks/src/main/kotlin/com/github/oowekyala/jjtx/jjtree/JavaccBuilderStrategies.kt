@@ -9,9 +9,9 @@ interface JjtxBuilderStrategy {
 
     fun createNode(nodeVar: NodeVar): String
 
-    fun openNodeHook(nodeVar: NodeVar): String
+    fun openNodeHook(nodeVar: NodeVar): String?
 
-    fun closeNodeHook(nodeVar: NodeVar): String
+    fun closeNodeHook(nodeVar: NodeVar): String?
 
     fun openNodeScope(nodeVar: NodeVar): String
 
@@ -19,9 +19,9 @@ interface JjtxBuilderStrategy {
 
     fun clearNodeScope(nodeVar: NodeVar): String
 
-    fun setFirstToken(nodeVar: NodeVar): String
+    fun setFirstToken(nodeVar: NodeVar): String?
 
-    fun setLastToken(nodeVar: NodeVar): String
+    fun setLastToken(nodeVar: NodeVar): String?
 
     fun popNode(nodeVar: NodeVar): String
 
@@ -52,7 +52,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
             nodeName = owner.nodeRawName!!,
             nodeQname = owner.nodeQualifiedName!!,
             nodeRefType =
-            bindings.jjtNodeClass.takeIf { it.isNotEmpty() && bindings.jjtMulti } ?: owner.nodeSimpleName!!
+            bindings.jjtNodeClass.takeIf { it.isNotEmpty() && !bindings.jjtMulti } ?: owner.nodeSimpleName!!
         )
 
     private fun buildVar(id: String, scopeDepth: Int): String {
@@ -62,7 +62,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
 
 
     override fun createNode(nodeVar: NodeVar): String {
-        val nc = nodeVar.nodeSimpleName
+        val nc = nodeVar.nodeRefType
 
         val args = "(${if (usesParser) "this, " else ""}${nodeVar.nodeId})"
 
@@ -73,23 +73,23 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
         }
     }
 
-    override fun openNodeHook(nodeVar: NodeVar): String =
-        if (bindings.jjtCustomNodeHooks) "jjtOpenNodeScope(${nodeVar.varName});" else ""
+    override fun openNodeHook(nodeVar: NodeVar): String? =
+        if (bindings.jjtCustomNodeHooks) "jjtOpenNodeScope(${nodeVar.varName});" else null
 
-    override fun closeNodeHook(nodeVar: NodeVar): String =
+    override fun closeNodeHook(nodeVar: NodeVar): String? =
         if (bindings.jjtCustomNodeHooks)
             "if (jjtree.nodeCreated()) jjtCloseNodeScope(${nodeVar.varName});"
-        else ""
+        else null
 
-    override fun setFirstToken(nodeVar: NodeVar): String =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetFirstToken(getToken(1));" else ""
+    override fun setFirstToken(nodeVar: NodeVar): String? =
+        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetFirstToken(getToken(1));" else null
 
-    override fun setLastToken(nodeVar: NodeVar): String =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetLastToken(getToken(0));" else ""
+    override fun setLastToken(nodeVar: NodeVar): String? =
+        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetLastToken(getToken(0));" else null
 
-    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName})"
+    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName});"
 
-    override fun clearNodeScope(nodeVar: NodeVar): String = "jjtree.clearNodeScope(${nodeVar.varName})"
+    override fun clearNodeScope(nodeVar: NodeVar): String = "jjtree.clearNodeScope(${nodeVar.varName});"
 
     override fun closeNodeScope(nodeVar: NodeVar): String {
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
@@ -101,5 +101,5 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
         }
     }
 
-    override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode()"
+    override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 }

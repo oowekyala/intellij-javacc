@@ -32,10 +32,10 @@ class JjtricksToJavacc {
 
 private fun bgen(arg: String = ""): String {
     val a = if (arg.isNotEmpty()) " ${arg.trim()} " else ""
-    return "/*bgen(jjtricks)$a*/"
+    return "/*@bgen(jjtricks)$a*/"
 }
 
-private fun egen() = "/*egen*/"
+private fun egen() = "/*@egen*/ "
 
 private fun JccParserDeclaration.addImports(vararg qnames: String) {
 
@@ -99,11 +99,12 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +bgen(nodeVar.nodeName) + Endl
                 emitOpenNodeCode(nodeVar)
                 +egen() + Endl
-                +o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
+                -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
             } + Endl
 
             stack.push(nodeVar)
             +"" + {
+                +bgen(nodeVar.nodeName) + Endl
                 emitTryCatchUnit(o.expansion!!, nodeVar)
             } + Endl
             stack.pop()
@@ -126,7 +127,6 @@ private class JjtxCompilVisitor(val file: JccFile,
             +"" + {
                 emitOpenNodeCode(nodeVar)
             }
-            +egen()
             stack.push(nodeVar)
             emitTryCatchUnit(o.expansionUnit, nodeVar)
             stack.pop()
@@ -140,9 +140,8 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     private fun emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = out.apply {
 
-        +bgen(nodeVar.nodeName) + Endl
         +"try " + {
-            +egen() + Endl
+            +egen()
             expansion.accept(this@JjtxCompilVisitor)
             appendln()
             +bgen() + Endl
@@ -158,7 +157,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                     +builder.closeNodeScope(nodeVar) + ";" + Endl
                     +nodeVar.closedVar + " = false;" + Endl
                 } + " else " + {
-                    +builder.popNode(nodeVar) + ";" + Endl
+                    +builder.popNode(nodeVar) + Endl
                 }
 
                 for (ex in thrown) {
@@ -169,20 +168,24 @@ private class JjtxCompilVisitor(val file: JccFile,
         }
         -" finally " + {
             +"if (" + nodeVar.closedVar + ") " + {
-                emitCloseNodeCode(nodeVar, true)
+                emitCloseNodeCode(nodeVar, true) + Endl
             } + Endl
         } + Endl
     }
 
     private fun emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = out.apply {
         with(builder) {
-            +setLastToken(nodeVar) + Endl
-            +closeNodeScope(nodeVar)
+            setLastToken(nodeVar)?.let {
+                +it + Endl
+            }
+            +closeNodeScope(nodeVar) + Endl
             if (!isFinal) {
                 +nodeVar.closedVar + " = false;" + Endl
             }
 
-            +closeNodeHook(nodeVar) + Endl
+            closeNodeHook(nodeVar)?.let {
+                +it + Endl
+            }
         }
     }
 
@@ -190,8 +193,12 @@ private class JjtxCompilVisitor(val file: JccFile,
         with(builder) {
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl
-            +setFirstToken(nodeVar) + Endl
-            +openNodeHook(nodeVar) + Endl
+            setFirstToken(nodeVar)?.let {
+                +it + Endl
+            }
+            openNodeHook(nodeVar)?.let {
+                +it + Endl
+            }
             +openNodeScope(nodeVar) + Endl
         }
     }

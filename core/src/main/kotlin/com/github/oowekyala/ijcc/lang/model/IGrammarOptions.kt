@@ -16,8 +16,8 @@ interface IGrammarOptions {
     val inlineBindings: InlineGrammarOptions
 }
 
-fun IGrammarOptions.addPackage(str: String) =
-    nodePackage.let { if (it.isEmpty()) str else "$it.str" }
+fun IGrammarOptions.addPackage(simpleName: String) =
+    nodePackage.let { if (it.isEmpty()) simpleName else "$it.$simpleName" }
 
 
 val JccFile.allOptionsBindings: List<JccOptionBinding> get() = options?.optionBindingList ?: emptyList()

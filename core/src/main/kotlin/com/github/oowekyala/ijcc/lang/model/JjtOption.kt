@@ -47,13 +47,14 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      */
     object NODE_FACTORY : JjtOption<String>(RefinedOptionType.TYPE, "") {
         override fun getValue(optionBinding: JccOptionBinding?, config: IGrammarOptions): String =
+            // the actual default
             if (optionBinding == null
                 || optionBinding.matchesType(INTEGER)
                 || optionBinding.matchesType(BOOLEAN)
                 || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
-            ) {
-                config.addPackage("SimpleNode") // the actual default
-            } else optionBinding.stringValue
+            )
+                config.addPackage("SimpleNode")
+            else optionBinding.stringValue
     }
 
     /**
