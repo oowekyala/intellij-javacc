@@ -22,7 +22,8 @@ class JjtricksToJavacc {
 
         bos.reset()
 
-        val visitor = JjtxCompilVisitor(jccFile, bos, VanillaJjtreeBuilder(jccFile.grammarOptions))
+        val compat = JjtreeCompat()
+        val visitor = JjtxCompilVisitor(jccFile, bos, compat, VanillaJjtreeBuilder(jccFile.grammarOptions, compat))
         jccFile.grammarFileRoot!!.accept(visitor)
 
         return bos.toString(Charsets.UTF_8.name())
@@ -72,8 +73,34 @@ private fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let 
 
 
 data class JjtreeCompat(
-    val fixLastParserActionsScope: Boolean = true,
+    /**
+     * Don't close the node scope before the last parser actions unit
+     * in a scoped expansion unit. For example:
+     *
+     *     (Foo() { a } { b }) #Node
+     *
+     * JJTree inserts the closing code between `a` and `b`, which can
+     * be confusing behaviour, since the stack isn't the same in `a`
+     * and `b`.
+     *
+     * When set to true, this behaviour is changed and the node scope
+     * is closed after `{b}`. This doesn't affect the scopes of productions,
+     * since the last parser actions can be used to return `jjtThis`.
+     */
+    val dontCloseBeforeLastParserAction: Boolean = true,
+
+    /**
+     * If set to true, jjtThis is available in the closing condition of
+     * its own node scope. In vanilla JJTree, #Node(jjtThis.something())
+     * isn't compiled correctly.
+     */
     val fixJjtThisConditionScope: Boolean = true,
+
+    /**
+     * If set to true, the tokens are set before calling the node open
+     * and close hooks. This is better as the tokens are then available
+     * inside those hooks.
+     */
     val setTokensBeforeHooks: Boolean = true
 )
 
@@ -99,7 +126,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
 
     override fun visitBnfProduction(o: JccBnfProduction) {
-        val nodeVar = builder.makeNodeVar(o, 0) ?: return super.visitBnfProduction(o)
+        val nodeVar = builder.makeNodeVar(o, null, 0) ?: return super.visitBnfProduction(o)
 
         with(out) {
 
@@ -127,7 +154,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
-        val nodeVar = builder.makeNodeVar(o, stack.size) ?: return super.visitScopedExpansionUnit(o)
+        val nodeVar = builder.makeNodeVar(o, stack.lastOrNull(), stack.size) ?: return super.visitScopedExpansionUnit(o)
 
         with(out) {
 
@@ -318,6 +345,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
 data class NodeVar(
     val varName: String,
+    val enclosingVar: NodeVar?,
     val closedVar: String,
     val exceptionVar: String,
     val owner: JjtNodeClassOwner,
@@ -338,3 +366,5 @@ private fun JccExpansion.findThrown(): Set<String> =
         .flatMap { it.header.javaThrowsList?.javaNameList?.asSequence() ?: emptySequence() }
         .map { it.text }
         .toSet()
+        .plus("ParseException")
+        .plus("RuntimeException")

@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 
 interface JjtxBuilderStrategy {
 
-    fun makeNodeVar(owner: JjtNodeClassOwner, scopingDepth: Int): NodeVar?
+    fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?, scopingDepth: Int): NodeVar?
 
     fun createNode(nodeVar: NodeVar): String
 
@@ -32,7 +32,8 @@ interface JjtxBuilderStrategy {
 /**
  * Imitates JJTree output.
  */
-class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBuilderStrategy {
+class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
+                           private val compat: JjtreeCompat) : JjtxBuilderStrategy {
 
     private val bindings = grammarOptions.inlineBindings
 
@@ -42,10 +43,11 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
     private val NodeVar.nodeId
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
 
-    override fun makeNodeVar(owner: JjtNodeClassOwner, scopingDepth: Int): NodeVar? =
+    override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?, scopingDepth: Int): NodeVar? =
         if (owner.isVoid) null
         else NodeVar(
             owner = owner,
+            enclosingVar = enclosing,
             varName = buildVar("n", scopingDepth),
             closedVar = buildVar("c", scopingDepth),
             exceptionVar = buildVar("e", scopingDepth),
@@ -96,10 +98,17 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions) : JjtxBu
         val n = nodeVar.varName
         return when {
             d == null        -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.text});"
-            else             -> "jjtree.closeNodeScope($n, ${d.text});"
+            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.text.filterIfCompat(nodeVar)});"
+            else             -> "jjtree.closeNodeScope($n, ${d.text.filterIfCompat(nodeVar)});"
         }
     }
+
+    private fun String.filterIfCompat(nodeVar: NodeVar): String =
+        if (compat.fixJjtThisConditionScope) replace("jjtThis", nodeVar.varName)
+        else this
+
+    private fun String.filterJjtThis(nodeVar: NodeVar): String =
+        replace("jjtThis", nodeVar.varName)
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 }
