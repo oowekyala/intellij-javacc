@@ -217,7 +217,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     private fun OutStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: OutStream.() -> Unit) =
         this.apply {
-            +"try " + {
+            +" try " + {
                 +egen()
                 insides()
                 appendln()
@@ -231,11 +231,11 @@ private class JjtxCompilVisitor(val file: JccFile,
         if (thrown.isNotEmpty()) {
             -" catch (Throwable " + nodeVar.exceptionVar + ") " + {
                 +"if (" + nodeVar.closedVar + ") " + {
-                    +builder.closeNodeScope(nodeVar) + ";" + Endl
+                    +builder.closeNodeScope(nodeVar) + Endl
                     +nodeVar.closedVar + " = false;" + Endl
                 } + " else " + {
                     +builder.popNode(nodeVar) + Endl
-                }
+                } + Endl
 
                 for (ex in thrown) {
                     +"if (" + nodeVar.exceptionVar + " instanceof " + ex + ") throw (" + ex + ") " + nodeVar.exceptionVar + ";" + Endl
