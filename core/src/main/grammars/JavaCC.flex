@@ -95,7 +95,7 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
     {C_STYLE_COMMENT}           { return JavaTokenType.C_STYLE_COMMENT; }
     {END_OF_LINE_COMMENT}       { return JavaTokenType.END_OF_LINE_COMMENT; }
-    {DOC_COMMENT}               { return JavaDocElementType.DOC_COMMENT; }
+    {DOC_COMMENT}               { return JavaTokenType.C_STYLE_COMMENT; }
 
     {LONG_LITERAL}              { return JCC_LONG_LITERAL; }
     {INTEGER_LITERAL}           { return JCC_INTEGER_LITERAL; }
