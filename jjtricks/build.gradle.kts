@@ -44,6 +44,7 @@ dependencies {
     // for debugging only, this pulls in a huge IBM dependency
     // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
+    implementation("net.java.dev.javacc:javacc:7.0.4")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)
     testImplementation("commons-io:commons-io:2.6")
