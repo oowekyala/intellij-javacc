@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
+import com.github.oowekyala.ijcc.lang.model.addParserPackage
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
@@ -13,6 +14,8 @@ interface JjtxBuilderStrategy {
     fun parserImplements(): List<String>
 
     fun parserImports(): List<String>
+
+    fun parserDeclarations(): String
 
     fun createNode(nodeVar: NodeVar): String
 
@@ -100,6 +103,15 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
                 it += "static ${grammarOptions.parserQualifiedName}TreeConstants.*"
             }
         }.sorted()
+
+
+    private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
+
+    override fun parserDeclarations(): String
+    = """
+        protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
+
+    """.trimIndent()
 
     override fun openNodeHook(nodeVar: NodeVar): String? =
         if (bindings.jjtCustomNodeHooks) "jjtOpenNodeScope(${nodeVar.varName});" else null

@@ -6,13 +6,13 @@ PARSER_BEGIN(SimpleExprParser)
 
     package com.jjtx.exprs;
     import com.jjtx.exprs.*;
-    import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
 
 
     /**
      *  This is my parser declaration
      */
-    public class SimpleExprParser {
+    public class SimpleExprParser/*@bgen(jjtree)*/implements SimpleExprParserTreeConstants/*@egen*/  {/*@bgen(jjtree)*/
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
 
     }
 

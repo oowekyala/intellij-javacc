@@ -63,7 +63,7 @@ private fun bgen(arg: String = ""): String {
 
 private fun egen() = "/*@egen*/ "
 
-private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
+private fun JccJavaCompilationUnit.guessIndent():String {
 
     // The indent preceding the first non-whitespace of the JCU
     // is in the previous sibling
@@ -74,8 +74,13 @@ private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
             ?.substringAfterLast("\n", "")
             ?: ""
 
+    return " ".repeat((prevIndent + this.text).minCommonIndent())
+
+}
+
+private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
     val unit= this.text!!
-    val indent = " ".repeat((prevIndent + unit).minCommonIndent())
+    val indent = guessIndent()
 
 
     val imports = StringBuilder("\n")
@@ -127,6 +132,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
     private val implementsRegex = Regex("implements|\\{")
+    private val braceRegex = Regex("\\{")
 
     // So ugly
     override fun visitJavaCompilationUnit(o: JccJavaCompilationUnit) {
@@ -141,7 +147,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 implPoint.value == "implements" -> {
                     sb.insert(
                         implPoint.range.endInclusive + 1,
-                        bgen() + builder.parserImplements().joinToString(prefix = ", ") + egen()
+                        bgen() + builder.parserImplements().joinToString(postfix = ", ") + egen()
                     )
                 }
                 else                            -> {
@@ -152,6 +158,12 @@ private class JjtxCompilVisitor(val file: JccFile,
                 }
             }
         }
+
+        val bracePoint = braceRegex.find(sb)!!
+
+        val indent = o.guessIndent()
+
+        sb.insert(bracePoint.range.endInclusive + 1, bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen())
 
         out.printSource(sb.toString())
     }

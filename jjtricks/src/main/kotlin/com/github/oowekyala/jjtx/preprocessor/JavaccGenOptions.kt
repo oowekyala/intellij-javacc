@@ -44,6 +44,10 @@ data class JavaccGenOptions(
 
 
     companion object {
+
+        /**
+         * Compatibility options mimicking JJTree output the closest.
+         */
         val FullJjtreeCompat = JavaccGenOptions(
             dontCloseBeforeLastParserAction = false,
             fixJjtThisConditionScope = false,
