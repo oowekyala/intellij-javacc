@@ -2,8 +2,11 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.MessageCollector
+import com.github.oowekyala.jjtx.reporting.ReportingContext
+import com.github.oowekyala.jjtx.reporting.TaskCtx
 import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
+import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.set
@@ -61,6 +64,17 @@ class JjtxContext internal constructor(val grammarFile: JccFile,
         }
     }
 
+    /**
+     * A sub-context, to refine error messages. The [contextStr] is
+     * given as information about the current location of the task.
+     */
+    fun subContext(contextStr: ReportingContext): JjtxContext = buildCtx(grammarFile) {
+        it.io = io
+        it.configChain = configChain
+        it.messageCollector = messageCollector.withContext(contextStr)
+    }
+
+
     companion object {
 
 
@@ -100,6 +114,8 @@ fun JccFile.defaultJjtopts(): List<Path> {
     return listOfNotNull(opts)
 
 }
+
+fun JjtxContext.subContext(key: JjtxTaskKey) = subContext(TaskCtx(key))
 
 // TODO there may be some mischief when this is in a jar
 internal val RootJjtOpts: NamedInputStream

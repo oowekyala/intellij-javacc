@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.ijcc.util.indent
+import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import java.io.PrintStream
 
 /**
@@ -8,6 +9,8 @@ import java.io.PrintStream
  */
 
 interface ReportPrinter {
+
+    fun withContext(contextStr: ReportingContext): ReportPrinter
 
     /**
      * Print the report of warnings + log messages collected.
@@ -22,6 +25,9 @@ interface ReportPrinter {
 
 
 object NoopReportPrinter : ReportPrinter {
+
+    override fun withContext(contextStr: ReportingContext) = this
+
     override fun onEnd() {
         // do nothing
     }
@@ -39,13 +45,23 @@ object NoopReportPrinter : ReportPrinter {
  * This is the default output printer.
  * Aggregates warnings, and hides exception stack traces.
  */
-class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
+class AggregateReportPrinter private constructor(
+    private val stream: PrintStream,
+    private val collected: MutableList<ReportEntry>,
+    private val contextStr: ReportingContext?
+) : ReportPrinter {
 
-    private val collected = mutableListOf<ReportEntry>()
+    constructor(stream: PrintStream, contextStr: ReportingContext? = null) : this(stream, mutableListOf(), contextStr)
+
+    private val padding = JjtxTaskKey.values().map { it.ref.length }.plus(InitCtx.displayName.length).max()!! + 4
 
     private var hadExceptions = false
 
-    private val myErrorPrinter: ReportPrinter = FullReportPrinter(stream)
+    private val myErrorPrinter: ReportPrinter =
+        FullReportPrinter(stream, indent = if (contextStr == null) "" else baseIndent)
+
+    override fun withContext(contextStr: ReportingContext): ReportPrinter =
+        AggregateReportPrinter(stream, collected, contextStr)
 
     override fun onEnd() {
 
@@ -82,7 +98,7 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
     override fun printEntry(reportEntry: ReportEntry) {
         // only let normal messages get through
         if (reportEntry.severity == Severity.NORMAL) {
-            stream.println(reportEntry.message)
+            iprintln(reportEntry.message)
         } else {
             collected += reportEntry
         }
@@ -92,6 +108,14 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
             myErrorPrinter.printEntry(reportEntry)
         }
 
+    }
+
+
+    private fun iprintln(string: String) {
+        if (contextStr != null) {
+            stream.print("[${contextStr.displayName}]".padEnd(padding))
+        }
+        stream.println(string)
     }
 
     private fun ExceptionEntry.printSingleException(numOccurred: Int) {
@@ -119,9 +143,31 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
     }
 }
 
-class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
+private val baseIndent = "    "
+
+class FullReportPrinter(private val stream: PrintStream,
+                        private val contextStr: ReportingContext? = null,
+                        private val indent: String = "") : ReportPrinter {
+
+    init {
+        if (contextStr != null) {
+            stream.println("[${contextStr.displayName}]")
+        }
+    }
+
+    private fun iprintln(string: String) {
+        stream.print(indent)
+        stream.println(string)
+    }
 
     private val padding = Severity.values().map { it.displayName.length }.max()!! + 4
+
+    /**
+     * Doesn't maintain state so can return a new instance.
+     */
+    override fun withContext(contextStr: ReportingContext): ReportPrinter =
+        FullReportPrinter(stream, contextStr, indent + baseIndent)
+
 
     override fun onEnd() {
         // do nothing
@@ -130,15 +176,15 @@ class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
     override fun printEntry(reportEntry: ReportEntry) {
         val (_, message, realSeverity, positions) = reportEntry
         val logLine = "[${realSeverity.displayName}]".padEnd(padding) + message
-        stream.println(logLine)
+        iprintln(logLine)
         positions.forEach {
-            stream.println(it.toString().indent(padding, indentStr = " "))
+            iprintln(it.toString().indent(padding, indentStr = " "))
         }
     }
 
     override fun printEntry(reportEntry: ExceptionEntry) {
         with(reportEntry) {
-            stream.println("Exception while $contextStr")
+            iprintln("Exception while $contextStr")
             reportEntry.thrown.printStackTrace(stream)
         }
 

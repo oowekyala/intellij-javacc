@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.DoExitNowError
+import com.github.oowekyala.jjtx.reporting.InitCtx
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.tasks.*
@@ -40,8 +41,6 @@ class Jjtricks(
         help = "Path to a grammar file (the extension can be omitted)"
     ) {
         toPath().normalize()
-    }.addValidator {
-        findGrammarFile(argCheckIo, value)
     }
 
     private val tasksImpl: List<List<JjtxTaskKey>> by args.positionalList(
@@ -61,7 +60,8 @@ class Jjtricks(
         help = "Output directory. Files are generated in a package tree rooted in this directory."
     ) {
         io.wd.resolve(this).normalize().toAbsolutePath()
-    }.default(io.wd.resolve("gen")).addValidator {
+    }.default(io.wd.resolve("gen"))
+        .addValidator {
         if (value.isFile()) {
             throw SystemExitException(
                 "-o $value is not a directory",
@@ -107,17 +107,21 @@ class Jjtricks(
         toPath().normalize()
     }
 
-    private fun produceContext(project: Project, collector: MessageCollector): JjtxContext {
+    private fun produceContext(project: Project,
+                               rootCollector: MessageCollector,
+                               collector: MessageCollector): JjtxContext {
 
-        val grammarFile = findGrammarFile(io, grammarPath)
-        val configChain = validateConfigFiles(io, grammarFile, configFiles, collector)
-        val jccFile = parseGrammarFile(grammarFile, project, collector)
+        val collIo = io.copy(exit = { m, _ -> collector.reportError(m, null) })
+
+        val grammarFile = findGrammarFile(collIo, grammarPath)
+        val configChain = validateConfigFiles(collIo, grammarFile, configFiles, collector)
+        val jccFile = parseGrammarFile(collIo, grammarFile, project)
 
 
         return JjtxContext.buildCtx(jccFile) {
             it.configChain = configChain
             it.io = io
-            it.messageCollector = collector
+            it.messageCollector = rootCollector
         }
     }
 
@@ -126,39 +130,63 @@ class Jjtricks(
 
         val err = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
-        val ctx = err.catchException("Exception while building run context", fatal = true) {
-            produceContext(env.project, err)
+        val tasks = myTasks
+
+        // not quiet mode
+        if (minReportSeverity < Severity.FAIL) {
+            // Don't use the message collector here, to get consistent results
+            io.stderr.println("JJTricks v$VERSION")
+            io.stderr.println("(Run with -h parameter for a usage summary)")
+            if (tasks.isEmpty()) {
+                io.stderr.println("No tasks to run!")
+                io.exit(ExitCode.OK)
+            } else {
+                io.stderr.println("Running tasks $tasks")
+            }
+            io.stderr.println()
         }
+
+        val ctx = err.catchException("Exception while building run context", fatal = true) {
+            val init = err.withContext(InitCtx)
+            produceContext(env.project, err, init).also {
+                init.reportNormal("Config chain: ${it.chainDump}")
+            }
+        }
+
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
-        val tasks = myTasks
-
-        err.reportNormal("JJTricks v$VERSION")
-        err.reportNormal("Running tasks $tasks, on ${ctx.chainDump}")
 
         if (DUMP_CONFIG in tasks) {
-            err.catchException("Exception while dumping configuration task") {
-                DumpConfigTask(ctx, io.stdout).execute()
+            ctx.subContext(DUMP_CONFIG).let {
+                it.messageCollector.catchException(null) {
+                    DumpConfigTask(it, io.stdout).execute()
+                }
             }
         }
 
         // node generation depends on the visitors
         if (GEN_VISITORS in tasks || GEN_NODES in tasks) {
-            err.catchException("Exception while generating visitors") {
-                GenerateVisitorsTask(ctx, outputRoot, sourceRoots.toList()).execute()
+            ctx.subContext(GEN_VISITORS).let {
+                it.messageCollector.catchException(null) {
+                    GenerateVisitorsTask(it, outputRoot, sourceRoots.toList()).execute()
+                }
             }
         }
 
         if (GEN_NODES in tasks) {
-            err.catchException("Exception while generating node files") {
-                GenerateNodesTask(ctx, outputRoot, sourceRoots.toList()).execute()
+            ctx.subContext(GEN_NODES).let {
+                it.messageCollector.catchException(null) {
+                    GenerateNodesTask(it, outputRoot, sourceRoots.toList()).execute()
+                }
             }
         }
 
         if (GEN_JAVACC in tasks) {
-            err.catchException("Exception while generating JavaCC file") {
-                GenerateJavaccTask(ctx, outputRoot).execute()
+            ctx.subContext(GEN_JAVACC).let {
+                it.messageCollector.catchException(null) {
+                    GenerateJavaccTask(it, outputRoot).execute()
+                }
             }
         }
 
@@ -345,7 +373,7 @@ private fun findGrammarFile(io: Io, path: Path): Path {
     }
 }
 
-private fun parseGrammarFile(file: Path, project: Project, collector: MessageCollector): JccFile {
+private fun parseGrammarFile(io: Io, file: Path, project: Project): JccFile {
 
     val localFileSystem =
         VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
@@ -354,10 +382,10 @@ private fun parseGrammarFile(file: Path, project: Project, collector: MessageCol
 
     val virtualFile =
         localFileSystem.findFileByPath(file.toAbsolutePath().toString())
-            ?: collector.reportError("Cannot find grammar file in filesystem: $file")
+            ?: io.bail("Cannot find grammar file in filesystem: $file")
 
     val jccFile = psiManager.findFile(virtualFile) as? JccFile
-        ?: collector.reportError("File was not a JJTree/JavaCC grammar")
+        ?: io.bail("File was not a JJTree/JavaCC grammar")
 
     return jccFile.also {
         (it as JccFileImpl).grammarNature = GrammarNature.JJTRICKS

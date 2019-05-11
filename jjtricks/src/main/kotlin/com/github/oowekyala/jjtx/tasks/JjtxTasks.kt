@@ -51,7 +51,7 @@ enum class JjtxTaskKey(val ref: String) {
                 local == "*" && ns.isNotEmpty() -> {
                     val nskeys = nss.getOrDefault(ns, emptyList<String>())
                     if (nskeys.isEmpty()) {
-                        io.bail("Task group $ns not known, available tasks $refs")
+                        io.bail("Task group $ns not known, available tasks ${values().toSet()}")
                     }
 
                     nskeys.mapNotNull { refs["$ns:$it"] }
@@ -59,7 +59,7 @@ enum class JjtxTaskKey(val ref: String) {
                 // foo is local
                 ns.isEmpty()                    ->
                     refs.values.firstOrNull { it.localName == local }?.let { listOf(it) }
-                        ?: io.bail("Task $local not known, available tasks $refs")
+                        ?: io.bail("Task $local not known, available tasks ${values().toSet()}")
                 else                            -> emptyList()
             }
 

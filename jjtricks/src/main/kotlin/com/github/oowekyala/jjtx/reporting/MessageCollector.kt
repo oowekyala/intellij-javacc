@@ -4,8 +4,9 @@ import com.github.oowekyala.jjtx.util.Io
 import com.github.oowekyala.jjtx.util.Position
 import java.util.*
 
-
 interface MessageCollector {
+
+    fun withContext(contextStr: ReportingContext): MessageCollector
 
     /**
      * @param message arg for the message
@@ -61,26 +62,27 @@ interface MessageCollector {
 
 
     companion object {
+        private object NoopCollector : MessageCollector {
 
-        fun noop(): MessageCollector {
-            return object : MessageCollector {
+            override fun withContext(contextStr: ReportingContext) = this
 
-                override fun report(message: String,
-                                    category: MessageCategory,
-                                    severityOverride: Severity?,
-                                    vararg sourcePosition: Position?): Severity =
-                    // do nothing
-                    severityOverride ?: category.minSeverity
+            override fun report(message: String,
+                                category: MessageCategory,
+                                severityOverride: Severity?,
+                                vararg sourcePosition: Position?): Severity =
+                // do nothing
+                severityOverride ?: category.minSeverity
 
-                override fun concludeReport() {
-                    // do nothing
-                }
+            override fun concludeReport() {
+                // do nothing
+            }
 
-                override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
-                    // do nothing
-                }
+            override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
+                // do nothing
             }
         }
+
+        fun noop(): MessageCollector = NoopCollector
 
         fun default(io: Io): MessageCollector = create(io, true, Severity.NORMAL)
 
@@ -107,6 +109,9 @@ private class MessageCollectorImpl(
     private val reportPrinter: ReportPrinter,
     private val minSeverity: Severity = Severity.WARNING
 ) : MessageCollector {
+
+    override fun withContext(contextStr: ReportingContext): MessageCollector =
+        MessageCollectorImpl(reportPrinter.withContext(contextStr), minSeverity)
 
     override fun concludeReport() {
         reportPrinter.onEnd()
@@ -157,7 +162,7 @@ enum class Severity(dName: String? = null) {
     FINE("DEBUG"),
     WARNING,
     /** Normal execution messages. */
-    NORMAL,
+    NORMAL("INFO"),
     NON_FATAL("ERROR"),
     FAIL("ERROR");
 
