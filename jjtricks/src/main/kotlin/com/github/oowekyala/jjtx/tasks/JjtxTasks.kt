@@ -1,16 +1,19 @@
 package com.github.oowekyala.jjtx.tasks
 
+import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.preprocessor.reportSyntaxErrors
+import com.github.oowekyala.jjtx.preprocessor.toJavacc
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.path
-import com.github.oowekyala.jjtx.util.toYaml
-import com.github.oowekyala.jjtx.util.toYamlString
+import com.github.oowekyala.jjtx.util.*
 import org.apache.velocity.VelocityContext
+import java.io.FileOutputStream
+import java.io.IOException
 import java.io.PrintStream
 import java.nio.file.Path
 
@@ -173,4 +176,44 @@ class GenerateNodesTask(ctx: JjtxContext,
         get() = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
 
     override val exceptionCtx: String = "Generating nodes"
+}
+
+
+/**
+ * Generate the visitors marked for execution in the opts file.
+ */
+class GenerateJavaccTask(val ctx: JjtxContext,
+                         private val outputDir: Path) : JjtxTask() {
+
+
+    override fun execute() {
+
+
+        val invalidSyntax = ctx.grammarFile.reportSyntaxErrors(ctx)
+
+        if (invalidSyntax) {
+            return
+        }
+
+        val o = outputDir.resolve(ctx.jjtxOptsModel.parserPackage.replace('.', '/')).resolve(ctx.grammarName + ".jj")
+
+        if (!o.exists()) {
+            o.createFile()
+        }
+
+        val opts = ctx.jjtxOptsModel.javaccGen
+
+        try {
+
+            FileOutputStream(o.toFile()).buffered()
+                .use {
+                    toJavacc(ctx.grammarFile, it, opts)
+                }
+
+            ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")
+
+        } catch (ioe: IOException) {
+            ctx.messageCollector.reportException(ioe, contextStr = "Generating JavaCC file", fatal = false)
+        }
+    }
 }

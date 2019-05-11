@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.addPackage
+import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
@@ -55,6 +56,11 @@ interface JjtxOptsModel : IGrammarOptions {
 
 
     val activeNodeGenerationScheme: String?
+
+    /**
+     * Generation options for the JavaCC file.
+     */
+    val javaccGen: JavaccGenOptions
 
 
     companion object {
@@ -138,4 +144,5 @@ interface JjtxOptsModel : IGrammarOptions {
             OptsModelImpl(ctx, parent, jsonElement.let { it as AstMap })
 
     }
+
 }

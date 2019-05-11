@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.ClassVBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
@@ -36,6 +37,8 @@ internal class OldJavaccOptionsModel(
     override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> = emptyMap() // TODO JJTree generation scheme
 
     override val activeNodeGenerationScheme: String? = null
+
+    override val javaccGen: JavaccGenOptions = JavaccGenOptions.FullJjtreeCompat
 
     override val typeHierarchy: NodeVBean = NodeVBean(
         name = grammarOptions.rootNodeClass.substringAfterLast('.'),

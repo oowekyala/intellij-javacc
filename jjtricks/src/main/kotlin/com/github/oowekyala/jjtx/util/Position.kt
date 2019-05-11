@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.ijcc.lang.psi.lineNumber
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.yaml.snakeyaml.error.Mark
@@ -22,6 +22,17 @@ data class YamlPosition(
 
     override fun toString(): String = startMark.toString()
 }
+
+
+class PsiFilePosition(
+    val textOffset: Int,
+    val psiFile: PsiFile
+) : Position {
+    override fun toString(): String = getSnippet(buffer = psiFile.text, textOffset = textOffset)
+}
+
+
+
 
 fun YamlPosition.addName(name: String?) = YamlPosition(
     startMark?.addName(name),
@@ -51,18 +62,54 @@ data class JsonPosition(val path: List<String>) : Position {
 }
 
 
-data class FilePosition(val line: Int, val column: Int, val file: PsiFile) : Position {
+fun PsiElement.position(): PsiFilePosition = PsiFilePosition(textOffset, containingFile)
 
-    override fun toString(): String = "in '${file.name}' [$line, $column]"
-
+//kept for posterity
+private fun getColAndLine(psiFile: PsiFile, offset: Int): Pair<Int, Int> {
+    val text = psiFile.text
+    val line = StringUtil.offsetToLineNumber(text, offset)
+    return Pair(line, offset - StringUtil.lineColToOffset(text, line, 0))
 }
 
 
-fun PsiElement.position(): FilePosition {
-    val line = lineNumber
-    return FilePosition(
-        line = line,
-        column = textOffset - StringUtil.lineColToOffset(containingFile.text, line, 0),
-        file = containingFile
-    )
+private fun getSnippet(buffer: CharSequence, textOffset: Int): String = getSnippet(buffer, textOffset, 4, 75)
+
+private fun getSnippet(buffer: CharSequence, textOffset: Int, indent: Int, maxLength: Int): String {
+    val half = (maxLength / 2 - 1).toFloat()
+    var start = textOffset
+    var head = ""
+    while (start > 0 && !isLineBreak(buffer[start - 1])) {
+        start -= 1
+        if (textOffset - start > half) {
+            head = " ... "
+            start += 5
+            break
+        }
+    }
+    var tail = ""
+    var end = textOffset
+    while (end < buffer.length && !isLineBreak(buffer[end])) {
+        end += 1
+        if (end - textOffset > half) {
+            tail = " ... "
+            end -= 5
+            break
+        }
+    }
+
+    val result = StringBuilder()
+    for (i in 0 until indent) {
+        result.append(" ")
+    }
+    result.append(head)
+    for (i in start until end) {
+        result.append(buffer[i])
+    }
+    result.append(tail)
+    result.append("\n")
+    for (i in 0 until indent + textOffset - start + head.length) {
+        result.append(" ")
+    }
+    result.append("^")
+    return result.toString()
 }

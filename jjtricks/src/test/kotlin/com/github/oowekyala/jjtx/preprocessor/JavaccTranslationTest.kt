@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.jjtree
+package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.jjtx.JjtxTestBase
 import io.kotlintest.shouldBe
@@ -70,7 +70,7 @@ class JavaccTranslationTest : JjtxTestBase() {
 
         """.trimIndent().asJccFile()
 
-        val str = JjtricksToJavacc().toJavacc(jcc)
+        val str = toJavaccString(jcc)
 
         str shouldBe "fjieif"
 

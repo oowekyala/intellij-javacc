@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.jjtree
+package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 

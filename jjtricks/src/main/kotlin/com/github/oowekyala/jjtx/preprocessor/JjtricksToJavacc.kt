@@ -1,31 +1,56 @@
-package com.github.oowekyala.jjtx.jjtree
+@file:JvmName("JjtricksToJavacc")
+
+package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
-import com.github.oowekyala.jjtx.jjtree.OutStream.Endl
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.preprocessor.OutStream.Endl
+import com.github.oowekyala.jjtx.util.position
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.util.*
 
-val bos = ByteArrayOutputStream()
 
 /**
- * @author Clément Fournier
+ * Reports syntax errors, returns true if any are found.
  */
-class JjtricksToJavacc {
+fun JccFile.reportSyntaxErrors(ctx: JjtxContext): Boolean {
 
-    fun toJavacc(jccFile: JccFile): String {
+    val visitor = object : JccVisitor() {
 
-        bos.reset()
+        var invalidSyntax = false
 
-        val compat = JjtreeCompat()
-        val visitor = JjtxCompilVisitor(jccFile, bos, compat, VanillaJjtreeBuilder(jccFile.grammarOptions, compat))
-        jccFile.grammarFileRoot!!.accept(visitor)
+        override fun visitElement(element: PsiElement) {
+            element.acceptChildren(this)
+        }
 
-        return bos.toString(Charsets.UTF_8.name())
+        override fun visitErrorElement(element: PsiErrorElement) {
+            invalidSyntax = true
+            ctx.messageCollector.reportNonFatal(element.errorDescription, position = element.position())
+        }
+
     }
+
+    this.accept(visitor)
+
+    return visitor.invalidSyntax
+}
+
+
+fun toJavacc(input: JccFile, out: OutputStream, options: JavaccGenOptions) {
+
+    val visitor = JjtxCompilVisitor(input, out, options, VanillaJjtreeBuilder(input.grammarOptions, options))
+    input.grammarFileRoot!!.accept(visitor)
+}
+
+fun toJavaccString(input: JccFile, options: JavaccGenOptions = JavaccGenOptions()): String {
+    val bos = ByteArrayOutputStream()
+    toJavacc(input, bos, options)
+    return bos.toString(Charsets.UTF_8.name())
 }
 
 
@@ -63,41 +88,9 @@ private fun String.minCommonIndent(): Int =
 private fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let { if (it == -1) length else it }
 
 
-data class JjtreeCompat(
-    /**
-     * Don't close the node scope before the last parser actions unit
-     * in a scoped expansion unit. For example:
-     *
-     *     (Foo() { a } { b }) #Node
-     *
-     * JJTree inserts the closing code between `a` and `b`, which can
-     * be confusing behaviour, since the stack isn't the same in `a`
-     * and `b`.
-     *
-     * When set to true, this behaviour is changed and the node scope
-     * is closed after `{b}`. This doesn't affect the scopes of productions,
-     * since the last parser actions can be used to return `jjtThis`.
-     */
-    val dontCloseBeforeLastParserAction: Boolean = false,
-
-    /**
-     * If set to true, jjtThis is available in the closing condition of
-     * its own node scope. In vanilla JJTree, #Node(jjtThis.something())
-     * isn't compiled correctly.
-     */
-    val fixJjtThisConditionScope: Boolean = true,
-
-    /**
-     * If set to true, the tokens are set before calling the node open
-     * and close hooks. This is better as the tokens are then available
-     * inside those hooks.
-     */
-    val setTokensBeforeHooks: Boolean = true
-)
-
 private class JjtxCompilVisitor(val file: JccFile,
                                 outputStream: OutputStream,
-                                val compat: JjtreeCompat,
+                                val compat: JavaccGenOptions,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
     private val out = OutStream(outputStream, "    ")
@@ -191,7 +184,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 }
 
         if (!endOfSequence) {
-            with (out) {
+            with(out) {
                 -bgen() + Endl
                 +"" + {
                     emitCloseNodeCode(enclosing, isFinal = false)

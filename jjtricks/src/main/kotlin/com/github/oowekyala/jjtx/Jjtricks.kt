@@ -9,6 +9,7 @@ import com.github.oowekyala.jjtx.reporting.DoExitNowError
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
 import com.github.oowekyala.jjtx.tasks.DumpConfigTask
+import com.github.oowekyala.jjtx.tasks.GenerateJavaccTask
 import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.util.*
@@ -59,8 +60,9 @@ class Jjtricks(
         }
     }
 
+    // TODO allow overriding some keys from command-line and remove this
     private val activeGenProfile: String? by args.storing(
-        "--gen",
+        "--node-gen",
         help = "ID of the node generation scheme to use. Can also be configured with the jjtx.activeGenScheme key."
     ).default {
         null
@@ -149,6 +151,10 @@ class Jjtricks(
 
         err.catchException("Exception while generating node files") {
             GenerateNodesTask(ctx, outputRoot, sourceRoots.toList(), activeGenProfile).execute()
+        }
+
+        err.catchException("Exception while generating JavaCC file") {
+            GenerateJavaccTask(ctx, outputRoot).execute()
         }
 
         ctx.messageCollector.concludeReport()
@@ -272,10 +278,10 @@ private fun validateConfigFiles(io: Io,
 
     val grammarName = grammarPath.toFile().nameWithoutExtension
 
-    val defaulted =
+    val (isDefault, defaulted) =
         when {
-            paths.isEmpty() -> listOf(grammarPath.resolveSibling("$grammarName.jjtopts"))
-            else            -> paths
+            paths.isEmpty() -> true to listOf(grammarPath.resolveSibling("$grammarName.jjtopts"))
+            else            -> false to paths
         }
 
     val resolved = defaulted.associateWith { p ->
@@ -300,12 +306,16 @@ private fun validateConfigFiles(io: Io,
     return if (resolved.all { it.value != null })
         resolved.values.mapNotNull { it!! }
     else {
-
-        val message = resolved.filterValues { it == null }.keys.joinToString(
-            prefix = "Cannot resolve option files: \n\t",
-            separator = "\n\t"
-        )
-        io.bail(message)
+        if (isDefault) {
+            io.stderr.println("No jjtopts file found for grammar $grammarName")
+            emptyList()
+        } else {
+            val message = resolved.filterValues { it == null }.keys.joinToString(
+                prefix = "Cannot resolve option files: \n\t",
+                separator = "\n\t"
+            )
+            io.bail(message)
+        }
     }
 }
 

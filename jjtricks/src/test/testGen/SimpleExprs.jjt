@@ -1,0 +1,49 @@
+
+options {
+    MULTI = true;
+}
+
+PARSER_BEGIN(SimpleExprParser)
+
+    package org.javacc.jjtree;
+
+    /**
+     *  This is my parser declaration
+     */
+    public class SimpleExprParser {
+
+    }
+
+PARSER_END(SimpleExprParser)
+
+// Some token declarations
+<DEFAULT>
+TOKEN :{
+  < PLUS: "+" >
+| < MINUS: "-" >
+| < NULL: "null" >
+| < INTEGER: ["+",  "-"] <DIGITS> >
+| < #DIGITS: (["0"-"9"])+ >
+}
+
+
+void Expression() #void: {}
+{
+      BinaryExpression()
+    | <NULL>   #NullLiteral
+}
+
+void BinaryExpression() #BinaryExpr(>1): {}
+{
+    UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+}
+
+void UnaryExpr() #void: {}
+{
+  ("(" Expression() ")") #ParenthesizedExpr | Integer()
+}
+
+void Integer() #IntegerLiteral: {}
+{
+  <INTEGER>
+}

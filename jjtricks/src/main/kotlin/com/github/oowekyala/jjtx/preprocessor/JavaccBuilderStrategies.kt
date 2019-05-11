@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.jjtree
+package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
@@ -33,7 +33,7 @@ interface JjtxBuilderStrategy {
  * Imitates JJTree output.
  */
 class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
-                           private val compat: JjtreeCompat) : JjtxBuilderStrategy {
+                           private val compat: JavaccGenOptions) : JjtxBuilderStrategy {
 
     private val bindings = grammarOptions.inlineBindings
 
