@@ -1,5 +1,4 @@
 import com.github.oowekyala.*
-import org.gradle.plugins.ide.idea.model.Module
 
 
 plugins {
@@ -10,7 +9,6 @@ plugins {
     // on
     id("org.jetbrains.grammarkit") version "2018.2.2"
     id("com.github.johnrengelman.shadow") version "5.0.0"
-    idea
 }
 
 group = "com.github.oowekyala"
@@ -19,19 +17,24 @@ version = "1.0"
 val runtime by configurations
 val compileOnly by configurations
 
-val ijdeps: Configuration by configurations.creating
 
 dependencies {
     api(project(":core"))
 
-    ijdeps(intellijCoreDep()) { includeJars("intellij-core", "guava", rootProject = rootProject) }
+    val ijdeps by configurations.creating
+
+    ijdeps(intellijCoreDep()) { includeJars("intellij-core") }
     ijdeps(intellijDep()) {
         includeIjCoreDeps(rootProject)
         includeJars("platform-api")
     }
 
+    // trick Idea into putting those on the classpath when
+    // running app inside IDE
     compileOnly(ijdeps)
+    runtimeOnly(ijdeps)
 
+    api("com.google.guava:guava:27.0.1-jre")
     api("org.apache.velocity:velocity:1.6.2")
 
     implementation("com.google.code.gson:gson:2.8.5")
@@ -41,7 +44,7 @@ dependencies {
     // for debugging only, this pulls in a huge IBM dependency
     // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
-    // implementation("net.java.dev.javacc:javacc:7.0.4")
+    implementation("net.java.dev.javacc:javacc:7.0.4")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)
     testImplementation("commons-io:commons-io:2.6")
@@ -56,15 +59,7 @@ sourceSets {
     }
 }
 
-
-idea.module {
-
-//    scopes["PROVIDED"]!!["plus"]!! += listOf(ijdeps)
-
-}
-
 tasks {
-
 
     compileJava {}
 

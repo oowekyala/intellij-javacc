@@ -7,7 +7,6 @@ import java.net.URI
 plugins {
     kotlin("jvm") version "1.3.11" // sync with extra property below
     java
-    idea
 }
 
 group = "com.github.oowekyala"
