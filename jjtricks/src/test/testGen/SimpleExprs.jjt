@@ -33,7 +33,7 @@ void Expression() #void: {}
     | <NULL>   #NullLiteral
 }
 
-void BinaryExpression() #BinaryExpr(>1) {}
+void BinaryExpression() #BinaryExpr(>1): {}
 {
     UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
 }

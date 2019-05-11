@@ -45,21 +45,30 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     private var hadExceptions = false
 
-    data class ExceptionMergeKey(
-        val message: String,
-        val ctxString: String?,
-        val clazz: Class<*>
-    )
+    private val myErrorPrinter: ReportPrinter = FullReportPrinter(stream)
 
     override fun onEnd() {
 
-        val warnings = collected.filter { it.severity == Severity.WARNING }
+        val bySeverity = collected.groupBy { it.severity }.withDefault { emptyList() }
+        val warnings = bySeverity.getValue(Severity.WARNING)
+        val errors = bySeverity.getValue(Severity.NON_FATAL) + bySeverity.getValue(Severity.FAIL)
 
-        if (warnings.isEmpty()) {
+        if (warnings.isEmpty() && errors.isEmpty()) {
             return
         } else {
-            val sizes = warnings.size
-            stream.println("There are $sizes JJTricks warnings")
+
+            val es = errors.size
+            val e = if (es > 0) "$es error" + (if (es > 1) "s" else "") else null
+
+            val ws = warnings.size
+            val w = if (ws > 0) "$ws warning" + (if (ws > 1) "s" else "") else null
+
+            stream.print("JJTricks exited with ")
+
+            val str =
+                if (e != null && w != null) "$e, and $w" else e ?: w!!
+
+            stream.println(str)
             stream.println("Rerun with --warn option for more details")
         }
 
@@ -77,6 +86,12 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
         } else {
             collected += reportEntry
         }
+
+        if (reportEntry.severity > Severity.NORMAL) {
+            // an error
+            myErrorPrinter.printEntry(reportEntry)
+        }
+
     }
 
     private fun ExceptionEntry.printSingleException(numOccurred: Int) {
@@ -106,7 +121,7 @@ class AggregateReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
 class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
-    private val padding = Severity.values().map { it.name.length }.max()!! + 4
+    private val padding = Severity.values().map { it.displayName.length }.max()!! + 4
 
     override fun onEnd() {
         // do nothing
@@ -114,7 +129,7 @@ class FullReportPrinter(private val stream: PrintStream) : ReportPrinter {
 
     override fun printEntry(reportEntry: ReportEntry) {
         val (_, message, realSeverity, positions) = reportEntry
-        val logLine = "[$realSeverity]".padEnd(padding) + message
+        val logLine = "[${realSeverity.displayName}]".padEnd(padding) + message
         stream.println(logLine)
         positions.forEach {
             stream.println(it.toString().indent(padding, indentStr = " "))

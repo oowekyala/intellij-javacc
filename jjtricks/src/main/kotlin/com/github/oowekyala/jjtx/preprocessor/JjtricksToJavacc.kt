@@ -31,7 +31,7 @@ fun JccFile.reportSyntaxErrors(ctx: JjtxContext): Boolean {
 
         override fun visitErrorElement(element: PsiErrorElement) {
             invalidSyntax = true
-            ctx.messageCollector.reportNonFatal(element.errorDescription, position = element.position())
+            ctx.messageCollector.reportNonFatal("Syntax error: ${element.errorDescription}", position = element.position())
         }
 
     }

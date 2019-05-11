@@ -115,8 +115,8 @@ class Jjtricks(
         args.force()
 
         val grammarFile = findGrammarFile(io, grammarPath)
-        val configChain = validateConfigFiles(io, grammarFile, configFiles)
-        val jccFile = parseGrammarFile(io, grammarFile, project)
+        val configChain = validateConfigFiles(io, grammarFile, configFiles, collector)
+        val jccFile = parseGrammarFile(grammarFile, project, collector)
 
 
         return JjtxContext.buildCtx(jccFile) {
@@ -274,7 +274,8 @@ class Jjtricks(
 
 private fun validateConfigFiles(io: Io,
                                 grammarPath: Path,
-                                paths: List<Path>): List<Path> {
+                                paths: List<Path>,
+                                messageCollector: MessageCollector): List<Path> {
 
     val grammarName = grammarPath.toFile().nameWithoutExtension
 
@@ -307,19 +308,19 @@ private fun validateConfigFiles(io: Io,
         resolved.values.mapNotNull { it!! }
     else {
         if (isDefault) {
-            io.stderr.println("No jjtopts file found for grammar $grammarName")
+            messageCollector.reportNormal("No jjtopts file found for grammar $grammarName")
             emptyList()
         } else {
             val message = resolved.filterValues { it == null }.keys.joinToString(
                 prefix = "Cannot resolve option files: \n\t",
                 separator = "\n\t"
             )
-            io.bail(message)
+            messageCollector.reportError(message)
         }
     }
 }
 
-
+// Used during arg validation, can use IO directly
 private fun findGrammarFile(io: Io, path: Path): Path {
 
 
@@ -337,7 +338,7 @@ private fun findGrammarFile(io: Io, path: Path): Path {
     }
 }
 
-private fun parseGrammarFile(io: Io, file: Path, project: Project): JccFile {
+private fun parseGrammarFile(file: Path, project: Project, collector: MessageCollector): JccFile {
 
     val localFileSystem =
         VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
@@ -346,10 +347,10 @@ private fun parseGrammarFile(io: Io, file: Path, project: Project): JccFile {
 
     val virtualFile =
         localFileSystem.findFileByPath(file.toAbsolutePath().toString())
-            ?: io.bail("Cannot find file in filesystem: $file")
+            ?: collector.reportError("Cannot find grammar file in filesystem: $file")
 
     val jccFile = psiManager.findFile(virtualFile) as? JccFile
-        ?: io.bail("Find was not a JJTree/JavaCC grammar")
+        ?: collector.reportError("File was not a JJTree/JavaCC grammar")
 
     return jccFile.also {
         (it as JccFileImpl).grammarNature = GrammarNature.JJTRICKS

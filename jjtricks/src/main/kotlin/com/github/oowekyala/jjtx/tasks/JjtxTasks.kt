@@ -151,7 +151,7 @@ class GenerateNodesTask(ctx: JjtxContext,
         val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
 
         if (activeId == null) {
-            ctx.messageCollector.reportNormal("No node generation schemes configured")
+            ctx.messageCollector.reportNormal("No node generation schemes configured (set jjtx.activeGenScheme)")
             return@lazy emptyList<FileGenTask>()
         }
 
