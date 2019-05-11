@@ -12,6 +12,7 @@ enum class JccCoreIcons(icon: Icon) : Icon by icon {
     /** File type icon.  */
     JAVACC_FILE("jccFile.svg"),
     JJTREE_FILE("jjtreeFile.svg"),
+    JJTRICKS_FILE("jjtreeFile.svg"),
     ;
 
     constructor(fname: String) : this(IconLoader.getIcon(fname))

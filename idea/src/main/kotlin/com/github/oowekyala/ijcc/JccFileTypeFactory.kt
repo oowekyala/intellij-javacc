@@ -9,5 +9,6 @@ class JavaccFileTypeFactory : FileTypeFactory() {
     override fun createFileTypes(consumer: FileTypeConsumer) {
         consumer.consume(JavaccFileType, "jj")
         consumer.consume(JjtreeFileType, "jjt")
+        consumer.consume(JjtricksFileType, "jjtx")
     }
 }

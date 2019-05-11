@@ -31,3 +31,18 @@ object JjtreeFileType : LanguageFileType(JavaccLanguage) {
 
     override fun getDescription(): String = "JJTree grammar"
 }
+
+/**
+ * This third file type is available for JJTricks files.
+ *
+ * @since 1.4
+ */
+object JjtricksFileType : LanguageFileType(JavaccLanguage) {
+    override fun getIcon(): Icon = JccCoreIcons.JJTREE_FILE
+
+    override fun getName(): String = "JJTRICKS_GRAMMAR"
+
+    override fun getDefaultExtension(): String = "jjtx"
+
+    override fun getDescription(): String = "JJTricks grammar"
+}

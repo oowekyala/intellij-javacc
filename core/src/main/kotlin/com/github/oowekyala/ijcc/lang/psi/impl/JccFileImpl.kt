@@ -3,6 +3,7 @@ package com.github.oowekyala.ijcc.lang.psi.impl
 import com.github.oowekyala.ijcc.JavaccFileType
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.JjtreeFileType
+import com.github.oowekyala.ijcc.JjtricksFileType
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
@@ -52,9 +53,10 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override var grammarNature: GrammarNature = when (fileType) {
         // isInInjection -> GrammarNature.UNKNOWN
-        JjtreeFileType -> GrammarNature.JJTREE
-        JavaccFileType -> GrammarNature.JAVACC
-        else           -> GrammarNature.UNKNOWN
+        JjtreeFileType   -> GrammarNature.JJTREE
+        JavaccFileType   -> GrammarNature.JAVACC
+        JjtricksFileType -> GrammarNature.JJTRICKS
+        else             -> GrammarNature.UNKNOWN
     }
         set(value) {
             field = value
