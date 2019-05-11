@@ -224,7 +224,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +bgen() + Endl
             }
             emitTryTail(thrownExceptions, nodeVar)
-            +egen()
+            +egen() + Endl
         }
 
     private fun OutStream.emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = this.apply {
@@ -245,7 +245,7 @@ private class JjtxCompilVisitor(val file: JccFile,
         }
         -" finally " + {
             +"if (" + nodeVar.closedVar + ") " + {
-                emitCloseNodeCode(nodeVar, true) + Endl
+                emitCloseNodeCode(nodeVar, true)
             } + Endl
         } + Endl
     }
