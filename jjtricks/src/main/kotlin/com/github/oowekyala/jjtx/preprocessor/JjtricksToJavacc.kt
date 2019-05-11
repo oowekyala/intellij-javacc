@@ -57,7 +57,7 @@ fun toJavaccString(input: JccFile, options: JavaccGenOptions = JavaccGenOptions(
 
 private fun bgen(arg: String = ""): String {
     val a = if (arg.isNotEmpty()) " ${arg.trim()} " else ""
-    return "/*@bgen(jjtricks)$a*/"
+    return "/*@bgen(jjtree)$a*/" // FIXME "jjtree" is hardcoded in JavaCC's codebase
 }
 
 private fun egen() = "/*@egen*/ "
