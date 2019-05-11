@@ -109,7 +109,7 @@ class Jjtricks(
 
     private fun produceContext(project: Project, collector: MessageCollector): JjtxContext {
 
-        args.force()
+//        args.force()
 
         val grammarFile = findGrammarFile(io, grammarPath)
         val configChain = validateConfigFiles(io, grammarFile, configFiles, collector)

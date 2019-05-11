@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx.util
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.openapi.util.text.StringUtil
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
@@ -30,6 +31,8 @@ fun String.splitAroundLast(delimiter: Char, firstBias: Boolean = false): Pair<St
         substringBeforeLast(delimiter, missingDelimiterValue = if (firstBias) this else ""),
         substringAfterLast(delimiter, missingDelimiterValue = if (firstBias) "" else this)
     )
+
+fun String.removeTrailingSpaces() = StringUtil.trimTrailing(this)
 
 val Path.extension: String?
     get() = toFile().extension.takeIf { it.isNotEmpty() }

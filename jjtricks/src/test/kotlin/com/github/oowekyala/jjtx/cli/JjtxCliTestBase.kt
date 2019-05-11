@@ -4,6 +4,7 @@ import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.util.StringSource
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.util.Comparing
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
 import junit.framework.Assert.assertEquals
