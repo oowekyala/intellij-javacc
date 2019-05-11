@@ -19,7 +19,7 @@ import com.intellij.psi.tree.IFileElementType
  */
 interface JccFile : PsiFile, JccPsiElement
 //    FIXME
-//    , PsiClassOwner
+    , PsiClassOwner
 {
 
     /** The unique parser declaration of this file. */
@@ -55,17 +55,15 @@ interface JccFile : PsiFile, JccPsiElement
 
     val tokenManagerDecls: Sequence<JccTokenManagerDecls>
 
-
     val grammarNature: GrammarNature
-
 
     // FIXME PsiClassOwnerNotResolved!!
 
-    fun getClasses(): Array<PsiClass>
+    override fun getClasses(): Array<PsiClass>
 
-    fun getPackageName(): String
+    override fun getPackageName(): String
 
-    fun setPackageName(var1: String?)
+    override fun setPackageName(var1: String?)
 
 
     companion object {
