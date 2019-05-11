@@ -4,43 +4,12 @@ package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.preprocessor.OutStream.Endl
-import com.github.oowekyala.jjtx.util.position
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.util.*
-
-
-/**
- * Reports syntax errors, returns true if any are found.
- */
-fun JccFile.reportSyntaxErrors(ctx: JjtxContext): Boolean {
-
-    // TODO check errors in the java compilation unit
-
-    val visitor = object : JccVisitor() {
-
-        var invalidSyntax = false
-
-        override fun visitElement(element: PsiElement) {
-            element.acceptChildren(this)
-        }
-
-        override fun visitErrorElement(element: PsiErrorElement) {
-            invalidSyntax = true
-            ctx.messageCollector.reportNonFatal("Syntax error: ${element.errorDescription}", position = element.position())
-        }
-
-    }
-
-    this.accept(visitor)
-
-    return visitor.invalidSyntax
-}
 
 
 fun toJavacc(input: JccFile, out: OutputStream, options: JavaccGenOptions) {
@@ -204,7 +173,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     private fun JccJavaBlock.reindentJava(indent: String): String =
         text.removeSurrounding("{", "}").replaceIndent(indent).trim()
 
-    private fun String.escapeJjtThis(nodeVar: NodeVar): String = replace("jjtThis", nodeVar.varName)
+    private fun String.escapeJjtThis(nodeVar: NodeVar): String = builder.escapeJjtThis(nodeVar, this)
 
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {

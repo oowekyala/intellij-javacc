@@ -1,7 +1,6 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.addParserPackage
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
@@ -34,6 +33,8 @@ interface JjtxBuilderStrategy {
     fun setLastToken(nodeVar: NodeVar): String?
 
     fun popNode(nodeVar: NodeVar): String
+
+    fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
 
 }
@@ -142,10 +143,12 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     }
 
     private fun String.filterIfCompat(nodeVar: NodeVar): String =
-        if (compat.fixJjtThisConditionScope) filterJjtThis(nodeVar) else this
+        if (compat.fixJjtThisConditionScope) escapeJjtThis(nodeVar, this) else this
 
-    private fun String.filterJjtThis(nodeVar: NodeVar): String =
-        replace("jjtThis", nodeVar.varName)
+
+    override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
+        expression.replace("jjtThis", nodeVar.varName)
+
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 }
