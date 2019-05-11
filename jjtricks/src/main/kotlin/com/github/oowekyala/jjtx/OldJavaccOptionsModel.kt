@@ -40,6 +40,7 @@ internal class OldJavaccOptionsModel(
 
     override val javaccGen: JavaccGenOptions = JavaccGenOptions.FullJjtreeCompat
 
+
     override val typeHierarchy: NodeVBean = NodeVBean(
         name = grammarOptions.rootNodeClass.substringAfterLast('.'),
         `class` = ClassVBean(grammarOptions.rootNodeClass),

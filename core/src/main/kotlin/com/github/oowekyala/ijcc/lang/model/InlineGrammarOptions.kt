@@ -61,5 +61,7 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
         val knownOptions: Map<String, GenericOption<*>> =
             JccOption.values.plus(JjtOption.values).associateBy { it.name }
 
+        private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
+
     }
 }

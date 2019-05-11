@@ -1,0 +1,3 @@
+JJTricks v1.0
+Running tasks [gen:javacc], on SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj

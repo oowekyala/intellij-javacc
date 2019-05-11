@@ -56,3 +56,18 @@ data class JavaccGenOptions(
         )
     }
 }
+
+
+data class JjtreeCompatBean(
+    var fixJjtThisConditionScope: Boolean = true,
+    var implementNodeConstants: Boolean = true,
+    //    var dontCloseBeforeLastParserAction: Boolean = false,
+    var setTokensBeforeHooks: Boolean = false
+) {
+
+    fun toModel(): JavaccGenOptions = JavaccGenOptions(
+        fixJjtThisConditionScope = fixJjtThisConditionScope,
+        implementNodeConstants = implementNodeConstants,
+        setTokensBeforeHooks = setTokensBeforeHooks
+    )
+}
