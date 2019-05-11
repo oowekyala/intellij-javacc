@@ -145,7 +145,7 @@ abstract class JjtxCliTestBase {
 
             val name = javaClass.simpleName.removeSuffix("CliTest").decapitalize()
 
-            val path = JjtxCliTestBase::class.java.`package`.name.replace('.', '/')
+            val path = javaClass.`package`.name.replace('.', '/')
 
             return SrcTestResources.resolve("$path/$name")
                 .also { assert(it.isDirectory()) { "$it should have been a directory" } }
