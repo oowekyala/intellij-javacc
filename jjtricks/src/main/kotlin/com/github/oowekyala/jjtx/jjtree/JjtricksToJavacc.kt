@@ -70,8 +70,16 @@ private fun String.minCommonIndent(): Int =
 
 private fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let { if (it == -1) length else it }
 
+
+data class JjtreeCompat(
+    val fixLastParserActionsScope: Boolean = true,
+    val fixJjtThisConditionScope: Boolean = true,
+    val setTokensBeforeHooks: Boolean = true
+)
+
 private class JjtxCompilVisitor(val file: JccFile,
                                 outputStream: OutputStream,
+                                val compat: JjtreeCompat,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
     private val out = OutStream(outputStream, "    ")
@@ -203,9 +211,15 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     private fun emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = out.apply {
         with(builder) {
-            setLastToken(nodeVar)?.let {
-                +it + Endl
-            }
+
+            fun doSetLastToken() =
+                setLastToken(nodeVar)?.let {
+                    +it + Endl
+                }
+
+
+            if (compat.setTokensBeforeHooks) doSetLastToken()
+
             +closeNodeScope(nodeVar) + Endl
             if (!isFinal) {
                 +nodeVar.closedVar + " = false;" + Endl
@@ -214,6 +228,8 @@ private class JjtxCompilVisitor(val file: JccFile,
             closeNodeHook(nodeVar)?.let {
                 +it + Endl
             }
+
+            if (!compat.setTokensBeforeHooks) doSetLastToken()
         }
     }
 
@@ -221,13 +237,20 @@ private class JjtxCompilVisitor(val file: JccFile,
         with(builder) {
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl
-            setFirstToken(nodeVar)?.let {
-                +it + Endl
-            }
+
+            fun doSetFirstToken() =
+                setFirstToken(nodeVar)?.let {
+                    +it + Endl
+                }
+
+            if (compat.setTokensBeforeHooks) doSetFirstToken()
+
             openNodeHook(nodeVar)?.let {
                 +it + Endl
             }
             +openNodeScope(nodeVar) + Endl
+
+            if (!compat.setTokensBeforeHooks) doSetFirstToken()
         }
     }
 
