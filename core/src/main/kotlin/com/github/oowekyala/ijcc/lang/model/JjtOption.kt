@@ -30,12 +30,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
 
     /** If set defines the name of a user-supplied class that will extend SimpleNode. Any tree nodes created will then be subclasses of NODE_CLASS. */
     object NODE_CLASS : JjtOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: IGrammarOptions): String {
-            return config.nodePackage.let {
-                if (it.isEmpty()) "SimpleNode"
-                else "$it.SimpleNode"
-            }
-        }
+        override fun contextualDefaultValue(config: IGrammarOptions): String = config.addPackage("SimpleNode")
     }
 
     /**
@@ -54,7 +49,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
                 || optionBinding.matchesType(BOOLEAN)
                 || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
             ) {
-                config.nodePackage + ".SimpleNode" // the actual default
+                config.addPackage("SimpleNode") // the actual default
             } else optionBinding.stringValue
     }
 

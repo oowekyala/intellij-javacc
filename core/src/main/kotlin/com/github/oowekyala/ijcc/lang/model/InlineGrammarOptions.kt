@@ -3,8 +3,6 @@ package com.github.oowekyala.ijcc.lang.model
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
-import java.nio.file.Path
-import java.nio.file.Paths
 
 
 /**
@@ -17,6 +15,9 @@ import java.nio.file.Paths
 class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGrammarOptions {
 
     override val inlineBindings: InlineGrammarOptions = this
+
+
+    override val isTrackTokens: Boolean by lazy { getOptionValueOrDefault(JjtOption.TRACK_TOKENS) }
 
     val rootNodeClass : String by lazy { getOptionValueOrDefault(JjtOption.NODE_CLASS) }
 

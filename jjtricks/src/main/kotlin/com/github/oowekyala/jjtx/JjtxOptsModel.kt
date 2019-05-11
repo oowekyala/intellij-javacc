@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
+import com.github.oowekyala.ijcc.lang.model.addPackage
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
@@ -138,8 +139,3 @@ interface JjtxOptsModel : IGrammarOptions {
 
     }
 }
-
-
-fun JjtxOptsModel.addPackage(simpleName: String) =
-    nodePackage.let { if (it.isNotEmpty()) "$it.$simpleName" else simpleName }
-

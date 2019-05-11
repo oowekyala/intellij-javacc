@@ -29,6 +29,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     override val nodePrefix: String by jjtx.withDefault { parentModel.nodePrefix }
     override val nodePackage: String by jjtx.withDefault { parentModel.nodePackage }
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
+    override val isTrackTokens: Boolean by jjtx.withDefault { parentModel.isTrackTokens }
 
     override val templateContext: Map<String, Any> by
     jjtx.withDefault { emptyMap<String, Any>() }

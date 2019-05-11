@@ -21,6 +21,8 @@ internal class OldJavaccOptionsModel(
 
     override val inlineBindings: InlineGrammarOptions = grammarOptions
 
+    override val isTrackTokens: Boolean = grammarOptions.isTrackTokens
+
     override val isDefaultVoid: Boolean = grammarOptions.isDefaultVoid
 
     override val parentModel: JjtxOptsModel? = null

@@ -11,9 +11,13 @@ interface IGrammarOptions {
     val nodePackage: String
     val isDefaultVoid: Boolean
     val nodePrefix: String
+    val isTrackTokens: Boolean
 
     val inlineBindings: InlineGrammarOptions
 }
+
+fun IGrammarOptions.addPackage(str: String) =
+    nodePackage.let { if (it.isEmpty()) str else "$it.str" }
 
 
 val JccFile.allOptionsBindings: List<JccOptionBinding> get() = options?.optionBindingList ?: emptyList()

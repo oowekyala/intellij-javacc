@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
+import com.github.oowekyala.ijcc.lang.model.addPackage
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.addPackage
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.Severity
 import java.util.regex.PatternSyntaxException
