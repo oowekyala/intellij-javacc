@@ -2,6 +2,7 @@
 
 package com.github.oowekyala.jjtx.preprocessor
 
+import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.jjtx.JjtxContext
@@ -107,6 +108,16 @@ private class JjtxCompilVisitor(val file: JccFile,
             }
         }
     }
+
+    override fun visitOptionBinding(o: JccOptionBinding) {
+        if (o.modelOption!!.supportedNature > GrammarNature.JAVACC) {
+            // erase it
+            out.printWhiteOut(o.text)
+        } else {
+            super.visitOptionBinding(o)
+        }
+    }
+
 
 
     override fun visitBnfProduction(o: JccBnfProduction) {
