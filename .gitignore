@@ -165,3 +165,5 @@ idea/build
 velocity.log
 velocity.log.*
 jjtricks/build
+src/test/testGen/gen/
+jjtricks/src/test/testGen/gen/
