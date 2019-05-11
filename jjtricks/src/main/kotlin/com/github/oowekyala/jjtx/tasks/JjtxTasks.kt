@@ -18,6 +18,57 @@ import java.io.PrintStream
 import java.nio.file.Path
 
 
+enum class JjtxTaskKey(val ref: String) {
+    DUMP_CONFIG("dump:config"),
+    GEN_VISITORS("gen:visitors"),
+    GEN_NODES("gen:nodes"),
+    GEN_JAVACC("gen:javacc");
+
+
+    val namespace = ref.substringBefore(':')
+    val localName = ref.substringAfter(':')
+
+    override fun toString(): String = ref
+
+    companion object {
+        private val nss = mutableMapOf<String, MutableList<String>>()
+        private val refs = mutableMapOf<String, JjtxTaskKey>()
+
+        init {
+            for (k in values()) {
+                nss.computeIfAbsent(k.namespace) { mutableListOf() } += k.localName
+                refs[k.ref] = k
+            }
+        }
+
+        fun parse(string: String, io: Io): List<JjtxTaskKey> {
+            if (string in refs) return listOf(refs[string]!!)
+
+            val (ns, local) = string.splitAroundFirst(':')
+
+            return when {
+                // foo:*
+                local == "*" && ns.isNotEmpty() -> {
+                    val nskeys = nss.getOrDefault(ns, emptyList<String>())
+                    if (nskeys.isEmpty()) {
+                        io.bail("Task group $ns not known, available tasks $refs")
+                    }
+
+                    nskeys.mapNotNull { refs["$ns:$it"] }
+                }
+                // foo is local
+                ns.isEmpty()                    ->
+                    refs.values.firstOrNull { it.localName == local }?.let { listOf(it) }
+                        ?: io.bail("Task $local not known, available tasks $refs")
+                else                            -> emptyList()
+            }
+
+        }
+
+    }
+}
+
+
 sealed class JjtxTask {
 
     abstract fun execute()
@@ -143,11 +194,10 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<
  */
 class GenerateNodesTask(ctx: JjtxContext,
                         outputDir: Path,
-                        otherSourceRoots: List<Path>,
-                        private val activeIdOverride: String?) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
+                        otherSourceRoots: List<Path>) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
 
     override val generationTasks: List<FileGenTask> by lazy {
-        val activeId = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme
+        val activeId = ctx.jjtxOptsModel.activeNodeGenerationScheme
         val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
 
         if (activeId == null) {
@@ -173,7 +223,7 @@ class GenerateNodesTask(ctx: JjtxContext,
     override val header: String = "NODE_GEN"
 
     override val configString: String
-        get() = activeIdOverride ?: ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
+        get() = ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
 
     override val exceptionCtx: String = "Generating nodes"
 }

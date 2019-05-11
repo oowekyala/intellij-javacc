@@ -8,10 +8,8 @@ import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.DoExitNowError
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
-import com.github.oowekyala.jjtx.tasks.DumpConfigTask
-import com.github.oowekyala.jjtx.tasks.GenerateJavaccTask
-import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
-import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
+import com.github.oowekyala.jjtx.tasks.*
+import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
 import com.github.oowekyala.jjtx.util.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
@@ -35,15 +33,25 @@ class Jjtricks(
     private val io: Io = Io()
 ) {
 
+    private val argCheckIo = io.copy(exit = { m, c -> throw SystemExitException(m, c) })
+
     private val grammarPath: Path by args.positional(
         name = "GRAMMAR",
         help = "Path to a grammar file (the extension can be omitted)"
     ) {
         toPath().normalize()
     }.addValidator {
-        val myIo = io.copy(exit = { m, c -> throw SystemExitException(m, c) })
-        findGrammarFile(myIo, value)
+        findGrammarFile(argCheckIo, value)
     }
+
+    private val tasksImpl: List<List<JjtxTaskKey>> by args.positionalList(
+        name = "TASK",
+        help = "List of tasks to run, available ones ${values().map { it.ref }}. The syntax 'gen:*' selects all tasks in the 'gen' group"
+    ) {
+        JjtxTaskKey.parse(this, argCheckIo)
+    }
+
+    private val myTasks: Set<JjtxTaskKey> get() = tasksImpl.flatten().toSet()
 
 
     private val outputRoot: Path by args.storing(
@@ -58,14 +66,6 @@ class Jjtricks(
                 ExitCode.ERROR.toInt
             )
         }
-    }
-
-    // TODO allow overriding some keys from command-line and remove this
-    private val activeGenProfile: String? by args.storing(
-        "--node-gen",
-        help = "ID of the node generation scheme to use. Can also be configured with the jjtx.activeGenScheme key."
-    ).default {
-        null
     }
 
     private val sourceRoots by args.adding(
@@ -137,24 +137,33 @@ class Jjtricks(
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
-        if (isDumpConfig) {
+        val tasks = myTasks
+
+        err.reportNormal("JJTricks v$VERSION running with tasks $tasks")
+
+        if (DUMP_CONFIG in tasks) {
             err.catchException("Exception while dumping configuration task") {
                 DumpConfigTask(ctx, io.stdout).execute()
             }
-            ctx.messageCollector.concludeReport()
-            io.exit(ExitCode.OK)
         }
 
-        err.catchException("Exception while generating visitors") {
-            GenerateVisitorsTask(ctx, outputRoot, sourceRoots.toList()).execute()
+        // node generation depends on the visitors
+        if (GEN_VISITORS in tasks || GEN_NODES in tasks) {
+            err.catchException("Exception while generating visitors") {
+                GenerateVisitorsTask(ctx, outputRoot, sourceRoots.toList()).execute()
+            }
         }
 
-        err.catchException("Exception while generating node files") {
-            GenerateNodesTask(ctx, outputRoot, sourceRoots.toList(), activeGenProfile).execute()
+        if (GEN_NODES in tasks) {
+            err.catchException("Exception while generating node files") {
+                GenerateNodesTask(ctx, outputRoot, sourceRoots.toList()).execute()
+            }
         }
 
-        err.catchException("Exception while generating JavaCC file") {
-            GenerateJavaccTask(ctx, outputRoot).execute()
+        if (GEN_JAVACC in tasks) {
+            err.catchException("Exception while generating JavaCC file") {
+                GenerateJavaccTask(ctx, outputRoot).execute()
+            }
         }
 
         ctx.messageCollector.concludeReport()
@@ -173,6 +182,9 @@ class Jjtricks(
 
 
     companion object {
+
+
+        const val VERSION = "1.0"
 
         private val DESCRIPTION = """
             A code generator for JJTree grammars, with emphasis on very high
