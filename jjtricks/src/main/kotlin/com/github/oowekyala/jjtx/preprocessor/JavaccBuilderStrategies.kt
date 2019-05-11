@@ -1,12 +1,18 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
+import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
+import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
 
 interface JjtxBuilderStrategy {
 
     fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?, scopingDepth: Int): NodeVar?
+
+    fun parserImplements(): List<String>
+
+    fun parserImports(): List<String>
 
     fun createNode(nodeVar: NodeVar): String
 
@@ -40,6 +46,13 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     private val nodeFactory = bindings.jjtNodeFactory
     private val usesParser = bindings.jjtNodeConstructionUsesParser
+
+
+    private val myImports = mutableSetOf<String>().also {
+        if (grammarOptions.nodePackage.isNotEmpty()) {
+            it += grammarOptions.nodePackage + ".*"
+        }
+    }
 
     private val NodeVar.nodeId
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
@@ -75,6 +88,18 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
             else                     -> "new $nc$args"
         }
     }
+
+    override fun parserImplements(): List<String> =
+        if (compat.implementNodeConstants)
+            listOf("${grammarOptions.parserSimpleName}TreeConstants")
+        else emptyList()
+
+    override fun parserImports(): List<String> =
+        myImports.also {
+            if (!compat.implementNodeConstants) {
+                it += "static ${grammarOptions.parserQualifiedName}TreeConstants.*"
+            }
+        }.sorted()
 
     override fun openNodeHook(nodeVar: NodeVar): String? =
         if (bindings.jjtCustomNodeHooks) "jjtOpenNodeScope(${nodeVar.varName});" else null

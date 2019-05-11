@@ -4,7 +4,6 @@ package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.preprocessor.OutStream.Endl
 import com.github.oowekyala.jjtx.util.position
@@ -20,6 +19,8 @@ import java.util.*
  * Reports syntax errors, returns true if any are found.
  */
 fun JccFile.reportSyntaxErrors(ctx: JjtxContext): Boolean {
+
+    // TODO check errors in the java compilation unit
 
     val visitor = object : JccVisitor() {
 
@@ -62,22 +63,29 @@ private fun bgen(arg: String = ""): String {
 
 private fun egen() = "/*@egen*/ "
 
-private fun JccParserDeclaration.addImports(vararg qnames: String) {
+private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
 
-    val unit = javaCompilationUnit!!.text
-    val indent = " ".repeat(unit.minCommonIndent())
+    // The indent preceding the first non-whitespace of the JCU
+    // is in the previous sibling
+    val prevIndent =
+        prevSibling
+            ?.takeIf { it.isWhitespace }
+            ?.text
+            ?.substringAfterLast("\n", "")
+            ?: ""
+
+    val unit= this.text!!
+    val indent = " ".repeat((prevIndent + unit).minCommonIndent())
 
 
     val imports = StringBuilder("\n")
     for (qname in qnames) {
-        imports.append("${indent}import $qname;\n")
+        imports.append(indent).append("import ").append(qname).appendln(";")
     }
 
-    val idx = packageRegex.find(unit)?.range?.last ?: 0
+    val idx = (packageRegex.find(unit)?.range?.last ?: 0) + 1
 
-    val jcu = project.jccEltFactory.createJcu(StringBuilder(unit).insert(idx, imports).toString())
-
-    javaCompilationUnit!!.replace(jcu)
+    return StringBuilder(unit).insert(idx, imports).toString()
 }
 
 
@@ -118,7 +126,35 @@ private class JjtxCompilVisitor(val file: JccFile,
         }
     }
 
+    private val implementsRegex = Regex("implements|\\{")
 
+    // So ugly
+    override fun visitJavaCompilationUnit(o: JccJavaCompilationUnit) {
+
+        val sb = StringBuilder(o.addImports(builder.parserImports()))
+
+        if (builder.parserImplements().isNotEmpty()) {
+
+            val implPoint = implementsRegex.find(sb)!!
+
+            when {
+                implPoint.value == "implements" -> {
+                    sb.insert(
+                        implPoint.range.endInclusive + 1,
+                        bgen() + builder.parserImplements().joinToString(prefix = ", ") + egen()
+                    )
+                }
+                else                            -> {
+                    sb.insert(
+                        implPoint.range.start - 1,
+                        bgen() + builder.parserImplements().joinToString(prefix = "implements ") + egen()
+                    )
+                }
+            }
+        }
+
+        out.printSource(sb.toString())
+    }
 
     override fun visitBnfProduction(o: JccBnfProduction) {
         val nodeVar = builder.makeNodeVar(o, null, 0) ?: return super.visitBnfProduction(o)

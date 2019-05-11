@@ -32,7 +32,14 @@ data class JavaccGenOptions(
      * and close hooks. This is better as the tokens are then available
      * inside those hooks.
      */
-    val setTokensBeforeHooks: Boolean = true
+    val setTokensBeforeHooks: Boolean = true,
+
+    /**
+     * If set to true, the parser will implement the interface containing
+     * the constants. This is a code smell and is kept only for compatibility
+     * with Jjtree.
+     */
+    val implementNodeConstants: Boolean = false
 ) {
 
 
@@ -40,7 +47,8 @@ data class JavaccGenOptions(
         val FullJjtreeCompat = JavaccGenOptions(
             dontCloseBeforeLastParserAction = false,
             fixJjtThisConditionScope = false,
-            setTokensBeforeHooks = false
+            setTokensBeforeHooks = false,
+            implementNodeConstants = true
         )
     }
 }

@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.typeHierarchy
 
-import com.github.oowekyala.ijcc.lang.model.addPackage
+import com.github.oowekyala.ijcc.lang.model.addNodePackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.Severity
@@ -45,14 +45,14 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         nodeName[0] == '%'              -> {
             val short = nodeName.substring(1)
             Triple(
-                ctx.jjtxOptsModel.addPackage(short),
+                ctx.jjtxOptsModel.addNodePackage(short),
                 short,
                 Specificity.QUOTED
             )
         }
         nodeName.matches(Regex("\\w+")) ->
             Triple(
-                ctx.jjtxOptsModel.addPackage(ctx.jjtxOptsModel.nodePrefix + nodeName),
+                ctx.jjtxOptsModel.addNodePackage(ctx.jjtxOptsModel.nodePrefix + nodeName),
                 nodeName,
                 Specificity.RESOLVED
             )
@@ -111,7 +111,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
     }
     return matching.map {
         TypeHierarchyTree(
-            ctx.jjtxOptsModel.addPackage(ctx.jjtxOptsModel.nodePrefix + it),
+            ctx.jjtxOptsModel.addNodePackage(ctx.jjtxOptsModel.nodePrefix + it),
             positionInfo,
             emptyList(),
             Specificity.REGEX

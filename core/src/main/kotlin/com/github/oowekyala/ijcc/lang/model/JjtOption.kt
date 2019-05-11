@@ -33,7 +33,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      * If set, also changes the type of the jjtThis references to only be that.
      */
     object NODE_CLASS : JjtOption<String>(RefinedOptionType.TYPE, "") {
-        override fun contextualDefaultValue(config: IGrammarOptions): String = config.addPackage("SimpleNode")
+        override fun contextualDefaultValue(config: IGrammarOptions): String = config.addNodePackage("SimpleNode")
     }
 
     /**
@@ -53,7 +53,7 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
                 || optionBinding.matchesType(BOOLEAN)
                 || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
             )
-                config.addPackage("SimpleNode")
+                config.addNodePackage("SimpleNode")
             else optionBinding.stringValue
     }
 

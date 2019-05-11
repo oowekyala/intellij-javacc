@@ -1,7 +1,6 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.addPackage
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
