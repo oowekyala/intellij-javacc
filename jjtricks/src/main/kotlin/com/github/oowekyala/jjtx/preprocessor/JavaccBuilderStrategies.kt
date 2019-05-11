@@ -135,15 +135,14 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
         return when {
-            d == null -> "jjtree.closeNodeScope($n, true);"
+            d == null        -> "jjtree.closeNodeScope($n, true);"
             d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(nodeVar)});"
-            else -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
+            else             -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
         }
     }
 
     private fun String.filterIfCompat(nodeVar: NodeVar): String =
-        if (compat.fixJjtThisConditionScope) filterJjtThis(nodeVar)
-        else this
+        if (compat.fixJjtThisConditionScope) filterJjtThis(nodeVar) else this
 
     private fun String.filterJjtThis(nodeVar: NodeVar): String =
         replace("jjtThis", nodeVar.varName)

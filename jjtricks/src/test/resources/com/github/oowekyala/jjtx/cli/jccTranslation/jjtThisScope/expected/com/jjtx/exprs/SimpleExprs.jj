@@ -74,7 +74,7 @@ void BinaryExpression(): {
         /*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
         if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, jjtThis.foo());
+            jjtree.closeNodeScope(jjtn000, jjtn000.foo());
             jjtc000 = false;
         } else {
             jjtree.popNode();
@@ -84,7 +84,7 @@ void BinaryExpression(): {
         throw (Error) jjte000;
     } finally {
         if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, jjtThis.foo());
+            jjtree.closeNodeScope(jjtn000, jjtn000.foo());
         }
     }
     /*@egen*/
@@ -103,7 +103,7 @@ void UnaryExpr() : {}
     /*@bgen(jjtree)*/
 } catch (Throwable jjte000) {
     if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
+        jjtree.closeNodeScope(jjtn000, jjtn000.numChildren() > 1);
         jjtc000 = false;
     } else {
         jjtree.popNode();
@@ -113,7 +113,7 @@ void UnaryExpr() : {}
     throw (Error) jjte000;
 } finally {
     if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
+        jjtree.closeNodeScope(jjtn000, jjtn000.numChildren() > 1);
     }
 }
 /*@egen*/

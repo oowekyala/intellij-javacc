@@ -40,7 +40,7 @@ void BinaryExpression() #BinaryExpr(jjtThis.foo()): {}
 
 void UnaryExpr() #void: {}
 {
-  ("(" Expression() ")") #ParenthesizedExpr | Integer()
+  ("(" Expression() ")") #ParenthesizedExpr(jjtThis.numChildren() > 1) | Integer()
 }
 
 void Integer() #IntegerLiteral: {}

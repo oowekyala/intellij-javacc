@@ -57,9 +57,11 @@ data class JavaccGenOptions(
     }
 }
 
-
+/**
+ * Defaults correspond to [JavaccGenOptions.FullJjtreeCompat].
+ */
 data class JjtreeCompatBean(
-    var fixJjtThisConditionScope: Boolean = true,
+    var fixJjtThisConditionScope: Boolean = false,
     var implementNodeConstants: Boolean = true,
     //    var dontCloseBeforeLastParserAction: Boolean = false,
     var setTokensBeforeHooks: Boolean = false
