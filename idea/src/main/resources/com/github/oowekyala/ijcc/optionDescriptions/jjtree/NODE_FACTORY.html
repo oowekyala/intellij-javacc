@@ -3,5 +3,10 @@ Specify a class containing a factory method with following signature to construc
      public static Node jjtCreate(int id)
 </pre>
 
-<p>For backwards compatibility, the value false may also be specified,
-    meaning that SimpleNode will be used as the factory class.
+<p>For backwards compatibility, the value true may also be specified,
+    meaning that the node class will be used as the factory class, for
+    each node. This is equivalent to using the string <code>"*"</code>
+    as a value.
+
+<p>If the value is an empty string (or default), the constructor of the
+    node class will be used instead.
