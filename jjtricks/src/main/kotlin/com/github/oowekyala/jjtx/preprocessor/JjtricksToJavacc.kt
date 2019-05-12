@@ -77,7 +77,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                                 val compat: JavaccGenOptions,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
-    private val out = DslPrintStream(outputStream, "    ")
+    private val out = DslPrintStream.forJavaccOutput(outputStream)
 
     private val stack = Stack<NodeVar>()
 

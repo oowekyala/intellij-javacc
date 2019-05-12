@@ -1,6 +1,5 @@
-package com.github.oowekyala.jjtx.misc
+package com.github.oowekyala.jjtx.util.io
 
-import com.github.oowekyala.jjtx.util.io.TrailingSpacesFilterOutputStream
 import io.kotlintest.shouldBe
 import org.junit.Test
 import java.io.ByteArrayOutputStream
@@ -12,7 +11,7 @@ import java.io.PrintStream
 class TrailingSpacesFilterTest {
 
 
-    fun printTest(ps: PrintStream.() -> Unit): String {
+    private fun printTest(ps: PrintStream.() -> Unit): String {
 
         val bos = ByteArrayOutputStream()
         val filter = PrintStream(TrailingSpacesFilterOutputStream(bos))

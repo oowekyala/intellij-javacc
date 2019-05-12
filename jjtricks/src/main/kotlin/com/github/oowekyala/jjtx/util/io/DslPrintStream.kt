@@ -67,4 +67,15 @@ internal class DslPrintStream(
      */
     object Endl
 
+    companion object {
+
+        fun forJavaccOutput(out: OutputStream): DslPrintStream {
+            val baseIndent = "    "
+            val os = out.let(::TrailingSpacesFilterOutputStream)
+
+            return DslPrintStream(os, baseIndent)
+        }
+
+
+    }
 }

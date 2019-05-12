@@ -81,7 +81,7 @@ data class JjtreeCompatBean(
     //    var dontCloseBeforeLastParserAction: Boolean = false,
     var setTokensBeforeHooks: Boolean = false,
     var descriptiveVariableNames: Boolean = false,
-    var forceCheckedExceptionsDeclaration: Boolean = false
+    var forceCheckedExceptionsDeclaration: Boolean = true
 ) {
 
     fun toModel(): JavaccGenOptions = JavaccGenOptions(

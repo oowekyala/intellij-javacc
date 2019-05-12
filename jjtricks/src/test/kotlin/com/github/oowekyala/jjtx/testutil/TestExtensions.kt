@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.testutil
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
 import com.github.oowekyala.jjtx.templates.NodeVBean
