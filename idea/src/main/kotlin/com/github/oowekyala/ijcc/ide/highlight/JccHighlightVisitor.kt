@@ -5,10 +5,12 @@ import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.errorInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.highlightInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.warningInfo
 import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceInfo
-import com.github.oowekyala.ijcc.ide.intentions.ReplaceLiteralWithReferenceIntention
+import com.github.oowekyala.ijcc.ide.intentions.ReplaceOptionValueIntention
 import com.github.oowekyala.ijcc.ide.intentions.ReplaceSupersedingUsageWithReferenceIntentionFix
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
+import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
+import com.github.oowekyala.ijcc.lang.model.JjtOption
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
@@ -181,8 +183,28 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         }
 
         if (!binding.matchesType(opt.expectedType)) {
-            binding.optionValue?.run {
-                myHolder += errorInfo(this, "Expected ${opt.expectedType}")
+            // this is a corner case, that option allows boolean values for backwards compatibility
+            if (opt == JjtOption.NODE_FACTORY && binding.matchesType(BOOLEAN)) {
+                binding.optionValue?.run {
+                    val fix =
+                        when {
+                            binding.stringValue.toBoolean() -> arrayOf(ReplaceOptionValueIntention("\"*\""))
+                            else                            -> arrayOf(ReplaceOptionValueIntention("\"\""))
+                        }
+
+                    myHolder += warningInfo(
+                        this,
+                        "NODE_FACTORY supports boolean values only for backwards compatibility"
+                    )
+                        .withQuickFix(*fix)
+                }
+            } else {
+                binding.optionValue?.run {
+                    myHolder += errorInfo(this, "Expected ${opt.expectedType}")
+                }
+                binding.optionValue?.run {
+                    myHolder += errorInfo(this, "Expected ${opt.expectedType}")
+                }
             }
         }
     }
