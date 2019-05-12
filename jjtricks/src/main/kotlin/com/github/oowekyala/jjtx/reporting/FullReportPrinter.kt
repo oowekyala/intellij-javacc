@@ -12,11 +12,8 @@ class FullReportPrinter(
     private val indent: String = ""
 ) : MessageCollector {
 
-    init {
-        if (contextStr != null) {
-            stream.println("[${contextStr.displayName}]")
-        }
-    }
+    private var contextPrinted = contextStr == null
+
 
     private fun iprintln(string: String) {
         stream.print(indent)
@@ -39,23 +36,29 @@ class FullReportPrinter(
     override fun reportEntry(reportEntry: ReportEntry) {
         if (reportEntry.severity < minSeverity) return
 
-        val (_, message, realSeverity, positions) = reportEntry
-        val logLine = "[${realSeverity.displayName}]".padEnd(padding) + message
-        iprintln(logLine)
-        positions.forEach {
-            iprintln(it.toString().indent(padding, indentStr = " "))
+        if (!contextPrinted && contextStr != null) {
+            printContextHeader(contextStr)
         }
-    }
 
-    override fun reportEntry(reportEntry: ExceptionEntry) {
         with(reportEntry) {
-            iprintln("Exception while $contextStr")
-            reportEntry.thrown.printStackTrace(stream)
+            iprintln("[${severity.displayName}]".padEnd(padding) + message)
+            positions.forEach {
+                iprintln(it.toString().indent(padding, indentStr = " "))
+            }
+
+            thrown?.printStackTrace(stream)
         }
 
-        if (reportEntry.doFail) {
+        if (reportEntry.severity == Severity.FAIL) {
             stream.flush()
             throw DoExitNowError()
         }
+    }
+
+    private fun printContextHeader(contextStr: ReportingContext) {
+        stream.print("[${contextStr.key}]")
+        if (contextStr.suffix != null) stream.println(" ${contextStr.suffix}")
+        else stream.println()
+        contextPrinted = true
     }
 }

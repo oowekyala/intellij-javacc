@@ -1,6 +1,5 @@
 package com.github.oowekyala.jjtx.reporting
 
-import com.github.oowekyala.ijcc.util.indent
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.util.baseIndent
 import java.io.PrintStream
@@ -12,12 +11,12 @@ import java.io.PrintStream
 class AggregateReportPrinter private constructor(
     private val stream: PrintStream,
     private val collected: MutableList<ReportEntry>,
-    private val contextStr: ReportingContext?
+    private val context: ReportingContext?
 ) : MessageCollector {
 
     constructor(stream: PrintStream, contextStr: ReportingContext? = null) : this(stream, mutableListOf(), contextStr)
 
-    private val padding = JjtxTaskKey.values().map { it.ref.length }.plus(InitCtx.displayName.length).max()!! + 4
+    private val padding = JjtxTaskKey.values().map { it.ref.length }.plus("init".length).max()!! + 4
 
     private var hadExceptions = false
 
@@ -25,7 +24,7 @@ class AggregateReportPrinter private constructor(
         FullReportPrinter(
             stream,
             minSeverity = Severity.IGNORE,
-            indent = if (contextStr == null) "" else baseIndent
+            indent = if (context == null) "" else baseIndent
         )
 
     override fun withContext(contextStr: ReportingContext): MessageCollector =
@@ -83,38 +82,9 @@ class AggregateReportPrinter private constructor(
 
 
     private fun iprintln(string: String) {
-        if (contextStr != null) {
-            stream.print("[${contextStr.displayName}]".padEnd(padding))
+        if (context != null) {
+            stream.print("[${context.key}]".padEnd(padding))
         }
         stream.println(string)
-    }
-
-    private fun ExceptionEntry.printSingleException(numOccurred: Int) {
-        val leader = if (numOccurred > 1) "$numOccurred exceptions" else "Exception"
-        if (contextStr != null) {
-            stream.println("$leader while ${contextStr.decapitalize()} (${thrown.javaClass.name})")
-        } else {
-            stream.println("$leader (${thrown.javaClass.name})")
-        }
-
-        if (position != null && altMessage != null) {
-            stream.println(altMessage.indent(1))
-            stream.println(position.toString().indent(1))
-            stream.println()
-        } else if (thrown.message != null) {
-            stream.println(thrown.message!!.trim().indent(1))
-            stream.println()
-        }
-    }
-
-    override fun reportEntry(reportEntry: ExceptionEntry) {
-        reportEntry.printSingleException(1)
-        hadExceptions = true
-
-        if (reportEntry.doFail) {
-            stream.println("Run with --warn to examine the stack trace")
-            stream.flush()
-            throw DoExitNowError()
-        }
     }
 }

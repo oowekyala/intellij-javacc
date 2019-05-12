@@ -4,7 +4,7 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.parse
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.reporting.reportError
+import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.*
 import org.apache.velocity.VelocityContext
@@ -55,7 +55,7 @@ private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: Strin
                 position = this.position
             )
         is AstScalar -> {
-            ctx.messageCollector.reportError("Expected map or sequence", position)
+            ctx.messageCollector.reportFatal("Expected map or sequence", position)
         }
     }
 
@@ -209,7 +209,7 @@ private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: Str
     val r = try {
         Regex(regexStr)
     } catch (e: PatternSyntaxException) {
-        ctx.messageCollector.reportError(
+        ctx.messageCollector.reportFatal(
             e.message ?: "Invalid regex",
             positionInfo
         )

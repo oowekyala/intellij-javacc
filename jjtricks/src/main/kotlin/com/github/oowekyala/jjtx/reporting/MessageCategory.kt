@@ -34,5 +34,6 @@ enum class MessageCategory(val minSeverity: Severity) {
     CLASS_NOT_GENERATED(Severity.FINE),
 
     NORMAL_EXEC_MESSAGE(Severity.NORMAL),
-    NON_FATAL(Severity.NON_FATAL)
+    NON_FATAL(Severity.NON_FATAL),
+    FATAL_ERROR(Severity.FAIL)
 }

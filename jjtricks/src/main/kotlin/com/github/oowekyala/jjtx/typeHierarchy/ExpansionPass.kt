@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.addNodePackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.reporting.reportError
+import com.github.oowekyala.jjtx.reporting.reportFatal
 import java.util.regex.PatternSyntaxException
 
 
@@ -33,7 +33,7 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         val r = try {
             Regex(value)
         } catch (e: PatternSyntaxException) {
-            ctx.messageCollector.reportError(
+            ctx.messageCollector.reportFatal(
                 e.message ?: "Invalid regex",
                 positionInfo
             )
@@ -97,7 +97,7 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
                 positionInfo
             )
         } else {
-            ctx.messageCollector.reportError(
+            ctx.messageCollector.reportFatal(
                 "Regex patterns should only be used as leaves, this pattern matches ${matching.size} nodes",
                 positionInfo
             )

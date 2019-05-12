@@ -110,7 +110,7 @@ class Jjtricks(
                                rootCollector: MessageCollector,
                                collector: MessageCollector): JjtxContext {
 
-        val collIo = io.copy(exit = { m, _ -> collector.reportError(m, null) })
+        val collIo = io.copy(exit = { m, _ -> collector.reportFatal(m, null) })
 
         val grammarFile = findGrammarFile(collIo, grammarPath)
         val configChain = validateConfigFiles(collIo, grammarFile, configFiles, collector)
@@ -349,7 +349,7 @@ private fun validateConfigFiles(io: Io,
                 prefix = "Cannot resolve option files: \n\t",
                 separator = "\n\t"
             )
-            messageCollector.reportError(message)
+            messageCollector.reportFatal(message)
         }
     }
 }

@@ -25,6 +25,12 @@ data class YamlPosition(
     override fun toString(): String = startMark.toString()
 }
 
+data class LineAndCol(val line: Int, val column: Int) : Position {
+
+    fun upgrade(text: CharSequence, filePath: Path): Position =
+        position(line, column, text, filePath)
+
+}
 
 fun position(textOffset: Int, text: CharSequence, filePath: Path): Position =
     GenericFilePosition(textOffset, text, filePath)

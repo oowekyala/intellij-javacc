@@ -6,7 +6,7 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.reporting.reportError
+import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.reporting.reportException
 import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
@@ -59,13 +59,13 @@ open class FileGenTask internal constructor(
 
         val fqcn = recogniseQname(templated)
         if (!fqcn.matches(StrictFqcnRegex)) {
-            ctx.messageCollector.reportError("'genClassName' should be a fully qualified class name, but was $templated")
+            ctx.messageCollector.reportFatal("'genClassName' should be a fully qualified class name, but was $templated")
         }
 
         val o: Path = outputDir.resolve(fqcn.replace('.', '/') + ".java").toAbsolutePath()
 
         if (o.isDirectory()) {
-            ctx.messageCollector.reportError("Output file $o is a directory")
+            ctx.messageCollector.reportFatal("Output file $o is a directory")
         }
 
         return Pair(templated, o)
@@ -88,7 +88,7 @@ open class FileGenTask internal constructor(
                     val file = ctx.grammarDir.resolve(template.fname).toFile()
 
                     if (!file.isFile) {
-                        ctx.messageCollector.reportError("File not found $file")
+                        ctx.messageCollector.reportFatal("File not found $file")
                     }
 
                     return file.readText()

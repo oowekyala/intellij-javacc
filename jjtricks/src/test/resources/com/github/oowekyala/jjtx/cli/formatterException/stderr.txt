@@ -3,6 +3,7 @@ JJTricks v1.0
 Running tasks [gen:visitors, gen:nodes, gen:javacc]
 
 [init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+[gen:nodes]         Executing profiles 'myGen'
 Exception while applying formatter 'java' on @output@/org/expr/Root.java (com.google.googlejavaformat.java.FormatterException)
      <identifier> expected
      in @output@/org/expr/Root.java:2:14:
@@ -39,6 +40,5 @@ Exception while applying formatter 'java' on @output@/org/expr/ExIntegerLiteral.
         public class extends org.expr.ExIntegerLiteral {
                       ^
 
-[gen:nodes]         Executing profiles 'myGen'
 [gen:nodes]         Generated 6 classes in @output@
 [gen:javacc]        Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj

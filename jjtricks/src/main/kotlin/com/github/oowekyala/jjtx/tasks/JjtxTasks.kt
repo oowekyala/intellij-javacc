@@ -123,6 +123,8 @@ abstract class GenerationTaskBase(
 
         val rootCtx = rootCtx()
 
+        ctx.messageCollector.reportNormal("Executing profiles '$configString'")
+
         for (gen in tasks) {
 
             try {
@@ -143,7 +145,6 @@ abstract class GenerationTaskBase(
             }
         }
 
-        ctx.messageCollector.reportNormal("Executing profiles '$configString'")
         if (generated > 0)
             ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
         if (aborted > 0)

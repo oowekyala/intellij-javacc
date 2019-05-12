@@ -8,8 +8,6 @@ interface MessageCollector {
 
     fun reportEntry(reportEntry: ReportEntry)
 
-    fun reportEntry(reportEntry: ExceptionEntry)
-
     fun concludeReport()
 
 
@@ -34,10 +32,6 @@ private object NoopCollector : MessageCollector {
     override fun withContext(contextStr: ReportingContext) = this
 
     override fun concludeReport() {
-        // do nothing
-    }
-
-    override fun reportEntry(reportEntry: ExceptionEntry) {
         // do nothing
     }
 

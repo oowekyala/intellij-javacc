@@ -10,13 +10,13 @@ fun MessageCollector.reportException(throwable: Throwable,
                                      fatal: Boolean = false,
                                      position: Position? = null) {
     reportEntry(
-        ExceptionEntry(
+        ReportEntry(
             thrown = throwable,
-            doFail = fatal,
+            severity = if (fatal) Severity.FAIL else Severity.NON_FATAL,
             timeStamp = Date(),
-            contextStr = contextStr,
-            position = position,
-            altMessage = altMessage
+            messageCategory = if (fatal) MessageCategory.FATAL_ERROR else MessageCategory.NON_FATAL,
+            positions = listOfNotNull(position),
+            message = altMessage ?: throwable.message ?: throwable.javaClass.name
         )
     )
 }
@@ -38,8 +38,10 @@ fun MessageCollector.reportNonFatal(message: String, position: Position?) {
 /**
  * Report a normal execution trace.
  */
-fun MessageCollector.reportError(message: String, position: Position? = null): Nothing {
+fun MessageCollector.reportFatal(message: String, position: Position? = null): Nothing {
     val m = if (position == null) message else message + "\n" + position.toString()
+    report(message, MessageCategory.FATAL_ERROR, position)
+    // shouldn't occur!
     throw IllegalStateException(m)
 }
 
@@ -48,11 +50,12 @@ fun MessageCollector.report(message: String,
                             vararg sourcePosition: Position?) {
     reportEntry(
         ReportEntry(
-            category,
-            message,
-            category.minSeverity,
-            listOfNotNull(*sourcePosition),
-            Date()
+            message = message,
+            messageCategory = category,
+            severity = category.minSeverity,
+            positions = listOfNotNull(*sourcePosition),
+            timeStamp = Date(),
+            thrown = null
         )
     )
 }
