@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
 import com.github.oowekyala.jjtx.reporting.MessageCategory.INCOMPLETE_VISITOR_SPEC
+import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.templates.*
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*

@@ -1,3 +1,5 @@
+@file:JvmName("JjtricksUtil")
+
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
@@ -42,9 +44,9 @@ val Path.baseName: String
 
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 fun Path.inputStream(): InputStream = FileInputStream(toFile())
-fun Path.isDirectory() : Boolean = Files.isDirectory(this)
-fun Path.exists() : Boolean = Files.exists(this)
-fun Path.isFile() : Boolean = Files.isRegularFile(this)
+fun Path.isDirectory(): Boolean = Files.isDirectory(this)
+fun Path.exists(): Boolean = Files.exists(this)
+fun Path.isFile(): Boolean = Files.isRegularFile(this)
 fun Path.createFile() {
     Files.createDirectories(parent)
     Files.createFile(this)
@@ -90,7 +92,7 @@ fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: Strin
     }.toString()
 
 
-fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
+internal fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     object : ReadOnlyProperty<R, T> {
 
         private lateinit var myThisRef: R
@@ -108,7 +110,7 @@ fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     }
 
 
-fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
+internal fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
     object : ReadOnlyProperty<Any, R> {
         override fun getValue(thisRef: Any, property: KProperty<*>): R =
             f(this@map.getValue(thisRef, property))
@@ -118,3 +120,4 @@ fun <T, R> ReadOnlyProperty<Any, T>.map(f: (T) -> R): ReadOnlyProperty<Any, R> =
 fun String.matches(regex: String): Boolean = matches(Regex(regex))
 val JccFile.path: Path
     get() = Paths.get(virtualFile.path).normalize()
+const val baseIndent = "    "

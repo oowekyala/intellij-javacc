@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.MessageCategory.*
+import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 

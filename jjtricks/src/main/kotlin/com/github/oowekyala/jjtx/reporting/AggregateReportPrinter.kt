@@ -2,44 +2,8 @@ package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.ijcc.util.indent
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
+import com.github.oowekyala.jjtx.util.baseIndent
 import java.io.PrintStream
-
-/**
- * @author Clément Fournier
- */
-
-interface ReportPrinter {
-
-    fun withContext(contextStr: ReportingContext): ReportPrinter
-
-    /**
-     * Print the report of warnings + log messages collected.
-     */
-    fun onEnd()
-
-    fun printEntry(reportEntry: ReportEntry)
-
-    fun printEntry(reportEntry: ExceptionEntry)
-
-}
-
-
-object NoopReportPrinter : ReportPrinter {
-
-    override fun withContext(contextStr: ReportingContext) = this
-
-    override fun onEnd() {
-        // do nothing
-    }
-
-    override fun printEntry(reportEntry: ReportEntry) {
-        // do nothing
-    }
-
-    override fun printEntry(reportEntry: ExceptionEntry) {
-        // do nothing
-    }
-}
 
 /**
  * This is the default output printer.
@@ -49,7 +13,7 @@ class AggregateReportPrinter private constructor(
     private val stream: PrintStream,
     private val collected: MutableList<ReportEntry>,
     private val contextStr: ReportingContext?
-) : ReportPrinter {
+) : MessageCollector {
 
     constructor(stream: PrintStream, contextStr: ReportingContext? = null) : this(stream, mutableListOf(), contextStr)
 
@@ -57,17 +21,24 @@ class AggregateReportPrinter private constructor(
 
     private var hadExceptions = false
 
-    private val myErrorPrinter: ReportPrinter =
-        FullReportPrinter(stream, indent = if (contextStr == null) "" else baseIndent)
+    private val myErrorPrinter: MessageCollector =
+        FullReportPrinter(
+            stream,
+            minSeverity = Severity.IGNORE,
+            indent = if (contextStr == null) "" else baseIndent
+        )
 
-    override fun withContext(contextStr: ReportingContext): ReportPrinter =
+    override fun withContext(contextStr: ReportingContext): MessageCollector =
+        // share same [collected]
         AggregateReportPrinter(stream, collected, contextStr)
 
-    override fun onEnd() {
+    override fun concludeReport() {
 
         val bySeverity = collected.groupBy { it.severity }.withDefault { emptyList() }
         val warnings = bySeverity.getValue(Severity.WARNING)
-        val errors = bySeverity.getValue(Severity.NON_FATAL) + bySeverity.getValue(Severity.FAIL)
+        val errors = bySeverity.getValue(Severity.NON_FATAL) + bySeverity.getValue(
+            Severity.FAIL
+        )
 
         if (warnings.isEmpty() && errors.isEmpty()) {
             return
@@ -95,7 +66,7 @@ class AggregateReportPrinter private constructor(
         stream.flush()
     }
 
-    override fun printEntry(reportEntry: ReportEntry) {
+    override fun reportEntry(reportEntry: ReportEntry) {
         // only let normal messages get through
         if (reportEntry.severity == Severity.NORMAL) {
             iprintln(reportEntry.message)
@@ -105,7 +76,7 @@ class AggregateReportPrinter private constructor(
 
         if (reportEntry.severity > Severity.NORMAL) {
             // an error
-            myErrorPrinter.printEntry(reportEntry)
+            myErrorPrinter.reportEntry(reportEntry)
         }
 
     }
@@ -136,64 +107,12 @@ class AggregateReportPrinter private constructor(
         }
     }
 
-    override fun printEntry(reportEntry: ExceptionEntry) {
+    override fun reportEntry(reportEntry: ExceptionEntry) {
         reportEntry.printSingleException(1)
         hadExceptions = true
 
         if (reportEntry.doFail) {
             stream.println("Run with --warn to examine the stack trace")
-            stream.flush()
-            throw DoExitNowError()
-        }
-    }
-}
-
-private val baseIndent = "    "
-
-class FullReportPrinter(private val stream: PrintStream,
-                        private val contextStr: ReportingContext? = null,
-                        private val indent: String = "") : ReportPrinter {
-
-    init {
-        if (contextStr != null) {
-            stream.println("[${contextStr.displayName}]")
-        }
-    }
-
-    private fun iprintln(string: String) {
-        stream.print(indent)
-        stream.println(string)
-    }
-
-    private val padding = Severity.values().map { it.displayName.length }.max()!! + 4
-
-    /**
-     * Doesn't maintain state so can return a new instance.
-     */
-    override fun withContext(contextStr: ReportingContext): ReportPrinter =
-        FullReportPrinter(stream, contextStr, indent + baseIndent)
-
-
-    override fun onEnd() {
-        // do nothing
-    }
-
-    override fun printEntry(reportEntry: ReportEntry) {
-        val (_, message, realSeverity, positions) = reportEntry
-        val logLine = "[${realSeverity.displayName}]".padEnd(padding) + message
-        iprintln(logLine)
-        positions.forEach {
-            iprintln(it.toString().indent(padding, indentStr = " "))
-        }
-    }
-
-    override fun printEntry(reportEntry: ExceptionEntry) {
-        with(reportEntry) {
-            iprintln("Exception while $contextStr")
-            reportEntry.thrown.printStackTrace(stream)
-        }
-
-        if (reportEntry.doFail) {
             stream.flush()
             throw DoExitNowError()
         }

@@ -3,9 +3,8 @@ package com.github.oowekyala.jjtx.tasks
 import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.OptsModelImpl
-import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
 import com.github.oowekyala.jjtx.preprocessor.toJavacc
-import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status

@@ -1,87 +1,19 @@
 package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.jjtx.util.io.Io
-import com.github.oowekyala.jjtx.util.Position
-import java.util.*
 
 interface MessageCollector {
 
     fun withContext(contextStr: ReportingContext): MessageCollector
 
-    /**
-     * @param message arg for the message
-     * @param category determines min severity & message
-     * @param severityOverride Force this severity to be used
-     * @param sourcePosition to report
-     *
-     * @return The actual severity reported
-     */
-    fun report(message: String,
-               category: MessageCategory,
-               severityOverride: Severity? = null,
-               vararg sourcePosition: Position?): Severity
+    fun reportEntry(reportEntry: ReportEntry)
 
-    fun report(message: String,
-               category: MessageCategory,
-               vararg sourcePosition: Position?): Severity =
-        report(message, category, severityOverride = null, sourcePosition = *sourcePosition)
-
-    /**
-     * Report a normal execution trace.
-     */
-    fun reportNormal(message: String) {
-        report(message, MessageCategory.NORMAL_EXEC_MESSAGE, severityOverride = null)
-    }
-
-
-    /**
-     * Report a non-fatal error, probably followed later by termination anyway.
-     */
-    fun reportNonFatal(message: String, position: Position?) {
-        report(message, MessageCategory.NON_FATAL, position)
-    }
-
-    /**
-     * Report a normal execution trace.
-     */
-    fun reportError(message: String, position: Position? = null): Nothing {
-        val m = if (position == null) message else message + "\n" + position.toString()
-        throw IllegalStateException(m)
-    }
-
-    fun reportException(throwable: Throwable,
-                        contextStr: String? = null,
-                        altMessage: String? = null,
-                        fatal: Boolean = false,
-                        position: Position? = null)
+    fun reportEntry(reportEntry: ExceptionEntry)
 
     fun concludeReport()
 
 
     companion object {
-        private object NoopCollector : MessageCollector {
-
-            override fun withContext(contextStr: ReportingContext) = this
-
-            override fun report(message: String,
-                                category: MessageCategory,
-                                severityOverride: Severity?,
-                                vararg sourcePosition: Position?): Severity =
-                // do nothing
-                severityOverride ?: category.minSeverity
-
-            override fun concludeReport() {
-                // do nothing
-            }
-
-            override fun reportException(throwable: Throwable,
-                                         contextStr: String?,
-                                         altMessage: String?,
-                                         fatal: Boolean,
-                                         position: Position?) {
-                // do nothing
-            }
-        }
 
         fun noop(): MessageCollector = NoopCollector
 
@@ -90,125 +22,26 @@ interface MessageCollector {
         fun create(io: Io, aggregate: Boolean, minSeverity: Severity): MessageCollector {
 
             val output = io.stderr
-            val printer = if (aggregate) AggregateReportPrinter(output) else FullReportPrinter(output)
 
-            return MessageCollectorImpl(
-                printer,
-                minSeverity
-            )
+            return if (aggregate) AggregateReportPrinter(output) else FullReportPrinter(output, minSeverity)
         }
     }
 }
 
 
-/**
- * @property minSeverity Minimum severity on which to report
- *
- * @author Clément Fournier
- */
-private class MessageCollectorImpl(
-    private val reportPrinter: ReportPrinter,
-    private val minSeverity: Severity = Severity.WARNING
-) : MessageCollector {
+private object NoopCollector : MessageCollector {
 
-    override fun withContext(contextStr: ReportingContext): MessageCollector =
-        MessageCollectorImpl(reportPrinter.withContext(contextStr), minSeverity)
+    override fun withContext(contextStr: ReportingContext) = this
 
     override fun concludeReport() {
-        reportPrinter.onEnd()
+        // do nothing
     }
 
-    override fun reportException(throwable: Throwable,
-                                 contextStr: String?,
-                                 altMessage: String?,
-                                 fatal: Boolean,
-                                 position: Position?) {
-
-        reportPrinter.printEntry(
-            ExceptionEntry(
-                thrown = throwable,
-                doFail = fatal,
-                timeStamp = Date(),
-                contextStr = contextStr,
-                position = position,
-                altMessage = altMessage
-            )
-        )
+    override fun reportEntry(reportEntry: ExceptionEntry) {
+        // do nothing
     }
 
-    override fun report(message: String,
-                        category: MessageCategory,
-                        severityOverride: Severity?,
-                        vararg sourcePosition: Position?): Severity {
-
-        val realSeverity = severityOverride ?: category.minSeverity
-
-        if (realSeverity == Severity.FAIL) {
-            throw IllegalStateException(message) // TODO add position
-        }
-
-        if (realSeverity < minSeverity) return Severity.IGNORE
-
-        reportPrinter.printEntry(
-            ReportEntry(
-                category,
-                message,
-                realSeverity,
-                listOfNotNull(*sourcePosition),
-                Date()
-            )
-        )
-
-        return realSeverity
+    override fun reportEntry(reportEntry: ReportEntry) {
+        // do nothing
     }
-}
-
-enum class Severity(dName: String? = null) {
-    /** Special severity */
-    IGNORE,
-    FINE("DEBUG"),
-    WARNING,
-    /** Normal execution messages. */
-    NORMAL("INFO"),
-    NON_FATAL("ERROR"),
-    FAIL("ERROR");
-
-    val displayName = dName ?: name
-}
-
-enum class MessageCategory(val minSeverity: Severity) {
-    /** Regex pattern in jjtopts doesn't match any jjtree node in grammar. */
-    UNMATCHED_HIERARCHY_REGEX(Severity.WARNING),
-    /** Exact node name in jjtopts doesn't match any jjtree node in grammar. */
-    EXACT_NODE_NOT_IN_GRAMMAR(Severity.FINE),
-    /**
-     * Regex pattern in jjtopts should be a leaf.
-     * Just a warning if it matches exactly one name.
-     */
-    REGEX_SHOULD_BE_LEAF(Severity.WARNING),
-
-    UNCOVERED_NODE(Severity.FINE),
-    UNCOVERED_GEN_NODE(Severity.WARNING),
-    DUPLICATE_MATCH(Severity.FINE),
-    NO_MATCH(Severity.WARNING),
-
-    MULTIPLE_HIERARCHY_ROOTS(Severity.FAIL),
-    PARSING_ERROR(Severity.FAIL),
-    FORMATTER_ERROR(Severity.NON_FATAL),
-
-    INVALID_REGEX(Severity.NON_FATAL),
-    FILE_NOT_FOUND(Severity.WARNING),
-
-
-    NO_HIERARCHY_ROOTS(Severity.FINE),
-    WRONG_TYPE(Severity.NON_FATAL),
-    VISITOR_NOT_RUN(Severity.FINE),
-    VISITOR_GENERATED(Severity.FINE),
-    INCOMPLETE_VISITOR_SPEC(Severity.FINE),
-
-    CLASS_GENERATED(Severity.FINE),
-    CLASS_NOT_GENERATED(Severity.FINE),
-
-    NORMAL_EXEC_MESSAGE(Severity.NORMAL),
-    NON_FATAL(Severity.NON_FATAL)
 }

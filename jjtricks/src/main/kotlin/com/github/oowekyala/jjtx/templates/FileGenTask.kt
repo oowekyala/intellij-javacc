@@ -5,6 +5,9 @@ import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.report
+import com.github.oowekyala.jjtx.reporting.reportError
+import com.github.oowekyala.jjtx.reporting.reportException
 import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext

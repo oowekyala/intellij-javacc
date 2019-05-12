@@ -106,11 +106,13 @@ private fun DataAstNode?.prettyPrintImpl(baseIndent: String, indent: String, sb:
             }
         }
         is AstScalar -> {
-            if (any.any { it == '\r' || it == '\n' }) {
-                sb.appendln()
-                sb.append(any.replaceIndent(inindent))
-            } else {
-                sb.append(any)
+            when {
+                any.any { it == '\r' || it == '\n' } -> {
+                    sb.appendln()
+                    sb.append(any.replaceIndent(inindent))
+                }
+                type == ScalarType.STRING            -> sb.append('"').append(any).append('"')
+                else                                 -> sb.append(any)
             }
 
         }

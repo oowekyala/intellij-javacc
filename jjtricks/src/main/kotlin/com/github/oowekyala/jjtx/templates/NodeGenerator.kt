@@ -3,6 +3,9 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.parse
 import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.report
+import com.github.oowekyala.jjtx.reporting.reportError
+import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.*
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine

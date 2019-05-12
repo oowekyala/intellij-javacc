@@ -3,7 +3,8 @@ package com.github.oowekyala.jjtx.typeHierarchy
 import com.github.oowekyala.ijcc.lang.model.addNodePackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory
-import com.github.oowekyala.jjtx.reporting.Severity
+import com.github.oowekyala.jjtx.reporting.report
+import com.github.oowekyala.jjtx.reporting.reportError
 import java.util.regex.PatternSyntaxException
 
 
@@ -89,15 +90,17 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
 
 
     if (children.isNotEmpty()) {
-        val override = if (matching.size == 1) null else Severity.FAIL
-        ctx.messageCollector.report(
-            "Regex patterns should only be used as leaves, this pattern matches ${matching.size} nodes",
-            MessageCategory.REGEX_SHOULD_BE_LEAF,
-            override,
-            positionInfo
-        )
-        if (override == Severity.FAIL) {
-            return emptyList()
+        if (matching.size == 1) {
+            ctx.messageCollector.report(
+                "Regex patterns should only be used as leaves, this pattern matches ${matching.size} nodes",
+                MessageCategory.REGEX_SHOULD_BE_LEAF,
+                positionInfo
+            )
+        } else {
+            ctx.messageCollector.reportError(
+                "Regex patterns should only be used as leaves, this pattern matches ${matching.size} nodes",
+                positionInfo
+            )
         }
     }
 
