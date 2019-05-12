@@ -59,40 +59,46 @@ private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: Strin
     return normalisedMap.toNodeGenerationSchemeImpl(ctx, id)
 }
 
-
+/**
+ * @receiver This is the map of patterns to filegen tasks
+ */
 private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): GrammarGenerationScheme {
 
     val found = mutableSetOf<NodeVBean>()
 
     val allSchemes = mutableListOf<NodeGenerationScheme>()
 
-    for ((k, node) in this) {
+    val waitingForNextPattern = mutableListOf<NodeVBean>()
 
-        val (alreadyMatched, newMatches) = k.findMatchingNodes(ctx, node.position).partition { it in found }
+    for ((pattern, node) in this) {
+
+        val (alreadyMatched, newMatches) = pattern.findMatchingNodes(ctx, node.position).partition { it in found }
 
         found += newMatches
 
         if (alreadyMatched.isNotEmpty()) {
             ctx.messageCollector.report(
-                "Pattern '$k' matched ${alreadyMatched.size} nodes that are already matched by some rules: "
+                "Pattern '$pattern' matched ${alreadyMatched.size} nodes that are already matched by some rules: "
                     + alreadyMatched.joinToString { it.name },
                 MessageCategory.DUPLICATE_MATCH,
-                keyPositions[k]
+                keyPositions[pattern]
             )
         }
 
         if (newMatches.isEmpty()) {
             ctx.messageCollector.report(
-                "Pattern '$k' matched no nodes",
+                "Pattern '$pattern' matched no nodes",
                 MessageCategory.NO_MATCH,
-                keyPositions[k]
+                keyPositions[pattern]
             )
         }
 
         val schemes = when (node) {
             is AstMap -> {
                 val b = node.parse<NodeGenerationBean>()
-                listOfNotNull(b.promote(ctx, node.position, newMatches))
+                val ms = newMatches + waitingForNextPattern
+                waitingForNextPattern.clear()
+                listOfNotNull(b.promote(ctx, node.position, ms))
             }
             is AstSeq -> {
                 val (maps, notMaps) = node.partition { it is AstMap }
@@ -104,14 +110,21 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
                         *notMaps.map { it.position }.toTypedArray()
                     )
                 }
+                val ms = newMatches + waitingForNextPattern
+                waitingForNextPattern.clear()
 
                 // handles nothing after colon with empty map I think
                 maps.mapNotNull {
                     val b = it.parse<NodeGenerationBean>()
-                    b.promote(ctx, it.position, newMatches)
+                    b.promote(ctx, it.position, ms)
                 }
             }
-            else      -> emptyList()
+            is AstScalar -> {
+                if (node.type == ScalarType.STRING && node.any.trim().isEmpty()) {
+                    waitingForNextPattern += newMatches
+                }
+                emptyList()
+            }
         }
 
         allSchemes += schemes

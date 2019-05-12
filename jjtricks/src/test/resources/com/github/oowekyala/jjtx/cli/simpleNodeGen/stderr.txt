@@ -6,4 +6,4 @@ Running tasks [gen:nodes]
 [gen:visitors]      Executing profiles 'defaultJjtreeVisitor, parameterlessVisitor'
 [gen:visitors]      Generated 2 classes in @output@
 [gen:nodes]         Executing profiles 'myGen'
-[gen:nodes]         Generated 8 classes in @output@
+[gen:nodes]         Generated 9 classes in @output@

@@ -12,7 +12,11 @@ data class AstScalar(
     val any: String,
     val type: ScalarType,
     override val position: Position? = null
-) : DataAstNode()
+) : DataAstNode() {
+
+    override fun toString(): String = any
+
+}
 
 enum class ScalarType {
     NUMBER,
@@ -26,7 +30,10 @@ enum class ScalarType {
 data class AstSeq(
     val list: List<DataAstNode>,
     override val position: Position? = null
-) : DataAstNode(), List<DataAstNode> by list
+) : DataAstNode(), List<DataAstNode> by list {
+
+    override fun toString(): String = list.toString()
+}
 
 
 data class AstMap(
@@ -34,6 +41,8 @@ data class AstMap(
     val keyPositions: Map<String, Position?> = emptyMap(),
     override val position: Position? = null
 ) : DataAstNode(), Map<String, DataAstNode> by map {
+
+    override fun toString(): String = map.toString()
 
     companion object {
 
@@ -58,5 +67,52 @@ data class AstMap(
             )
         }
     }
+}
 
+
+fun DataAstNode.prettyPrint(indent: String = "    "): String =
+    StringBuilder().also {
+        this.prettyPrintImpl(indent, "", it)
+    }.toString()
+
+private fun DataAstNode?.prettyPrintImpl(baseIndent: String, indent: String, sb: StringBuilder) {
+    val inindent = indent + baseIndent
+
+    when (this) {
+        is AstMap    -> {
+            if (this.isEmpty()) sb.append("{}")
+            else {
+                sb.appendln("{")
+                for ((k, v) in this) {
+                    sb.append(inindent).append('"').append(k).append('"').append(": ")
+                    v.prettyPrintImpl(baseIndent, inindent + baseIndent, sb)
+                    sb.appendln()
+                }
+                sb.append(indent).appendln("}")
+
+            }
+        }
+
+        is AstSeq    -> {
+            if (this.isEmpty()) sb.append("[]")
+            else {
+                sb.appendln("[")
+                for (v in this) {
+                    sb.append(inindent)
+                    v.prettyPrintImpl(baseIndent, inindent, sb)
+                    sb.appendln()
+                }
+                sb.append(indent).appendln("]")
+            }
+        }
+        is AstScalar -> {
+            if (any.any { it == '\r' || it == '\n' }) {
+                sb.appendln()
+                sb.append(any.replaceIndent(inindent))
+            } else {
+                sb.append(any)
+            }
+
+        }
+    }
 }
