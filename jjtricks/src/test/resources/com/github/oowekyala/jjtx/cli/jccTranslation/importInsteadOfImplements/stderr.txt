@@ -1,3 +1,6 @@
 JJTricks v1.0
-Running tasks [gen:javacc], on SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+(Run with -h parameter for a usage summary)
+Running tasks [gen:javacc]
+
+[init]              Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+[gen:javacc]        Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj

@@ -241,7 +241,7 @@ data class NodeGenerationBean(
             StringSource.File(templateFile!!)
         }
 
-        val formatterChoice = FormatterChoice.select(formatter)
+        val formatterChoice = FormatterRegistry.select(formatter)
 
         return NodeGenerationScheme(
             nodeBeans,
@@ -260,7 +260,7 @@ data class NodeGenerationScheme(
     val genClassTemplate: String?,
     val template: StringSource,
     val context: Map<String, Any>,
-    val formatter: FormatterChoice?
+    val formatter: SourceFormatter?
 ) {
 
     fun toFileGenTasks(): List<FileGenTask> =

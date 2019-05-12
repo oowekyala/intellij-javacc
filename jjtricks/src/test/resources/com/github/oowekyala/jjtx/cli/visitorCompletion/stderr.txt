@@ -1,4 +1,7 @@
 JJTricks v1.0
-Running tasks [gen:visitors], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
-Generated 2 classes in @output@
+(Run with -h parameter for a usage summary)
+Running tasks [gen:visitors]
+
+[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+[gen:visitors]      Executing profiles 'defaultJjtreeVisitor, parameterlessVisitor'
+[gen:visitors]      Generated 2 classes in @output@

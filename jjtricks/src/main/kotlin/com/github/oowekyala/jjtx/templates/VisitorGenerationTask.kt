@@ -18,7 +18,7 @@ import java.nio.file.Path
  * @property execute Whether the task will be run by JJTricks
  * @property templateFile The path to a file containing the template. Can be a classpath resource.
  * @property template The source of a template, if present, overrides [templateFile]
- * @property formatter The name of a formatter to use, available formatters are listed in [FormatterChoice]
+ * @property formatter The name of a formatter to use, available formatters are listed in [FormatterRegistry]
  * @property genClassName A template evaluating to the FQCN of the class to generate.
  * @property context A map of additional context variables available in the template
  */
@@ -82,7 +82,7 @@ data class VisitorConfigBean(
             id = id,
             execute = execute ?: true,
             template = t,
-            formatter = FormatterChoice.select(formatter ?: "java"),
+            formatter = FormatterRegistry.select(formatter ?: "java"),
             genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )
@@ -113,7 +113,7 @@ class VisitorGenerationTask internal constructor(
     val id: String,
     val execute: Boolean,
     template: StringSource,
-    formatter: FormatterChoice?,
+    formatter: SourceFormatter?,
     genFqcn: String,
     context: Map<String, Any?>
 ) : FileGenTask(template, formatter, genFqcn, context) {

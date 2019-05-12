@@ -30,7 +30,7 @@ import java.nio.file.Path
  */
 open class FileGenTask internal constructor(
     val template: StringSource,
-    private val formatter: FormatterChoice?,
+    private val formatter: SourceFormatter?,
     private val genFqcn: String,
     val context: Map<String, Any?>
 ) {

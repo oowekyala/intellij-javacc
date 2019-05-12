@@ -143,7 +143,7 @@ abstract class GenerationTaskBase(
             }
         }
 
-        ctx.messageCollector.reportNormal("[$header]: $configString")
+        ctx.messageCollector.reportNormal("Executing profiles '$configString'")
         if (generated > 0)
             ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
         if (aborted > 0)
@@ -154,7 +154,6 @@ abstract class GenerationTaskBase(
     }
 
     protected abstract val generationTasks: List<FileGenTask>
-    protected abstract val header: String
     protected abstract val configString: String
     protected abstract val exceptionCtx: String
 
@@ -168,7 +167,6 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<
     : GenerationTaskBase(ctx, outputDir, sourceRoots) {
 
 
-    override val header: String = "VISITOR_GEN"
     override val exceptionCtx: String = "Generating visitor"
 
     override val generationTasks: List<VisitorGenerationTask> by lazy {
@@ -222,8 +220,6 @@ class GenerateNodesTask(ctx: JjtxContext,
     override fun rootCtx(): VelocityContext =
         VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
 
-
-    override val header: String = "NODE_GEN"
 
     override val configString: String
         get() = ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"

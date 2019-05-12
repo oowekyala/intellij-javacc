@@ -66,6 +66,8 @@ private fun Mark.addName(name: String?): Mark =
         )
     } ?: this
 
+typealias LineAndColumn = Pair<Int, Int>
+
 
 data class JsonPosition(val path: List<String>) : Position {
 
@@ -80,7 +82,7 @@ data class JsonPosition(val path: List<String>) : Position {
 fun PsiElement.position(): PsiFilePosition = PsiFilePosition(textOffset, containingFile)
 
 //kept for posterity
-private fun getColAndLine(psiFile: PsiFile, offset: Int): Pair<Int, Int> {
+private fun getColAndLine(psiFile: PsiFile, offset: Int): LineAndColumn {
     val text = psiFile.text
     val line = StringUtil.offsetToLineNumber(text, offset)
     return Pair(line, offset - StringUtil.lineColToOffset(text, line, 0))
