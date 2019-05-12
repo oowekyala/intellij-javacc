@@ -1,8 +1,11 @@
 JJTricks v1.0
-Running tasks [gen:nodes], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[VISITOR_GEN]: defaultJjtreeVisitor, parameterlessVisitor
-Generated 1 classes in @output@
-1 classes were not generated because found in other output roots
-[NODE_GEN]: myGen
-Generated 7 classes in @output@
-1 classes were not generated because found in other output roots
+(Run with -h parameter for a usage summary)
+Running tasks [gen:nodes]
+
+[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+[gen:visitors]      Executing profiles 'defaultJjtreeVisitor, parameterlessVisitor'
+[gen:visitors]      Generated 1 classes in @output@
+[gen:visitors]      1 classes were not generated because found in other output roots
+[gen:nodes]         Executing profiles 'myGen'
+[gen:nodes]         Generated 7 classes in @output@
+[gen:nodes]         1 classes were not generated because found in other output roots

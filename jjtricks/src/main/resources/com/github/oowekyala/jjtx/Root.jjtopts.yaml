@@ -54,8 +54,6 @@ jjtx:
              return visitor.visit(this, data);
           }
 
-
-
     parameterlessVisitor:
       templateFile: "/jjtx/templates/Visitor.java.vm"
       execute: false

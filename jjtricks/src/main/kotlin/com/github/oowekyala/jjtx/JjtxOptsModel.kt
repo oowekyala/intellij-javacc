@@ -66,6 +66,12 @@ interface JjtxOptsModel : IGrammarOptions {
 
         const val DefaultRootNodeName = "Node"
 
+
+        // TODO there may be some mischief when this is in a jar
+        internal val RootJjtOpts: NamedInputStream
+            get() = Jjtricks.getResourceAsStream("/jjtx/Root.jjtopts.yaml")!!
+
+
         /**
          * Parses and chains a full chain of paths, throwing an
          * exception if one model can't be parsed. The context

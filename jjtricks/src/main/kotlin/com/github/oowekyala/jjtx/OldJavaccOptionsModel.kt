@@ -14,9 +14,7 @@ import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
  *
  * @author Clément Fournier
  */
-internal class OldJavaccOptionsModel(
-    grammarFile: JccFile
-) : JjtxOptsModel {
+internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     private val grammarOptions = InlineGrammarOptions(grammarFile)
 
