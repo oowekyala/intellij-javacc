@@ -1,5 +1,5 @@
 options {
-
+    // MULTI = true;
 }
 
 PARSER_BEGIN(SimpleExprParser)

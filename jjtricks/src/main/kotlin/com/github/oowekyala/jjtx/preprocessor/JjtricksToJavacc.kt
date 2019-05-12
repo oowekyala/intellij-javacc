@@ -93,11 +93,11 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     override fun visitOptionBinding(o: JccOptionBinding) {
         if (o.modelOption!!.supportedNature > GrammarNature.JAVACC) {
-            // erase it
-            out.printWhiteOut(o.text)
-        } else {
-            super.visitOptionBinding(o)
+            // comment it
+            out.print("// ")
         }
+
+        super.visitOptionBinding(o)
     }
 
     private val implementsRegex = Regex("implements|\\{")

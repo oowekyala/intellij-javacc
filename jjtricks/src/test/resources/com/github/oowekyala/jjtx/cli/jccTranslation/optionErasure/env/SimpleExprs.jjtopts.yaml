@@ -5,7 +5,6 @@ jjtx:
     fixJjtThisConditionScope: true
 
   nodePrefix: Ex
-  nodePackage: "org.exprs.ast"
   typeHierarchy:
     "%MyNodeParent":
       - "Expression":
