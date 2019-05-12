@@ -161,7 +161,19 @@ open class FileGenTask internal constructor(
         val formatted = try {
             formatter?.format(rendered)
         } catch (e: Exception) {
-            ctx.messageCollector.reportException(e, "applying formatter '${formatter!!.name.toLowerCase()}' on $o", fatal = false)
+
+            val (pos, mess) = e.message?.let { m ->
+                formatter!!.parseMessage(m)?.let { (lc, m) ->
+                    position(lc.first, lc.second, rendered, o) to m
+                }
+            } ?: Pair(null, null)
+
+            ctx.messageCollector.reportException(
+                throwable = e,
+                contextStr = "applying formatter '${formatter!!.name.toLowerCase()}' on $o",
+                altMessage = mess,
+                position = pos
+            )
             null
         } ?: rendered
 

@@ -125,7 +125,12 @@ class AggregateReportPrinter private constructor(
         } else {
             stream.println("$leader (${thrown.javaClass.name})")
         }
-        if (thrown.message != null) {
+
+        if (position != null && altMessage != null) {
+            stream.println(altMessage.indent(1))
+            stream.println(position.toString().indent(1))
+            stream.println()
+        } else if (thrown.message != null) {
             stream.println(thrown.message!!.trim().indent(1))
             stream.println()
         }

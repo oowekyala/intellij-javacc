@@ -49,14 +49,11 @@ interface MessageCollector {
         throw IllegalStateException(m)
     }
 
-    /**
-     * Report a non-fatal error, probably followed later by termination anyway.
-     */
-    fun reportNonFatal(throwable: Throwable) {
-        reportException(throwable, null, fatal = false)
-    }
-
-    fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean)
+    fun reportException(throwable: Throwable,
+                        contextStr: String? = null,
+                        altMessage: String? = null,
+                        fatal: Boolean = false,
+                        position: Position? = null)
 
     fun concludeReport()
 
@@ -77,7 +74,11 @@ interface MessageCollector {
                 // do nothing
             }
 
-            override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
+            override fun reportException(throwable: Throwable,
+                                         contextStr: String?,
+                                         altMessage: String?,
+                                         fatal: Boolean,
+                                         position: Position?) {
                 // do nothing
             }
         }
@@ -117,14 +118,20 @@ private class MessageCollectorImpl(
         reportPrinter.onEnd()
     }
 
-    override fun reportException(throwable: Throwable, contextStr: String?, fatal: Boolean) {
+    override fun reportException(throwable: Throwable,
+                                 contextStr: String?,
+                                 altMessage: String?,
+                                 fatal: Boolean,
+                                 position: Position?) {
 
         reportPrinter.printEntry(
             ExceptionEntry(
                 thrown = throwable,
                 doFail = fatal,
                 timeStamp = Date(),
-                contextStr = contextStr
+                contextStr = contextStr,
+                position = position,
+                altMessage = altMessage
             )
         )
     }

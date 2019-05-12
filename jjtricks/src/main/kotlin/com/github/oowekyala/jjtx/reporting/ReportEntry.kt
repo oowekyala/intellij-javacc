@@ -18,5 +18,7 @@ data class ExceptionEntry(
     val thrown: Throwable,
     val doFail: Boolean,
     val timeStamp: Date,
-    val contextStr: String?
+    val contextStr: String?,
+    val altMessage: String? ,
+    val position: Position?
 ) : Reportable()

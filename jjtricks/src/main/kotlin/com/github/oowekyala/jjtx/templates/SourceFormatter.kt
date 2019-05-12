@@ -14,7 +14,10 @@ interface SourceFormatter {
     /**
      * Attempts to retrieve at least line and column from an error message.
      */
-    fun findPosition(errorMessage: String): LineAndColumn?
+    fun parseMessage(errorMessage: String): Pair<LineAndColumn, String>?
+
+
+
 
     /**
      * Name, case doesn't matter.
@@ -31,13 +34,14 @@ interface SourceFormatter {
 enum class FormatterRegistry : SourceFormatter {
     JAVA {
 
-        private val lcRegex = Regex("(\\d+):(\\d+): error:.*")
+        private val lcRegex = Regex("(\\d+):(\\d+): error:(.*)")
 
         override fun format(source: String): String = Formatter().formatSource(source)
 
-        override fun findPosition(errorMessage: String): LineAndColumn? =
-            lcRegex.find(errorMessage)?.groupValues?.let { it[1].toInt() to it[2].toInt() }
-
+        override fun parseMessage(errorMessage: String): Pair<LineAndColumn, String>? =
+            lcRegex.find(errorMessage.trim())?.groupValues?.let {
+                Pair((it[1].toInt() - 1) to it[2].toInt(), it[3])
+            }
     };
 
     companion object {

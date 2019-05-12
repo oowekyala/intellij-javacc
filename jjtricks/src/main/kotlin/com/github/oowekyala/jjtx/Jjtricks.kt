@@ -198,7 +198,7 @@ class Jjtricks(
             block()
         } catch (e: Exception) {
             catchException(null, fatal = true) {
-                this.reportException(e, ctxStr, fatal) as T
+                this.reportException(e, ctxStr, fatal = fatal) as T
             }
         } catch (e: DoExitNowError) {
             io.exit(ExitCode.ERROR)

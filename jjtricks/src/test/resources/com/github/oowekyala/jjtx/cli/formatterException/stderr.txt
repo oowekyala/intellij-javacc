@@ -1,23 +1,44 @@
 JJTricks v1.0
-Running tasks [gen:visitors, gen:nodes, gen:javacc], on DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+(Run with -h parameter for a usage summary)
+Running tasks [gen:visitors, gen:nodes, gen:javacc]
+
+[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 Exception while applying formatter 'java' on @output@/org/expr/Root.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/Root.java:2:14:
+        public class extends org.expr.Root {
+                      ^
 
 Exception while applying formatter 'java' on @output@/org/expr/ExExpression.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/ExExpression.java:2:14:
+        public class extends org.expr.ExExpression {
+                      ^
 
 Exception while applying formatter 'java' on @output@/org/expr/ExBinaryExpression.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/ExBinaryExpression.java:2:14:
+        public class extends org.expr.ExBinaryExpression {
+                      ^
 
 Exception while applying formatter 'java' on @output@/org/expr/ExLiteral.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/ExLiteral.java:2:14:
+        public class extends org.expr.ExLiteral {
+                      ^
 
 Exception while applying formatter 'java' on @output@/org/expr/ExNullLiteral.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/ExNullLiteral.java:2:14:
+        public class extends org.expr.ExNullLiteral {
+                      ^
 
 Exception while applying formatter 'java' on @output@/org/expr/ExIntegerLiteral.java (com.google.googlejavaformat.java.FormatterException)
-    2:14: error: <identifier> expected
+     <identifier> expected
+     in @output@/org/expr/ExIntegerLiteral.java:2:14:
+        public class extends org.expr.ExIntegerLiteral {
+                      ^
 
-[NODE_GEN]: myGen
-Generated 6 classes in @output@
-Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
+[gen:nodes]         Executing profiles 'myGen'
+[gen:nodes]         Generated 6 classes in @output@
+[gen:javacc]        Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj

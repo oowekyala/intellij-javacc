@@ -1,2 +1,5 @@
 JJTricks v1.0
-Running tasks [help:dump-config], on DummyExpr.jjtopts.yaml -> DummyExprParent.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+(Run with -h parameter for a usage summary)
+Running tasks [help:dump-config]
+
+[init]              Config chain: DummyExpr.jjtopts.yaml -> DummyExprParent.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt

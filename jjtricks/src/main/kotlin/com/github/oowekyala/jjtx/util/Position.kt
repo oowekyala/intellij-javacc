@@ -5,6 +5,8 @@ import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.yaml.snakeyaml.error.Mark
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * @author Clément Fournier
@@ -24,25 +26,46 @@ data class YamlPosition(
 }
 
 
-class PsiFilePosition(
-    val textOffset: Int,
-    val psiFile: PsiFile
-) : Position {
+fun position(textOffset: Int, text: CharSequence, filePath: Path): Position =
+    GenericFilePosition(textOffset, text, filePath)
 
+fun position(line: Int, column: Int, text: CharSequence, filePath: Path): Position =
+    GenericFilePosition(line, column, text, filePath)
+
+
+private class GenericFilePosition : Position {
+
+    val text: CharSequence
+    val filePath: Path
+    val textOffset: Int
     val line: Int
     val column: Int
 
-    init {
-        val (l, c) = getColAndLine(psiFile, textOffset)
+    constructor(offset: Int, text: CharSequence, filePath: Path) {
+        this.textOffset = offset
+        this.text = text
+        this.filePath = filePath
+        val (l, c) = text.getColAndLine(textOffset)
         line = l
         column = c
     }
 
+    constructor(line: Int, column: Int, text: CharSequence, filePath: Path) {
+        this.text = text
+        this.filePath = filePath
+        this.line = line
+        this.column = column
+        this.textOffset = (line to column).toOffset(text)
+    }
+
+    constructor(offset: Int, psiFile: PsiFile) : this(offset, psiFile.text, Paths.get(psiFile.virtualFile.path))
+
+
     override fun toString(): String = buildString {
         append(" in ")
-        append(psiFile.virtualFile.path)
+        append(filePath)
         append(":").append(line + 1).append(":").append(column).append(":\n")
-        append(getSnippet(buffer = psiFile.text, textOffset = textOffset))
+        append(getSnippet(buffer = text, textOffset = textOffset))
     }
 }
 
@@ -79,14 +102,15 @@ data class JsonPosition(val path: List<String>) : Position {
 }
 
 
-fun PsiElement.position(): PsiFilePosition = PsiFilePosition(textOffset, containingFile)
+fun PsiElement.position(): Position = GenericFilePosition(textOffset, containingFile)
 
-//kept for posterity
-private fun getColAndLine(psiFile: PsiFile, offset: Int): LineAndColumn {
-    val text = psiFile.text
-    val line = StringUtil.offsetToLineNumber(text, offset)
-    return Pair(line, offset - StringUtil.lineColToOffset(text, line, 0))
+
+fun CharSequence.getColAndLine(offset: Int): LineAndColumn {
+    val line = StringUtil.offsetToLineNumber(this, offset)
+    return Pair(line, offset - StringUtil.lineColToOffset(this, line, 0))
 }
+
+fun LineAndColumn.toOffset(text: CharSequence) = StringUtil.lineColToOffset(text, first, second)
 
 
 private fun getSnippet(buffer: CharSequence, textOffset: Int): String = getSnippet(buffer, textOffset, 4, 75)
