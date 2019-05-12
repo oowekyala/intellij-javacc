@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
+import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
+import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.STRING
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType.PACKAGE
 import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
@@ -47,14 +48,12 @@ sealed class JjtOption<T : Any>(type: JccOptionType<T>, staticDefaultValue: T?)
      */
     object NODE_FACTORY : JjtOption<String>(RefinedOptionType.TYPE, "") {
         override fun getValue(optionBinding: JccOptionBinding?, config: IGrammarOptions): String =
-            // the actual default
-            if (optionBinding == null
-                || optionBinding.matchesType(INTEGER)
-                || optionBinding.matchesType(BOOLEAN)
-                || optionBinding.matchesType(STRING) && optionBinding.stringValue.isEmpty()
-            )
-                config.addNodePackage("SimpleNode")
-            else optionBinding.stringValue
+            when {
+                optionBinding == null              -> ""
+                optionBinding.matchesType(STRING)  -> optionBinding.stringValue
+                optionBinding.matchesType(BOOLEAN) -> if (optionBinding.stringValue.toBoolean()) "*" else ""
+                else                               -> ""
+            }
     }
 
     /**

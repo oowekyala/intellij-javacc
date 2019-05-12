@@ -34,7 +34,7 @@ void Expression() : {}
       BinaryExpression()
     | /*@bgen(jjtree) NullLiteral */
 {
-    ASTNullLiteral jjtn000 = (ASTNullLiteral) com.jjtx.exprs.SimpleNode.jjtCreate(JJTNULLLITERAL);
+    ASTNullLiteral jjtn000 = new ASTNullLiteral(JJTNULLLITERAL);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 } try {
@@ -61,7 +61,7 @@ void Expression() : {}
 
 void BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
-    ASTBinaryExpr jjtn000 = (ASTBinaryExpr) com.jjtx.exprs.SimpleNode.jjtCreate(JJTBINARYEXPR);
+    ASTBinaryExpr jjtn000 = new ASTBinaryExpr(JJTBINARYEXPR);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
     /*@egen*/
@@ -94,7 +94,7 @@ void UnaryExpr() : {}
 {
   /*@bgen(jjtree) ParenthesizedExpr */
 {
-    ASTParenthesizedExpr jjtn000 = (ASTParenthesizedExpr) com.jjtx.exprs.SimpleNode.jjtCreate(JJTPARENTHESIZEDEXPR);
+    ASTParenthesizedExpr jjtn000 = new ASTParenthesizedExpr(JJTPARENTHESIZEDEXPR);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 } try {
@@ -121,7 +121,7 @@ void UnaryExpr() : {}
 
 void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
-    ASTIntegerLiteral jjtn000 = (ASTIntegerLiteral) com.jjtx.exprs.SimpleNode.jjtCreate(JJTINTEGERLITERAL);
+    ASTIntegerLiteral jjtn000 = new ASTIntegerLiteral(JJTINTEGERLITERAL);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
     /*@egen*/
