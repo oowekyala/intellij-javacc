@@ -256,10 +256,17 @@ private class JjtxCompilVisitor(val file: JccFile,
                     +builder.popNode(nodeVar) + Endl
                 } + Endl
 
-                for (ex in thrown) {
-                    +"if (" + nodeVar.exceptionVar + " instanceof " + ex + ") throw (" + ex + ") " + nodeVar.exceptionVar + ";" + Endl
+                if (compat.castExceptions) {
+                    +"// This chain of casts is meant to force you to declare" + Endl
+                    +"// checked exceptions explicitly on the productions, else it fails" + Endl
+                    +"// with a ClassCastException on the Error branch" + Endl
+                    for (ex in thrown) {
+                        +"if (" + nodeVar.exceptionVar + " instanceof " + ex + ") throw (" + ex + ") " + nodeVar.exceptionVar + ";" + Endl
+                    }
+                    +"throw (Error) " + nodeVar.exceptionVar + ";" + Endl
+                } else {
+                    +"throw " + nodeVar.exceptionVar + ";" + Endl
                 }
-                +"throw (Error) " + nodeVar.exceptionVar + ";" + Endl
             }
         }
         -" finally " + {

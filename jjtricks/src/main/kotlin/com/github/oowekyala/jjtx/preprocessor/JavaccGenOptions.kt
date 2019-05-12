@@ -45,7 +45,14 @@ data class JavaccGenOptions(
      * Use descriptive variable names for generated variables, instead
      * of Jjtree-like `jjtn000`, `jjtc000`, etc
      */
-    val descriptiveVariableNames: Boolean = true
+    val descriptiveVariableNames: Boolean = true,
+
+    /**
+     * Cast the exceptions at run-time to force declaration of checked exceptions.
+     * If you trust your own code, set it to false exceptions to throw exceptions
+     * immediately.
+     */
+    val castExceptions: Boolean = false
 ) {
 
 
@@ -59,7 +66,8 @@ data class JavaccGenOptions(
             fixJjtThisConditionScope = false,
             setTokensBeforeHooks = false,
             implementNodeConstants = true,
-            descriptiveVariableNames = false
+            descriptiveVariableNames = false,
+            castExceptions = true
         )
     }
 }
@@ -72,13 +80,15 @@ data class JjtreeCompatBean(
     var implementNodeConstants: Boolean = true,
     //    var dontCloseBeforeLastParserAction: Boolean = false,
     var setTokensBeforeHooks: Boolean = false,
-    var descriptiveVariableNames: Boolean = false
+    var descriptiveVariableNames: Boolean = false,
+    var forceCheckedExceptionsDeclaration: Boolean = false
 ) {
 
     fun toModel(): JavaccGenOptions = JavaccGenOptions(
         fixJjtThisConditionScope = fixJjtThisConditionScope,
         implementNodeConstants = implementNodeConstants,
         setTokensBeforeHooks = setTokensBeforeHooks,
-        descriptiveVariableNames = descriptiveVariableNames
+        descriptiveVariableNames = descriptiveVariableNames,
+        castExceptions = forceCheckedExceptionsDeclaration
     )
 }

@@ -64,6 +64,9 @@ internal class OutStream(
         return this
     }
 
+    /**
+     * Represents an end-of-line.
+     */
     object Endl
 
 }

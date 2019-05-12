@@ -48,6 +48,9 @@ void Expression() : {}
     } else {
         jjtree.popNode();
     }
+    // This chain of casts is meant to force you to declare
+    // checked exceptions explicitly on the productions, else it fails
+    // with a ClassCastException on the Error branch
     if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
     if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
     throw (Error) jjte000;
@@ -79,6 +82,9 @@ void BinaryExpression(): {
         } else {
             jjtree.popNode();
         }
+        // This chain of casts is meant to force you to declare
+        // checked exceptions explicitly on the productions, else it fails
+        // with a ClassCastException on the Error branch
         if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
         if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
         throw (Error) jjte000;
@@ -108,6 +114,9 @@ void UnaryExpr() : {}
     } else {
         jjtree.popNode();
     }
+    // This chain of casts is meant to force you to declare
+    // checked exceptions explicitly on the productions, else it fails
+    // with a ClassCastException on the Error branch
     if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
     if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
     throw (Error) jjte000;
@@ -139,6 +148,9 @@ void Integer(): {
         } else {
             jjtree.popNode();
         }
+        // This chain of casts is meant to force you to declare
+        // checked exceptions explicitly on the productions, else it fails
+        // with a ClassCastException on the Error branch
         if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
         if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
         throw (Error) jjte000;
