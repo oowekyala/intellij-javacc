@@ -1,0 +1,152 @@
+options {
+    // MULTI = true;
+    // NODE_FACTORY = true;
+}
+
+PARSER_BEGIN(SimpleExprParser)
+
+    package com.jjtx.exprs;
+    import org.exprs.ast.*;
+    import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
+
+
+    /**
+     *  This is my parser declaration
+     */
+    public class SimpleExprParser extends Foo<B> implements A {/*@bgen(jjtree)*/
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
+
+    }
+
+PARSER_END(SimpleExprParser)
+
+// Some token declarations
+<DEFAULT>
+TOKEN :{
+  < PLUS: "+" >
+| < MINUS: "-" >
+| < NULL: "null" >
+| < INTEGER: ["+",  "-"] <DIGITS> >
+| < #DIGITS: (["0"-"9"])+ >
+}
+
+
+void Expression() : {}
+{
+      BinaryExpression()
+    | /*@bgen(jjtree) NullLiteral */
+{
+    ExNullLiteral jjtn000 = (ExNullLiteral) ExNullLiteral.jjtCreate(JJTNULLLITERAL);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+} try {
+    /*@egen*/ <NULL>
+    /*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+    } else {
+        jjtree.popNode();
+    }
+    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+    throw (Error) jjte000;
+} finally {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+    }
+}
+/*@egen*/
+
+}
+
+void BinaryExpression(): {
+    /*@bgen(jjtree) BinaryExpr */
+    ExBinaryExpr jjtn000 = (ExBinaryExpr) ExBinaryExpr.jjtCreate(JJTBINARYEXPR);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+    /*@egen*/
+}
+{
+    /*@bgen(jjtree) BinaryExpr */
+     try {
+        /*@egen*/ UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+        /*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtThis.foo());
+            jjtc000 = false;
+        } else {
+            jjtree.popNode();
+        }
+        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+        throw (Error) jjte000;
+    } finally {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtThis.foo());
+        }
+    }
+    /*@egen*/
+}
+
+
+void UnaryExpr() : {}
+{
+  /*@bgen(jjtree) ParenthesizedExpr */
+{
+    ExParenthesizedExpr jjtn000 = (ExParenthesizedExpr) ExParenthesizedExpr.jjtCreate(JJTPARENTHESIZEDEXPR);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+} try {
+    /*@egen*/ ("(" Expression() ")")
+    /*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+    } else {
+        jjtree.popNode();
+    }
+    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+    throw (Error) jjte000;
+} finally {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+    }
+}
+/*@egen*/
+ | Integer()
+}
+
+void Integer(): {
+    /*@bgen(jjtree) IntegerLiteral */
+    ExIntegerLiteral jjtn000 = (ExIntegerLiteral) ExIntegerLiteral.jjtCreate(JJTINTEGERLITERAL);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+    /*@egen*/
+}
+{
+    /*@bgen(jjtree) IntegerLiteral */
+     try {
+        /*@egen*/ <INTEGER>
+        /*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtc000 = false;
+        } else {
+            jjtree.popNode();
+        }
+        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+        throw (Error) jjte000;
+    } finally {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+        }
+    }
+    /*@egen*/
+}
