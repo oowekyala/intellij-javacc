@@ -1,11 +1,10 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.util.io
 
 import java.io.PrintStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import kotlin.system.exitProcess
-
 
 /**
  * Encapsulates the IO context of a running app.
@@ -20,7 +19,10 @@ data class Io(
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
     private val dateGetter: () -> Date = { Date() },
-    private val exit: (String, Int) -> Nothing = { m, code -> stderr.println(m); stderr.flush(); exitProcess(code) }
+    private val exit: (String, Int) -> Nothing = { m, code -> stderr.println(m); stderr.flush(); exitProcess(
+        code
+    )
+    }
 ) {
 
     fun exit(code: ExitCode): Nothing = exit("", code.toInt)
@@ -44,16 +46,5 @@ data class Io(
 
 }
 
-
 val workingDirectory: Path
     get() = Paths.get(System.getProperty("user.dir"))
-
-/**
- * Exit code of the app.
- */
-enum class ExitCode {
-    OK,
-    ERROR;
-
-    val toInt = ordinal
-}

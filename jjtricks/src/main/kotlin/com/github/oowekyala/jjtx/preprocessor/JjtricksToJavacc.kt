@@ -4,7 +4,8 @@ package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.jjtx.preprocessor.OutStream.Endl
+import com.github.oowekyala.jjtx.util.io.DslPrintStream
+import com.github.oowekyala.jjtx.util.io.DslPrintStream.Endl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import java.io.ByteArrayOutputStream
@@ -76,7 +77,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                                 val compat: JavaccGenOptions,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
-    private val out = OutStream(outputStream, "    ")
+    private val out = DslPrintStream(outputStream, "    ")
 
     private val stack = Stack<NodeVar>()
 
@@ -226,7 +227,7 @@ private class JjtxCompilVisitor(val file: JccFile,
         super.visitParserActionsUnit(o)
     }
 
-    private fun OutStream.emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = this.apply {
+    private fun DslPrintStream.emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = this.apply {
 
         emitTryCatch(nodeVar, expansion.findThrown()) {
             expansion.accept(this@JjtxCompilVisitor)
@@ -234,7 +235,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
 
-    private fun OutStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: OutStream.() -> Unit) =
+    private fun DslPrintStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: DslPrintStream.() -> Unit) =
         this.apply {
             +" try " + {
                 +egen()
@@ -246,7 +247,7 @@ private class JjtxCompilVisitor(val file: JccFile,
             +egen() + Endl
         }
 
-    private fun OutStream.emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = this.apply {
+    private fun DslPrintStream.emitTryTail(thrown: Set<String>, nodeVar: NodeVar) = this.apply {
         if (thrown.isNotEmpty()) {
             -" catch (Throwable " + nodeVar.exceptionVar + ") " + {
                 +"if (" + nodeVar.closedVar + ") " + {
@@ -276,7 +277,7 @@ private class JjtxCompilVisitor(val file: JccFile,
         } + Endl
     }
 
-    private fun OutStream.emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = this.apply {
+    private fun DslPrintStream.emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = this.apply {
         with(builder) {
 
             fun doSetLastToken() =
@@ -301,7 +302,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
 
-    private fun OutStream.emitOpenNodeCode(nodeVar: NodeVar) {
+    private fun DslPrintStream.emitOpenNodeCode(nodeVar: NodeVar) {
         with(builder) {
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl

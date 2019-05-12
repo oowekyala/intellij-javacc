@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.misc
 
-import com.github.oowekyala.jjtx.preprocessor.TrailingSpacesFilterOutputStream
+import com.github.oowekyala.jjtx.util.io.TrailingSpacesFilterOutputStream
 import io.kotlintest.shouldBe
 import org.junit.Test
 import java.io.ByteArrayOutputStream

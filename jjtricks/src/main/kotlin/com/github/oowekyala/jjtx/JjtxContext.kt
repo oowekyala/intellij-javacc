@@ -10,7 +10,7 @@ import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.set
-import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.jjtx.util.path
 import com.intellij.openapi.project.Project

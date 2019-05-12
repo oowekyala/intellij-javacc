@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.util.StringSource
-import com.github.oowekyala.jjtx.util.ExitCode
+import com.github.oowekyala.jjtx.util.io.ExitCode
 import org.junit.Test
 
 /**

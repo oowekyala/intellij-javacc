@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.reporting
 
-import com.github.oowekyala.jjtx.util.Io
+import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.Position
 import java.util.*
 
