@@ -39,7 +39,13 @@ data class JavaccGenOptions(
      * the constants. This is a code smell and is kept only for compatibility
      * with Jjtree.
      */
-    val implementNodeConstants: Boolean = false
+    val implementNodeConstants: Boolean = false,
+
+    /**
+     * Use descriptive variable names for generated variables, instead
+     * of Jjtree-like `jjtn000`, `jjtc000`, etc
+     */
+    val descriptiveVariableNames: Boolean = true
 ) {
 
 
@@ -52,7 +58,8 @@ data class JavaccGenOptions(
             dontCloseBeforeLastParserAction = false,
             fixJjtThisConditionScope = false,
             setTokensBeforeHooks = false,
-            implementNodeConstants = true
+            implementNodeConstants = true,
+            descriptiveVariableNames = false
         )
     }
 }
@@ -64,12 +71,14 @@ data class JjtreeCompatBean(
     var fixJjtThisConditionScope: Boolean = false,
     var implementNodeConstants: Boolean = true,
     //    var dontCloseBeforeLastParserAction: Boolean = false,
-    var setTokensBeforeHooks: Boolean = false
+    var setTokensBeforeHooks: Boolean = false,
+    var descriptiveVariableNames: Boolean = false
 ) {
 
     fun toModel(): JavaccGenOptions = JavaccGenOptions(
         fixJjtThisConditionScope = fixJjtThisConditionScope,
         implementNodeConstants = implementNodeConstants,
-        setTokensBeforeHooks = setTokensBeforeHooks
+        setTokensBeforeHooks = setTokensBeforeHooks,
+        descriptiveVariableNames = descriptiveVariableNames
     )
 }

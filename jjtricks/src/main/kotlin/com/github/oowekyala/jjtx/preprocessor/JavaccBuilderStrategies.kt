@@ -8,7 +8,7 @@ import com.github.oowekyala.ijcc.lang.psi.expressionText
 
 interface JjtxBuilderStrategy {
 
-    fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?, scopingDepth: Int): NodeVar?
+    fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar?
 
     fun parserImplements(): List<String>
 
@@ -61,23 +61,52 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     private val NodeVar.nodeId
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
 
-    override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?, scopingDepth: Int): NodeVar? =
+    override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar? =
         if (owner.isVoid) null
-        else NodeVar(
-            owner = owner,
-            enclosingVar = enclosing,
-            varName = buildVar("n", scopingDepth),
-            closedVar = buildVar("c", scopingDepth),
-            exceptionVar = buildVar("e", scopingDepth),
-            nodeName = owner.nodeRawName!!,
-            nodeQname = owner.nodeQualifiedName!!,
-            nodeRefType =
-            bindings.jjtNodeClass.takeIf { it.isNotEmpty() && !bindings.jjtMulti } ?: owner.nodeSimpleName!!
-        )
+        else {
 
-    private fun buildVar(id: String, scopeDepth: Int): String {
-        val s = "000$scopeDepth"
-        return "jjt" + id + s.substring(s.length - 3, s.length)
+            val (nVar, cVar, exVar) = varNames(owner, enclosing)
+
+            NodeVar(
+                owner = owner,
+                enclosingVar = enclosing,
+                varName = nVar,
+                closedVar = cVar,
+                exceptionVar = exVar,
+                nodeName = owner.nodeRawName!!,
+                nodeQname = owner.nodeQualifiedName!!,
+                nodeRefType =
+                bindings.jjtNodeClass.takeIf { it.isNotEmpty() && !bindings.jjtMulti } ?: owner.nodeSimpleName!!
+            )
+        }
+
+    /**
+     * Builds the variable names for the node var, closed var, exception var.
+     */
+    private fun varNames(owner: JjtNodeClassOwner, enclosing: NodeVar?): Triple<String, String, String> {
+        val scopeDepth = if (enclosing != null) enclosing.scopeDepth + 1 else 0
+
+        return if (compat.descriptiveVariableNames) {
+            val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
+
+            Triple(
+                nodeVarName,
+                "${nodeVarName}NeedsClose",
+                "${nodeVarName}Exception"
+            )
+        } else {
+            // Default jjtree naming scheme
+
+            val s = "000$scopeDepth"
+            val num = s.substring(s.length - 3, s.length)
+
+            fun withId(id: String) = "jjt$id$num"
+            Triple(
+                withId("n"),
+                withId("c"),
+                withId("e")
+            )
+        }
     }
 
 
@@ -108,8 +137,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
 
-    override fun parserDeclarations(): String
-    = """
+    override fun parserDeclarations(): String = """
         protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
 
     """.trimIndent()
@@ -136,9 +164,11 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
         return when {
-            d == null        -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(nodeVar)});"
-            else             -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
+            d == null -> "jjtree.closeNodeScope($n, true);"
+            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(
+                nodeVar
+            )});"
+            else -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
         }
     }
 

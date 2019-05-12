@@ -1,0 +1,151 @@
+options {
+    // MULTI = true;
+}
+
+PARSER_BEGIN(SimpleExprParser)
+
+    package com.jjtx.exprs;
+    import org.exprs.ast.*;
+    import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
+
+
+    /**
+     *  This is my parser declaration
+     */
+    public class SimpleExprParser extends Foo<B> implements A {/*@bgen(jjtree)*/
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
+
+    }
+
+PARSER_END(SimpleExprParser)
+
+// Some token declarations
+<DEFAULT>
+TOKEN :{
+  < PLUS: "+" >
+| < MINUS: "-" >
+| < NULL: "null" >
+| < INTEGER: ["+",  "-"] <DIGITS> >
+| < #DIGITS: (["0"-"9"])+ >
+}
+
+
+void Expression() : {}
+{
+      BinaryExpression()
+    | /*@bgen(jjtree) NullLiteral */
+{
+    ExNullLiteral nullLiteral = (ExNullLiteral) com.jjtx.exprs.SimpleNode.jjtCreate(JJTNULLLITERAL);
+    boolean nullLiteralNeedsClose = true;
+    jjtree.openNodeScope(nullLiteral);
+} try {
+    /*@egen*/ <NULL>
+    /*@bgen(jjtree)*/
+} catch (Throwable nullLiteralException) {
+    if (nullLiteralNeedsClose) {
+        jjtree.closeNodeScope(nullLiteral, true);
+        nullLiteralNeedsClose = false;
+    } else {
+        jjtree.popNode();
+    }
+    if (nullLiteralException instanceof ParseException) throw (ParseException) nullLiteralException;
+    if (nullLiteralException instanceof RuntimeException) throw (RuntimeException) nullLiteralException;
+    throw (Error) nullLiteralException;
+} finally {
+    if (nullLiteralNeedsClose) {
+        jjtree.closeNodeScope(nullLiteral, true);
+    }
+}
+/*@egen*/
+
+}
+
+void BinaryExpression(): {
+    /*@bgen(jjtree) BinaryExpr */
+    ExBinaryExpr binaryExpr = (ExBinaryExpr) com.jjtx.exprs.SimpleNode.jjtCreate(JJTBINARYEXPR);
+    boolean binaryExprNeedsClose = true;
+    jjtree.openNodeScope(binaryExpr);
+    /*@egen*/
+}
+{
+    /*@bgen(jjtree) BinaryExpr */
+     try {
+        /*@egen*/ UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+        /*@bgen(jjtree)*/
+    } catch (Throwable binaryExprException) {
+        if (binaryExprNeedsClose) {
+            jjtree.closeNodeScope(binaryExpr, binaryExpr.foo());
+            binaryExprNeedsClose = false;
+        } else {
+            jjtree.popNode();
+        }
+        if (binaryExprException instanceof ParseException) throw (ParseException) binaryExprException;
+        if (binaryExprException instanceof RuntimeException) throw (RuntimeException) binaryExprException;
+        throw (Error) binaryExprException;
+    } finally {
+        if (binaryExprNeedsClose) {
+            jjtree.closeNodeScope(binaryExpr, binaryExpr.foo());
+        }
+    }
+    /*@egen*/
+}
+
+
+void UnaryExpr() : {}
+{
+  /*@bgen(jjtree) ParenthesizedExpr */
+{
+    ExParenthesizedExpr parenthesizedExpr = (ExParenthesizedExpr) com.jjtx.exprs.SimpleNode.jjtCreate(JJTPARENTHESIZEDEXPR);
+    boolean parenthesizedExprNeedsClose = true;
+    jjtree.openNodeScope(parenthesizedExpr);
+} try {
+    /*@egen*/ ("(" Expression() ")")
+    /*@bgen(jjtree)*/
+} catch (Throwable parenthesizedExprException) {
+    if (parenthesizedExprNeedsClose) {
+        jjtree.closeNodeScope(parenthesizedExpr, parenthesizedExpr.numChildren() > 1);
+        parenthesizedExprNeedsClose = false;
+    } else {
+        jjtree.popNode();
+    }
+    if (parenthesizedExprException instanceof ParseException) throw (ParseException) parenthesizedExprException;
+    if (parenthesizedExprException instanceof RuntimeException) throw (RuntimeException) parenthesizedExprException;
+    throw (Error) parenthesizedExprException;
+} finally {
+    if (parenthesizedExprNeedsClose) {
+        jjtree.closeNodeScope(parenthesizedExpr, parenthesizedExpr.numChildren() > 1);
+    }
+}
+/*@egen*/
+ | Integer()
+}
+
+void Integer(): {
+    /*@bgen(jjtree) IntegerLiteral */
+    ExIntegerLiteral integerLiteral = (ExIntegerLiteral) com.jjtx.exprs.SimpleNode.jjtCreate(JJTINTEGERLITERAL);
+    boolean integerLiteralNeedsClose = true;
+    jjtree.openNodeScope(integerLiteral);
+    /*@egen*/
+}
+{
+    /*@bgen(jjtree) IntegerLiteral */
+     try {
+        /*@egen*/ <INTEGER>
+        /*@bgen(jjtree)*/
+    } catch (Throwable integerLiteralException) {
+        if (integerLiteralNeedsClose) {
+            jjtree.closeNodeScope(integerLiteral, true);
+            integerLiteralNeedsClose = false;
+        } else {
+            jjtree.popNode();
+        }
+        if (integerLiteralException instanceof ParseException) throw (ParseException) integerLiteralException;
+        if (integerLiteralException instanceof RuntimeException) throw (RuntimeException) integerLiteralException;
+        throw (Error) integerLiteralException;
+    } finally {
+        if (integerLiteralNeedsClose) {
+            jjtree.closeNodeScope(integerLiteral, true);
+        }
+    }
+    /*@egen*/
+}

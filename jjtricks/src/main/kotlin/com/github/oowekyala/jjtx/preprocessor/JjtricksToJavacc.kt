@@ -137,8 +137,10 @@ private class JjtxCompilVisitor(val file: JccFile,
         out.printSource(sb.toString())
     }
 
+    private fun <T> Stack<T>.top(): T? = if (isEmpty()) null else peek()
+
     override fun visitBnfProduction(o: JccBnfProduction) {
-        val nodeVar = builder.makeNodeVar(o, null, 0) ?: return super.visitBnfProduction(o)
+        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitBnfProduction(o)
 
         with(out) {
 
@@ -160,7 +162,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
     override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-        val nodeVar = builder.makeNodeVar(o, null, 0) ?: return super.visitJavacodeProduction(o)
+        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitJavacodeProduction(o)
 
         with(out) {
             emitTryCatch(nodeVar, o.thrownExceptions) {
@@ -177,7 +179,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
-        val nodeVar = builder.makeNodeVar(o, stack.lastOrNull(), stack.size) ?: return super.visitScopedExpansionUnit(o)
+        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitScopedExpansionUnit(o)
 
         with(out) {
 

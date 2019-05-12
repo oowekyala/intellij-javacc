@@ -16,4 +16,6 @@ data class NodeVar(
     val nodeRefType: String = nodeQname
 ) {
     val nodeSimpleName = nodeQname.substringAfterLast('.')
+
+    val scopeDepth: Int = generateSequence(enclosingVar) { it.enclosingVar }.count()
 }
