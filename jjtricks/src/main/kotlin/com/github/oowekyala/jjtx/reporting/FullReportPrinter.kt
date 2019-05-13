@@ -41,7 +41,7 @@ class FullReportPrinter(
         // do nothing
     }
 
-    fun addExceptionPosition(position: Position) {
+    fun printExceptionPosition(position: Position) {
         stream.println(position.toString().replaceIndent(lcolIndent))
     }
 
@@ -61,7 +61,7 @@ class FullReportPrinter(
             }
 
             positions.forEach {
-                stream.println(it.toString().replaceIndent(lcolIndent))
+                printExceptionPosition(it)
             }
 
             if (printStackTrace) {

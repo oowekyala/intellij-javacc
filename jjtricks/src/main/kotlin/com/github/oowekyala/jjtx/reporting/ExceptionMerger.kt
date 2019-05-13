@@ -12,14 +12,14 @@ class ExceptionMerger {
 
         val k = ExMergeKey(throwable.javaClass, messageKey)
 
-        var b = true
+        var isMissing = true
 
         merged.computeIfAbsent(k) {
-            b = !b
+            isMissing = !isMissing
             mutableListOf()
         } += JjtricksExceptionWrapper.wrapIdem(throwable)
 
-        return b
+        return isMissing
     }
 
 

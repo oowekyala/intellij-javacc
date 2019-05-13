@@ -83,7 +83,7 @@ class AggregateReportPrinter private constructor(
                     thrown,
                     reportEntry.message
                 ) && reportEntry.positions.isNotEmpty()) {
-                myErrorPrinter.addExceptionPosition(reportEntry.positions.first())
+                myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
             } else {
                 // an error
                 myErrorPrinter.reportEntry(reportEntry)
