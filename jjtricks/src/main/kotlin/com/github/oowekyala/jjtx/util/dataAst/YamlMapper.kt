@@ -22,12 +22,13 @@ internal val Node.position: YamlPosition
 
 internal fun Node.yamlToData(fileName: String? = null): DataAstNode =
     when (this) {
-        is ScalarNode   ->
+        is ScalarNode   -> {
             AstScalar(
                 any = value,
-                type = ScalarType.STRING,
+                type = tag.scalarType,
                 position = position.addName(fileName)
             )
+        }
         is SequenceNode ->
             AstSeq(
                 list = value.map { it.yamlToData(fileName) },
@@ -71,6 +72,15 @@ internal val DataAstNode.yamlTag: Tag
         is AstMap    -> Tag.MAP
         is AstSeq    -> Tag.SEQ
     }
+
+val Tag.scalarType: ScalarType
+    get() = when (this) {
+        Tag.BOOL           -> ScalarType.BOOLEAN
+        Tag.INT, Tag.FLOAT -> ScalarType.NUMBER
+        Tag.NULL           -> ScalarType.NULL
+        else               -> ScalarType.STRING
+    }
+
 
 internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
     if (children.isEmpty())

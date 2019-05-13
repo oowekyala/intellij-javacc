@@ -24,6 +24,10 @@
         "templateContext": {
           "type": "object"
         },
+        "nodeGenerationSchemes": {
+          "type": "object"
+        },
+
         "visitors": {
           "type": "object",
           "additionalProperties": {
