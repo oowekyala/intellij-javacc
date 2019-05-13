@@ -8,7 +8,10 @@ import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.set
+import com.github.oowekyala.jjtx.util.io.DefaultResourceResolver
 import com.github.oowekyala.jjtx.util.io.Io
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
+import com.github.oowekyala.jjtx.util.io.ResourceResolver
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.jjtx.util.path
 import com.intellij.openapi.project.Project
@@ -80,15 +83,19 @@ interface JjtxContext {
     val globalVelocityContext: VelocityContext
 
 
+    fun resolveResource(path: String): NamedInputStream?
+
+
+    data class CtxBuilder internal constructor(
+        val grammarFile: JccFile,
+        var configChain: List<Path> = grammarFile.defaultJjtopts(),
+        var io: Io = Io(),
+        var resourceResolver: ResourceResolver = DefaultResourceResolver(grammarFile.path.parent),
+        var messageCollector: MessageCollector = MessageCollector.default(io)
+    )
+
+
     companion object {
-
-
-        data class CtxBuilder internal constructor(
-            val grammarFile: JccFile,
-            var configChain: List<Path> = grammarFile.defaultJjtopts(),
-            var io: Io = Io(),
-            var messageCollector: MessageCollector = MessageCollector.default(io)
-        )
 
         /**
          * Build a context for the given grammar file.
@@ -101,9 +108,12 @@ interface JjtxContext {
                     grammarFile = it.grammarFile,
                     configChain = it.configChain,
                     io = it.io,
-                    messageCollector = it.messageCollector
+                    messageCollector = it.messageCollector,
+                    resourceResolver = it.resourceResolver
                 )
             }
+
+
     }
 }
 
@@ -115,11 +125,12 @@ interface JjtxContext {
  *
  * @author Clément Fournier
  */
-internal class JjtxRootContext(
+private class JjtxRootContext(
     override val grammarFile: JccFile,
     override val configChain: List<Path>,
     override val messageCollector: MessageCollector,
-    override val io: Io
+    override val io: Io,
+    val resourceResolver: ResourceResolver
 ) : JjtxContext {
 
     override val reportingContext: ReportingContext = RootContext
@@ -129,6 +140,10 @@ internal class JjtxRootContext(
     override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 
     override val grammarDir: Path = grammarFile.path.parent
+
+
+    override fun resolveResource(path: String): NamedInputStream? =
+        resourceResolver.getStreamable(path)
 
 
     override val jjtxOptsModel: JjtxOptsModel by lazy {

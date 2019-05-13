@@ -19,9 +19,8 @@ data class Io(
     val stdout: PrintStream = System.out,
     val stderr: PrintStream = System.err,
     private val dateGetter: () -> Date = { Date() },
-    private val exit: (String, Int) -> Nothing = { m, code -> stderr.println(m); stderr.flush(); exitProcess(
-        code
-    )
+    private val exit: (String, Int) -> Nothing = { m, code ->
+        stderr.println(m); stderr.flush(); exitProcess(code)
     }
 ) {
 

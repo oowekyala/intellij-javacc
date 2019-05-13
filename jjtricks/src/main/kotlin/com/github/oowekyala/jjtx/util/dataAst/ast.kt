@@ -24,6 +24,7 @@ enum class ScalarType {
     NUMBER,
     STRING,
     BOOLEAN,
+
     /**
      * Represents "no value", as in
      *

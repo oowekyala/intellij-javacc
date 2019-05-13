@@ -1,13 +1,12 @@
 package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.ijcc.util.deleteWhitespace
-import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.StringSource
-import com.google.common.io.Resources
+import com.github.oowekyala.jjtx.util.io.readText
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.nio.file.Path
@@ -63,6 +62,7 @@ open class FileGenTask internal constructor(
         val o: Path = outputDir.resolve(fqcn.replace('.', '/') + ".java").toAbsolutePath()
 
         if (o.isDirectory()) {
+            // TODO is this really fatal?
             ctx.messageCollector.reportFatal("Output file $o is a directory")
         }
 
@@ -76,23 +76,10 @@ open class FileGenTask internal constructor(
             is StringSource.Str  -> template.source
             is StringSource.File -> {
 
+                val nis = ctx.resolveResource(template.fname)
+                    ?: ctx.messageCollector.reportFatal("File not found ${template.fname}")
 
-                fun fromResource(): String? = Jjtricks.getResource(template.fname)?.let {
-                    Resources.toString(it, Charsets.UTF_8)
-                }
-
-                fun fromFile(): String {
-
-                    val file = ctx.grammarDir.resolve(template.fname).toFile()
-
-                    if (!file.isFile) {
-                        ctx.messageCollector.reportFatal("File not found $file")
-                    }
-
-                    return file.readText()
-                }
-
-                return fromResource() ?: fromFile()
+                return nis.readText()
             }
         }
 
