@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.toFilePos
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
@@ -8,11 +9,34 @@ import org.yaml.snakeyaml.emitter.Emitter
 import org.yaml.snakeyaml.error.Mark
 import org.yaml.snakeyaml.error.YAMLException
 import org.yaml.snakeyaml.nodes.*
+import org.yaml.snakeyaml.reader.UnicodeReader
 import org.yaml.snakeyaml.resolver.Resolver
 import org.yaml.snakeyaml.serializer.Serializer
 import java.io.IOException
 import java.io.StringWriter
+import java.io.Writer
 
+
+object YAML : DataLanguage {
+
+    override fun parse(input: NamedInputStream): DataAstNode =
+        input.newInputStream().use { istream ->
+            val reader = UnicodeReader(istream).buffered()
+            Yaml().compose(reader).yamlToData(input.filename)
+        }
+
+    override fun write(data: DataAstNode, out: Writer) {
+        val opts = DumperOptions()
+        val serializer = Serializer(Emitter(out, opts), Resolver(), opts, Tag.MAP)
+        try {
+            serializer.open()
+            serializer.serialize(data.toYaml())
+            serializer.close()
+        } catch (var6: IOException) {
+            throw RuntimeException("Exception dumping node to yaml", var6)
+        }
+    }
+}
 /**
  * @author Clément Fournier
  */

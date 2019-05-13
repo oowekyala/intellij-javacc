@@ -1,7 +1,6 @@
 package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.parse
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.reporting.reportFatal
@@ -100,7 +99,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
 
         val schemes = when (node) {
             is AstMap    -> {
-                val b = node.parse<NodeGenerationBean>()
+                val b = node.load<NodeGenerationBean>()
                 val ms = newMatches + waitingForNextPattern
                 waitingForNextPattern.clear()
                 listOfNotNull(b.promote(ctx, node.position, ms))
@@ -120,7 +119,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
 
                 // handles nothing after colon with empty map I think
                 maps.mapNotNull {
-                    val b = it.parse<NodeGenerationBean>()
+                    val b = it.load<NodeGenerationBean>()
                     b.promote(ctx, it.position, ms)
                 }
             }

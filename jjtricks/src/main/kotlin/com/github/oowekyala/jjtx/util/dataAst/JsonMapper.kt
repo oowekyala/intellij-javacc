@@ -1,9 +1,38 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.google.gson.*
 import com.google.gson.internal.LazilyParsedNumber
+import com.google.gson.internal.Streams
+import com.google.gson.stream.JsonReader
+import java.io.IOException
+import java.io.Writer
 
+/**
+ * TODO use org.json and remove Gson
+ */
+object JSON : DataLanguage {
+    override fun parse(input: NamedInputStream): DataAstNode =
+        input.newInputStream().bufferedReader().use { reader ->
+            val jsonReader = JsonReader(reader).apply {
+                isLenient = true
+            }
+
+            JsonParser().parse(jsonReader).toData()
+        }
+
+    override fun write(data: DataAstNode, out: Writer) {
+        try {
+            val gson = GsonBuilder().setPrettyPrinting().create()
+            val jsonWriter = gson.newJsonWriter(out)
+            jsonWriter.isLenient = true
+            Streams.write(data.toJson(), jsonWriter)
+        } catch (e: IOException) {
+            throw AssertionError(e)
+        }
+    }
+}
 
 internal fun DataAstNode.toJson(): JsonElement =
     when (this) {
@@ -45,7 +74,7 @@ internal fun DataAstNode.toJson(): JsonElement =
     }
 
 
-internal fun JsonElement.jsonToData(): DataAstNode {
+private fun JsonElement.toData(): DataAstNode {
 
     fun JsonElement.jsonReal(parentPosition: JsonPosition): DataAstNode {
         val myPosition = parentPosition.resolve(this.toString())
