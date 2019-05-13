@@ -12,5 +12,6 @@ val RootContext = ReportingContext("", null)
 
 val InitCtx = ReportingContext("init", null)
 
+fun ReportingContext.subKey(suffix: String) = ReportingContext("$key:$suffix", null)
 fun taskCtx(taskKey: JjtxTaskKey) = ReportingContext(taskKey.ref, null)
 fun fileSubCtx(parent: ReportingContext, path: Path) = ReportingContext(parent.key, path.toString())

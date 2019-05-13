@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.util.StringSource
+import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
 

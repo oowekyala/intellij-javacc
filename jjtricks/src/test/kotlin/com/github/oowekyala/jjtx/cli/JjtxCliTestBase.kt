@@ -2,10 +2,14 @@ package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.testutil.getStackFrame
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
+import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.TrailingSpacesFilterOutputStream
+import com.github.oowekyala.jjtx.util.isDirectory
+import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
@@ -58,14 +62,20 @@ abstract class JjtxCliTestBase {
 
     }
 
+    protected open fun mapEnv(default: Path): Path = default
+    protected open fun mapRes(default: Path): Path = default
+
     private inner class MyTestCase(params: TestBuilder) {
 
         val tmpDir: Path = createTempDirectory(TmpPrefix)
-        val resDir: Path = findTestDir(this@JjtxCliTestBase.javaClass).resolve(params.subpath)
+        val resDir: Path = mapRes(findTestDir(this@JjtxCliTestBase.javaClass).resolve(params.subpath))
+
         val env: Path =
             findTestDir(params.envOwner)
                 .resolve(params.subpath)
-                .resolve("env").also {
+                .resolve("env")
+                .let { mapEnv(it) }
+                .also {
                     assert(it.isDirectory())
                 }
         val expectedOutput: Path? = resDir.resolve("expected").takeIf { it.isDirectory() }
@@ -108,15 +118,17 @@ abstract class JjtxCliTestBase {
             ExitCode.values()[stop.code]
         }
 
+        fun ByteArrayOutputStream.toActualText() =
+            // remove non-determinism by truncating tmp dir name
+            toString(Charset.defaultCharset().name())
+                .replace(Regex("${Regex.escape(test.actualOutput.toString())}\\b"), "@output@")
+                .replace(Regex("${Regex.escape(test.tmpDir.toString())}\\b"), "@tmp@")
+
+
         fun myAssertEquals(expectedSource: StringSource?,
-                           actual: ByteArrayOutputStream) {
+                           actualText: String) {
 
             if (expectedSource != null) {
-                val actualText =
-                    // remove non-determinism by truncating tmp dir name
-                    actual.toString(Charset.defaultCharset().name())
-                        .replace(Regex("${Regex.escape(test.actualOutput.toString())}\\b"), "@output@")
-                        .replace(Regex("${Regex.escape(test.tmpDir.toString())}\\b"), "@tmp@")
 
 
                 val (fpath, expectedText) = when (expectedSource) {
@@ -135,13 +147,27 @@ abstract class JjtxCliTestBase {
 
         }
 
-        myAssertEquals(test.expectedStdout, myStdout)
-        myAssertEquals(test.expectedStderr, myStderr)
-        assertEquals(test.expectedExitCode, code)
+        // there's always the problem that testing one thing
+        // before another might hide exceptions
+        // Testing stderr first and failing might hide more grave
+        // issues like files missing
+        // We assert the directory, and if it fails we also print stderr
+        // to show as much as possible
 
         if (test.expectedOutput != null) {
-            assertDirEquals(test.expectedOutput, test.actualOutput)
+            try {
+                assertDirEquals(test.expectedOutput, test.actualOutput)
+            } catch (e: FileComparisonFailure) {
+                System.err.println(myStderr.toActualText())
+                throw e
+            }
         }
+
+
+        myAssertEquals(test.expectedStdout, myStdout.toActualText())
+        myAssertEquals(test.expectedStderr, myStderr.toActualText())
+        assertEquals(test.expectedExitCode, code)
+
     }
 
 

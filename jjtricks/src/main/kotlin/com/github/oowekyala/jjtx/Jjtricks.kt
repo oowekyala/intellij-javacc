@@ -8,10 +8,13 @@ import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.*
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
+import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
+import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -337,8 +340,15 @@ private fun validateConfigFiles(io: Io,
             "yaml"    -> path
             "jjtopts" -> path.resolveSibling("$fileName.yaml").takeIf { it.isFile() }
             null      ->
-                path.resolveSibling("$fileName.jjtopts").takeIf { it.isFile() }
-                    ?: path.resolveSibling("$fileName.jjtopts.yaml").takeIf { it.isFile() }
+                listOf(
+                    "$fileName.jjtopts",
+                    "$fileName.jjtopts.yaml",
+                    "$fileName.jjtopts.json",
+                    "$fileName.json",
+                    "$fileName.yaml"
+                ).map {
+                    path.resolveSibling(it)
+                }.firstOrNull { it.isFile() }
             else      -> null
         }
     }

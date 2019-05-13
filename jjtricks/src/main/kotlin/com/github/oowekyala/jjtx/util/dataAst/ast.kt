@@ -24,6 +24,13 @@ enum class ScalarType {
     NUMBER,
     STRING,
     BOOLEAN,
+    /**
+     * Represents "no value", as in
+     *
+     *     yaml:
+     *
+     * The value of the key "yaml" is NULL
+     */
     NULL;
 
     override fun toString(): String = name

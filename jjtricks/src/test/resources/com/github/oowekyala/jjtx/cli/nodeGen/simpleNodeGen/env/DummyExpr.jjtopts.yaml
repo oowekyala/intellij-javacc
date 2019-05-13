@@ -21,6 +21,7 @@ jjtx:
             }
 
           formatter: "java"
+
       "BinaryExpression":
       "v: !$node.subNodes.isEmpty()":
         - template: |

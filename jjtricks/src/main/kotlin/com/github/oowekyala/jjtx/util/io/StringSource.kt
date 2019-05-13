@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.util.io
 
 sealed class StringSource {
 
@@ -8,6 +8,8 @@ sealed class StringSource {
     companion object {
 
         fun ofTrimmed(s: () -> String) = Str(s().trim())
+
+        fun string(s: () -> String) = Str(s())
 
     }
 

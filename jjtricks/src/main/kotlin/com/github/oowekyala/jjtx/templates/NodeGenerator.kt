@@ -8,6 +8,7 @@ import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.dataAst.*
+import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.util.regex.PatternSyntaxException
@@ -124,7 +125,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
                 }
             }
             is AstScalar -> {
-                if (node.type == ScalarType.STRING && node.any.trim().isEmpty()) {
+                if (node.type == ScalarType.NULL) {
                     waitingForNextPattern += newMatches
                 }
                 emptyList()

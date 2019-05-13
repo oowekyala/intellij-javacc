@@ -180,6 +180,12 @@ fun JjtxContext.fileSubContext(file: Path) =
 fun JjtxContext.subContext(key: JjtxTaskKey) =
     subContext(taskCtx(key))
 
+/**
+ * A sub-context appending the key to the existing subcontext.
+ */
+fun JjtxContext.subContext(key: String) =
+    subContext(reportingContext.subKey(key))
+
 
 private class SubContext(parent: JjtxContext, override val reportingContext: ReportingContext) : JjtxContext by parent {
 

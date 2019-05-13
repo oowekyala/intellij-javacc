@@ -6,9 +6,6 @@ jjtx:
     parameterlessVisitor:
       execute: false
 
-
-  nodeTemplates:
-
   nodePrefix: Ex
   nodePackage: "org.expr"
   typeHierarchy:

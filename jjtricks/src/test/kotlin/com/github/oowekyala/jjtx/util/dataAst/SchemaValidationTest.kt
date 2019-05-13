@@ -68,7 +68,9 @@ class SchemaValidationTest {
     fun noThRoot() = neg("NoThRoot.yaml")
 
     @Test
-    fun multipleThRoot() = neg("MultipleThRoots.yaml")
+    fun multipleThRoot() = neg("MultipleThRoots.yaml") {
+
+    }
 
 
     @Test

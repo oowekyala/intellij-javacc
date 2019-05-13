@@ -6,6 +6,7 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.io.StringSource
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine

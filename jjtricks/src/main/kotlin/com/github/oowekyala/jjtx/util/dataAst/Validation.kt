@@ -15,10 +15,26 @@ fun DataAstNode.validateJjtopts(ctx: JjtxContext): Int =
     validateJjtopts {
         causingExceptions.forEach { ex ->
             val pos = (this@validateJjtopts as? AstMap)?.findJsonPointer(ex.pointerToViolation)?.position
-            ctx.messageCollector.reportNonFatal(ex.errorMessage!!, pos)
+            ctx.messageCollector.reportNonFatal(ex.sanitizedMessage(this), pos)
         }
         ctx.messageCollector.reportFatal(message!!)
     }
+
+private fun ValidationException.sanitizedMessage(parent: ValidationException): String {
+
+    if (parent.isAt("jjtx", "typeHierarchy")) {
+        Regex("(maximum|minimum) size: \\[1], found: \\[(\\d+)]").matchEntire(errorMessage.trim())?.let {
+            return "Expected a unique name, found ${it.groupValues[2]}"
+        }
+    }
+
+    return errorMessage.replace("JSONObject", "Map")
+}
+
+
+private fun ValidationException.isAt(vararg path: String) =
+    pointerToViolation.removePrefix("#/").split('/') == path.toList()
+
 
 fun AstMap.findJsonPointer(pointer: String): DataAstNode? =
     jsonPointerToPosition(pointer).findPathIn(this)
