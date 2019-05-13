@@ -1,4 +1,6 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.util.dataAst
+
+import com.github.oowekyala.jjtx.util.splitAroundFirst
 
 /**
  * Namespacer allows structuring config files in a flat

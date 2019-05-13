@@ -6,6 +6,7 @@ import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.MessageCategory.*
 import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
 /**
@@ -107,7 +108,7 @@ internal class TypeHierarchyTree internal constructor(
             return when (this) {
                 is AstMap    -> this.fromJsonObject(ctx)
                 is AstScalar -> this.fromJsonPrimitive(ctx)
-                else         -> {
+                else                                                -> {
                     ctx.messageCollector.report(
                         "expected string or object, got $this",
                         WRONG_TYPE,
@@ -150,7 +151,7 @@ internal class TypeHierarchyTree internal constructor(
                     children = children.mapNotNull { it.toTree(ctx) },
                     positionInfo = position
                 )
-                else         -> {
+                else                                                -> {
                     ctx.messageCollector.report(
                         "expected array or string, got $children",
                         WRONG_TYPE,

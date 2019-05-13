@@ -1,8 +1,11 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.ScalarType.*
+import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.YamlPosition
+import com.github.oowekyala.jjtx.util.addName
+import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
 import com.google.gson.*
 import com.google.gson.internal.LazilyParsedNumber
 import org.yaml.snakeyaml.DumperOptions
@@ -195,7 +198,12 @@ internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
     if (children.isEmpty())
         AstScalar(nodeName, STRING)
     else
-        AstMap(mapOf(nodeName to AstSeq(children.map { it.toDataNode() })))
+        AstMap(
+            mapOf(
+                nodeName to AstSeq(
+                    children.map { it.toDataNode() })
+            )
+        )
 
 internal fun YamlNode.toYamlString(): String {
     val opts = DumperOptions()

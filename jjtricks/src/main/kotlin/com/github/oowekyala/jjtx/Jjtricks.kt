@@ -11,6 +11,7 @@ import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -293,7 +294,11 @@ class Jjtricks(
         fun getResourceAsStream(path: String): NamedInputStream? =
             Jjtricks::class.java.getResourceAsStream(expandResourcePath(path))
                 ?.let {
-                    NamedInputStream({ Jjtricks::class.java.getResourceAsStream(expandResourcePath(path)) }, path)
+                    NamedInputStream({
+                        Jjtricks::class.java.getResourceAsStream(
+                            expandResourcePath(path)
+                        )
+                    }, path)
                 }
 
         private fun expandResourcePath(path: String): String {

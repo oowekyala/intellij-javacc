@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.util.schema
+package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext

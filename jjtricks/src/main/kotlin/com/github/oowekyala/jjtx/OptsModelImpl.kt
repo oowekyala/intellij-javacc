@@ -8,6 +8,9 @@ import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.templates.*
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.dataAst.*
+import com.github.oowekyala.jjtx.util.dataAst.Namespacer
+import com.github.oowekyala.jjtx.util.dataAst.toJson
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import kotlin.properties.ReadOnlyProperty
@@ -108,7 +111,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
 }
 
 private inline fun <reified T> Namespacer.withDefault(propName: String? = null,
-                                                      crossinline default: () -> T): ReadOnlyProperty<Any, T> =
+                                                                                             crossinline default: () -> T): ReadOnlyProperty<Any, T> =
     JsonProperty(this, propName)
         .map {
             it?.parse<T>() ?: default()

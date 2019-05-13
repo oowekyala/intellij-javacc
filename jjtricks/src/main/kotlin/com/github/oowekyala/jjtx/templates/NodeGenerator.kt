@@ -7,6 +7,7 @@ import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.dataAst.*
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.util.regex.PatternSyntaxException
@@ -35,7 +36,7 @@ import java.util.regex.PatternSyntaxException
 internal fun DataAstNode.toNodeGenerationSchemes(ctx: JjtxContext): Map<String, GrammarGenerationScheme> =
     when (this) {
         is AstMap -> this.mapValues { (id, node) -> node.toSingleNodeGenerationScheme(ctx, id) }
-        else      -> {
+        else                                             -> {
             ctx.messageCollector.report(
                 "Expected map of ids to node generation schemes",
                 MessageCategory.WRONG_TYPE,
@@ -97,13 +98,13 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
         }
 
         val schemes = when (node) {
-            is AstMap -> {
+            is AstMap    -> {
                 val b = node.parse<NodeGenerationBean>()
                 val ms = newMatches + waitingForNextPattern
                 waitingForNextPattern.clear()
                 listOfNotNull(b.promote(ctx, node.position, ms))
             }
-            is AstSeq -> {
+            is AstSeq    -> {
                 val (maps, notMaps) = node.partition { it is AstMap }
 
                 if (notMaps.isNotEmpty()) {

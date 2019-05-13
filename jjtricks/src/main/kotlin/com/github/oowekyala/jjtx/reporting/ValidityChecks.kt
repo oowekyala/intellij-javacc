@@ -3,7 +3,6 @@ package com.github.oowekyala.jjtx.reporting
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccVisitor
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.util.position
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 

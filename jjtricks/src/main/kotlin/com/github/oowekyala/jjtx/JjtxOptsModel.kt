@@ -6,7 +6,11 @@ import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.*
-import com.github.oowekyala.jjtx.util.schema.validateJjtopts
+import com.github.oowekyala.jjtx.util.dataAst.AstMap
+import com.github.oowekyala.jjtx.util.dataAst.DataAstNode
+import com.github.oowekyala.jjtx.util.dataAst.jsonToData
+import com.github.oowekyala.jjtx.util.dataAst.yamlToData
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import org.yaml.snakeyaml.Yaml

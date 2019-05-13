@@ -1,5 +1,8 @@
 package com.github.oowekyala.jjtx.util
 
+import com.github.oowekyala.jjtx.util.dataAst.AstMap
+import com.github.oowekyala.jjtx.util.dataAst.DataAstNode
+import com.github.oowekyala.jjtx.util.dataAst.Namespacer
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement

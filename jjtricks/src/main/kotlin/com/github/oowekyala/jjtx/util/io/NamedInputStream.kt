@@ -1,4 +1,4 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.jjtx.util.io
 
 import java.io.InputStream
 

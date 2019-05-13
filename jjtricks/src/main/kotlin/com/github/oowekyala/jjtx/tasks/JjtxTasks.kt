@@ -10,6 +10,8 @@ import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.dataAst.toYaml
+import com.github.oowekyala.jjtx.util.dataAst.toYamlString
 import com.github.oowekyala.jjtx.util.io.Io
 import org.apache.velocity.VelocityContext
 import java.io.FileOutputStream
