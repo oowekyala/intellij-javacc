@@ -18,6 +18,16 @@ jjtx:
 
             }
           formatter: "none"
+      "hello":
+        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+          template: |
+            #if( !package.empty )
+            package $package;
+            #end
+            public class $simpleName extends ${node.class.qualifiedName} {
+
+            }
+          formatter: "none"
 
   nodePrefix: Ex
   nodePackage: "org.expr"

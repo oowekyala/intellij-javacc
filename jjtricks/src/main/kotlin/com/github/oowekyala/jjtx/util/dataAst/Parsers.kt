@@ -41,8 +41,6 @@ fun parseGuessFromExtension(input: NamedInputStream, preference: DataLanguage = 
     }
 
 
-fun parseYaml(input: NamedInputStream): DataAstNode =
-    YAML.parse(input)
+fun parseYaml(input: NamedInputStream): DataAstNode = YAML.parse(input)
 
-fun parseJson(input: NamedInputStream): DataAstNode =
-    JSON.parse(input)
+fun parseJson(input: NamedInputStream): DataAstNode = JSON.parse(input)

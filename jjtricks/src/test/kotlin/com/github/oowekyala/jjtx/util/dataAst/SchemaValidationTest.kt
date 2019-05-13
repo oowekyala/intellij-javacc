@@ -12,11 +12,11 @@ class SchemaValidationTest {
 
     private fun toNis(fname: String): NamedInputStream = Jjtricks.getResourceAsStream("/jjtx/util/dataAst/$fname")!!
 
-    fun neg(fname: String, neg: Boolean = true, errors: ValidationException.() -> Unit) {
+    fun neg(fname: String, neg: Boolean = true, errors: ValidationException.() -> Unit = {}) {
         neg(toNis(fname), neg, errors)
     }
 
-    fun neg(nis: NamedInputStream, neg: Boolean = true, errors: ValidationException.() -> Unit) {
+    fun neg(nis: NamedInputStream, neg: Boolean = true, errors: ValidationException.() -> Unit = {}) {
 
         val ast = parseGuessFromExtension(nis)
         var hasErrors = false
@@ -49,6 +49,10 @@ class SchemaValidationTest {
 
     @Test
     fun visitorPos() = pos("VisitorPos.yaml")
+
+
+    @Test
+    fun typeHierarchyPos() = pos("TypeHierarchyPos.yaml")
 
 
     @Test

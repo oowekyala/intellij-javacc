@@ -6,6 +6,34 @@
   "required": [
     "jjtx"
   ],
+  "definitions": {
+    "formatter": {
+      "type": "string",
+      "pattern": "java|none"
+    },
+    "nodeGenTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "formatter": {
+          "$ref": "#/definitions/formatter"
+        },
+        "genClassName": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "templateFile": {
+          "type": "string"
+        },
+        "context": {
+          "type": "object"
+        }
+      }
+    }
+  },
+
   "additionalProperties": false,
   "properties": {
     "jjtx": {
@@ -25,7 +53,23 @@
           "type": "object"
         },
         "nodeGenerationSchemes": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/nodeGenTask"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/nodeGenTask"
+                  }
+                }
+              ]
+            }
+          }
         },
 
         "visitors": {
@@ -41,7 +85,7 @@
                 "type": "string"
               },
               "formatter": {
-                "type": "string"
+                "$ref": "#/definitions/formatter"
               },
               "genClassName": {
                 "type": "string"
