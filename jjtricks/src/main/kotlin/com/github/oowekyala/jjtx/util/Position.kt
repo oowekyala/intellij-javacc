@@ -1,8 +1,7 @@
 package com.github.oowekyala.jjtx.util
 
-import com.github.oowekyala.jjtx.util.dataAst.AstMap
 import com.github.oowekyala.jjtx.util.dataAst.DataAstNode
-import com.github.oowekyala.jjtx.util.dataAst.Namespacer
+import com.github.oowekyala.jjtx.util.dataAst.findPointer
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
@@ -123,8 +122,7 @@ data class JsonPosition(val path: List<String>) : Position {
 
     override fun toString(): String = "At " + path.joinToString(" / ") { "\"$it\"" }
 
-
-    fun findPathIn(map: AstMap): DataAstNode? = Namespacer(map)[path.joinToString(separator = ".")]
+    infix fun findIn(map: DataAstNode): DataAstNode? = map.findPointer(path)
 
 }
 

@@ -1,24 +1,9 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
-import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.JsonPosition
-import com.github.oowekyala.jjtx.util.YamlPosition
-import com.github.oowekyala.jjtx.util.addName
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
-import com.google.gson.*
-import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.emitter.Emitter
-import org.yaml.snakeyaml.error.YAMLException
-import org.yaml.snakeyaml.nodes.*
-import org.yaml.snakeyaml.resolver.Resolver
-import org.yaml.snakeyaml.serializer.Serializer
-import java.io.IOException
-import java.io.StringWriter
 import java.lang.reflect.Method
 import java.util.*
-import kotlin.collections.LinkedHashMap
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 
@@ -27,7 +12,7 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
     val visitors = visitorBeans.toDataNode()
 
-    val th = rawTypeHierarchy.toDataNode()
+    val th = resolvedTypeHierarchy.toDataNode()
 
     return AstMap(
         mapOf(

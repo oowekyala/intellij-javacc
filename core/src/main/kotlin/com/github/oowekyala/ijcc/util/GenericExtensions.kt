@@ -130,7 +130,7 @@ fun <T> List<T>.init(): List<T> =
     if (isEmpty()) throw NoSuchElementException() else take(size - 1)
 
 fun <T> List<T>.tail(): List<T> =
-    if (isEmpty()) throw NoSuchElementException() else drop(1)
+    if (isEmpty()) throw NoSuchElementException() else subList(1, size)
 
 
 // null keys will not be added.

@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
-import com.github.oowekyala.jjtx.util.splitAroundFirst
+import com.github.oowekyala.ijcc.util.tail
 
 /**
  * Namespacer allows structuring config files in a flat
@@ -17,26 +17,34 @@ import com.github.oowekyala.jjtx.util.splitAroundFirst
  *
  * @author Clément Fournier
  */
-internal data class Namespacer(val json: AstMap, val namespace: String = "") {
+internal class Namespacer(val data: DataAstNode, val namespace: String = "", val delim: Char = '.') {
 
-    operator fun get(key: String): DataAstNode? = json.getSplit(fullKey(key))
+    operator fun get(key: String): DataAstNode? = data.findPointer(fullKey(key).split(delim))
 
-    infix fun namespace(sub: String) = Namespacer(json, "$namespace.$sub")
+    infix fun namespace(sub: String) = Namespacer(data, fullKey(sub), delim = delim)
 
-    private fun fullKey(k: String) = if (namespace.isEmpty()) k else "$namespace.$k"
+    private fun fullKey(k: String) = if (namespace.isEmpty()) k else "$namespace$delim$k"
 
-    private fun AstMap.getSplit(key: String): DataAstNode? {
-        when {
-            key in this -> return this[key]
-            '.' in key  -> {
-                val (hd, tl) = key.splitAroundFirst('.')
-                val subMap = this[hd] as? AstMap ?: return null
-                return subMap.getSplit(tl)
-            }
-            else        -> return null
+    override fun toString(): String = data.prettyPrint()
+
+}
+
+fun DataAstNode.findPointer(vararg path: String): DataAstNode? = findPointer(path.toList())
+
+fun DataAstNode.findPointer(path: List<String>): DataAstNode? {
+    if (path.isEmpty()) return this
+
+    val hd = path[0]
+    val tl = path.tail()
+
+    return when (this) {
+        is AstSeq -> hd.toIntOrNull()?.let { this.getOrNull(it) }?.findPointer(tl)
+        is AstMap -> when (hd) {
+            in this -> this[hd]?.findPointer(tl)
+            else    -> null
         }
+        else      -> null
     }
-
 }
 
 internal infix fun AstMap.namespace(ns: String) = Namespacer(this, ns)

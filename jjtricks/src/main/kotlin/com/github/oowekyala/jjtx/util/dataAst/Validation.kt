@@ -14,7 +14,7 @@ import org.json.JSONTokener
 fun DataAstNode.validateJjtopts(ctx: JjtxContext): Int =
     validateJjtopts {
         causingExceptions.forEach { ex ->
-            val pos = (this@validateJjtopts as? AstMap)?.findJsonPointer(ex.pointerToViolation)?.position
+            val pos = findPointer(ex.pointerToViolation)?.position
             ctx.messageCollector.reportNonFatal(ex.sanitizedMessage(this), pos)
         }
         ctx.messageCollector.reportFatal(message!!)
@@ -33,11 +33,11 @@ private fun ValidationException.sanitizedMessage(parent: ValidationException): S
 
 
 private fun ValidationException.isAt(vararg path: String) =
-    pointerToViolation.removePrefix("#/").split('/') == path.toList()
+    jsonPointerPosition(pointerToViolation).path == path.toList()
 
 
 fun AstMap.findJsonPointer(pointer: String): DataAstNode? =
-    jsonPointerToPosition(pointer).findPathIn(this)
+    jsonPointerPosition(pointer) findIn this
 
 
 fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
@@ -54,4 +54,5 @@ fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
         0
     }
 
-fun jsonPointerToPosition(pointer: String): JsonPosition = JsonPosition(pointer.removePrefix("#/").split('/'))
+fun jsonPointerPosition(pointer: String): JsonPosition =
+    JsonPosition(pointer.removePrefix("#/").split('/'))

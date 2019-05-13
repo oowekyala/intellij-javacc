@@ -83,13 +83,18 @@ internal class OptsModelImpl(val ctx: JjtxContext,
         TypeHierarchyTree.fromData(it, ctx)
     }
 
-    internal val rawTypeHierarchy: TypeHierarchyTree by lazy {
+    /**
+     * Type hierarchy after resolution against the grammar, before
+     * transformation to [NodeVBean] (which is just a mapping process).
+     * This is what's printed by help:dump-config
+     */
+    internal val resolvedTypeHierarchy: TypeHierarchyTree by lazy {
         th.process(ctx)
     }
 
     override val typeHierarchy: NodeVBean by lazy {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        NodeVBean.toBean(rawTypeHierarchy, ctx)
+        NodeVBean.toBean(resolvedTypeHierarchy, ctx)
     }
 
 
