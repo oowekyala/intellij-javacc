@@ -293,7 +293,7 @@ class Jjtricks(
         fun getResourceAsStream(path: String): NamedInputStream? =
             Jjtricks::class.java.getResourceAsStream(expandResourcePath(path))
                 ?.let {
-                    NamedInputStream(it, path)
+                    NamedInputStream({ Jjtricks::class.java.getResourceAsStream(expandResourcePath(path)) }, path)
                 }
 
         private fun expandResourcePath(path: String): String {

@@ -6,11 +6,11 @@ import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.schema.validateJjtopts
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.reader.UnicodeReader
-import java.io.Reader
 import java.nio.file.Path
 
 /**
@@ -86,7 +86,7 @@ interface JjtxOptsModel : IGrammarOptions {
             // they're in decreasing precedence order
             configChain
                 .filter { it.isFile() }
-                .map { NamedInputStream(it.inputStream(), it.toString()) }
+                .map { NamedInputStream(it::inputStream, it.toString()) }
                 .plus(RootJjtOpts)
                 // but we fold them from least important to most important
                 .asReversed()
@@ -111,7 +111,7 @@ interface JjtxOptsModel : IGrammarOptions {
                   parent: JjtxOptsModel): JjtxOptsModel {
 
             return when (file.extension) {
-                "json" -> parseJson(ctx, file.inputStream.bufferedReader(), parent)
+                "json" -> parseJson(ctx, file, parent)
                 // by default assume it's yaml
                 else   -> parseYaml(ctx, file, parent)
             }
@@ -120,28 +120,29 @@ interface JjtxOptsModel : IGrammarOptions {
 
         private fun parseYaml(ctx: JjtxContext,
                               file: NamedInputStream,
-                              parent: JjtxOptsModel): JjtxOptsModel {
+                              parent: JjtxOptsModel): JjtxOptsModel =
+            file.newInputStream().use { istream ->
+                val reader = UnicodeReader(istream).buffered()
 
-            val reader = UnicodeReader(file.inputStream).buffered()
+                val data = Yaml().compose(reader).yamlToData(file.filename)
 
-            val json = Yaml().compose(reader).yamlToData(file.filename)
+                fromElement(ctx, data, parent)
 
-            return fromElement(ctx, json, parent)
-        }
+            }
 
         private fun parseJson(ctx: JjtxContext,
-                              reader: Reader,
-                              parent: JjtxOptsModel): JjtxOptsModel {
+                              file: NamedInputStream,
+                              parent: JjtxOptsModel): JjtxOptsModel =
+            file.newInputStream().bufferedReader().use { reader ->
+                val jsonReader = JsonReader(reader)
+                jsonReader.isLenient = true
 
-            val jsonReader = JsonReader(reader)
-            jsonReader.isLenient = true
+                val jsonParser = JsonParser()
 
-            val jsonParser = JsonParser()
+                val elt = jsonParser.parse(jsonReader).jsonToData()
 
-            val elt = jsonParser.parse(jsonReader).jsonToData()
-
-            return fromElement(ctx, elt, parent)
-        }
+                fromElement(ctx, elt, parent)
+            }
 
         private fun fromElement(ctx: JjtxContext,
                                 jsonElement: DataAstNode,

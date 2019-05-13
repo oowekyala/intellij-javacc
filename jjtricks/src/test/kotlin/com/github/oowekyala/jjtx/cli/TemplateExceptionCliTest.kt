@@ -8,6 +8,6 @@ import org.junit.Test
 class TemplateExceptionCliTest : JjtxCliTestBase() {
 
     @Test
-    fun testSimpleArg() = doTest("DummyExpr")
+    fun testSimpleArg() = doTest("DummyExpr", "gen:*")
 
 }

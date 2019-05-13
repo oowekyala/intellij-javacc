@@ -50,7 +50,7 @@ fun MessageCollector.reportNormal(message: String) {
 /**
  * Report a non-fatal error, probably followed later by termination anyway.
  */
-fun MessageCollector.reportNonFatal(message: String, position: Position?) {
+fun MessageCollector.reportNonFatal(message: String, position: Position? = null) {
     report(message, MessageCategory.NON_FATAL, position)
 }
 

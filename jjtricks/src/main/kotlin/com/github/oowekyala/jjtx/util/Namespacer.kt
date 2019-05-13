@@ -15,11 +15,11 @@ package com.github.oowekyala.jjtx.util
  *
  * @author Clément Fournier
  */
-internal data class Namespacer(val namespace: String, val json: AstMap) {
+internal data class Namespacer(val json: AstMap, val namespace: String = "") {
 
     operator fun get(key: String): DataAstNode? = json.getSplit(fullKey(key))
 
-    infix fun namespace(sub: String) = Namespacer("$namespace.$sub", json)
+    infix fun namespace(sub: String) = Namespacer(json, "$namespace.$sub")
 
     private fun fullKey(k: String) = if (namespace.isEmpty()) k else "$namespace.$k"
 
@@ -37,5 +37,5 @@ internal data class Namespacer(val namespace: String, val json: AstMap) {
 
 }
 
-internal infix fun AstMap.namespace(ns: String) = Namespacer(ns, this)
+internal infix fun AstMap.namespace(ns: String) = Namespacer(this, ns)
 

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://raw.githubusercontent.com/oowekyala/intellij-javacc/jjtricksjjtricks.schema.json",
+  "title": "Schema of jjopts configuration files for JJTricks",
+  "type": "object",
+  "required": [
+    "jjtx"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "jjtx": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodePrefix": {
+          "type": "string"
+        },
+        "nodePackage": {
+          "type": "string"
+        },
+        "activeGenScheme": {
+          "type": "string"
+        },
+        "templateContext": {
+          "type": "object"
+        },
+        "visitors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "execute": {
+                "type": "boolean"
+              },
+              "templateFile": {
+                "type": "string"
+              },
+              "formatter": {
+                "type": "string"
+              },
+              "genClassName": {
+                "type": "string"
+              },
+              "context": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

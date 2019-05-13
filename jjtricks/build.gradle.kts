@@ -38,6 +38,7 @@ dependencies {
     api("org.apache.velocity:velocity:1.6.2")
 
     implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.github.everit-org.json-schema:org.everit.json.schema:1.11.1")
     implementation("com.github.oowekyala.treeutils:tree-printers:2.1.0")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
