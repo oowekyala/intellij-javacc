@@ -41,3 +41,8 @@ fun TypeHWrapper.node(fqcn: String, nodeSpec: TypeHSpec = EmptySpec) {
 }
 
 val EmptySpec: TypeHSpec = {}
+
+fun getCallerName(): String = getStackFrame(2).methodName
+fun getThisMethodName(): String = getStackFrame(1).methodName
+
+fun getStackFrame(int: Int): StackTraceElement = Thread.currentThread().stackTrace[int]

@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.Jjtricks
-import com.github.oowekyala.jjtx.util.StringSource
+import com.github.oowekyala.jjtx.testutil.getStackFrame
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
@@ -39,7 +39,7 @@ import java.util.*
 abstract class JjtxCliTestBase {
 
 
-    inner class TestBuilder {
+    inner class TestBuilder(var subpath: String) {
         var expectedExitCode: ExitCode = ExitCode.OK
 
         /**
@@ -61,8 +61,13 @@ abstract class JjtxCliTestBase {
     private inner class MyTestCase(params: TestBuilder) {
 
         val tmpDir: Path = createTempDirectory(TmpPrefix)
-        val resDir: Path = findTestDir(this@JjtxCliTestBase.javaClass)
-        val env: Path = findTestDir(params.envOwner).resolve("env").also { assert(it.isDirectory()) }
+        val resDir: Path = findTestDir(this@JjtxCliTestBase.javaClass).resolve(params.subpath)
+        val env: Path =
+            findTestDir(params.envOwner)
+                .resolve(params.subpath)
+                .resolve("env").also {
+                    assert(it.isDirectory())
+                }
         val expectedOutput: Path? = resDir.resolve("expected").takeIf { it.isDirectory() }
 
         val expectedStdout: StringSource? = params.expectedOut
@@ -82,7 +87,8 @@ abstract class JjtxCliTestBase {
 
     fun doTest(vararg args: String, conf: TestBuilder.() -> Unit = {}) {
 
-        val test = MyTestCase(TestBuilder().also(conf))
+        val callingMethod = getStackFrame(4).methodName.replace(Regex("(Cli)?[tT]ests?|\\d+"), "").decapitalize()
+        val test = MyTestCase(TestBuilder(callingMethod).also(conf))
 
         val myStdout = ByteArrayOutputStream()
         val myStderr = ByteArrayOutputStream()
@@ -145,7 +151,7 @@ abstract class JjtxCliTestBase {
 
         private fun findTestDir(javaClass: Class<*>): Path {
 
-            val name = javaClass.simpleName.removeSuffix("CliTest").decapitalize()
+            val name = javaClass.simpleName.replace(Regex("(Cli)?Tests?|\\d+"), "").decapitalize()
 
             val path = javaClass.`package`.name.replace('.', '/')
 
