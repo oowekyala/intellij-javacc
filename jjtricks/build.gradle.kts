@@ -1,4 +1,6 @@
 import com.github.oowekyala.*
+import groovy.xml.dom.DOMCategory.attributes
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 
 plugins {

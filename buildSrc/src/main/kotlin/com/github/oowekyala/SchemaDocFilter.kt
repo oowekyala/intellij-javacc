@@ -42,17 +42,20 @@ fun Project.filterSchemaDoc(inDir: File, outDir: File) {
     val arr = doc.select(".json-schema-array-items")!!
 
     for (items in arr) {
-        val ref = items.selectFirst(".json-property-type .json-schema-ref") ?: continue
-        println(items)
 
-        items.parent().previousElementSibling()!!.selectFirst(".json-property-type").let { type ->
-            Regex("object(\\[])+").matchEntire(type.text().trim())?.let { match ->
-                type.html(ref.outerHtml() + match.groupValues[1])
+        val ref = items.selectFirst(".json-property-type .json-schema-ref")
 
-                // TODO maybe there are some other constraints
-                items.remove()
+        if (ref != null)
+            items.parent().previousElementSibling()!!.selectFirst(".json-property-type").let { type ->
+                Regex("object(\\[])+").matchEntire(type.text().trim())?.let { match ->
+                    type.html(ref.outerHtml() + match.groupValues[1])
+                }
             }
-        }
+
+        // TODO maybe there are some other constraints
+        // but not in the current schema
+        items.remove()
+
     }
 
     outDir.resolve("index.html").bufferedWriter().use {
