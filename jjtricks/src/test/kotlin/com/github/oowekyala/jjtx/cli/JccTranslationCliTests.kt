@@ -11,6 +11,7 @@ class JccTranslationCliTests : JjtxCliTestBase() {
         "SimpleExprs",
         "gen:javacc"
     )
+
     @Test
     fun testImportInsteadOfImplements() = doTest(
         "SimpleExprs",

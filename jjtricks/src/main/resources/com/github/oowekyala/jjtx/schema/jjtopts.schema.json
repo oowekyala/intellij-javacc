@@ -32,6 +32,27 @@
         }
       }
     },
+    "vanillaJjtreeOpts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixJjtThisConditionScope": {
+          "type": "boolean"
+        },
+        "implementNodeConstants": {
+          "type": "boolean"
+        },
+        "setTokensBeforeHooks": {
+          "type": "boolean"
+        },
+        "descriptiveVariableNames": {
+          "type": "boolean"
+        },
+        "forceCheckedExceptionsDeclaration": {
+          "type": "boolean"
+        }
+      }
+    },
     "typeHierarchyNode": {
       "anyOf": [
         {
@@ -74,9 +95,6 @@
         "nodePackage": {
           "type": "string"
         },
-        "activeGenScheme": {
-          "type": "string"
-        },
         "templateContext": {
           "type": "object"
         },
@@ -84,7 +102,12 @@
         "typeHierarchy": {
           "$ref": "#/definitions/typeHierarchyNode"
         },
-
+        "javaccGen": {
+          "$ref": "#/definitions/vanillaJjtreeOpts"
+        },
+        "activeGenScheme": {
+          "type": "string"
+        },
         "nodeGenerationSchemes": {
           "type": "object",
           "additionalProperties": {
