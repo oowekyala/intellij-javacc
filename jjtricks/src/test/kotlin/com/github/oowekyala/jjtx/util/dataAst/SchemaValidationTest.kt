@@ -24,6 +24,13 @@ class SchemaValidationTest {
         ast.validateJjtopts {
             errors()
             hasErrors = true
+            causingExceptions.forEach { ex ->
+                val pos = (ast as AstMap).findJsonPointer(ex.pointerToViolation)?.position
+                System.out.println(ex)
+                if (pos != null)
+                    System.out.println(pos)
+            }
+            System.out.println(this)
         }
 
         if (neg && !hasErrors) {
@@ -53,6 +60,15 @@ class SchemaValidationTest {
 
     @Test
     fun typeHierarchyPos() = pos("TypeHierarchyPos.yaml")
+
+    @Test
+    fun typeHierarchyNeg() = pos("TypeHierarchyPos.yaml")
+
+    @Test
+    fun noThRoot() = neg("NoThRoot.yaml")
+
+    @Test
+    fun multipleThRoot() = neg("MultipleThRoots.yaml")
 
 
     @Test

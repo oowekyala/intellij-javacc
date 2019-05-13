@@ -17,3 +17,6 @@ jjtx:
           - Literal:
               - NullLiteral
               - IntegerLiteral: foo
+
+    "foo":
+      -"Expr": "bar"

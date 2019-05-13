@@ -13,12 +13,15 @@ import org.json.JSONTokener
 
 fun DataAstNode.validateJjtopts(ctx: JjtxContext): Int =
     validateJjtopts {
-        causingExceptions.forEach {
-            val pos = jsonPointerToPosition(it.pointerToViolation).findPathIn(this@validateJjtopts as AstMap)?.position
-            ctx.messageCollector.reportNonFatal(it.errorMessage!!, pos)
+        causingExceptions.forEach { ex ->
+            val pos = (this@validateJjtopts as? AstMap)?.findJsonPointer(ex.pointerToViolation)?.position
+            ctx.messageCollector.reportNonFatal(ex.errorMessage!!, pos)
         }
         ctx.messageCollector.reportFatal(message!!)
     }
+
+fun AstMap.findJsonPointer(pointer: String): DataAstNode? =
+    jsonPointerToPosition(pointer).findPathIn(this)
 
 
 fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =

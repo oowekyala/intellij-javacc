@@ -31,6 +31,23 @@
           "type": "object"
         }
       }
+    },
+    "typeHierarchyNode": {
+      "type": [
+        "string",
+        "object"
+      ],
+      "additionalProperties": {
+        "type": [
+          "string",
+          "array"
+        ],
+        "items": {
+          "$ref": "#/definitions/typeHierarchyNode"
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     }
   },
 
@@ -52,6 +69,11 @@
         "templateContext": {
           "type": "object"
         },
+
+        "typeHierarchy": {
+          "$ref": "#/definitions/typeHierarchyNode"
+        },
+
         "nodeGenerationSchemes": {
           "type": "object",
           "additionalProperties": {

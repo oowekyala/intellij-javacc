@@ -16,7 +16,7 @@ internal fun DataAstNode.toJson(): JsonElement =
                         any
                     )
                 )
-                ScalarType.NULL    -> JsonNull()
+                ScalarType.NULL    -> JsonNull.INSTANCE
                 ScalarType.BOOLEAN -> JsonPrimitive(any.toBoolean())
             }
 
