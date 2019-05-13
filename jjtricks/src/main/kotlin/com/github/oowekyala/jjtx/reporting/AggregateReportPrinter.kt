@@ -11,16 +11,16 @@ import java.io.PrintStream
 class AggregateReportPrinter private constructor(
     private val stream: PrintStream,
     private val collected: MutableList<ReportEntry>,
+    private val exceptionMerger: ExceptionMerger,
     private val context: ReportingContext?
 ) : MessageCollector {
 
-    constructor(stream: PrintStream, contextStr: ReportingContext? = null) : this(stream, mutableListOf(), contextStr)
+    constructor(stream: PrintStream, contextStr: ReportingContext? = null)
+        : this(stream, mutableListOf(), ExceptionMerger(), contextStr)
 
     private val padding = JjtxTaskKey.values().map { it.ref.length }.plus("init".length).max()!! + 4
 
-    private var hadExceptions = false
-
-    private val myErrorPrinter: MessageCollector =
+    private val myErrorPrinter =
         FullReportPrinter(
             stream = stream,
             minSeverity = Severity.IGNORE,
@@ -30,7 +30,12 @@ class AggregateReportPrinter private constructor(
 
     override fun withContext(contextStr: ReportingContext): MessageCollector =
         // share same [collected]
-        AggregateReportPrinter(stream = stream, collected = collected, context = contextStr)
+        AggregateReportPrinter(
+            stream = stream,
+            collected = collected,
+            exceptionMerger = exceptionMerger,
+            context = contextStr
+        )
 
     override fun concludeReport() {
 
@@ -50,6 +55,7 @@ class AggregateReportPrinter private constructor(
             val ws = warnings.size
             val w = if (ws > 0) "$ws warning" + (if (ws > 1) "s" else "") else null
 
+            stream.println()
             stream.print("JJTricks exited with ")
 
             val str =
@@ -57,10 +63,6 @@ class AggregateReportPrinter private constructor(
 
             stream.println(str)
             stream.println("Rerun with --warn option for more details")
-        }
-
-        if (hadExceptions) {
-            stream.println("Rerun with --warn option to inspect the stack trace of exceptions")
         }
 
         stream.flush()
@@ -75,8 +77,17 @@ class AggregateReportPrinter private constructor(
         }
 
         if (reportEntry.severity > Severity.NORMAL) {
-            // an error
-            myErrorPrinter.reportEntry(reportEntry)
+
+            val thrown = reportEntry.thrown
+            if (thrown != null && exceptionMerger.add(
+                    thrown,
+                    reportEntry.message
+                ) && reportEntry.positions.isNotEmpty()) {
+                myErrorPrinter.addExceptionPosition(reportEntry.positions.first())
+            } else {
+                // an error
+                myErrorPrinter.reportEntry(reportEntry)
+            }
         }
 
     }

@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.reporting
 
+import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.baseIndent
 import java.io.PrintStream
 
@@ -38,6 +39,10 @@ class FullReportPrinter(
 
     override fun concludeReport() {
         // do nothing
+    }
+
+    fun addExceptionPosition(position: Position) {
+        stream.println(position.toString().replaceIndent(lcolIndent))
     }
 
     override fun reportEntry(reportEntry: ReportEntry) {

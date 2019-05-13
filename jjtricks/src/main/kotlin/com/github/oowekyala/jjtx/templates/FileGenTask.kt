@@ -156,7 +156,7 @@ open class FileGenTask internal constructor(
             )
 
         val rendered = engine.evaluate(fullCtx, logId = o.toString(), template = template) {
-            throw ReportedExceptionWrapper.withKnownFileCtx(it, template, o)
+            throw JjtricksExceptionWrapper.withKnownFileCtx(it, template, o)
         }
 
 
@@ -164,7 +164,7 @@ open class FileGenTask internal constructor(
             formatter?.format(rendered)
         } catch (e: Exception) {
 
-            val wrapper = ReportedExceptionWrapper.withKnownFileCtx(e, rendered, o)
+            val wrapper = JjtricksExceptionWrapper.withKnownFileCtx(e, rendered, o)
 
             ctx.messageCollector.reportWrappedException(
                 wrapper = wrapper,

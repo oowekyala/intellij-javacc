@@ -12,7 +12,7 @@ import java.nio.file.Path
 class DoExitNowError : Error()
 
 
-class ReportedExceptionWrapper(override val cause: Throwable, message: String, val position: Position?)
+class JjtricksExceptionWrapper(override val cause: Throwable, message: String?, val position: Position?)
     : RuntimeException(message, cause) {
 
 
@@ -22,17 +22,20 @@ class ReportedExceptionWrapper(override val cause: Throwable, message: String, v
             VelocityExtractor.extract(cause)
                 ?: GJFormatExtractor.extract(cause)
 
-        fun withKnownFileCtx(cause: Throwable, fileContents: String, path: Path): ReportedExceptionWrapper =
+        fun withKnownFileCtx(cause: Throwable, fileContents: String, path: Path): JjtricksExceptionWrapper =
             positionedMessage(cause)?.let {
                 val (_, pos, _) = it
 
                 if (pos is LineAndCol) it.copy(position = pos.upgrade(fileContents, path))
                 else it
             }?.let {
-                ReportedExceptionWrapper(cause, it.message, it.position)
-            } ?: ReportedExceptionWrapper(cause, "", null)
+                JjtricksExceptionWrapper(cause, it.message, it.position)
+            } ?: JjtricksExceptionWrapper(cause, null, null)
 
+
+        fun wrapIdem(throwable: Throwable): JjtricksExceptionWrapper =
+            if (throwable is JjtricksExceptionWrapper) throwable
+            else JjtricksExceptionWrapper(throwable, null, null)
 
     }
-
 }

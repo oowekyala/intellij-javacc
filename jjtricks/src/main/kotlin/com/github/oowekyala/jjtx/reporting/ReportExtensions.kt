@@ -9,7 +9,7 @@ fun MessageCollector.reportException(throwable: Throwable,
                                      altMessage: String? = null,
                                      fatal: Boolean = false,
                                      position: Position? = null) {
-    if (throwable is ReportedExceptionWrapper) {
+    if (throwable is JjtricksExceptionWrapper) {
         reportWrappedException(throwable, contextStr, fatal)
     } else reportEntry(
         ReportEntry(
@@ -24,7 +24,7 @@ fun MessageCollector.reportException(throwable: Throwable,
 }
 
 fun MessageCollector.reportWrappedException(
-    wrapper: ReportedExceptionWrapper,
+    wrapper: JjtricksExceptionWrapper,
     contextStr: String? = null,
     fatal: Boolean = false
 ) {
