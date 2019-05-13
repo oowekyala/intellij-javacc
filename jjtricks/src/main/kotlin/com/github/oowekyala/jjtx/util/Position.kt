@@ -39,39 +39,53 @@ fun position(line: Int, column: Int, text: CharSequence, filePath: Path): Positi
     GenericFilePosition(line, column, text, filePath)
 
 
-private class GenericFilePosition : Position {
-
-    val text: CharSequence
-    val filePath: Path
-    val textOffset: Int
-    val line: Int
-    val column: Int
-
-    constructor(offset: Int, text: CharSequence, filePath: Path) {
-        this.textOffset = offset
-        this.text = text
-        this.filePath = filePath
-        val (l, c) = text.getColAndLine(textOffset)
-        line = l
-        column = c
-    }
-
-    constructor(line: Int, column: Int, text: CharSequence, filePath: Path) {
-        this.text = text
-        this.filePath = filePath
-        this.line = line
-        this.column = column
-        this.textOffset = (line to column).toOffset(text)
-    }
-
-    constructor(offset: Int, psiFile: PsiFile) : this(offset, psiFile.text, Paths.get(psiFile.virtualFile.path))
+private class GenericFilePosition(
+    val snippet: String
+) : Position {
 
 
-    override fun toString(): String = buildString {
-        append(" in ")
-        append(filePath)
-        append(":").append(line + 1).append(":").append(column).append(":\n")
-        append(getSnippet(buffer = text, textOffset = textOffset))
+    override fun toString(): String = snippet
+
+    companion object {
+        // The goal of these "constructors" is to not store the full text!
+
+        operator fun invoke(offset: Int, text: CharSequence, filePath: Path): GenericFilePosition {
+            val (l, c) = text.getColAndLine(offset)
+
+            val snippet = buildSnippet(
+                line = l,
+                column = c,
+                offset = offset,
+                text = text,
+                filePath = filePath
+            )
+            return GenericFilePosition(snippet)
+        }
+
+        operator fun invoke(line: Int, column: Int, text: CharSequence, filePath: Path): GenericFilePosition {
+            val offset = (line to column).toOffset(text)
+            val snippet = buildSnippet(
+                line = line,
+                column = column,
+                offset = offset,
+                text = text,
+                filePath = filePath
+            )
+            return GenericFilePosition(snippet)
+
+        }
+
+        operator fun invoke(offset: Int, psiFile: PsiFile) =
+            this(offset, psiFile.text, Paths.get(psiFile.virtualFile.path))
+
+        private fun buildSnippet(line: Int, column: Int, offset: Int, text: CharSequence, filePath: Path): String {
+            return buildString {
+                append(" in ")
+                append(filePath)
+                append(":").append(line + 1).append(":").append(column).append(":\n")
+                append(getSnippet(buffer = text, textOffset = offset))
+            }
+        }
     }
 }
 
