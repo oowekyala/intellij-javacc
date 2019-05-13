@@ -1,7 +1,6 @@
 package com.github.oowekyala.jjtx.util.io
 
 import com.github.oowekyala.jjtx.Jjtricks
-import com.github.oowekyala.jjtx.util.inputStream
 import com.github.oowekyala.jjtx.util.isFile
 import java.nio.file.Path
 
@@ -23,20 +22,18 @@ data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver {
         fromClasspathResource(path) ?: fromFile(path)
 
     private fun fromClasspathResource(path: String): NamedInputStream? =
-        Jjtricks::class.java.getResourceAsStream(expandResourcePath(path))
-            ?.let {
-                NamedInputStream({
-                    Jjtricks::class.java.getResourceAsStream(
-                        expandResourcePath(path)
-                    )
-                }, path)
-            }
+        Jjtricks::class.java.getResourceAsStream(expandResourcePath(path))?.use { _ ->
+            NamedInputStream({
+                // Repeat, so as not to capture the open input stream
+                Jjtricks::class.java.getResourceAsStream(
+                    expandResourcePath(path)
+                )
+            }, path)
+        }
 
 
     private fun fromFile(path: String): NamedInputStream? =
-        ctxDir.resolve(path).takeIf { it.isFile() }?.let {
-            NamedInputStream({ it.inputStream() }, path)
-        }
+        ctxDir.resolve(path).takeIf { it.isFile() }?.namedInputStream()
 
     private fun expandResourcePath(path: String): String {
         return when {

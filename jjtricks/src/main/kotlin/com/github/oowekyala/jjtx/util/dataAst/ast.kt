@@ -26,6 +26,11 @@ enum class ScalarType {
     BOOLEAN,
 
     /**
+     * Reference to a piece of data defined in another file.
+     */
+    REFERENCE,
+
+    /**
      * Represents "no value", as in
      *
      *     yaml:

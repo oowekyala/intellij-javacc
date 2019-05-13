@@ -6,9 +6,12 @@ import com.github.oowekyala.jjtx.reporting.subKey
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.dataAst.*
-import com.github.oowekyala.jjtx.util.inputStream
+import com.github.oowekyala.jjtx.util.dataAst.AstMap
+import com.github.oowekyala.jjtx.util.dataAst.YamlLang
+import com.github.oowekyala.jjtx.util.dataAst.parseGuessFromExtension
+import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
+import com.github.oowekyala.jjtx.util.io.namedInputStream
 import com.github.oowekyala.jjtx.util.isFile
 import java.nio.file.Path
 
@@ -85,7 +88,7 @@ interface JjtxOptsModel : IGrammarOptions {
             // they're in decreasing precedence order
             configChain
                 .filter { it.isFile() }
-                .map { NamedInputStream(it::inputStream, it.toString()) }
+                .map { it.namedInputStream() }
                 .plus(RootJjtOpts)
                 // but we fold them from least important to most important
                 .asReversed()

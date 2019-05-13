@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
+import com.github.oowekyala.jjtx.util.io.extension
 import com.google.gson.Gson
 import org.apache.commons.lang3.reflect.TypeLiteral
 import java.io.StringWriter
