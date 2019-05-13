@@ -9,10 +9,12 @@ import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.createFile
 import com.github.oowekyala.jjtx.util.dataAst.toYaml
-import com.github.oowekyala.jjtx.util.dataAst.toYamlString
+import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.Io
+import com.github.oowekyala.jjtx.util.path
+import com.github.oowekyala.jjtx.util.splitAroundFirst
 import org.apache.velocity.VelocityContext
 import java.io.FileOutputStream
 import java.io.IOException
@@ -102,7 +104,7 @@ class DumpConfigTask(private val ctx: JjtxContext,
 
         out.println("# Fully resolved JJTricks configuration")
         out.println("# Config file chain: ${ctx.chainDump}")
-        out.println(opts.toYaml().toYamlString())
+        out.println(opts.toYaml())
         out.flush()
     }
 }

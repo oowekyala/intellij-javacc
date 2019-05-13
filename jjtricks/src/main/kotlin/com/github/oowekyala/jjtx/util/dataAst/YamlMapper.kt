@@ -1,11 +1,11 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
-import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
-import com.github.oowekyala.jjtx.util.YamlPosition
-import com.github.oowekyala.jjtx.util.addName
+import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.toFilePos
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.emitter.Emitter
+import org.yaml.snakeyaml.error.Mark
 import org.yaml.snakeyaml.error.YAMLException
 import org.yaml.snakeyaml.nodes.*
 import org.yaml.snakeyaml.resolver.Resolver
@@ -17,22 +17,28 @@ import java.io.StringWriter
  * @author Clément Fournier
  */
 
-internal val Node.position: YamlPosition
-    get() = YamlPosition(startMark, endMark)
+internal fun Node.position(filename: String?): Position? = startMark?.toFilePos(filename)
 
+/**
+ * Converts a Yaml node to the language independent AST.
+ *
+ * @param fileName Name of the file from which the node was parsed.
+ * SnakeYaml's [Mark]s have a dummy string by default and must be
+ * replaced.
+ */
 internal fun Node.yamlToData(fileName: String? = null): DataAstNode =
     when (this) {
         is ScalarNode   -> {
             AstScalar(
                 any = value,
                 type = tag.scalarType,
-                position = position.addName(fileName)
+                position = position(fileName)
             )
         }
         is SequenceNode ->
             AstSeq(
                 list = value.map { it.yamlToData(fileName) },
-                position = position.addName(fileName)
+                position = position(fileName)
             )
         is MappingNode  -> {
             // preserve order!
@@ -43,14 +49,22 @@ internal fun Node.yamlToData(fileName: String? = null): DataAstNode =
 
             AstMap(
                 map = values,
-                position = position.addName(fileName)
+                position = position(fileName)
             )
         }
         else            -> throw IllegalStateException("Unknown node type")
     }
 
+internal fun DataAstNode.toYamlString(): String = toYaml().toYamlString()
 
-internal fun DataAstNode.toYaml(): Node = when (this) {
+/**
+ * Dumps the node to yaml.
+ *
+ * The reconstructed yaml tree has no position data.
+ * It's possible to rebuild positions by dumping to
+ * a string ([toYamlString]) and reparsing.
+ */
+private fun DataAstNode.toYaml(): Node = when (this) {
     is AstScalar -> ScalarNode(
         yamlTag,
         any,
@@ -66,14 +80,14 @@ internal fun DataAstNode.toYaml(): Node = when (this) {
     is AstSeq    -> SequenceNode(yamlTag, list.map { it.toYaml() }, DumperOptions.FlowStyle.BLOCK)
 }
 
-internal val DataAstNode.yamlTag: Tag
+private val DataAstNode.yamlTag: Tag
     get() = when (this) {
         is AstScalar -> Tag.STR
         is AstMap    -> Tag.MAP
         is AstSeq    -> Tag.SEQ
     }
 
-val Tag.scalarType: ScalarType
+private val Tag.scalarType: ScalarType
     get() = when (this) {
         Tag.BOOL           -> ScalarType.BOOLEAN
         Tag.INT, Tag.FLOAT -> ScalarType.NUMBER
@@ -82,18 +96,7 @@ val Tag.scalarType: ScalarType
     }
 
 
-internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
-    if (children.isEmpty())
-        AstScalar(nodeName, ScalarType.STRING)
-    else
-        AstMap(
-            mapOf(
-                nodeName to AstSeq(
-                    children.map { it.toDataNode() })
-            )
-        )
-
-internal fun Node.toYamlString(): String {
+private fun Node.toYamlString(): String {
     val opts = DumperOptions()
     val sw = StringWriter()
     val serializer = Serializer(Emitter(sw, opts), Resolver(), opts, Tag.MAP)

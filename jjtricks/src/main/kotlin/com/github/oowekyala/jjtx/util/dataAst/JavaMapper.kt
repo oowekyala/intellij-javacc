@@ -1,12 +1,13 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
 import java.lang.reflect.Method
 import java.util.*
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
-
+internal fun OptsModelImpl.toYaml(): String = toDataNode().toYamlString()
 
 internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
@@ -29,7 +30,18 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
     )
 }
 
-internal fun OptsModelImpl.toYaml(): YamlNode = toDataNode().toYaml()
+
+internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
+    if (children.isEmpty())
+        AstScalar(nodeName, STRING)
+    else
+        AstMap(
+            mapOf(
+                nodeName to AstSeq(
+                    children.map { it.toDataNode() })
+            )
+        )
+
 
 internal fun Any?.toDataNode(): DataAstNode {
     return when (this) {

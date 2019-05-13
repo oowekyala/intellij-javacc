@@ -6,11 +6,17 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import org.json.JSONObject
 import org.yaml.snakeyaml.error.Mark
 import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
+ * Represents a position in some file.
+ * Position instances must be able to describe themselves,
+ * and should not hold resources that this function doesn't
+ * need, eg the file contents. Only used for error messages.
+ *
  * @author Clément Fournier
  */
 interface Position {
@@ -19,16 +25,11 @@ interface Position {
 
 }
 
-data class YamlPosition(
-    val startMark: Mark?,
-    val endMark: Mark?
-) : Position {
-
-    override fun toString(): String = startMark.toString()
-}
-
 data class LineAndCol(val line: Int, val column: Int) : Position {
 
+    /**
+     * Upgrade to a position with a full snippet.
+     */
     fun upgrade(text: CharSequence, filePath: Path): Position =
         position(line, column, text, filePath)
 
@@ -41,7 +42,7 @@ fun position(line: Int, column: Int, text: CharSequence, filePath: Path): Positi
     GenericFilePosition(line, column, text, filePath)
 
 
-private class GenericFilePosition(
+private class GenericFilePosition private constructor(
     val snippet: String
 ) : Position {
 
@@ -54,6 +55,8 @@ private class GenericFilePosition(
         operator fun invoke(offset: Int, text: CharSequence, filePath: Path): GenericFilePosition {
             val (l, c) = text.getColAndLine(offset)
 
+            JSONObject
+
             val snippet = buildSnippet(
                 line = l,
                 column = c,
@@ -65,7 +68,7 @@ private class GenericFilePosition(
         }
 
         operator fun invoke(line: Int, column: Int, text: CharSequence, filePath: Path): GenericFilePosition {
-            val offset = (line to column).toOffset(text)
+            val offset = LineAndCol(line, column).toOffset(text)
             val snippet = buildSnippet(
                 line = line,
                 column = column,
@@ -92,28 +95,17 @@ private class GenericFilePosition(
 }
 
 
+fun Mark.toFilePos(name: String? = null): Position =
+    GenericFilePosition(
+        line = line,
+        column = column,
+        text = String(buffer, 0, buffer.size),
+        filePath = Paths.get(name)
+    )
 
-
-fun YamlPosition.addName(name: String?) = YamlPosition(
-    startMark?.addName(name),
-    endMark?.addName(name)
-)
-
-private fun Mark.addName(name: String?): Mark =
-    name?.let {
-        Mark(
-            it,
-            this.index,
-            this.line,
-            this.column,
-            this.buffer,
-            this.pointer
-        )
-    } ?: this
-
-typealias LineAndColumn = Pair<Int, Int>
-
-
+/**
+ * A Json pointer.
+ */
 data class JsonPosition(val path: List<String>) : Position {
 
     constructor(first: String) : this(listOf(first))
@@ -130,12 +122,12 @@ data class JsonPosition(val path: List<String>) : Position {
 fun PsiElement.position(): Position = GenericFilePosition(textOffset, containingFile)
 
 
-fun CharSequence.getColAndLine(offset: Int): LineAndColumn {
+fun CharSequence.getColAndLine(offset: Int): LineAndCol {
     val line = StringUtil.offsetToLineNumber(this, offset)
-    return Pair(line, offset - StringUtil.lineColToOffset(this, line, 0))
+    return LineAndCol(line, offset - StringUtil.lineColToOffset(this, line, 0))
 }
 
-fun LineAndColumn.toOffset(text: CharSequence) = StringUtil.lineColToOffset(text, first, second)
+fun LineAndCol.toOffset(text: CharSequence) = StringUtil.lineColToOffset(text, line, column)
 
 
 private fun getSnippet(buffer: CharSequence, textOffset: Int): String = getSnippet(buffer, textOffset, 4, 75)
