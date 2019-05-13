@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
+    compile("org.jsoup:jsoup:1.12.1")
 }
 
 

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://raw.githubusercontent.com/oowekyala/intellij-javacc/jjtricksjjtricks.schema.json",
-  "title": "Schema of jjopts configuration files for JJTricks",
+  "title": "Schema of jjtopts configuration files for JJTricks",
   "type": "object",
   "required": [
     "jjtx"
@@ -9,7 +9,7 @@
   "definitions": {
     "formatter": {
       "type": "string",
-      "pattern": "java|none"
+      "enum": ["java", "none"]
     },
     "visitorGenTask": {
       "type": "object",
@@ -95,6 +95,12 @@
           "items": {
             "$ref": "#/definitions/nodeGenTask"
           }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       ]
     },
@@ -136,7 +142,6 @@
       "properties": {
         "nodePrefix": {
           "description": "Prefix prepended to the node name. Defaults to the JJTree key NODE_PREFIX, or its default of \"AST\"",
-          ",",
           "type": "string",
           "pattern": "\\w+"
         },

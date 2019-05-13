@@ -82,6 +82,32 @@ tasks {
         )
     }
 
+    val generateSchemaDoc by creating(Exec::class.java) {
+
+        val docOut1 = "$buildDir/rawSchemaDoc"
+        val docOut2 = "$buildDir/finalSchemaDoc"
+
+        val inSchema = "src/main/resources/com/github/oowekyala/jjtx/schema/jjtopts.schema.json"
+
+
+        // npm install -g bootprint
+        // npm install -g bootprint-json-schema
+
+        commandLine = listOf(
+            "bootprint",
+            "json-schema",
+            inSchema,
+            docOut1
+        )
+
+        doLast {
+            // Filter the output to improve it
+            // The original project is unbuildable because of shitty npm deps
+            filterSchemaDoc(file(docOut1), file(docOut2))
+            println("Schema doc accessible at $docOut2/index.html")
+        }
+    }
+
     shadowJar {
         archiveBaseName.set("jjtricks")
         archiveAppendix.set("")
