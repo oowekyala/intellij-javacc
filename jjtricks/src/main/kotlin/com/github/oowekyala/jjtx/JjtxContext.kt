@@ -1,9 +1,7 @@
 package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.github.oowekyala.jjtx.reporting.MessageCollector
-import com.github.oowekyala.jjtx.reporting.ReportingContext
-import com.github.oowekyala.jjtx.reporting.TaskCtx
+import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
@@ -24,6 +22,8 @@ import java.nio.file.Path
  * @author Clément Fournier
  */
 interface JjtxContext {
+
+    val reportingContext: ReportingContext
 
     /**
      * Main grammar file.
@@ -122,6 +122,8 @@ internal class JjtxRootContext(
     override val io: Io
 ) : JjtxContext {
 
+    override val reportingContext: ReportingContext = RootContext
+
     override val project: Project = grammarFile.project
 
     override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
@@ -167,18 +169,20 @@ fun JccFile.defaultJjtopts(): List<Path> {
  * reporting.
  */
 fun JjtxContext.subContext(contextStr: ReportingContext): JjtxContext =
-    SubContext(this, messageCollector.withContext(contextStr))
+    SubContext(this, contextStr)
 
+fun JjtxContext.fileSubContext(file: Path) =
+    subContext(fileSubCtx(reportingContext, file))
 
 /**
  * A [subContext] using the given key as a [ReportingContext].
  */
 fun JjtxContext.subContext(key: JjtxTaskKey) =
-    subContext(TaskCtx(key))
+    subContext(taskCtx(key))
 
 
-private class SubContext(parent: JjtxContext, subCollector: MessageCollector) : JjtxContext by parent {
+private class SubContext(parent: JjtxContext, override val reportingContext: ReportingContext) : JjtxContext by parent {
 
-    override val messageCollector: MessageCollector = subCollector
+    override val messageCollector: MessageCollector = parent.messageCollector.withContext(reportingContext)
 
 }

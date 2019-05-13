@@ -91,6 +91,17 @@ fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: Strin
         this.evaluate(ctx, it, logId, template)
     }.toString()
 
+inline fun VelocityEngine.evaluate(ctx: VelocityContext,
+                                   template: String,
+                                   logId: String = "jjtx-velocity",
+                                   onException: (Throwable) -> Nothing): String =
+    StringWriter().also {
+        try {
+            this.evaluate(ctx, it, logId, template)
+        } catch (e: Throwable) {
+            onException(e)
+        }
+    }.toString()
 
 internal fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     object : ReadOnlyProperty<R, T> {

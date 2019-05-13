@@ -1,6 +1,5 @@
 package com.github.oowekyala.jjtx.reporting
 
-import com.github.oowekyala.ijcc.util.indent
 import com.github.oowekyala.jjtx.util.baseIndent
 import java.io.PrintStream
 
@@ -9,6 +8,7 @@ class FullReportPrinter(
     private val stream: PrintStream,
     private val minSeverity: Severity,
     private val contextStr: ReportingContext? = null,
+    private val printStackTrace: Boolean = true,
     private val indent: String = ""
 ) : MessageCollector {
 
@@ -20,13 +20,20 @@ class FullReportPrinter(
         stream.println(string)
     }
 
-    private val padding = Severity.values().map { it.displayName.length }.max()!! + 4
+    private val lcolOffset: Int = indent.length + lcolWidth
+    private val lcolIndent = " ".repeat(lcolOffset)
 
     /**
      * Doesn't maintain state so can return a new instance.
      */
     override fun withContext(contextStr: ReportingContext): MessageCollector =
-        FullReportPrinter(stream, minSeverity, contextStr, indent + baseIndent)
+        FullReportPrinter(
+            stream = stream,
+            minSeverity = minSeverity,
+            contextStr = contextStr,
+            printStackTrace = printStackTrace,
+            indent = indent + baseIndent
+        )
 
 
     override fun concludeReport() {
@@ -41,12 +48,20 @@ class FullReportPrinter(
         }
 
         with(reportEntry) {
-            iprintln("[${severity.displayName}]".padEnd(padding) + message)
-            positions.forEach {
-                iprintln(it.toString().indent(padding, indentStr = " "))
+            val header = if (thrown != null) thrown.javaClass.name else message ?: return
+
+            iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
+            if (thrown != null && message != null) {
+                stream.println(message.trim().replaceIndent(lcolIndent))
             }
 
-            thrown?.printStackTrace(stream)
+            positions.forEach {
+                stream.println(it.toString().replaceIndent(lcolIndent))
+            }
+
+            if (printStackTrace) {
+                thrown?.printStackTrace(stream)
+            }
         }
 
         if (reportEntry.severity == Severity.FAIL) {
@@ -60,5 +75,9 @@ class FullReportPrinter(
         if (contextStr.suffix != null) stream.println(" ${contextStr.suffix}")
         else stream.println()
         contextPrinted = true
+    }
+
+    private companion object {
+        val lcolWidth = Severity.values().map { it.displayName.length }.max()!! + 4
     }
 }

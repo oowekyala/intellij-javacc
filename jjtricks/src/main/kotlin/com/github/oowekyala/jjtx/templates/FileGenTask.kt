@@ -4,10 +4,7 @@ import com.github.oowekyala.ijcc.util.deleteWhitespace
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.reporting.MessageCategory
-import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.reporting.reportFatal
-import com.github.oowekyala.jjtx.reporting.reportException
+import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.util.*
 import com.google.common.io.Resources
 import org.apache.velocity.VelocityContext
@@ -158,24 +155,20 @@ open class FileGenTask internal constructor(
                 "timestamp" to ctx.io.now()
             )
 
-        val rendered = engine.evaluate(fullCtx, logId = o.toString(), template = template)
+        val rendered = engine.evaluate(fullCtx, logId = o.toString(), template = template) {
+            throw ReportedExceptionWrapper.withKnownFileCtx(it, template, o)
+        }
 
 
         val formatted = try {
             formatter?.format(rendered)
         } catch (e: Exception) {
 
-            val (pos, mess) = e.message?.let { m ->
-                formatter!!.parseMessage(m)?.let { (lc, m) ->
-                    position(lc.first, lc.second, rendered, o) to m
-                }
-            } ?: Pair(null, null)
+            val wrapper = ReportedExceptionWrapper.withKnownFileCtx(e, rendered, o)
 
-            ctx.messageCollector.reportException(
-                throwable = e,
-                contextStr = "applying formatter '${formatter!!.name.toLowerCase()}' on $o",
-                altMessage = mess,
-                position = pos
+            ctx.messageCollector.reportWrappedException(
+                wrapper = wrapper,
+                contextStr = "applying formatter '${formatter!!.name.toLowerCase()}' on $o"
             )
             null
         } ?: rendered

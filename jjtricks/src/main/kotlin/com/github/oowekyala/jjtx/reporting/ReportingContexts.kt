@@ -3,13 +3,14 @@ package com.github.oowekyala.jjtx.reporting
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import java.nio.file.Path
 
-sealed class ReportingContext(
+data class ReportingContext(
     val key: String,
     val suffix: String?
 )
 
-object InitCtx : ReportingContext("init", null)
+val RootContext = ReportingContext("", null)
 
-data class TaskCtx(val taskKey: JjtxTaskKey) : ReportingContext(taskKey.ref, null)
+val InitCtx = ReportingContext("init", null)
 
-data class FileSubCtx(val parent: ReportingContext, val path: Path) : ReportingContext(parent.key, path.toString())
+fun taskCtx(taskKey: JjtxTaskKey) = ReportingContext(taskKey.ref, null)
+fun fileSubCtx(parent: ReportingContext, path: Path) = ReportingContext(parent.key, path.toString())

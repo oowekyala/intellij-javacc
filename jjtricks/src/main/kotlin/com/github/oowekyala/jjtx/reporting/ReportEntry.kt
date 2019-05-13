@@ -6,7 +6,7 @@ import java.util.*
 
 
 data class ReportEntry(
-    val message: String,
+    val message: String?,
     val positions: List<Position>,
     val timeStamp: Date,
     val thrown: Throwable?,

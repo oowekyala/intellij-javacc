@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.templates
 
-import com.github.oowekyala.jjtx.util.LineAndColumn
+import com.github.oowekyala.jjtx.reporting.ErrorPositionRecoverer
+import com.github.oowekyala.jjtx.reporting.GJFormatExtractor
 import com.google.googlejavaformat.java.Formatter
 
 // todo make service
@@ -11,12 +12,7 @@ interface SourceFormatter {
      */
     fun format(source: String): String
 
-    /**
-     * Attempts to retrieve at least line and column from an error message.
-     */
-    fun parseMessage(errorMessage: String): Pair<LineAndColumn, String>?
-
-
+    val errorPositionParser: ErrorPositionRecoverer?
 
 
     /**
@@ -31,17 +27,9 @@ interface SourceFormatter {
  * Lists the formatters available to postprocess generated files.
  * These can be referred to in a case-insensitive fashion.
  */
-enum class FormatterRegistry : SourceFormatter {
-    JAVA {
-
-        private val lcRegex = Regex("(\\d+):(\\d+): error:(.*)")
-
+enum class FormatterRegistry(override val errorPositionParser: ErrorPositionRecoverer?) : SourceFormatter {
+    JAVA(GJFormatExtractor) {
         override fun format(source: String): String = Formatter().formatSource(source)
-
-        override fun parseMessage(errorMessage: String): Pair<LineAndColumn, String>? =
-            lcRegex.find(errorMessage.trim())?.groupValues?.let {
-                Pair((it[1].toInt() - 1) to it[2].toInt(), it[3])
-            }
     };
 
     companion object {

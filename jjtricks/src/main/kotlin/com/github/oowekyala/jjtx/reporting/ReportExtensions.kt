@@ -9,14 +9,33 @@ fun MessageCollector.reportException(throwable: Throwable,
                                      altMessage: String? = null,
                                      fatal: Boolean = false,
                                      position: Position? = null) {
-    reportEntry(
+    if (throwable is ReportedExceptionWrapper) {
+        reportWrappedException(throwable, contextStr, fatal)
+    } else reportEntry(
         ReportEntry(
             thrown = throwable,
             severity = if (fatal) Severity.FAIL else Severity.NON_FATAL,
             timeStamp = Date(),
             messageCategory = if (fatal) MessageCategory.FATAL_ERROR else MessageCategory.NON_FATAL,
             positions = listOfNotNull(position),
-            message = altMessage ?: throwable.message ?: throwable.javaClass.name
+            message = altMessage ?: throwable.message
+        )
+    )
+}
+
+fun MessageCollector.reportWrappedException(
+    wrapper: ReportedExceptionWrapper,
+    contextStr: String? = null,
+    fatal: Boolean = false
+) {
+    reportEntry(
+        ReportEntry(
+            thrown = wrapper.cause,
+            severity = if (fatal) Severity.FAIL else Severity.NON_FATAL,
+            timeStamp = Date(),
+            messageCategory = if (fatal) MessageCategory.FATAL_ERROR else MessageCategory.NON_FATAL,
+            positions = listOfNotNull(wrapper.position),
+            message = wrapper.message ?: wrapper.cause.message
         )
     )
 }

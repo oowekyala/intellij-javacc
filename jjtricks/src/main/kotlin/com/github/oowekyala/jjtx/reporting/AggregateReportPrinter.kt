@@ -22,14 +22,15 @@ class AggregateReportPrinter private constructor(
 
     private val myErrorPrinter: MessageCollector =
         FullReportPrinter(
-            stream,
+            stream = stream,
             minSeverity = Severity.IGNORE,
+            printStackTrace = false,
             indent = if (context == null) "" else baseIndent
         )
 
     override fun withContext(contextStr: ReportingContext): MessageCollector =
         // share same [collected]
-        AggregateReportPrinter(stream, collected, contextStr)
+        AggregateReportPrinter(stream = stream, collected = collected, context = contextStr)
 
     override fun concludeReport() {
 
@@ -68,7 +69,7 @@ class AggregateReportPrinter private constructor(
     override fun reportEntry(reportEntry: ReportEntry) {
         // only let normal messages get through
         if (reportEntry.severity == Severity.NORMAL) {
-            iprintln(reportEntry.message)
+            iprintln(reportEntry.message ?: return)
         } else {
             collected += reportEntry
         }
