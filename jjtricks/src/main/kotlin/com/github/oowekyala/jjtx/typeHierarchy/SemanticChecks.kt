@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory.UNCOVERED_NODE
 import com.github.oowekyala.jjtx.reporting.report
+import com.github.oowekyala.jjtx.util.position
 
 
 internal fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOwner>,

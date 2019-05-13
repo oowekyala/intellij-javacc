@@ -19,3 +19,10 @@ class NamedInputStream(
 }
 
 
+fun namedInputStream(input: String, filename: String = "input"): NamedInputStream =
+    NamedInputStream(
+        { input.byteInputStream() },
+        filename
+    )
+
+

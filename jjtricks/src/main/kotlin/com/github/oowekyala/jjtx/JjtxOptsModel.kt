@@ -5,16 +5,13 @@ import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.dataAst.AstMap
 import com.github.oowekyala.jjtx.util.dataAst.DataAstNode
-import com.github.oowekyala.jjtx.util.dataAst.jsonToData
-import com.github.oowekyala.jjtx.util.dataAst.yamlToData
+import com.github.oowekyala.jjtx.util.dataAst.DataLanguage
+import com.github.oowekyala.jjtx.util.dataAst.parseGuessFromExtension
+import com.github.oowekyala.jjtx.util.inputStream
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
-import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.reader.UnicodeReader
+import com.github.oowekyala.jjtx.util.isFile
 import java.nio.file.Path
 
 /**
@@ -112,46 +109,11 @@ interface JjtxOptsModel : IGrammarOptions {
          */
         fun parse(ctx: JjtxContext,
                   file: NamedInputStream,
-                  parent: JjtxOptsModel): JjtxOptsModel {
-
-            return when (file.extension) {
-                "json" -> parseJson(ctx, file, parent)
-                // by default assume it's yaml
-                else   -> parseYaml(ctx, file, parent)
-            }
-        }
-
-
-        private fun parseYaml(ctx: JjtxContext,
-                              file: NamedInputStream,
-                              parent: JjtxOptsModel): JjtxOptsModel =
-            file.newInputStream().use { istream ->
-                val reader = UnicodeReader(istream).buffered()
-
-                val data = Yaml().compose(reader).yamlToData(file.filename)
-
-                fromElement(ctx, data, parent)
-
+                  parent: JjtxOptsModel): JjtxOptsModel =
+            parseGuessFromExtension(file, preference = DataLanguage.YAML).let {
+                OptsModelImpl(ctx, parent, it.let { it as AstMap })
             }
 
-        private fun parseJson(ctx: JjtxContext,
-                              file: NamedInputStream,
-                              parent: JjtxOptsModel): JjtxOptsModel =
-            file.newInputStream().bufferedReader().use { reader ->
-                val jsonReader = JsonReader(reader)
-                jsonReader.isLenient = true
-
-                val jsonParser = JsonParser()
-
-                val elt = jsonParser.parse(jsonReader).jsonToData()
-
-                fromElement(ctx, elt, parent)
-            }
-
-        private fun fromElement(ctx: JjtxContext,
-                                jsonElement: DataAstNode,
-                                parent: JjtxOptsModel) =
-            OptsModelImpl(ctx, parent, jsonElement.let { it as AstMap })
 
     }
 

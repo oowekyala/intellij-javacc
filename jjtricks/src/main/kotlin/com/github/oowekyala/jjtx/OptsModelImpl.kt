@@ -17,7 +17,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
- * A chain of json config files ending up in the inline bindings.
+ * A chain of json/yaml config files ending up in the inline bindings.
  *
  * @author Clément Fournier
  */
