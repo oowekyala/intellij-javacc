@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://raw.githubusercontent.com/oowekyala/intellij-javacc/jjtricksjjtricks.schema.json",
+  "$id": "http://com.github.oowekyala/jjtricks/jjtopts",
   "title": "Schema of jjtopts configuration files for JJTricks",
   "type": "object",
   "required": [
@@ -55,7 +55,7 @@
     },
     "vanillaJjtreeOpts": {
       "type": "object",
-      "description": "Options for the JJTree builder",
+      "description": "Configuration of the compatibility JJTree builder. Output of this profile closely resembles JJTree output, but can be tweaked with the bindings of this object. Default values match most closely JJTree's behaviour.",
       "additionalProperties": false,
       "properties": {
         "fixJjtThisConditionScope": {
@@ -87,20 +87,14 @@
           "$ref": "#/definitions/nodeGenTask"
         },
         {
-          "description": "If no value is present, the matching nodes will apply to the next set of generation tasks",
-          "type": "null"
-        },
-        {
           "type": "array",
           "items": {
             "$ref": "#/definitions/nodeGenTask"
           }
         },
         {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "description": "If no value is present, the matching nodes will apply to the next set of generation tasks",
+          "type": "null"
         }
       ]
     },
@@ -115,9 +109,6 @@
           "maxProperties": 1,
           "additionalProperties": {
             "anyOf": [
-              {
-                "type": "string"
-              },
               {
                 "$ref": "#/definitions/typeHierarchyNode"
               },
@@ -152,7 +143,8 @@
         "templateContext": {
           "description": "Additional bindings for a Velocity context that will be shared by all template executions (gen:visitors, gen:nodes)",
           "type": "object",
-          "default": {}
+          "default": "{}"
+
         },
         "typeHierarchy": {
           "description": "Description of the subtyping relation between generated node types. This is useful when your hierarchy is not trivial and you want to e.g. generate visitors with a delegation mechanism",

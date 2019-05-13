@@ -85,6 +85,8 @@ tasks {
     }
 
     val generateSchemaDoc by creating(Exec::class.java) {
+        
+        group = "Documentation"
 
         val docOut1 = "$buildDir/rawSchemaDoc"
         val docOut2 = "$buildDir/finalSchemaDoc"
