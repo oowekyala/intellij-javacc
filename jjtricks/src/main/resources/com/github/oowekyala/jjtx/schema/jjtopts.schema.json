@@ -11,6 +11,27 @@
       "type": "string",
       "pattern": "java|none"
     },
+    "visitorGenTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "execute": {
+          "type": "boolean"
+        },
+        "templateFile": {
+          "type": "string"
+        },
+        "formatter": {
+          "$ref": "#/definitions/formatter"
+        },
+        "genClassName": {
+          "type": "string"
+        },
+        "context": {
+          "type": "object"
+        }
+      }
+    },
     "nodeGenTask": {
       "type": "object",
       "additionalProperties": false,
@@ -34,24 +55,48 @@
     },
     "vanillaJjtreeOpts": {
       "type": "object",
+      "description": "Options for the JJTree builder",
       "additionalProperties": false,
       "properties": {
         "fixJjtThisConditionScope": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "If set to true, jjtThis is available in the closing condition of its own node scope. In vanilla JJTree, #Node(jjtThis.something()) isn't compiled correctly.",
+          "default": true
         },
         "implementNodeConstants": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "setTokensBeforeHooks": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "descriptiveVariableNames": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "forceCheckedExceptionsDeclaration": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       }
+    },
+    "nodeGenerationScheme": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/nodeGenTask"
+        },
+        {
+          "description": "If no value is present, the matching nodes will apply to the next set of generation tasks",
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/nodeGenTask"
+          }
+        }
+      ]
     },
     "typeHierarchyNode": {
       "anyOf": [
@@ -90,19 +135,26 @@
       "additionalProperties": false,
       "properties": {
         "nodePrefix": {
-          "type": "string"
+          "description": "Prefix prepended to the node name. Defaults to the JJTree key NODE_PREFIX, or its default of \"AST\"",
+          ",",
+          "type": "string",
+          "pattern": "\\w+"
         },
         "nodePackage": {
+          "description": "Package of the node classes",
           "type": "string"
         },
         "templateContext": {
-          "type": "object"
+          "description": "Additional bindings for a Velocity context that will be shared by all template executions (gen:visitors, gen:nodes)",
+          "type": "object",
+          "default": {}
         },
-
         "typeHierarchy": {
+          "description": "Description of the subtyping relation between generated node types. This is useful when your hierarchy is not trivial and you want to e.g. generate visitors with a delegation mechanism",
           "$ref": "#/definitions/typeHierarchyNode"
         },
         "javaccGen": {
+          "description": "Configuration of JavaCC grammar generation.",
           "$ref": "#/definitions/vanillaJjtreeOpts"
         },
         "activeGenScheme": {
@@ -112,21 +164,9 @@
           "type": "object",
           "additionalProperties": {
             "type": "object",
+            "description": "Map of ids to node generation scheme.",
             "additionalProperties": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/nodeGenTask"
-                },
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/nodeGenTask"
-                  }
-                }
-              ]
+              "$ref": "#/definitions/nodeGenerationScheme"
             }
           }
         },
@@ -134,25 +174,7 @@
         "visitors": {
           "type": "object",
           "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "execute": {
-                "type": "boolean"
-              },
-              "templateFile": {
-                "type": "string"
-              },
-              "formatter": {
-                "$ref": "#/definitions/formatter"
-              },
-              "genClassName": {
-                "type": "string"
-              },
-              "context": {
-                "type": "object"
-              }
-            }
+            "$ref": "#/definitions/visitorGenTask"
           }
         }
       }
