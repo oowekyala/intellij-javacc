@@ -7,17 +7,15 @@ import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.emitter.Emitter
 import org.yaml.snakeyaml.error.Mark
-import org.yaml.snakeyaml.error.YAMLException
 import org.yaml.snakeyaml.nodes.*
 import org.yaml.snakeyaml.reader.UnicodeReader
 import org.yaml.snakeyaml.resolver.Resolver
 import org.yaml.snakeyaml.serializer.Serializer
 import java.io.IOException
-import java.io.StringWriter
 import java.io.Writer
 
 
-object YAML : DataLanguage {
+object YamlLang : DataLanguage {
 
     override fun parse(input: NamedInputStream): DataAstNode =
         input.newInputStream().use { istream ->
@@ -79,7 +77,6 @@ internal fun Node.yamlToData(fileName: String? = null): DataAstNode =
         else            -> throw IllegalStateException("Unknown node type")
     }
 
-internal fun DataAstNode.toYamlString(): String = toYaml().toYamlString()
 
 /**
  * Dumps the node to yaml.
@@ -118,20 +115,3 @@ private val Tag.scalarType: ScalarType
         Tag.NULL           -> ScalarType.NULL
         else               -> ScalarType.STRING
     }
-
-
-private fun Node.toYamlString(): String {
-    val opts = DumperOptions()
-    val sw = StringWriter()
-    val serializer = Serializer(Emitter(sw, opts), Resolver(), opts, Tag.MAP)
-    try {
-        serializer.open()
-        serializer.serialize(this)
-        serializer.close()
-    } catch (var6: IOException) {
-        throw YAMLException(var6)
-    }
-
-    return sw.toString()
-}
-

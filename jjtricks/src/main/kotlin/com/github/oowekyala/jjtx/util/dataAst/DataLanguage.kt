@@ -24,12 +24,12 @@ fun DataLanguage.writeToString(data: DataAstNode): String =
     }.toString()
 
 
-fun parseGuessFromExtension(input: NamedInputStream, preference: DataLanguage = YAML): DataAstNode =
+fun parseGuessFromExtension(input: NamedInputStream, preference: DataLanguage = YamlLang): DataAstNode =
     when (input.extension) {
-        "json" -> JSON.parse(input)
-        "yaml" -> YAML.parse(input)
-        else   -> preference.parse(input)
-    }
+        "json" -> JsonLang
+        "yaml" -> YamlLang
+        else   -> preference
+    }.parse(input)
 
 
 internal inline fun <reified T> DataAstNode.load(): T {
@@ -38,6 +38,10 @@ internal inline fun <reified T> DataAstNode.load(): T {
     return any as T
 }
 
-fun parseYaml(input: NamedInputStream): DataAstNode = YAML.parse(input)
+fun DataAstNode.toYamlString(): String = YamlLang.writeToString(this)
+fun DataAstNode.toJsonString(): String = JsonLang.writeToString(this)
 
-fun parseJson(input: NamedInputStream): DataAstNode = JSON.parse(input)
+
+fun parseYaml(input: NamedInputStream): DataAstNode = YamlLang.parse(input)
+
+fun parseJson(input: NamedInputStream): DataAstNode = JsonLang.parse(input)

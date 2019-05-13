@@ -132,8 +132,8 @@ internal class JjtxRootContext(
 
 
     override val jjtxOptsModel: JjtxOptsModel by lazy {
-        // This uses the run context so should only be executed after the constructor returns
-        // hence the lazyness
+        // This uses the run context so should only be executed
+        // after the constructor returns, hence the lazyness
         JjtxOptsModel.parseChain(this, configChain)
     }
 
@@ -170,9 +170,6 @@ fun JccFile.defaultJjtopts(): List<Path> {
  */
 fun JjtxContext.subContext(contextStr: ReportingContext): JjtxContext =
     SubContext(this, contextStr)
-
-fun JjtxContext.fileSubContext(file: Path) =
-    subContext(fileSubCtx(reportingContext, file))
 
 /**
  * A [subContext] using the given key as a [ReportingContext].

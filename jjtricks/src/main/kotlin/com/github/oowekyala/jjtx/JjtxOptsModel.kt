@@ -6,10 +6,7 @@ import com.github.oowekyala.jjtx.reporting.subKey
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.dataAst.AstMap
-import com.github.oowekyala.jjtx.util.dataAst.DataLanguage
-import com.github.oowekyala.jjtx.util.dataAst.parseGuessFromExtension
-import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts
+import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.inputStream
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.isFile
@@ -111,7 +108,7 @@ interface JjtxOptsModel : IGrammarOptions {
         fun parse(ctx: JjtxContext,
                   file: NamedInputStream,
                   parent: JjtxOptsModel): JjtxOptsModel =
-            parseGuessFromExtension(file, preference = DataLanguage.YAML)
+            parseGuessFromExtension(file, preference = YamlLang)
                 .apply { validateJjtopts(ctx.subContext(ctx.reportingContext.subKey("validation"))) }
                 .let { OptsModelImpl(ctx, parent, it as AstMap) }
 

@@ -10,9 +10,9 @@ import java.io.IOException
 import java.io.Writer
 
 /**
- * TODO use org.json and remove Gson
+ * TODO use org.json and remove Gson. org.json has no deserializer though
  */
-object JSON : DataLanguage {
+object JsonLang : DataLanguage {
     override fun parse(input: NamedInputStream): DataAstNode =
         input.newInputStream().bufferedReader().use { reader ->
             val jsonReader = JsonReader(reader).apply {

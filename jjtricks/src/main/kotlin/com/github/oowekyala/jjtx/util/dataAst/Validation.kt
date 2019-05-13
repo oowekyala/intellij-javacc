@@ -44,7 +44,7 @@ fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
     Jjtricks.getResourceAsStream("/jjtx/schema/jjtopts.schema.json")!!.newInputStream().use { inputStream ->
         val rawSchema = JSONObject(JSONTokener(inputStream))
         val schema = SchemaLoader.load(rawSchema)
-        val doc = JSON.writeToString(this)
+        val doc = JsonLang.writeToString(this)
         try {
             schema.validate(JSONObject(doc))
         } catch (e: ValidationException) {
