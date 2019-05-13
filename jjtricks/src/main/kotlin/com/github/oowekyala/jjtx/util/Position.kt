@@ -1,3 +1,5 @@
+@file:JvmName("PositionUtils")
+
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.jjtx.util.dataAst.DataAstNode
@@ -6,7 +8,6 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.json.JSONObject
 import org.yaml.snakeyaml.error.Mark
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -25,15 +26,13 @@ interface Position {
 
 }
 
-data class LineAndCol(val line: Int, val column: Int) : Position {
+data class LineAndCol(val line: Int, val column: Int) : Position
 
-    /**
-     * Upgrade to a position with a full snippet.
-     */
-    fun upgrade(text: CharSequence, filePath: Path): Position =
-        position(line, column, text, filePath)
-
-}
+/**
+ * Upgrade to a position with a full snippet.
+ */
+fun LineAndCol.upgrade(text: CharSequence, filePath: Path): Position =
+    position(line, column, text, filePath)
 
 fun position(textOffset: Int, text: CharSequence, filePath: Path): Position =
     GenericFilePosition(textOffset, text, filePath)
@@ -52,17 +51,28 @@ private class GenericFilePosition private constructor(
     companion object {
         // The goal of these "constructors" is to not store the full text!
 
+        operator fun invoke(kemar: Mark, fname: String?): GenericFilePosition =
+            with(kemar) {
+                GenericFilePosition(
+                    buildSnippet(
+                        line,
+                        column,
+                        pointer,
+                        String(buffer, 0, buffer.size),
+                        fname ?: name
+                    )
+                )
+            }
+
         operator fun invoke(offset: Int, text: CharSequence, filePath: Path): GenericFilePosition {
             val (l, c) = text.getColAndLine(offset)
-
-            JSONObject
 
             val snippet = buildSnippet(
                 line = l,
                 column = c,
                 offset = offset,
                 text = text,
-                filePath = filePath
+                filePath = filePath.toString()
             )
             return GenericFilePosition(snippet)
         }
@@ -74,7 +84,7 @@ private class GenericFilePosition private constructor(
                 column = column,
                 offset = offset,
                 text = text,
-                filePath = filePath
+                filePath = filePath.toString()
             )
             return GenericFilePosition(snippet)
 
@@ -83,7 +93,7 @@ private class GenericFilePosition private constructor(
         operator fun invoke(offset: Int, psiFile: PsiFile) =
             this(offset, psiFile.text, Paths.get(psiFile.virtualFile.path))
 
-        private fun buildSnippet(line: Int, column: Int, offset: Int, text: CharSequence, filePath: Path): String {
+        private fun buildSnippet(line: Int, column: Int, offset: Int, text: CharSequence, filePath: String): String {
             return buildString {
                 append(" in ")
                 append(filePath)
@@ -96,12 +106,7 @@ private class GenericFilePosition private constructor(
 
 
 fun Mark.toFilePos(name: String? = null): Position =
-    GenericFilePosition(
-        line = line,
-        column = column,
-        text = String(buffer, 0, buffer.size),
-        filePath = Paths.get(name)
-    )
+    GenericFilePosition(this, name)
 
 /**
  * A Json pointer.

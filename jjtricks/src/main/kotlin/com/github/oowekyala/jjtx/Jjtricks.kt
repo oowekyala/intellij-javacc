@@ -151,8 +151,9 @@ class Jjtricks(
 
         val ctx = err.catchException("Exception while building run context", fatal = true) {
             val init = err.withContext(InitCtx)
-            produceContext(env.project, err, init).also {
-                init.reportNormal("Config chain: ${it.chainDump}")
+            produceContext(env.project, err, init).apply {
+                init.reportNormal("Config chain: $chainDump")
+                jjtxOptsModel // force evaluation
             }
         }
 

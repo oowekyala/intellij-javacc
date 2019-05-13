@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.jjtx.util.LineAndCol
 import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.upgrade
 import java.nio.file.Path
 
 

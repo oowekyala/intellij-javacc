@@ -93,7 +93,7 @@ interface JjtxOptsModel : IGrammarOptions {
                     try {
                         parse(ctx, path, model)
                     } catch (e: Exception) {
-                        throw RuntimeException("Exception parsing file ${path.filename} : ${e.message}")
+                        throw RuntimeException("Exception parsing options file ${path.filename}", e)
                     }
                 }
 

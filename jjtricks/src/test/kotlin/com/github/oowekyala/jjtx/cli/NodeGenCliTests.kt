@@ -12,7 +12,7 @@ class NodeGenCliTests : JjtxCliTestBase() {
     fun testMultiSourceNodeGen() = doTest("DummyExpr", "gen:nodes", "-s", "ignored")
 
     @Test
-    fun testNoNodeGen() = doTest("DummyExpr", "gen:nodes")
+    fun testNoNodeGen() = doTest("DummyExpr", "gen:nodes", "--warn")
 
     @Test
     fun testSimpleNodeGen() = doTest("DummyExpr", "gen:nodes")
