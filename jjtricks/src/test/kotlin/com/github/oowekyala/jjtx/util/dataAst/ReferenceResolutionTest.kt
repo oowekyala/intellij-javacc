@@ -33,5 +33,8 @@ class ReferenceResolutionTest : BaseTreeDumpTest<DataAstNode>(
         it.shouldBeInstanceOf<DoExitNowError>()
     }
 
+    @Test
+    fun `test map merging`() = doTest("MapMerge")
+
 
 }

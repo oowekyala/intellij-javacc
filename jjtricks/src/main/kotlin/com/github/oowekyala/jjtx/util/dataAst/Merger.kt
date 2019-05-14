@@ -60,7 +60,7 @@ private class TreeWalkHelper(val resolver: ResourceResolver<NamedInputStream>,
             newT = newT.rebuildPointerSet(nextResolved, targets)
         }
 
-        return newT
+        return newT.mergeMaps()
     }
 
     private fun DataAstNode.rebuildPointerSet(targetTree: DataAstNode, refs: List<CrossTreeRef>): DataAstNode {
@@ -75,6 +75,27 @@ private class TreeWalkHelper(val resolver: ResourceResolver<NamedInputStream>,
                 r.jsonPointer.findIn(targetTree) ?: err.reportFatal("Element ${r.jsonPointer} missing in ${r.resource}")
             } else {
                 this
+            }
+        }
+
+    }
+
+    /**
+     * Final step.
+     */
+    private fun DataAstNode.mergeMaps(): DataAstNode {
+
+        return when (this) {
+            is AstScalar -> this
+            is AstSeq    -> copy(list = list.map { it.mergeMaps() })
+            is AstMap    -> {
+                val merged =
+                    when (val sub = this["<<"]) {
+                        is AstMap -> sub.map + (this.map - "<<")
+                        else      -> map
+                    }
+
+                copy(map = merged.mapValues { (_, v) -> v.mergeMaps() })
             }
         }
 
