@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
-import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.JsonPointer
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.google.gson.internal.LazilyParsedNumber
@@ -31,13 +31,13 @@ data class AstScalar(
 
 }
 
-data class TreeRef(val resource: String, val jsonPointer: JsonPosition)
+data class TreeRef(val resource: String, val jsonPointer: JsonPointer)
 
 fun parseReference(ref: String): TreeRef {
 
     val (res, pointer) = if ('#' in ref) ref.split('#') else listOf("", ref)
 
-    return TreeRef(res, JsonPosition(pointer.split('/').filterNot { it.isEmpty() }))
+    return TreeRef(res, JsonPointer(pointer.split('/').filterNot { it.isEmpty() }))
 }
 
 

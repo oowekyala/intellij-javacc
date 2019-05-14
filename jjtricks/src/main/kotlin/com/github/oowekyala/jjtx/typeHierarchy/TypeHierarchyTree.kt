@@ -90,7 +90,7 @@ internal class TypeHierarchyTree internal constructor(
 
         fun default(rootName: String) =
             TypeHierarchyTree(rootName,
-                JsonPosition("jjtx.typeHierarchy"), emptyList(), specificity = Specificity.ROOT)
+                JsonPointer("jjtx.typeHierarchy"), emptyList(), specificity = Specificity.ROOT)
 
         /**
          * First construction pass, from a Json object.

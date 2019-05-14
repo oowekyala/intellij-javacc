@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.ijcc.util.tail
-import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.JsonPointer
 
 /**
  * Namespacer allows structuring config files in a flat
@@ -30,7 +30,7 @@ internal class Namespacer(val data: DataAstNode, val namespace: String = "", val
 
 }
 
-fun DataAstNode.findPointer(jsonPosition: JsonPosition) = findPointer(path = jsonPosition.path)
+fun DataAstNode.findPointer(jsonPointer: JsonPointer) = findPointer(path = jsonPointer.path)
 
 fun DataAstNode.findPointer(vararg path: String): DataAstNode? = findPointer(path.toList())
 

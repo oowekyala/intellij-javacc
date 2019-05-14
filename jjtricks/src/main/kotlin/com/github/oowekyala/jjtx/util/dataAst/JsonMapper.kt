@@ -1,6 +1,6 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
-import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.JsonPointer
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.google.gson.*
@@ -73,8 +73,8 @@ internal fun DataAstNode.toJson(): JsonElement =
 
 private fun JsonElement.toData(): DataAstNode {
 
-    fun JsonElement.jsonReal(parentPosition: JsonPosition): DataAstNode {
-        val myPosition = parentPosition.resolve(this.toString())
+    fun JsonElement.jsonReal(parentPointer: JsonPointer): DataAstNode {
+        val myPosition = parentPointer.resolve(this.toString())
         return when (this) {
             is JsonNull      -> AstScalar(
                 any = toString(),
@@ -105,7 +105,7 @@ private fun JsonElement.toData(): DataAstNode {
 
                 val map = entrySet().map {
 
-                    val kPos = myPosition.resolve(it.key)
+                    val kPos = myPosition / it.key
 
                     Pair<DataAstNode, DataAstNode>(
                         AstScalar(any = it.key, type = STRING, position = kPos),
@@ -126,5 +126,5 @@ private fun JsonElement.toData(): DataAstNode {
 
     }
 
-    return jsonReal(JsonPosition(emptyList()))
+    return jsonReal(JsonPointer.Root)
 }

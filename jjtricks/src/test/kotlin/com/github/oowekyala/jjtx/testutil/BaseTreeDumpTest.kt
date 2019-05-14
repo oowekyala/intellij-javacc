@@ -5,7 +5,6 @@ import com.github.oowekyala.jjtx.util.io.namedInputStream
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.treeutils.printers.TreePrinter
 import com.intellij.rt.execution.junit.FileComparisonFailure
-import com.intellij.util.io.readText
 import java.nio.file.Path
 
 /**
@@ -63,6 +62,23 @@ abstract class BaseTreeDumpTest<H : Any>(
                 expectedFile.toPath().toAbsolutePath().toString()
             )
         }
+    }
+
+    fun doNegTest(fileBaseName: String, handler: (Throwable) -> Unit) {
+        val sourceFile = findTestFile(javaClass, "$pathToFixtures/$fileBaseName$extension")
+
+        assert(sourceFile.isFile()) {
+            "Source file $sourceFile is missing"
+        }
+        try {
+            parseFile(sourceFile.namedInputStream()) // UTF-8
+        } catch (e: Throwable) {
+            handler(e)
+            return
+        }
+
+        throw AssertionError("Expected an exception to be thrown")
+
     }
 
     private fun findTestFile(contextClass: Class<*>, resourcePath: String): Path {

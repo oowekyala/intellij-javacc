@@ -8,6 +8,8 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.util.text.StringUtil.isLineBreak
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
 import org.yaml.snakeyaml.error.Mark
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -111,15 +113,20 @@ fun Mark.toFilePos(name: String? = null): Position =
 /**
  * A Json pointer.
  */
-data class JsonPosition(val path: List<String>) : Position {
+data class JsonPointer(val path: ImmutableList<String>) : Position {
 
-    constructor(first: String) : this(listOf(first))
+    constructor() : this(immutableListOf())
+    constructor(first: String) : this(immutableListOf(first))
+    constructor(vararg s: String) : this(immutableListOf(*s))
 
-    fun resolve(key: String) = JsonPosition(path + key)
+    infix fun resolve(key: String) = JsonPointer(path.add(key))
+    infix fun resolve(i: Int) = resolve(i.toString())
+    operator fun div(k: Int) = resolve(k.toString())
+    operator fun div(k: String) = resolve(k)
 
     override fun toString(): String = path.joinToString("/", prefix = "/")
 
-    infix fun findIn(map: DataAstNode): DataAstNode? = map.findPointer(path)
+    fun findIn(map: DataAstNode): DataAstNode? = map.findPointer(path)
 
     /**
      * Returns true if this pointer is a subpath of the [other] pointer.
@@ -134,13 +141,12 @@ data class JsonPosition(val path: List<String>) : Position {
      *
      * ```
      *
-     *
      */
-    operator fun contains(other: JsonPosition): Boolean =
-        path.zip(other.path).takeWhile { it.first == it.second }.size == other.path.size
+    operator fun contains(other: JsonPointer): Boolean =
+        path.zip(other.path).takeWhile { it.first == it.second }.size == path.size
 
     companion object {
-        val Root = JsonPosition(emptyList())
+        val Root = JsonPointer()
     }
 
 }

@@ -4,7 +4,8 @@ import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
-import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.JsonPointer
+import kotlinx.collections.immutable.toImmutableList
 import org.everit.json.schema.ValidationException
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -37,7 +38,7 @@ private fun ValidationException.isAt(vararg path: String) =
 
 
 fun AstMap.findJsonPointer(pointer: String): DataAstNode? =
-    jsonPointerPosition(pointer) findIn this
+    jsonPointerPosition(pointer).findIn(this)
 
 
 fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
@@ -54,5 +55,5 @@ fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
         0
     }
 
-fun jsonPointerPosition(pointer: String): JsonPosition =
-    JsonPosition(pointer.removePrefix("#/").split('/'))
+fun jsonPointerPosition(pointer: String): JsonPointer =
+    JsonPointer(pointer.removePrefix("#/").split('/').toImmutableList())

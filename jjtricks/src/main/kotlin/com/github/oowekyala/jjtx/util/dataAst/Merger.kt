@@ -3,7 +3,7 @@ package com.github.oowekyala.jjtx.util.dataAst
 import com.github.oowekyala.ijcc.util.init
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.reportFatal
-import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.JsonPointer
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.REFERENCE
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
@@ -22,7 +22,7 @@ private class TreeWalkHelper(val resolver: ResourceResolver<NamedInputStream>,
 
     private data class ResolvedTreeRef(
         val tree: NamedInputStream,
-        val pointer: JsonPosition
+        val pointer: JsonPointer
     )
 
     private val processedTrees = mutableMapOf<NamedInputStream, DataAstNode>()
@@ -50,11 +50,10 @@ private class TreeWalkHelper(val resolver: ResourceResolver<NamedInputStream>,
         val root = parseGuessFromExtension(this)
 
         val refs = mutableSetOf<CrossTreeRef>()
-        root.collectRefs(this, refs)
+        var newT = root.collectRefs(this, refs)
 
         val todo = refs.groupBy { it.target.tree }
 
-        var newT = root
         for ((next, targets) in todo) {
             val nextResolved = next.getResolvedTree(inclusionPosPath + targets.first().position, inclusionPath + this)
 
@@ -83,36 +82,37 @@ private class TreeWalkHelper(val resolver: ResourceResolver<NamedInputStream>,
 
 
     private fun DataAstNode.collectRefs(myOrigin: NamedInputStream,
-                                        refs: MutableSet<CrossTreeRef>) {
+                                        refs: MutableSet<CrossTreeRef>): DataAstNode {
 
 
-        walkWithPointer { pointer ->
+        val root = this
+        return rebuild { pointer ->
             if (this is AstScalar && type == REFERENCE) {
-                val target = parseReference(any)
+                val target = typedValue as TreeRef
 
-                val targetTree = if (target.resource.isEmpty()) {
+                if (target.resource.isEmpty()) {
                     // reference to this file
                     if (pointer in target.jsonPointer) {
                         // No detection across file boundaries, but inclusion cycles are prohibited
                         err.reportFatal("Reference $any includes itself recursively", position)
                     }
-                    myOrigin
+                    return@rebuild root.findPointer(target.jsonPointer)
+                        ?: err.reportFatal("Element ${target.jsonPointer} missing in ${myOrigin.filename}", position)
+
                 } else {
                     // fail early if a resource is not resolved
                     val resolved = resolver.getResource(target.resource)
                         ?: err.reportFatal("Unresolved reference ${target.resource}", position)
 
-                    resolved
+                    refs += CrossTreeRef(
+                        position ?: pointer, // FIXME
+                        ResolvedTreeRef(myOrigin, pointer),
+                        ResolvedTreeRef(resolved, target.jsonPointer)
+                    )
                 }
-
-                refs += CrossTreeRef(
-                    position ?: pointer, // FIXME
-                    ResolvedTreeRef(myOrigin, pointer),
-                    ResolvedTreeRef(targetTree, target.jsonPointer)
-                )
             }
 
-            VisitResult.CONTINUE
+            this
         }
     }
 
@@ -142,11 +142,11 @@ enum class VisitResult {
     CONTINUE, STOP_RECURSION, ABORT
 }
 
-fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPosition) -> VisitResult) {
+fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPointer) -> VisitResult) {
 
     class StopError : Error()
 
-    fun DataAstNode.walkHelper(myPointer: JsonPosition, f: DataAstNode.(JsonPosition) -> VisitResult) {
+    fun DataAstNode.walkHelper(myPointer: JsonPointer, f: DataAstNode.(JsonPointer) -> VisitResult) {
 
         when (this) {
             is AstScalar ->
@@ -161,7 +161,7 @@ fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPosition) -> VisitResult) {
                     VisitResult.ABORT    -> throw StopError()
                     VisitResult.CONTINUE ->
                         for ((k, v) in map) {
-                            v.walkHelper(myPointer.resolve(k), f)
+                            v.walkHelper(myPointer / k, f)
                         }
 
 
@@ -175,7 +175,7 @@ fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPosition) -> VisitResult) {
                     VisitResult.ABORT    -> throw StopError()
                     VisitResult.CONTINUE ->
                         list.forEachIndexed { i, v ->
-                            v.walkHelper(myPointer.resolve(i.toString()), f)
+                            v.walkHelper(myPointer / i, f)
                         }
 
 
@@ -188,7 +188,7 @@ fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPosition) -> VisitResult) {
     }
 
     try {
-        walkHelper(JsonPosition.Root, f)
+        walkHelper(JsonPointer.Root, f)
     } catch (e: StopError) {
         // return
     }
@@ -196,16 +196,16 @@ fun DataAstNode.walkWithPointer(f: DataAstNode.(JsonPosition) -> VisitResult) {
 }
 
 
-fun DataAstNode.rebuild(f: DataAstNode.(JsonPosition) -> DataAstNode): DataAstNode {
+fun DataAstNode.rebuild(f: DataAstNode.(JsonPointer) -> DataAstNode): DataAstNode {
 
-    fun DataAstNode.walkHelper(myPointer: JsonPosition, f: DataAstNode.(JsonPosition) -> DataAstNode): DataAstNode {
+    fun DataAstNode.walkHelper(myPointer: JsonPointer, f: DataAstNode.(JsonPointer) -> DataAstNode): DataAstNode {
 
         return when (this) {
             is AstScalar -> f(myPointer)
-            is AstMap    -> copy(map = map.mapValues { (k, v) -> v.walkHelper(myPointer.resolve(k), f) })
-            is AstSeq    -> copy(list = list.mapIndexed { i, v -> v.walkHelper(myPointer.resolve(i.toString()), f) })
+            is AstMap    -> copy(map = map.mapValues { (k, v) -> v.walkHelper(myPointer / k, f) })
+            is AstSeq    -> copy(list = list.mapIndexed { i, v -> v.walkHelper(myPointer / i, f) })
 
         }
     }
-    return walkHelper(JsonPosition.Root, f)
+    return walkHelper(JsonPointer.Root, f)
 }
