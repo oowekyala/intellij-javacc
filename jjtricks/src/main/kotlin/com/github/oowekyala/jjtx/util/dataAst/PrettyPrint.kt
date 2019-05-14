@@ -16,7 +16,7 @@ private fun DataAstNode?.prettyPrintImpl(baseIndent: String, indent: String, inc
                 sb.appendln("{")
                 for ((k, v) in this) {
                     sb.append(inindent).append('"').append(k).append('"').append(": ")
-                    v.prettyPrintImpl(baseIndent, inindent + baseIndent, includeTypes, sb)
+                    v.prettyPrintImpl(baseIndent, inindent, includeTypes, sb)
                     sb.appendln()
                 }
                 sb.append(indent).appendln("}")

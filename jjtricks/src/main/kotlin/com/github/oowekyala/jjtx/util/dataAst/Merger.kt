@@ -204,7 +204,6 @@ fun DataAstNode.rebuild(f: DataAstNode.(JsonPointer) -> DataAstNode): DataAstNod
             is AstScalar -> f(myPointer)
             is AstMap    -> copy(map = map.mapValues { (k, v) -> v.walkHelper(myPointer / k, f) })
             is AstSeq    -> copy(list = list.mapIndexed { i, v -> v.walkHelper(myPointer / i, f) })
-
         }
     }
     return walkHelper(JsonPointer.Root, f)

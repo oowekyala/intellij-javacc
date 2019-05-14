@@ -4,6 +4,7 @@ import com.github.oowekyala.jjtx.util.JsonPointer
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import com.google.gson.internal.LazilyParsedNumber
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Abstract AST, common denominator between JSON and YAML.
@@ -37,7 +38,7 @@ fun parseReference(ref: String): TreeRef {
 
     val (res, pointer) = if ('#' in ref) ref.split('#') else listOf("", ref)
 
-    return TreeRef(res, JsonPointer(pointer.split('/').filterNot { it.isEmpty() }))
+    return TreeRef(res, JsonPointer(pointer.split('/').filterNot { it.isEmpty() }.toImmutableList()))
 }
 
 

@@ -1,40 +1,40 @@
 {
     "jjtx": {
-            "visitors": {
-                    "parameterlessVisitor": REFERENCE("Ref(resource=, jsonPointer=/jjtx/visitors/defaultJjtreeVisitor)")
-                }
+        "visitors": {
+            "parameterlessVisitor": REFERENCE("TreeRef(resource=, jsonPointer=/jjtx/visitors/defaultJjtreeVisitor)")
+        }
 
-            "nodeGen": REFERENCE("Ref(resource=/jjtx/JjtreeGen, jsonPointer=/jjtx/nodeGen)")
-            "nodePrefix": STRING("Ex")
-            "nodePackage": STRING("org.exprs.ast")
-            "typeHierarchy": {
-                    "%MyNodeParent": [
-                            {
-                                "Expression": [
-                                        STRING("r:.*Expression")
-                                        {
-                                            "Literal": [
-                                                    STRING("NullLiteral")
-                                                    {
-                                                        "IntegerLiteral": STRING("foo")
-                                                    }
+        "nodeGen": REFERENCE("TreeRef(resource=/jjtx/JjtreeGen, jsonPointer=/jjtx/nodeGen)")
+        "nodePrefix": STRING("Ex")
+        "nodePackage": STRING("org.exprs.ast")
+        "typeHierarchy": {
+            "%MyNodeParent": [
+                {
+                    "Expression": [
+                        STRING("r:.*Expression")
+                        {
+                            "Literal": [
+                                STRING("NullLiteral")
+                                {
+                                    "IntegerLiteral": STRING("foo")
+                                }
 
-                                                ]
+                            ]
 
-                                        }
-
-                                    ]
-
-                            }
-
-                        ]
-
-                    "foo": {
-                            "-"Expr"": STRING("bar")
                         }
 
+                    ]
+
                 }
 
+            ]
+
+            "foo": {
+                "-"Expr"": STRING("bar")
+            }
+
         }
+
+    }
 
 }

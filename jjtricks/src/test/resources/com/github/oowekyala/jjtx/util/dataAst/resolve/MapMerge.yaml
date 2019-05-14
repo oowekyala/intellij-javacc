@@ -1,0 +1,8 @@
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      templateFile: foo/bar/VisitorTest.vm
+      execute: true
+    parameterlessVisitor:
+      <<: !from '#/jjtx/visitors/defaultJjtreeVisitor'
+      execute: false

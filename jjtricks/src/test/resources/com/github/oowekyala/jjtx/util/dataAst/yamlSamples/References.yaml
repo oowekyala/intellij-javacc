@@ -3,7 +3,9 @@ jjtx:
     defaultJjtreeVisitor:
       templateFile: foo/bar/VisitorTest.vm
       execute: true
-    parameterlessVisitor: !from '#/jjtx/visitors/defaultJjtreeVisitor'
+    parameterlessVisitor:
+        <<: !from '#/jjtx/visitors/defaultJjtreeVisitor'
+        foo: a
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"

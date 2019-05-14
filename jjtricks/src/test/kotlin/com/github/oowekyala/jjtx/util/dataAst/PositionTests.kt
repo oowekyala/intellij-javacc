@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.JsonPointer
 import io.kotlintest.specs.WordSpec
+import kotlinx.collections.immutable.immutableListOf
 
 /**
  * @author Clément Fournier
@@ -37,7 +38,7 @@ class PositionTests : WordSpec({
         "have no segments" {
             assert(JsonPointer().path.isEmpty())
             assert(JsonPointer() == JsonPointer.Root)
-            assert(JsonPointer(emptyList()) == JsonPointer.Root)
+            assert(JsonPointer(immutableListOf()) == JsonPointer.Root)
         }
     }
 
