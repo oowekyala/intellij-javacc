@@ -85,7 +85,7 @@ tasks {
         )
     }
 
-    val generateSchemaDoc by creating(Exec::class.java) {
+    val schemaDocs by creating(Exec::class.java) {
         
         group = "Documentation"
 

@@ -3,9 +3,6 @@
   "$id": "http://com.github.oowekyala/jjtricks/jjtopts",
   "title": "Schema of jjtopts configuration files for JJTricks",
   "type": "object",
-  "required": [
-    "jjtx"
-  ],
   "definitions": {
     "formatter": {
       "type": "string",
