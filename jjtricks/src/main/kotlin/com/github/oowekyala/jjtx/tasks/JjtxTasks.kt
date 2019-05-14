@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.tasks
 
 import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.preprocessor.toJavacc
 import com.github.oowekyala.jjtx.reporting.*
@@ -84,7 +85,7 @@ val JjtxContext.chainDump
     get() =
         configChain
             .map { io.wd.relativize(it).normalize() }
-            .plus("/jjtx/Root.jjtopts.yaml")
+            .plus(JjtxOptsModel.RootJjtOpts.filename)
             // the "element =" here is not optional, since Path <: Iterable<Path>,
             // it could append all segments if not disambiguated
             .plus(element = io.wd.relativize(grammarFile.path))
