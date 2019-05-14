@@ -31,13 +31,13 @@ data class AstScalar(
 
 }
 
-data class Ref(val resource: String, val jsonPointer: JsonPosition)
+data class TreeRef(val resource: String, val jsonPointer: JsonPosition)
 
-fun parseReference(ref: String): Ref {
+fun parseReference(ref: String): TreeRef {
 
     val (res, pointer) = if ('#' in ref) ref.split('#') else listOf("", ref)
 
-    return Ref(res, JsonPosition(pointer.split('/').filterNot { it.isEmpty() }))
+    return TreeRef(res, JsonPosition(pointer.split('/').filterNot { it.isEmpty() }))
 }
 
 
@@ -106,7 +106,7 @@ data class AstMap(
 }
 
 
-object AstTreeLikeWitness : TreeLikeAdapter<DataAstNode> {
+object AstTreeLike : TreeLikeAdapter<DataAstNode> {
     override fun getChildren(node: DataAstNode): List<DataAstNode> = when (node) {
         is AstScalar -> emptyList()
         is AstMap    -> node.values.toList()

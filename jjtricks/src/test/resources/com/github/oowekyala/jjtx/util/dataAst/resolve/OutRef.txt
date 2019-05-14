@@ -6,12 +6,12 @@
                                     {
                                         "templateFile": STRING("/jjtx/templates/Node.java.vm")
                                         "template": STRING(
-                                                #if( !package.empty )
-                                                package $package;
-                                                #end
-                                                public class $simpleName extends ${node.class.qualifiedName} {
-
-                                                })
+                                                |#if( !package.empty )
+                                                |package $package;
+                                                |#end
+                                                |public class $simpleName extends ${node.class.qualifiedName} {
+                                                |
+                                                |})
                                         "formatter": STRING("none")
                                     }
 

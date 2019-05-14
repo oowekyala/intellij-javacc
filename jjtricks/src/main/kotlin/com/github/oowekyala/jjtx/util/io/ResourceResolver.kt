@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.util.io
 
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.util.isFile
+import java.io.Closeable
 import java.nio.file.Path
 
 /**
@@ -9,33 +10,21 @@ import java.nio.file.Path
  *
  * @author Clément Fournier
  */
-interface ResourceResolver {
+interface ResourceResolver<T> : Closeable {
 
-    fun getStreamable(path: String): NamedInputStream?
-
-}
-
-/**
- * Remembers already fetched resources.
- */
-class CachedResourceResolver(private val base: ResourceResolver) : ResourceResolver {
-
-    private val cache = mutableMapOf<String, NamedInputStream?>()
-
-
-    override fun getStreamable(path: String): NamedInputStream? =
-        cache.computeIfAbsent(path, base::getStreamable)
-
-
-    fun drop(): Unit = cache.clear()
+    fun getResource(path: String): T?
 
 }
 
 
-data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver {
+data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver<NamedInputStream> {
 
 
-    override fun getStreamable(path: String): NamedInputStream? =
+    override fun close() {
+        // no need to close
+    }
+
+    override fun getResource(path: String): NamedInputStream? =
         fromClasspathResource(path) ?: fromFile(path)
 
     private fun fromClasspathResource(path: String): NamedInputStream? =

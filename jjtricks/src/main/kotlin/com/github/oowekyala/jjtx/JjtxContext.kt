@@ -90,7 +90,7 @@ interface JjtxContext {
         val grammarFile: JccFile,
         var configChain: List<Path> = grammarFile.defaultJjtopts(),
         var io: Io = Io(),
-        var resourceResolver: ResourceResolver = DefaultResourceResolver(grammarFile.path.parent),
+        var resourceResolver: ResourceResolver<NamedInputStream> = DefaultResourceResolver(grammarFile.path.parent),
         var messageCollector: MessageCollector = MessageCollector.default(io)
     )
 
@@ -130,7 +130,7 @@ private class JjtxRootContext(
     override val configChain: List<Path>,
     override val messageCollector: MessageCollector,
     override val io: Io,
-    val resourceResolver: ResourceResolver
+    val resourceResolver: ResourceResolver<NamedInputStream>
 ) : JjtxContext {
 
     override val reportingContext: ReportingContext = RootContext
@@ -143,7 +143,7 @@ private class JjtxRootContext(
 
 
     override fun resolveResource(path: String): NamedInputStream? =
-        resourceResolver.getStreamable(path)
+        resourceResolver.getResource(path)
 
 
     override val jjtxOptsModel: JjtxOptsModel by lazy {
