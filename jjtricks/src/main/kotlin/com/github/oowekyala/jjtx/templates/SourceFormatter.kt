@@ -37,9 +37,9 @@ enum class FormatterRegistry(override val errorPositionParser: ErrorPositionReco
          * Returns the formatter corresponding to the [key],
          * or null if there is none.
          */
-        fun select(key: String?): SourceFormatter? {
-            val k = key?.toUpperCase() ?: return null
-            return values().firstOrNull { it.name == k }
+        fun getOrDefault(key: String?): SourceFormatter? {
+            val k = key?.toUpperCase() ?: return JAVA
+            return values().firstOrNull { it.name == k } ?: JAVA
         }
     }
 }

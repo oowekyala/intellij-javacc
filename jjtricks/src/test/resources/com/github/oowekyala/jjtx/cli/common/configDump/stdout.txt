@@ -1,5 +1,5 @@
 # Fully resolved JJTricks configuration
-# Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Empty.jjtopts.yaml -> DummyExpr.jjt
+# Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
   nodePackage: org.exprs.ast
   nodePrefix: Ex

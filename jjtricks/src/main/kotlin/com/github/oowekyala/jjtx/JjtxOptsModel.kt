@@ -70,7 +70,7 @@ interface JjtxOptsModel : IGrammarOptions {
 
         // TODO there may be some mischief when this is in a jar
         internal val RootJjtOpts: NamedInputStream
-            get() = Jjtricks.getResourceAsStream("/jjtx/Empty.jjtopts.yaml")!!
+            get() = Jjtricks.getResourceAsStream("/jjtx/Root.jjtopts.yaml")!!
 
 
         /**

@@ -53,7 +53,7 @@ data class FileGenBean(
             genClassTemplate = genClassName,
             template = t,
             context = context ?: emptyMap(),
-            formatter = FormatterRegistry.select(formatter)
+            formatter = FormatterRegistry.getOrDefault(formatter)
         )
 
     }
@@ -80,7 +80,7 @@ data class FileGenBean(
             myBean = this,
             id = id,
             template = t,
-            formatter = FormatterRegistry.select(formatter),
+            formatter = FormatterRegistry.getOrDefault(formatter),
             genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )

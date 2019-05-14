@@ -33,7 +33,7 @@ jjtx:
           visit($n.class.simpleName,Object)
           #end
 
-          #evaluate($global.visitorMethodComment)
+          #evaluate($visitorMethodComment)
           default Object visit($node.class.simpleName node, Object data) {
               #if ($node.superNode)
               return visit(($node.superNode.class.simpleName) node, data);
@@ -50,6 +50,7 @@ jjtx:
     parameterlessVisitor:
       templateFile: "/jjtx/templates/Visitor.java.vm"
       genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
+      formatter: java
       context:
         visitorMethodComment: !from '#/jjtx/templateContext/visitorMethodComment'
         methodTemplate: |
@@ -57,7 +58,7 @@ jjtx:
           visit($node.class.simpleName)
           #end
 
-          #evaluate($global.visitorMethodComment)
+          #evaluate($visitorMethodComment)
           default void visit($node.class.simpleName node) {
               #if ($node.superNode)
               visit(($node.superNode.class.simpleName) node);

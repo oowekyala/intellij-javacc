@@ -1,9 +1,9 @@
 jjtx:
   visitors:
     defaultJjtreeVisitor:
-      execute: true
+      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
     parameterlessVisitor:
-      execute: true
+      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/parameterlessVisitor'
 
   nodeGenerationSchemes:
     parentGen:

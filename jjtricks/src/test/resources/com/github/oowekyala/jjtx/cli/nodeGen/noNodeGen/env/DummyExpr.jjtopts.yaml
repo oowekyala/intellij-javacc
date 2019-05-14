@@ -1,10 +1,6 @@
 
 jjtx:
   visitors:
-    defaultJjtreeVisitor:
-      execute: false
-    parameterlessVisitor:
-      execute: false
 
   nodePrefix: Ex
   nodePackage: "org.expr"
