@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.treeutils.TreeLikeAdapter
 
 /**
  * Abstract AST, common denominator between JSON and YAML.
@@ -84,3 +85,11 @@ data class AstMap(
     }
 }
 
+
+object AstTreeLikeWitness : TreeLikeAdapter<DataAstNode> {
+    override fun getChildren(node: DataAstNode): List<DataAstNode> = when (node) {
+        is AstScalar -> emptyList()
+        is AstMap    -> node.values.toList()
+        is AstSeq    -> node.list
+    }
+}

@@ -1,0 +1,22 @@
+jjtx:
+  visitors:
+    defaultJjtreeVisitor:
+      templateFile: foo/bar/VisitorTest.vm
+      execute: true
+    parameterlessVisitor:
+      templateFile: foo/bar/VisitorTest.vm
+      genClassName: "${grammar.name}VisitorX"
+      execute: true
+
+  nodePrefix: Ex
+  nodePackage: "org.exprs.ast"
+  typeHierarchy:
+    "%MyNodeParent":
+      - "Expression":
+          - "r:.*Expression"
+          - Literal:
+              - NullLiteral
+              - IntegerLiteral: foo
+
+    "foo":
+      -"Expr": "bar"

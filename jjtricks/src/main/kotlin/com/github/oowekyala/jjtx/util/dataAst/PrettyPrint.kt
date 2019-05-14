@@ -52,7 +52,7 @@ private fun DataAstNode?.prettyPrintImpl(baseIndent: String, indent: String, inc
             if (includeTypes) {
                 sb.append(type).append("(")
                 printStr(any)
-                sb.append(indent).append(")")
+                sb.append(")")
             } else when (type) {
                 ScalarType.STRING -> printStr(any)
                 else              -> sb.append(any)

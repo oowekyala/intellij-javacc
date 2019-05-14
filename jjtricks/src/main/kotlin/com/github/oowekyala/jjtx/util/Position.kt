@@ -121,6 +121,28 @@ data class JsonPosition(val path: List<String>) : Position {
 
     infix fun findIn(map: DataAstNode): DataAstNode? = map.findPointer(path)
 
+    /**
+     * Returns true if this pointer is a subpath of the [other] pointer.
+     * Eg if
+     *
+     * ```
+     * | p      | q      | p in q | q in p |
+     * |--------|--------|--------|--------|
+     * | /a/b   | /a     | true   | false  |
+     * | /a/0   | /a/1   | false  | false  |
+     * | /a/0/c | /a/0/c | true   | true   |
+     *
+     * ```
+     *
+     *
+     */
+    operator fun contains(other: JsonPosition): Boolean =
+        path.zip(other.path).takeWhile { it.first == it.second }.size == other.path.size
+
+    companion object {
+        val Root = JsonPosition(emptyList())
+    }
+
 }
 
 

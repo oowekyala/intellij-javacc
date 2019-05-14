@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
 import com.github.oowekyala.jjtx.Jjtricks
+import com.github.oowekyala.jjtx.testutil.SrcTestResources
 import com.github.oowekyala.jjtx.testutil.getStackFrame
 import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.ExitCode
@@ -9,7 +10,6 @@ import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.TrailingSpacesFilterOutputStream
 import com.github.oowekyala.jjtx.util.isDirectory
 import com.github.oowekyala.jjtx.util.isFile
-import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
@@ -185,17 +185,11 @@ abstract class JjtxCliTestBase {
                 .also { assert(it.isDirectory()) { "$it should have been a directory" } }
         }
 
-        private val SrcTestResources = let {
-            System.getProperty("jjtx.testEnv.jjtricks.testResDir")?.let { it.toPath().toAbsolutePath() }
-                // that's for when the tests are run inside the IDE
-                ?: JjtxCliTestBase::class.java.protectionDomain.codeSource.location.file.toPath()
-                    .resolve("../../../src/test/resources").normalize()
-        }
+
 
     }
 
 }
-
 
 private fun assertDirEquals(expected: Path, actual: Path) {
 

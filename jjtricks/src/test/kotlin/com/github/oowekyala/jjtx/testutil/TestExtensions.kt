@@ -1,13 +1,16 @@
 package com.github.oowekyala.jjtx.testutil
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
+import com.github.oowekyala.jjtx.cli.JjtxCliTestBase
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.templates.NodeVBean.Companion.TreeLikeWitness
+import com.github.oowekyala.jjtx.util.toPath
 import com.github.oowekyala.treeutils.matchers.MatchingConfig
 import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper
 import com.github.oowekyala.treeutils.matchers.baseShouldMatchSubtree
 import com.github.oowekyala.treeutils.printers.KotlintestBeanTreePrinter
 import io.kotlintest.shouldBe
+import java.nio.file.Path
 
 /**
  * @author Clément Fournier
@@ -46,3 +49,9 @@ fun getCallerName(): String = getStackFrame(2).methodName
 fun getThisMethodName(): String = getStackFrame(1).methodName
 
 fun getStackFrame(int: Int): StackTraceElement = Thread.currentThread().stackTrace[int]
+val SrcTestResources: Path = run {
+    System.getProperty("jjtx.testEnv.jjtricks.testResDir")?.toPath()?.toAbsolutePath()
+    // that's for when the tests are run inside the IDE
+        ?: JjtxCliTestBase::class.java.protectionDomain.codeSource.location.file.toPath()
+            .resolve("../../../src/test/resources").normalize()
+}

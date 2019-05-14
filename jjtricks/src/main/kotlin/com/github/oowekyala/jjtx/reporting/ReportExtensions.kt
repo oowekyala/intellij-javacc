@@ -57,11 +57,10 @@ fun MessageCollector.reportNonFatal(message: String, position: Position? = null)
 /**
  * Report a normal execution trace.
  */
-fun MessageCollector.reportFatal(message: String, position: Position? = null): Nothing {
-    val m = if (position == null) message else message + "\n" + position.toString()
-    report(message, MessageCategory.FATAL_ERROR, position)
+fun MessageCollector.reportFatal(message: String, vararg position: Position?): Nothing {
+    report(message, MessageCategory.FATAL_ERROR, *position)
     // shouldn't occur!
-    throw IllegalStateException(m)
+    throw AssertionError("The message reported should have thrown an error itself")
 }
 
 fun MessageCollector.report(message: String,

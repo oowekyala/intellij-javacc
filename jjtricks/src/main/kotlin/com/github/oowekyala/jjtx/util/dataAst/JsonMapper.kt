@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.util.JsonPosition
+import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.google.gson.*
 import com.google.gson.internal.LazilyParsedNumber
@@ -39,14 +40,10 @@ internal fun DataAstNode.toJson(): JsonElement =
 
         is AstScalar ->
             when (type) {
-                ScalarType.STRING  -> JsonPrimitive(any)
-                ScalarType.NUMBER  -> JsonPrimitive(
-                    LazilyParsedNumber(
-                        any
-                    )
-                )
-                ScalarType.NULL    -> JsonNull.INSTANCE
-                ScalarType.BOOLEAN -> JsonPrimitive(any.toBoolean())
+                STRING, REFERENCE -> JsonPrimitive(any)
+                NUMBER            -> JsonPrimitive(LazilyParsedNumber(any))
+                NULL              -> JsonNull.INSTANCE
+                BOOLEAN           -> JsonPrimitive(any.toBoolean())
             }
 
         is AstSeq    -> {
@@ -81,15 +78,15 @@ private fun JsonElement.toData(): DataAstNode {
         return when (this) {
             is JsonNull      -> AstScalar(
                 any = toString(),
-                type = ScalarType.NULL,
+                type = NULL,
                 position = myPosition
             )
 
             is JsonPrimitive -> {
                 val type = when {
-                    isNumber -> ScalarType.NUMBER
-                    isString -> ScalarType.STRING
-                    else     -> ScalarType.BOOLEAN
+                    isNumber -> NUMBER
+                    isString -> STRING
+                    else     -> BOOLEAN
                 }
 
                 AstScalar(
@@ -111,7 +108,7 @@ private fun JsonElement.toData(): DataAstNode {
                     val kPos = myPosition.resolve(it.key)
 
                     Pair<DataAstNode, DataAstNode>(
-                        AstScalar(any = it.key, type = ScalarType.STRING, position = kPos),
+                        AstScalar(any = it.key, type = STRING, position = kPos),
                         it.value.jsonReal(kPos)
                     )
                 }.toMap()

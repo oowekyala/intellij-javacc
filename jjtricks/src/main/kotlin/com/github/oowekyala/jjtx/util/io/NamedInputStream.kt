@@ -6,6 +6,8 @@ import java.nio.charset.Charset
 import java.nio.file.Path
 
 /**
+ * @param identity Key for the [equals] comparison
+ *
  * @author Clément Fournier
  */
 class NamedInputStream(
@@ -35,7 +37,7 @@ fun Path.namedInputStream() =
     NamedInputStream(
         inputStream = this::inputStream,
         filename = toString(),
-        identity = this
+        identity = this.toAbsolutePath()
     )
 
 fun String.namedInputStream(filename: String = "input"): NamedInputStream =

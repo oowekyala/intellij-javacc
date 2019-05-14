@@ -15,6 +15,23 @@ interface ResourceResolver {
 
 }
 
+/**
+ * Remembers already fetched resources.
+ */
+class CachedResourceResolver(private val base: ResourceResolver) : ResourceResolver {
+
+    private val cache = mutableMapOf<String, NamedInputStream?>()
+
+
+    override fun getStreamable(path: String): NamedInputStream? =
+        cache.computeIfAbsent(path, base::getStreamable)
+
+
+    fun drop(): Unit = cache.clear()
+
+}
+
+
 data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver {
 
 
@@ -28,7 +45,7 @@ data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver {
                 Jjtricks::class.java.getResourceAsStream(
                     expandResourcePath(path)
                 )
-            }, path)
+            }, path, path)
         }
 
 

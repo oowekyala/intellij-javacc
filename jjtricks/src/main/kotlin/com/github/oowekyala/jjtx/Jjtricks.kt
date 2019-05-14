@@ -302,7 +302,7 @@ class Jjtricks(
                         Jjtricks::class.java.getResourceAsStream(
                             expandResourcePath(path)
                         )
-                    }, path)
+                    }, path, identity = path)
                 }
 
         private fun expandResourcePath(path: String): String {
