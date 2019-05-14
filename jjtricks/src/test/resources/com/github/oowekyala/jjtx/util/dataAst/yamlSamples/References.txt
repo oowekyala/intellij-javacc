@@ -1,0 +1,44 @@
+{
+    "jjtx": {
+            "visitors": {
+                    "defaultJjtreeVisitor": {
+                            "templateFile": STRING("foo/bar/VisitorTest.vm")
+                            "execute": BOOLEAN("true")
+                        }
+
+                    "parameterlessVisitor": REFERENCE("Ref(resource=, jsonPointer=/jjtx/visitors/defaultJjtreeVisitor)")
+                }
+
+            "nodePrefix": STRING("Ex")
+            "nodePackage": STRING("org.exprs.ast")
+            "typeHierarchy": {
+                    "%MyNodeParent": [
+                            {
+                                "Expression": [
+                                        STRING("r:.*Expression")
+                                        {
+                                            "Literal": [
+                                                    STRING("NullLiteral")
+                                                    {
+                                                        "IntegerLiteral": STRING("foo")
+                                                    }
+
+                                                ]
+
+                                        }
+
+                                    ]
+
+                            }
+
+                        ]
+
+                    "foo": {
+                            "-"Expr"": STRING("bar")
+                        }
+
+                }
+
+        }
+
+}

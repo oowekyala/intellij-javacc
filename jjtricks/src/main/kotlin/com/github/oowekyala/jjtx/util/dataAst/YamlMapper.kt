@@ -108,7 +108,7 @@ private val DataAstNode.yamlTag: Tag
         is AstSeq    -> Tag.SEQ
     }
 
-private val RefTag = Tag("from")
+private val RefTag = Tag("!from")
 
 private val Tag.scalarType: ScalarType
     get() = when (this) {

@@ -117,7 +117,7 @@ data class JsonPosition(val path: List<String>) : Position {
 
     fun resolve(key: String) = JsonPosition(path + key)
 
-    override fun toString(): String = "At " + path.joinToString(" / ") { "\"$it\"" }
+    override fun toString(): String = path.joinToString("/", prefix = "/")
 
     infix fun findIn(map: DataAstNode): DataAstNode? = map.findPointer(path)
 

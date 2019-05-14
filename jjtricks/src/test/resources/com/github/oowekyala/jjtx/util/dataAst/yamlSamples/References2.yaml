@@ -1,0 +1,19 @@
+jjtx:
+  visitors:
+    parameterlessVisitor: !from '#/jjtx/visitors/defaultJjtreeVisitor'
+
+  nodeGen:
+    !from '/jjtx/JjtreeGen#/jjtx/nodeGen'
+
+  nodePrefix: Ex
+  nodePackage: "org.exprs.ast"
+  typeHierarchy:
+    "%MyNodeParent":
+      - "Expression":
+          - "r:.*Expression"
+          - Literal:
+              - NullLiteral
+              - IntegerLiteral: foo
+
+    "foo":
+      -"Expr": "bar"

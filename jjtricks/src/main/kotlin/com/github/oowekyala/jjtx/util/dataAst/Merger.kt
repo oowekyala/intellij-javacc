@@ -102,11 +102,3 @@ private fun DataAstNode.rebuildResolvingIncludes(
     }
 }
 
-private data class Ref(val resource: String, val jsonPointer: JsonPosition)
-
-private fun parseReference(ref: String): Ref {
-
-    val (res, pointer) = if ('#' in ref) ref.split('#') else listOf("", ref)
-
-    return Ref(res, JsonPosition(pointer.split('/')))
-}

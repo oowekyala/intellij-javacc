@@ -1,7 +1,9 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
+import com.github.oowekyala.jjtx.util.JsonPosition
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.treeutils.TreeLikeAdapter
+import com.google.gson.internal.LazilyParsedNumber
 
 /**
  * Abstract AST, common denominator between JSON and YAML.
@@ -17,9 +19,27 @@ data class AstScalar(
     override val position: Position? = null
 ) : DataAstNode() {
 
+    val typedValue: Any? = when (type) {
+        ScalarType.REFERENCE -> parseReference(any)
+        ScalarType.NUMBER    -> LazilyParsedNumber(any)
+        ScalarType.BOOLEAN   -> any.toBoolean()
+        ScalarType.STRING    -> any
+        ScalarType.NULL      -> null
+    }
+
     override fun toString(): String = any
 
 }
+
+data class Ref(val resource: String, val jsonPointer: JsonPosition)
+
+fun parseReference(ref: String): Ref {
+
+    val (res, pointer) = if ('#' in ref) ref.split('#') else listOf("", ref)
+
+    return Ref(res, JsonPosition(pointer.split('/').filterNot { it.isEmpty() }))
+}
+
 
 enum class ScalarType {
     NUMBER,

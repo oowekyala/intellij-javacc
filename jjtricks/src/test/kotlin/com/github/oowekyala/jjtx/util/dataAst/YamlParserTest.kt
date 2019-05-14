@@ -19,5 +19,12 @@ class YamlParserTest : BaseTreeDumpTest<DataAstNode>(
     @Test
     fun `test sample 1`() = doTest("Sample1")
 
+    @Test
+    fun `test references no resolve 1`() = doTest("References")
+
+
+    @Test
+    fun `test references no resolve 2`() = doTest("References2")
+
 
 }
