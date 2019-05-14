@@ -134,7 +134,7 @@
         "nodePrefix": {
           "description": "Prefix prepended to the node name. Defaults to the JJTree key NODE_PREFIX, or its default of \"AST\"",
           "type": "string",
-          "pattern": "\\w+"
+          "pattern": "\\w*"
         },
         "nodePackage": {
           "description": "Package of the node classes",

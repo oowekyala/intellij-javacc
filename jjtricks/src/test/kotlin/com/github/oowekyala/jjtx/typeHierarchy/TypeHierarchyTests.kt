@@ -34,7 +34,7 @@ class TypeHierarchyTests : JjtxContextTestBase() {
 
     fun `test empty config adopts nodes`() {
         baseCtx
-            .copy(opts = JsonOpts("{\"jjtx.nodePrefix\": \"\"}"))
+            .copy(opts = JsonOpts("{\"jjtx\": {\"nodePrefix\": \"\"}}"))
             .doTest {
                 myCtx.jjtxOptsModel.typeHierarchy should matchRoot("Node") {
                     node("SomeExpr")

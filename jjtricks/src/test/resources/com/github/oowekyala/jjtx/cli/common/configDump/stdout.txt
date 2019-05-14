@@ -24,7 +24,7 @@ jjtx:
           visit($n.class.simpleName,Object)
           #end
 
-          #evaluate($global.visitorMethodComment)
+          #evaluate($visitorMethodComment)
           default Object visit($node.class.simpleName node, Object data) {
               #if ($node.superNode)
               return visit(($node.superNode.class.simpleName) node, data);
@@ -67,7 +67,7 @@ jjtx:
           visit($node.class.simpleName)
           #end
 
-          #evaluate($global.visitorMethodComment)
+          #evaluate($visitorMethodComment)
           default void visit($node.class.simpleName node) {
               #if ($node.superNode)
               visit(($node.superNode.class.simpleName) node);
@@ -95,6 +95,7 @@ jjtx:
             #end
            *
            */
+      formatter: java
       genClassName: ${grammar.name}VisitorX
       templateFile: foo/bar/VisitorTest.vm
 
