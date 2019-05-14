@@ -2,6 +2,8 @@ package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.reporting.reportNonFatal
+import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
@@ -11,19 +13,17 @@ import java.nio.file.Path
 // They're decoupled from the real VisitorConfig though
 /**
  * Configuration of a visitor generation task, as input under `jjtx.visitors`.
- * `jjtx.visitors` is a map of ids to [VisitorConfigBean]. If a configuration
+ * `jjtx.visitors` is a map of ids to [FileGenBean]. If a configuration
  * with the same id is found in the parent [JjtxOptsModel], the child configuration
  * is completed by the parent configuration.
  *
- * @property execute Whether the task will be run by JJTricks
  * @property templateFile The path to a file containing the template. Can be a classpath resource.
  * @property template The source of a template, if present, overrides [templateFile]
  * @property formatter The name of a formatter to use, available formatters are listed in [FormatterRegistry]
  * @property genClassName A template evaluating to the FQCN of the class to generate.
  * @property context A map of additional context variables available in the template
  */
-data class VisitorConfigBean(
-    val execute: Boolean?,
+data class FileGenBean(
     val templateFile: String?,
     val template: String?,
     val formatter: String?,
@@ -31,23 +31,32 @@ data class VisitorConfigBean(
     val context: Map<String, Any?>?
 ) {
 
-    /**
-     * Completes the missing settings of this bean with those of the [other] bean.
-     * Beans are merged with beans with the same id higher up the config chain. If
-     * in the end, the merged bean should [execute], then validation is performed by
-     * [toConfig] and the bean is promoted to a complete [VisitorGenerationTask].
-     */
-    fun merge(other: VisitorConfigBean): VisitorConfigBean =
-        VisitorConfigBean(
-            execute = execute ?: other.execute,
-            templateFile = templateFile ?: other.templateFile,
-            template = template ?: other.template,
-            formatter = formatter ?: other.formatter,
-            genClassName = genClassName ?: other.genClassName,
-            // merge the contexts
-            context = (other.context ?: emptyMap()).plus(this.context ?: emptyMap())
+
+    private fun getTemplate(ctx: JjtxContext, positionInfo: Position?): StringSource? = when {
+        template != null     -> StringSource.Str(template)
+        templateFile != null -> StringSource.File(templateFile)
+        else                 -> {
+            ctx.messageCollector.reportNonFatal(
+                "File generation task must mention either 'templateFile' or 'template'",
+                positionInfo
+            )
+            null
+        }
+    }
+
+    fun toNodeGenScheme(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeVBean>): NodeGenerationScheme? {
+
+        val t = getTemplate(ctx, positionInfo) ?: return null
+
+        return NodeGenerationScheme(
+            nodeBeans = nodeBeans,
+            genClassTemplate = genClassName,
+            template = t,
+            context = context ?: emptyMap(),
+            formatter = FormatterRegistry.select(formatter)
         )
 
+    }
 
     /**
      * Creates a runnable [VisitorGenerationTask] from this configuration,
@@ -58,31 +67,20 @@ data class VisitorConfigBean(
      *
      * @throws IllegalStateException if this config is invalid
      */
-    fun toConfig(id: String): VisitorGenerationTask? {
+    fun toFileGen(ctx: JjtxContext, positionInfo: Position?, id: String): VisitorGenerationTask? {
 
-        if (execute == false) {
-            // the config is not even checked
-            return null
-        }
-
-        val t = if (templateFile == null && template == null) {
-            throw java.lang.IllegalStateException("Visitor spec '$id' must mention either 'templateFile' or 'template'")
-        } else if (template != null) {
-            StringSource.Str(template)
-        } else {
-            StringSource.File(templateFile!!)
-        }
+        val t = getTemplate(ctx, positionInfo) ?: return null
 
         if (genClassName == null) {
-            throw java.lang.IllegalStateException("Visitor spec '$id' must mention 'genClassName', the template for the fully qualified class name of the generated class")
+            ctx.messageCollector.reportNonFatal("File generation task '$id' must mention 'genClassName', the template for the fully qualified class name of the generated class")
+            return null
         }
 
         return VisitorGenerationTask(
             myBean = this,
             id = id,
-            execute = execute ?: true,
             template = t,
-            formatter = FormatterRegistry.select(formatter ?: "java"),
+            formatter = FormatterRegistry.select(formatter),
             genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )
@@ -109,9 +107,8 @@ data class VisitorConfigBean(
  * @author Clément Fournier
  */
 class VisitorGenerationTask internal constructor(
-    private val myBean: VisitorConfigBean,
+    private val myBean: FileGenBean,
     val id: String,
-    val execute: Boolean,
     template: StringSource,
     formatter: SourceFormatter?,
     genFqcn: String,

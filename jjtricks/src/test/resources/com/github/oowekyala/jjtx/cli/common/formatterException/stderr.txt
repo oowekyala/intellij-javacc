@@ -2,7 +2,7 @@ JJTricks v1.0
 (Run with -h parameter for a usage summary)
 Running tasks [gen:visitors, gen:nodes, gen:javacc]
 
-[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Empty.jjtopts.yaml -> DummyExpr.jjt
 [gen:nodes]         Executing profiles 'myGen'
     [ERROR]    com.google.googlejavaformat.java.FormatterException
                <identifier> expected

@@ -153,19 +153,19 @@ abstract class JjtxCliTestBase {
         // issues like files missing
         // We assert the directory, and if it fails we also print stderr
         // to show as much as possible
+        System.err.println(myStderr.toActualText())
 
         if (test.expectedOutput != null) {
             try {
                 assertDirEquals(test.expectedOutput, test.actualOutput)
             } catch (e: FileComparisonFailure) {
-                System.err.println(myStderr.toActualText())
                 throw e
             }
         }
 
 
-        myAssertEquals(test.expectedStdout, myStdout.toActualText())
         myAssertEquals(test.expectedStderr, myStderr.toActualText())
+        myAssertEquals(test.expectedStdout, myStdout.toActualText())
         assertEquals(test.expectedExitCode, code)
 
     }

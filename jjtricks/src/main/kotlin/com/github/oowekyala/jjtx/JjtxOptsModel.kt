@@ -3,12 +3,11 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.reporting.subKey
+import com.github.oowekyala.jjtx.templates.FileGenBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
-import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.dataAst.AstMap
-import com.github.oowekyala.jjtx.util.dataAst.YamlLang
-import com.github.oowekyala.jjtx.util.dataAst.parseGuessFromExtension
+import com.github.oowekyala.jjtx.util.dataAst.parseAndResolveIncludes
 import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.namedInputStream
@@ -48,7 +47,7 @@ interface JjtxOptsModel : IGrammarOptions {
     /**
      * Map of ids to runnable visitor generation tasks.
      */
-    val visitors: Map<String, VisitorGenerationTask>
+    val visitors: Map<String, FileGenBean>
 
     /**
      * The node generation scheme, not merged if provided.
@@ -111,7 +110,7 @@ interface JjtxOptsModel : IGrammarOptions {
         fun parse(ctx: JjtxContext,
                   file: NamedInputStream,
                   parent: JjtxOptsModel): JjtxOptsModel =
-            parseGuessFromExtension(file, preference = YamlLang)
+            file.parseAndResolveIncludes(ctx.resourceResolver, ctx.messageCollector)
                 .apply { validateJjtopts(ctx.subContext(ctx.reportingContext.subKey("validation"))) }
                 .let { OptsModelImpl(ctx, parent, it as AstMap) }
 

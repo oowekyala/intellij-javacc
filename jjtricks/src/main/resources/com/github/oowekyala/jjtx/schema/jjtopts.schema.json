@@ -11,14 +11,14 @@
       "type": "string",
       "enum": ["java", "none"]
     },
-    "visitorGenTask": {
+    "fileGenTask": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "execute": {
-          "type": "boolean"
-        },
         "templateFile": {
+          "type": "string"
+        },
+        "template": {
           "type": "string"
         },
         "formatter": {
@@ -84,12 +84,12 @@
     "nodeGenerationScheme": {
       "anyOf": [
         {
-          "$ref": "#/definitions/nodeGenTask"
+          "$ref": "#/definitions/fileGenTask"
         },
         {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/nodeGenTask"
+            "$ref": "#/definitions/fileGenTask"
           }
         },
         {
@@ -171,7 +171,7 @@
         "visitors": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/visitorGenTask"
+            "$ref": "#/definitions/fileGenTask"
           }
         }
       }

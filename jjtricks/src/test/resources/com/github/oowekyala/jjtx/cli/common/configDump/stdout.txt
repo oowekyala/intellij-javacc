@@ -1,29 +1,9 @@
 # Fully resolved JJTricks configuration
-# Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+# Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Empty.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
   nodePackage: org.exprs.ast
   nodePrefix: Ex
-  templateContext:
-    visitorMethodComment: |
-      /**
-       * Visits {@linkplain $node.class.simpleName $node.name}.
-         #if ( $node.superNode )
-       * Delegates to {@link $H#methodAnchor($node.superNode)}
-       * if unimplemented.
-       *
-        #if ( !$node.subNodes.empty )
-       * This method is delegated to by:
-       * <ul>
-          #foreach($sub in $node.subNodes)
-       *   <li>{@link $H#methodAnchor($sub)}</li>
-          #end
-       * </ul>
-        #end
-        #else
-       *   This is the root of the delegation chain.
-        #end
-       *
-       */
+  templateContext: {}
   typeHierarchy:
     org.exprs.ast.MyNodeParent:
     - org.exprs.ast.ExExpression:
@@ -52,7 +32,26 @@ jjtx:
               return node.childrenAccept(this, data);
               #end
           }
-      execute: 'true'
+        visitorMethodComment: |
+          /**
+           * Visits {@linkplain $node.class.simpleName $node.name}.
+             #if ( $node.superNode )
+           * Delegates to {@link $H#methodAnchor($node.superNode)}
+           * if unimplemented.
+           *
+            #if ( !$node.subNodes.empty )
+           * This method is delegated to by:
+           * <ul>
+              #foreach($sub in $node.subNodes)
+           *   <li>{@link $H#methodAnchor($sub)}</li>
+              #end
+           * </ul>
+            #end
+            #else
+           *   This is the root of the delegation chain.
+            #end
+           *
+           */
       formatter: java
       genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
       templateFile: foo/bar/VisitorTest.vm
@@ -76,7 +75,26 @@ jjtx:
               node.childrenAccept(this, data);
               #end
           }
-      execute: 'true'
+        visitorMethodComment: |
+          /**
+           * Visits {@linkplain $node.class.simpleName $node.name}.
+             #if ( $node.superNode )
+           * Delegates to {@link $H#methodAnchor($node.superNode)}
+           * if unimplemented.
+           *
+            #if ( !$node.subNodes.empty )
+           * This method is delegated to by:
+           * <ul>
+              #foreach($sub in $node.subNodes)
+           *   <li>{@link $H#methodAnchor($sub)}</li>
+              #end
+           * </ul>
+            #end
+            #else
+           *   This is the root of the delegation chain.
+            #end
+           *
+           */
       genClassName: ${grammar.name}VisitorX
       templateFile: foo/bar/VisitorTest.vm
 

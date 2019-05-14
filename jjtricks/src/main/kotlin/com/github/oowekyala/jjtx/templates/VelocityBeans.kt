@@ -142,7 +142,7 @@ data class VisitorVBean(
 ) {
 
     companion object {
-        fun fromVisitorBean(id: String, bean: VisitorConfigBean) = VisitorVBean(
+        fun fromVisitorBean(id: String, bean: FileGenBean) = VisitorVBean(
             id = id,
             `class` = ClassVBean(bean.genClassName!!),
             context = bean.context ?: emptyMap()
@@ -178,8 +178,7 @@ data class RunVBean(
             val visitors =
                 ctx.jjtxOptsModel
                     .let { it as? OptsModelImpl }
-                    ?.visitorBeans
-                    ?.filterValues { it.execute ?: true }
+                    ?.visitors
                     ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
                     ?: emptyMap()
 
@@ -209,13 +208,6 @@ data class GrammarVBean(
 
     companion object {
         fun create(ctx: JjtxContext): GrammarVBean {
-            val visitors =
-                ctx.jjtxOptsModel
-                    .let { it as? OptsModelImpl }
-                    ?.visitorBeans
-                    ?.filterValues { it.execute ?: true }
-                    ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
-                    ?: emptyMap()
 
             return GrammarVBean(
                 name = ctx.grammarName,

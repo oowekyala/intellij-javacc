@@ -5,7 +5,10 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.preprocessor.toJavacc
-import com.github.oowekyala.jjtx.reporting.*
+import com.github.oowekyala.jjtx.reporting.reportException
+import com.github.oowekyala.jjtx.reporting.reportNonFatal
+import com.github.oowekyala.jjtx.reporting.reportNormal
+import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
@@ -159,7 +162,7 @@ abstract class GenerationTaskBase(
 
     }
 
-    protected abstract val generationTasks: List<FileGenTask>
+    protected abstract val generationTasks: Collection<FileGenTask>
     protected abstract val configString: String
     protected abstract val exceptionCtx: String
 
@@ -175,19 +178,12 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<
 
     override val exceptionCtx: String = "Generating visitor"
 
-    override val generationTasks: List<VisitorGenerationTask> by lazy {
-
-        val (doExec, dont) = ctx.jjtxOptsModel.visitors.values.partition { it.execute }
-
-        dont.forEach {
-            ctx.messageCollector.report(
-                "Visitor ${it.id} is not configured for execution",
-                MessageCategory.VISITOR_NOT_RUN
-            )
+    override val generationTasks: Collection<VisitorGenerationTask> by lazy {
+        ctx.jjtxOptsModel.visitors.mapNotNull { (k, v) ->
+            v.toFileGen(ctx, null, k)
         }
-
-        doExec
     }
+
 
     override val configString: String by lazy {
         generationTasks.joinToString { it.id }

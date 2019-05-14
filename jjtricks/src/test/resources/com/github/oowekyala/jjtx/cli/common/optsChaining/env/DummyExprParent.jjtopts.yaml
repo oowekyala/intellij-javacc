@@ -2,9 +2,7 @@
 jjtx:
   visitors:
     defaultJjtreeVisitor:
-      execute: true
-    parameterlessVisitor:
-      execute: true
+      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
 
   nodePrefix: AST
   nodePackage: "org.parent"

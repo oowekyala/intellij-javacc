@@ -99,10 +99,10 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
 
         val schemes = when (node) {
             is AstMap    -> {
-                val b = node.load<NodeGenerationBean>()
+                val b = node.load<FileGenBean>()
                 val ms = newMatches + waitingForNextPattern
                 waitingForNextPattern.clear()
-                listOfNotNull(b.promote(ctx, node.position, ms))
+                listOfNotNull(b?.toNodeGenScheme(ctx, node.position, ms))
             }
             is AstSeq    -> {
                 val (maps, notMaps) = node.partition { it is AstMap }
@@ -119,8 +119,8 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
 
                 // handles nothing after colon with empty map I think
                 maps.mapNotNull {
-                    val b = it.load<NodeGenerationBean>()
-                    b.promote(ctx, it.position, ms)
+                    val b = it.load<FileGenBean>()
+                    b?.toNodeGenScheme(ctx, it.position, ms)
                 }
             }
             is AstScalar -> {
@@ -235,48 +235,11 @@ private fun findByRegex(ctx: JjtxContext, positionInfo: Position?, regexStr: Str
 }
 
 
-data class NodeGenerationBean(
-    var formatter: String?,
-    var genClassName: String?,
-    var template: String?,
-    var templateFile: String?,
-    var context: Map<String, Any>?
-) {
-
-    fun promote(ctx: JjtxContext, positionInfo: Position?, nodeBeans: List<NodeVBean>): NodeGenerationScheme? {
-
-
-        val t = if (templateFile == null && template == null) {
-            ctx.messageCollector.reportNonFatal(
-                "Node generation spec must mention either 'templateFile' or 'template'",
-                positionInfo
-            )
-            return null
-        } else if (template != null) {
-            StringSource.Str(template!!)
-        } else {
-            StringSource.File(templateFile!!)
-        }
-
-        val formatterChoice = FormatterRegistry.select(formatter)
-
-        return NodeGenerationScheme(
-            nodeBeans,
-            genClassName,
-            t,
-            context ?: emptyMap(),
-            formatterChoice
-        )
-
-    }
-
-}
-
 data class NodeGenerationScheme(
     val nodeBeans: List<NodeVBean>,
     val genClassTemplate: String?,
     val template: StringSource,
-    val context: Map<String, Any>,
+    val context: Map<String, Any?>,
     val formatter: SourceFormatter?
 ) {
 

@@ -1,11 +1,5 @@
 
 jjtx:
-  visitors:
-    defaultJjtreeVisitor:
-      execute: false
-    parameterlessVisitor:
-      execute: false
-
   activeGenScheme: myGen
   nodeGenerationSchemes:
     myGen:

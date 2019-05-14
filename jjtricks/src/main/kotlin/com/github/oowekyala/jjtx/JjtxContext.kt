@@ -83,7 +83,10 @@ interface JjtxContext {
     val globalVelocityContext: VelocityContext
 
 
-    fun resolveResource(path: String): NamedInputStream?
+    val resourceResolver: ResourceResolver<NamedInputStream>
+
+
+    fun resolveResource(path: String): NamedInputStream? = resourceResolver.getResource(path)
 
 
     data class CtxBuilder internal constructor(
@@ -130,7 +133,7 @@ private class JjtxRootContext(
     override val configChain: List<Path>,
     override val messageCollector: MessageCollector,
     override val io: Io,
-    val resourceResolver: ResourceResolver<NamedInputStream>
+    override val resourceResolver: ResourceResolver<NamedInputStream>
 ) : JjtxContext {
 
     override val reportingContext: ReportingContext = RootContext
@@ -140,10 +143,6 @@ private class JjtxRootContext(
     override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
 
     override val grammarDir: Path = grammarFile.path.parent
-
-
-    override fun resolveResource(path: String): NamedInputStream? =
-        resourceResolver.getResource(path)
 
 
     override val jjtxOptsModel: JjtxOptsModel by lazy {

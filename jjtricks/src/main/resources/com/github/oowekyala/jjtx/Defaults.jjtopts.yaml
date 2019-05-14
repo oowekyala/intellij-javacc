@@ -1,10 +1,3 @@
-# Root file at the top of option file chains
-# The default visitors can be referred to by id and completed
-# Template variables may be overridden
-
-# Note: this file should not be used to set things that can be overridden
-# in the JJTree file.
-
 jjtx:
   templateContext:
     visitorMethodComment: |
@@ -33,7 +26,6 @@ jjtx:
       templateFile: "/jjtx/templates/Visitor.java.vm"
       formatter: "java"
       genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
-      execute: false
       context:
         visitorMethodComment: !from '#/jjtx/templateContext/visitorMethodComment'
         methodTemplate: |
@@ -57,7 +49,6 @@ jjtx:
 
     parameterlessVisitor:
       templateFile: "/jjtx/templates/Visitor.java.vm"
-      execute: false
       genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
       context:
         visitorMethodComment: !from '#/jjtx/templateContext/visitorMethodComment'

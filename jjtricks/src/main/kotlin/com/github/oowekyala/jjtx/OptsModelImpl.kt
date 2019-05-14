@@ -3,9 +3,10 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
-import com.github.oowekyala.jjtx.reporting.MessageCategory.INCOMPLETE_VISITOR_SPEC
-import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.templates.*
+import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
+import com.github.oowekyala.jjtx.templates.NodeVBean
+import com.github.oowekyala.jjtx.templates.toNodeGenerationSchemes
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
@@ -48,31 +49,8 @@ internal class OptsModelImpl(val ctx: JjtxContext,
             parentModel.templateContext + deepest
         }.lazily()
 
-    internal val visitorBeans: Map<String, VisitorConfigBean> by jjtx.withDefault<Map<String, VisitorConfigBean>>("visitors") {
-        emptyMap()
-    }.map { curBeans ->
-        curBeans.mapValues { (id, bean) ->
-            parentModel.let { it as? OptsModelImpl }?.visitorBeans?.get(id)?.let {
-                bean.merge(it)
-            } ?: bean
-        }
-    }.lazily()
-
-    override val visitors: Map<String, VisitorGenerationTask> by lazy {
-
-        val valid = visitorBeans.mapValuesTo(mutableMapOf()) { (id, bean) ->
-            try {
-                bean.toConfig(id)
-            } catch (e: IllegalStateException) {
-                // todo don't swallow
-                ctx.messageCollector.report(e.message ?: "", INCOMPLETE_VISITOR_SPEC)
-                null
-            }
-        }
-
-
-        @Suppress("UNCHECKED_CAST")
-        valid.filterValues { it != null } as Map<String, VisitorGenerationTask>
+    override val visitors: Map<String, FileGenBean> by jjtx.withDefault("visitors") {
+        emptyMap<String, FileGenBean>()
     }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {

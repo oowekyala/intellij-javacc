@@ -2,7 +2,6 @@ package com.github.oowekyala.jjtx.util.io
 
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.util.isFile
-import java.io.Closeable
 import java.nio.file.Path
 
 /**
@@ -10,7 +9,7 @@ import java.nio.file.Path
  *
  * @author Clément Fournier
  */
-interface ResourceResolver<T> : Closeable {
+interface ResourceResolver<T> {
 
     fun getResource(path: String): T?
 
@@ -19,10 +18,6 @@ interface ResourceResolver<T> : Closeable {
 
 data class DefaultResourceResolver(val ctxDir: Path) : ResourceResolver<NamedInputStream> {
 
-
-    override fun close() {
-        // no need to close
-    }
 
     override fun getResource(path: String): NamedInputStream? =
         fromClasspathResource(path) ?: fromFile(path)

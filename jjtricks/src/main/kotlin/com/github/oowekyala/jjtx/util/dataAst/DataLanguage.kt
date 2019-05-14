@@ -33,10 +33,10 @@ fun parseGuessFromExtension(input: NamedInputStream, preference: DataLanguage = 
     }.parse(input)
 
 
-internal inline fun <reified T> DataAstNode.load(): T {
+internal inline fun <reified T> DataAstNode.load(): T? {
     val type = object : TypeLiteral<T>() {}
     val any = Gson().fromJson<Any>(toJson(), type.type)
-    return any as T
+    return any as T?
 }
 
 fun DataAstNode.toYamlString(): String = YamlLang.writeToString(this)
