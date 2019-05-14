@@ -1,0 +1,13 @@
+jjtx:
+  nodeGen:
+    myGen:
+      "r:.*":
+        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+          template: |
+            #if( !package.empty )
+            package $package;
+            #end
+            public class $simpleName extends ${node.class.qualifiedName} {
+
+            }
+          formatter: "none"

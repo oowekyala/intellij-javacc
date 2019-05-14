@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
+import com.github.oowekyala.ijcc.util.init
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.util.JsonPosition
@@ -11,7 +12,7 @@ import com.github.oowekyala.jjtx.util.io.ResourceResolver
 
 fun NamedInputStream.parseAndResolveIncludes(resolver: ResourceResolver, err: MessageCollector): DataAstNode =
     CachedResourceResolver(resolver).let {
-        val parsed = parseAndResolveIncludes(listOf(), listOf(), it, err)
+        val parsed = parseAndResolveIncludes(listOf(), listOf(this), it, err)
         it.drop() // drop the cache
         parsed
     }
@@ -24,7 +25,7 @@ private fun NamedInputStream.parseAndResolveIncludes(
     err: MessageCollector
 ): DataAstNode {
 
-    if (this in inclusionPath) {
+    if (this in inclusionPath.init()) {
         err.reportFatal("Cycle in file inclusions", *inclusionPosPath.toTypedArray())
     }
 

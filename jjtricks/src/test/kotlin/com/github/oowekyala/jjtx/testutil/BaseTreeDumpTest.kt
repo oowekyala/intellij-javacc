@@ -1,10 +1,12 @@
 package com.github.oowekyala.jjtx.testutil
 
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
+import com.github.oowekyala.jjtx.util.io.namedInputStream
+import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.treeutils.printers.TreePrinter
 import com.intellij.rt.execution.junit.FileComparisonFailure
+import com.intellij.util.io.readText
 import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.test.assertEquals
 
 /**
  * @author Clément Fournier
@@ -26,7 +28,7 @@ abstract class BaseTreeDumpTest<H : Any>(
     /**
      * Parses the given string into a node.
      */
-    abstract fun parseFile(fileText: String): H
+    abstract fun parseFile(nis: NamedInputStream): H
 
 
     /**
@@ -37,13 +39,13 @@ abstract class BaseTreeDumpTest<H : Any>(
      */
     fun doTest(fileBaseName: String) {
         val expectedFile = findTestFile(javaClass, "$pathToFixtures/$fileBaseName$ExpectedExt").toFile()
-        val sourceFile = findTestFile(javaClass, "$pathToFixtures/$fileBaseName$extension").toFile()
+        val sourceFile = findTestFile(javaClass, "$pathToFixtures/$fileBaseName$extension")
 
-        assert(sourceFile.isFile) {
+        assert(sourceFile.isFile()) {
             "Source file $sourceFile is missing"
         }
 
-        val parsed = parseFile(sourceFile.readText()) // UTF-8
+        val parsed = parseFile(sourceFile.namedInputStream()) // UTF-8
         val actual = printer.dumpSubtree(parsed)
 
         if (!expectedFile.exists()) {

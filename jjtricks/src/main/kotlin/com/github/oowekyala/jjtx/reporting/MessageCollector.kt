@@ -36,6 +36,10 @@ private object NoopCollector : MessageCollector {
     }
 
     override fun reportEntry(reportEntry: ReportEntry) {
-        // do nothing
+        if (reportEntry.severity == Severity.FAIL) {
+            System.err.println(reportEntry)
+            throw DoExitNowError()
+        }
+        // else do nothing
     }
 }

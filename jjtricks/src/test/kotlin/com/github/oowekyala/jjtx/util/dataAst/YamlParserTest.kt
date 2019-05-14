@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.testutil.BaseTreeDumpTest
 import com.github.oowekyala.jjtx.testutil.DataTreePrinter
-import com.github.oowekyala.jjtx.util.io.namedInputStream
+import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import org.junit.Test
 
 /**
@@ -13,7 +13,7 @@ class YamlParserTest : BaseTreeDumpTest<DataAstNode>(
     "yamlSamples",
     ".yaml"
 ) {
-    override fun parseFile(fileText: String): DataAstNode = YamlLang.parse(fileText.namedInputStream())
+    override fun parseFile(nis: NamedInputStream): DataAstNode = YamlLang.parse(nis)
 
 
     @Test

@@ -41,7 +41,7 @@ private fun DataAstNode?.prettyPrintImpl(baseIndent: String, indent: String, inc
                 when {
                     s.any { it == '\r' || it == '\n' } -> {
                         sb.appendln()
-                        sb.append(s.replaceIndentByMargin(inindent))
+                        sb.append(s.replaceIndent(inindent))
                     }
                     else                               ->
                         sb.append('"').append(s).append('"')
