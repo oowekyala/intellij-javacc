@@ -123,8 +123,6 @@ inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -
         else operation(r, t)
     }
 
-fun dump(function: (StringBuilder) -> Unit): String = java.lang.StringBuilder().also { function(it) }.toString()
-
 
 fun <T> List<T>.init(): List<T> =
     if (isEmpty()) throw NoSuchElementException() else subList(0, size - 1)

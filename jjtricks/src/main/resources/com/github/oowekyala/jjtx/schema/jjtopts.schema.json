@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://com.github.oowekyala/jjtricks/jjtopts",
-  "title": "Schema of jjtopts configuration files for JJTricks",
+  "title": "JJTricks configuration file",
   "type": "object",
   "definitions": {
     "formatter": {
@@ -95,28 +95,69 @@
         }
       ]
     },
+    "singleNodeMatcher": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "\\w+",
+          "description": "Expands to the nodePackage + nodePrefix + name"
+        },
+        {
+          "type": "string",
+          "pattern": "%\\w+",
+          "description": "Expands to nodePackage + name following the '%'. The difference is that the nodePrefix is not applied."
+        },
+        {
+          "type": "string",
+          "pattern": "\\w+(\\.\\w+)+",
+          "description": "Qualified name (there is a dot in it), which is not expanded and taken as-is."
+        }
+      ]
+    },
+    "regexNodeMatcher": {
+      "type": "string",
+      "pattern": "r:.*",
+      "description": "The part after the 'r:' is interpreted as a regex. This pattern expands to all the nodes whose name match the regex."
+    },
+    "childNodeMatcher": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/singleNodeMatcher"
+        },
+        {
+          "$ref": "#/definitions/regexNodeMatcher"
+        }
+      ]
+    },
     "typeHierarchyNode": {
       "anyOf": [
         {
-          "type": "string"
+          "type": "string",
+          "description": "Interpreted as foo"
         },
         {
           "type": "object",
-          "minProperties": 1,
-          "maxProperties": 1,
-          "additionalProperties": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/typeHierarchyNode"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/typeHierarchyNode"
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/singleNodeMatcher"
+            },
+            "subtypes": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/childNodeMatcher"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/typeHierarchyNode"
+                  }
                 }
-              }
-            ]
-          }
+              ]
+            }
+          },
+          "required": [
+            "name"
+          ]
         }
       ]
     }
@@ -140,7 +181,7 @@
         "templateContext": {
           "description": "Additional bindings for a Velocity context that will be shared by all template executions (gen:visitors, gen:nodes)",
           "type": "object",
-          "default": "{}"
+          "default": {}
 
         },
         "typeHierarchy": {

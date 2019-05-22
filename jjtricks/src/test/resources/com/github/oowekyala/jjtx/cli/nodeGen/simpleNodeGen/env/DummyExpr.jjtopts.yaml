@@ -51,6 +51,7 @@ jjtx:
     "%Root":
       - "Expression":
           - "r:.*Expression"
-          - Literal:
+          - match: Literal
+            children:
               - NullLiteral
               - IntegerLiteral
