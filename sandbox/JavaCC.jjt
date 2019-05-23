@@ -1112,7 +1112,7 @@ void regular_expr_production() :
   |
     "<" <IDENTIFIER> ( "," <IDENTIFIER> )* ">"
   ]
-  regexpr_kind() [ "[" "IGNORE_CASE" "]" ] ":"
+  regex_kind() [ "[" "IGNORE_CASE" "]" ] ":"
   "{" regexpr_spec() ( "|" regexpr_spec() )* "}"
 }
 

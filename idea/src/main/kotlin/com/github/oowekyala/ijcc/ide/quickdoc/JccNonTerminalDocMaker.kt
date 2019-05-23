@@ -1,6 +1,7 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.ide.inspections.docIsNecessary
+import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
@@ -20,6 +21,7 @@ import org.intellij.lang.annotations.Language
 object JccNonTerminalDocMaker {
 
     const val BnfSectionName = "BNF"
+    const val StartSectionName = "Start set"
     const val JJTreeSectionName = "JJTree node"
 
     fun makeDoc(prod: JccJavacodeProduction): String = buildQuickDoc {
@@ -57,6 +59,42 @@ object JccNonTerminalDocMaker {
                     prod.expansion?.let { ExpansionMinifierVisitor(this).startOn(it) }
                 }
                 jjtreeSection(prod)
+                buildSection(StartSectionName) {
+                    val startSet = prod.expansion?.startSet() ?: emptySet()
+                    startSetSection(startSet)
+                }
+            }
+        }
+    }
+
+    private fun StringBuilder.startSetSection(startSet: Set<AtomicUnit>) {
+        append("&nbsp;&nbsp;")
+        startSet.foreachAndBetween(delim = { append("<br>| ") }) {
+            when (it) {
+                is AtomicToken          -> {
+                    val str = it.token.asStringToken
+                    when {
+                        str != null           -> psiLink(
+                            builder = this,
+                            linkTarget = JccDocUtil.linkRefToToken(it.token),
+                            linkText = str.text
+                        )
+                        it.token.name != null -> psiLink(
+                            builder = this,
+                            linkTarget = JccDocUtil.linkRefToToken(it.token),
+                            linkText = angles(it.token.name!!)
+                        )
+                        else                  -> it.token.regularExpression?.accept(JccTerminalDocMaker.RegexDocVisitor(this))
+                    }
+                }
+                is AtomicProduction     ->
+                    psiLink(
+                        builder = this,
+                        linkTarget = JccDocUtil.linkRefToProd(it.production),
+                        linkText = "${it.production.name}()"
+                    )
+                is AtomicUnresolved     -> it.ref.accept(JccTerminalDocMaker.RegexDocVisitor(this))
+                is AtomicUnresolvedProd -> it.ref.accept(ExpansionMinifierVisitor(this))
             }
         }
     }

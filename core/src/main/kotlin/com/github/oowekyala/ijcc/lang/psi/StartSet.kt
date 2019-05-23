@@ -90,7 +90,7 @@ private fun <T : JccPsiElement> T.computeAndCache(
 
     if (existing == null && this !in alreadySeen) {
         val computed = this.compute(alreadySeen.add(this))
-        putUserData(startSetKey, computed)
+//        putUserData(startSetKey, computed)
         return computed
     }
 

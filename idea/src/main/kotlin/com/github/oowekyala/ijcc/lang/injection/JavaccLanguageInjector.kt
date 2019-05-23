@@ -25,10 +25,14 @@ object JavaccLanguageInjector : MultiHostInjector {
         if (context !is JccPsiElement) return
         if (context.pluginSettings.injectionSupportLevel == DISABLED) return
 
-        when (context) {
-            // FIXME inject both into the same injection file
-            is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
-            is JccGrammarFileRoot     -> registrar.injectIntoGrammar(context)
+        try {
+            when (context) {
+                // FIXME inject both into the same injection file
+                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
+                is JccGrammarFileRoot     -> registrar.injectIntoGrammar(context)
+            }
+        } catch (e: Exception) {
+            // TODO log?
         }
     }
 
