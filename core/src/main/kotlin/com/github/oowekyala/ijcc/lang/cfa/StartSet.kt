@@ -9,6 +9,11 @@ import kotlinx.collections.immutable.immutableListOf
 import kotlinx.collections.immutable.immutableSetOf
 import kotlin.math.max
 
+/**
+ * A unit of a FIRST set. This can be a token, a production (either if we hit
+ * left-recursion, or if we group productions that produce at most one token),
+ * or an unresolved token or production reference.
+ */
 sealed class AtomicUnit
 
 /** Valid token. */
@@ -26,10 +31,14 @@ data class AtomicProduction(val production: JccNonTerminalProduction) : AtomicUn
 /**
  * Returns the start set of this production. Unresolved references and Javacode
  * productions are considered opaque and hence atomic.
+ *
+ * If [groupUnary] is true, then productions that yield at most one token are considered
+ * atomic. So if you have a production A := "b" | "c" in the FIRST set, instead of having
+ * "b" and "c" in the resulting set, you have A.
  */
-fun JccNonTerminalProduction.startSet(groupUnary: Boolean = false): Set<AtomicUnit> = when (this) {
-    is JccBnfProduction -> computeStartSet(
-        StartSetStateImpl(
+fun JccNonTerminalProduction.firstSet(groupUnary: Boolean = false): Set<AtomicUnit> = when (this) {
+    is JccBnfProduction -> computeFirst(
+        FirstSetStateImpl(
             groupUnary = groupUnary
         )
     )
@@ -40,21 +49,21 @@ fun JccNonTerminalProduction.startSet(groupUnary: Boolean = false): Set<AtomicUn
     )
 }
 
-/** Returns the start set of this expansion. */
-fun JccExpansion.startSet(groupUnary: Boolean = false): Set<AtomicUnit> =
-    startSetImpl(StartSetStateImpl(groupUnary = groupUnary))
+/** Returns the first set of this expansion. */
+fun JccExpansion.firstSet(groupUnary: Boolean = false): Set<AtomicUnit> =
+    firstSetImpl(FirstSetStateImpl(groupUnary = groupUnary))
 
 // The cache is local to a single analysis. It's here to speedup the
 // algorithm and avoid quadratic explosion, but the start set shouldn't
 // be cached in nodes.
-private fun JccBnfProduction.computeStartSet(state: StartSetState): Set<AtomicUnit> =
-    state.computeAndCache(this) { expansion?.startSetImpl(it) ?: emptySet() }
+private fun JccBnfProduction.computeFirst(state: FirstSetState): Set<AtomicUnit> =
+    state.computeAndCache(this) { expansion?.firstSetImpl(it) ?: emptySet() }
     // if the method returns null, then this prod is in alreadySeen (left-recursion),
     // in which case we return the set of this
         ?: setOf(AtomicProduction(this))
 
 
-private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
+private fun JccExpansion.firstSetImpl(state: FirstSetState): Set<AtomicUnit> =
     when (this) {
         is JccLocalLookaheadUnit         -> emptySet()
 
@@ -71,23 +80,23 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
                     else                                                          -> emptySet() // weird
                 }
 
-        is JccScopedExpansionUnit        -> expansionUnit.startSetImpl(state)
-        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.startSetImpl(state) ?: emptySet()
-        is JccOptionalExpansionUnit      -> expansion?.startSetImpl(state) ?: emptySet()
-        is JccParenthesizedExpansionUnit -> expansion?.startSetImpl(state) ?: emptySet()
-        is JccTryCatchExpansionUnit      -> expansion?.startSetImpl(state) ?: emptySet()
+        is JccScopedExpansionUnit        -> expansionUnit.firstSetImpl(state)
+        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.firstSetImpl(state) ?: emptySet()
+        is JccOptionalExpansionUnit      -> expansion?.firstSetImpl(state) ?: emptySet()
+        is JccParenthesizedExpansionUnit -> expansion?.firstSetImpl(state) ?: emptySet()
+        is JccTryCatchExpansionUnit      -> expansion?.firstSetImpl(state) ?: emptySet()
         is JccExpansionSequence          ->
             expansionUnitList.asSequence()
                 .takeUntil { !it.isEmptyMatchPossible() }
-                .map { it.startSetImpl(state) }
+                .map { it.firstSetImpl(state) }
                 .fold(emptySet()) { a, b -> a + b }
         is JccExpansionAlternative       ->
             expansionList.asSequence()
-                .map { it.startSetImpl(state) }
+                .map { it.firstSetImpl(state) }
                 .fold(emptySet()) { a, b -> a + b }
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
             when (it) {
-                is JccBnfProduction -> it.computeStartSet(state)
+                is JccBnfProduction -> it.computeFirst(state)
                 else                                                   -> setOf(
                     AtomicProduction(
                         it
@@ -99,9 +108,9 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
     }
 
 
-private typealias StartSetState = AlgoState<JccNonTerminalProduction, Set<AtomicUnit>>
+private typealias FirstSetState = AlgoState<JccNonTerminalProduction, Set<AtomicUnit>>
 
-private class StartSetStateImpl(
+private class FirstSetStateImpl(
     alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf(),
     cache: MutableMap<JccNonTerminalProduction, Set<AtomicUnit>> = mutableMapOf(),
     /**
@@ -109,15 +118,18 @@ private class StartSetStateImpl(
      * atomic.
      */
     val groupUnary: Boolean,
+    /**
+     * We use a cache of max tokens too.
+     */
     private val maxTokensState: MaxTokensState = AlgoState()
-) : StartSetState(alreadySeen, cache) {
+) : FirstSetState(alreadySeen, cache) {
 
 
-    override fun next(t: JccNonTerminalProduction): StartSetState =
-        StartSetStateImpl(alreadySeen.add(t), cache, groupUnary, maxTokensState)
+    override fun next(t: JccNonTerminalProduction): FirstSetState =
+        FirstSetStateImpl(alreadySeen.add(t), cache, groupUnary, maxTokensState)
 
     override fun computeAndCache(t: JccNonTerminalProduction,
-                                 compute: JccNonTerminalProduction.(StartSetState) -> Set<AtomicUnit>): Set<AtomicUnit>? {
+                                 compute: JccNonTerminalProduction.(FirstSetState) -> Set<AtomicUnit>): Set<AtomicUnit>? {
 
         val sup = super.computeAndCache(t, compute) ?: return null
         if (!groupUnary) return sup
@@ -160,7 +172,10 @@ private open class AlgoState<T : JccPsiElement, V>(
 
 private typealias MaxTokensState = AlgoState<JccNonTerminalProduction, Int?>
 
-
+/**
+ * Finds out the length of the longest match possible of this expansion.
+ * If null, then the longest match is unbounded.
+ */
 private fun JccNonTerminalProduction.maxTokens(state: MaxTokensState): Int? =
     when (this) {
         is JccBnfProduction -> state.computeAndCache(this) { st ->

@@ -22,8 +22,8 @@ import org.intellij.lang.annotations.Language
 object JccNonTerminalDocMaker {
 
     const val BnfSectionName = "BNF"
-    const val StartSectionName = "Start set"
-    const val CompactStartSectionName = "Condensed start set"
+    const val StartSectionName = "FIRST set"
+    const val CompactStartSectionName = "Condensed FIRST set"
     const val JJTreeSectionName = "JJTree node"
 
     fun makeDoc(prod: JccJavacodeProduction): String = buildQuickDoc {
@@ -63,8 +63,8 @@ object JccNonTerminalDocMaker {
                 jjtreeSection(prod)
             }
             sections {
-                val condensed = prod.expansion?.startSet(groupUnary = true) ?: emptySet()
-                val full = prod.expansion?.startSet(groupUnary = false) ?: emptySet()
+                val condensed = prod.expansion?.firstSet(groupUnary = true) ?: emptySet()
+                val full = prod.expansion?.firstSet(groupUnary = false) ?: emptySet()
                 if (condensed != full) {
                     buildSection(CompactStartSectionName) {
                         startSetSection(condensed)

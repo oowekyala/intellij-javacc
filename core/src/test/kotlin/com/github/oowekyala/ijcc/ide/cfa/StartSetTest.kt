@@ -24,7 +24,7 @@ class StartSetTest : JccCoreTestBase() {
                             test: Set<AtomicUnit>.() -> Unit) {
         val r = asExpansion(*otherProdNamesAndExps)
 
-        r.startSet(groupAtomic).test()
+        r.firstSet(groupAtomic).test()
     }
 
 

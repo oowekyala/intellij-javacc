@@ -1,8 +1,20 @@
 <p>What's new:
 
 <ul>
-    <li>Start sets of productions are now available in the quickdoc, to
-        help you optimise your lookaheads.
+    <li>FIRST sets of productions are now available in the quickdoc, to
+        help you optimise your lookaheads. There are two new sections in the
+        doc:
+        <ul>
+            <li><b>Condensed FIRST set:</b> This is a set of tokens and productions
+                that is equivalent to the full FIRST set below. If some productions
+                in the FIRST set may yield at most one token, then they are not expanded.
+                So if you have a production A := "b" | "c" in the FIRST set, instead of
+                having "b" and "c" in the resulting set, you have A. This can dramatically
+                shorten this section for big grammars.
+                <b>FIRST set:</b> This is the fully expanded set of tokens. Note that
+                JAVACODE productions are included there since we can't break them down.
+            </li>
+        </ul>
     </li>
 </ul>
 
@@ -14,7 +26,7 @@
 <p>What's fixed:
 <ul>
     <li>Tokens like <code>"<"</code> being invisible in the quick documentation
-        because no HTML escape was performed.
+        because no HTML escaping was performed.
     </li>
     <li>Parentheses between two scoped expansion units are not unnecessary, eg
     <code> ( "foo" #Foo ) #Bar</code></li>
