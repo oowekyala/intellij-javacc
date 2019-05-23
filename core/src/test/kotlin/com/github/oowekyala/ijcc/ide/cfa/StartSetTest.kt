@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.shouldBeA
 import com.github.oowekyala.ijcc.lang.shouldContainOneSuch
 import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
-import io.kotlintest.matchers.collections.shouldBeLargerThan
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldNotBeEmpty
 import io.kotlintest.matchers.haveSize
@@ -20,10 +19,11 @@ import org.junit.Test
 class StartSetTest : JccCoreTestBase() {
 
     private fun String.test(vararg otherProdNamesAndExps: Pair<String, String>,
+                            groupAtomic: Boolean = false,
                             test: Set<AtomicUnit>.() -> Unit) {
         val r = asExpansion(*otherProdNamesAndExps)
 
-        r.startSet().test()
+        r.startSet(groupAtomic).test()
     }
 
 
@@ -94,6 +94,33 @@ class StartSetTest : JccCoreTestBase() {
             it.shouldBeA<AtomicToken> {
                 it.token.asStringToken shouldNotBe null
                 it.token.asStringToken!!.text shouldBe "\"f\""
+            }
+        }
+    }
+
+    @Test
+    fun testReferenceAtomic() = "Foo()".test(
+        "Foo" to "\"f\"",
+        groupAtomic = true
+    ) {
+        this should haveSize(1)
+        this.shouldContainOneSuch {
+            it.shouldBeA<AtomicProduction> {
+                it.production.name shouldBe "Foo"
+            }
+        }
+    }
+
+    @Test
+    fun testReferenceAtomic2() = "Foo()".test(
+        "Foo" to "\"f\" | Bar()",
+        "Bar" to "\"g\"",
+        groupAtomic = true
+    ) {
+        this should haveSize(1)
+        this.shouldContainOneSuch {
+            it.shouldBeA<AtomicProduction> {
+                it.production.name shouldBe "Foo"
             }
         }
     }

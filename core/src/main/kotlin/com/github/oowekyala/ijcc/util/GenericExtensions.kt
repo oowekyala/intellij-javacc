@@ -106,7 +106,7 @@ fun <T> Sequence<T>.takeUntil(t: T): Sequence<T> = takeUntil { it == t }
  */
 fun <T> Sequence<T>.takeUntil(pred: (T) -> Boolean): Sequence<T> {
     val fst = indexOfFirst { pred(it) }
-    return take(fst + 1)
+    return if (fst < 0) this else take(fst + 1)
 }
 
 
@@ -116,12 +116,18 @@ fun <A, B, C, D> Pair<A, B>.map(f: (A) -> C, g: (B) -> D): Pair<C, D> = Pair(f(f
 
 fun TokenSet.contains(psiElement: PsiElement): Boolean = psiElement.node?.let { this.contains(it.elementType) } == true
 
-
-inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R): R? =
-    fold(initial as R?) { r, t ->
-        if (t == null || r == null) null
-        else operation(r, t)
+/**
+ * Folds the elements of this sequence, breaking as soon as a null value is encountered or
+ * the operation returns null.
+ */
+inline fun <T, R> Sequence<T?>.foldNullable(initial: R, operation: (acc: R, T) -> R?): R? {
+    var accumulator: R = initial
+    for (element in this) {
+        if (element == null) return null
+        else accumulator = operation(accumulator, element) ?: return null
     }
+    return accumulator
+}
 
 
 fun <T> List<T>.init(): List<T> =

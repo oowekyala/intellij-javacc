@@ -22,6 +22,7 @@ object JccNonTerminalDocMaker {
 
     const val BnfSectionName = "BNF"
     const val StartSectionName = "Start set"
+    const val CompactStartSectionName = "Condensed start set"
     const val JJTreeSectionName = "JJTree node"
 
     fun makeDoc(prod: JccJavacodeProduction): String = buildQuickDoc {
@@ -59,9 +60,17 @@ object JccNonTerminalDocMaker {
                     prod.expansion?.let { ExpansionMinifierVisitor(this).startOn(it) }
                 }
                 jjtreeSection(prod)
+            }
+            sections {
+                val condensed = prod.expansion?.startSet(groupUnary = true) ?: emptySet()
+                val full = prod.expansion?.startSet(groupUnary = false) ?: emptySet()
+                if (condensed != full) {
+                    buildSection(CompactStartSectionName) {
+                        startSetSection(condensed)
+                    }
+                }
                 buildSection(StartSectionName) {
-                    val startSet = prod.expansion?.startSet() ?: emptySet()
-                    startSetSection(startSet)
+                    startSetSection(full)
                 }
             }
         }
