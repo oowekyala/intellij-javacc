@@ -95,11 +95,6 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
                 )
             }
         } ?: setOf(AtomicUnresolvedProd(this))
-        // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
-        is JccExpansionUnit              ->
-            childrenSequence()
-                .mapNotNull { (it as? JccExpansionUnit)?.startSetImpl(state) }
-                .fold(emptySet()) { a, b -> a + b }
         else                                                                -> emptySet() // valid, but nothing to do
     }
 
@@ -212,8 +207,5 @@ private fun JccExpansion.maxTokens(state: MaxTokensState): Int? =
             }
         }
         is JccTryCatchExpansionUnit      -> expansion?.maxTokens(state)
-        // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
-        is JccExpansionUnit              ->
-            childrenSequence().map { (it as? JccScopedExpansionUnit)?.maxTokens(state) }.foldNullable(0) { a, b -> a + b }
         else                                                                -> 0
     }

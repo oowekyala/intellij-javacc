@@ -30,7 +30,7 @@ private fun JccRegularExpression.computeNullability(alreadySeen: ImmutableList<J
  */
 fun JccNonTerminalProduction.isEmptyMatchPossible(): Boolean = when (this) {
     is JccBnfProduction -> computeNullability(immutableListOf())
-    else                                                   -> false
+    else                -> false
 }
 
 /**
@@ -57,7 +57,7 @@ private fun JccRegexElement.isEmptyMatchPossible(alreadySeen: ImmutableList<JccR
         is JccRegexAlternativeElt     -> regexElementList.any { it.isEmptyMatchPossible(alreadySeen) }
         is JccTokenReferenceRegexUnit ->
             typedReference.resolveToken()?.regularExpression?.computeNullability(alreadySeen) == true
-        else                                                             -> throw IllegalStateException(this.toString())
+        else                          -> throw IllegalStateException(this.toString())
     }
 
 
@@ -78,11 +78,8 @@ private fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccBnfP
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
             it is JccBnfProduction && it.computeNullability(alreadySeen)
         } == true
-        // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
-        is JccExpansionUnit              ->
-            childrenSequence().all { (it as? JccExpansionUnit)?.isEmptyMatchPossible(alreadySeen) == true }
         is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
-        else                                                                -> false
+        else                             -> false
     }
 
 typealias LeftMostSet = ImmutableSet<JccNonTerminalExpansionUnit>
@@ -96,7 +93,7 @@ private fun emptyLeftMostSet(): LeftMostSet = immutableSetOf()
  */
 fun JccNonTerminalProduction.leftMostSet(): LeftMostSet? = when (this) {
     is JccBnfProduction -> expansion?.computeLeftMost() ?: emptyLeftMostSet()
-    else                                                   -> null
+    else                -> null
 }
 
 /** Populates the leftmost set of this expansion. Populates the set via side effects.
@@ -123,7 +120,7 @@ private fun JccExpansion.computeLeftMost(): LeftMostSet? =
                 .foldNullable(emptyLeftMostSet()) { a, b -> a.addAll(b) }
 
         is JccNonTerminalExpansionUnit   -> immutableSetOf(this)
-        else                                                                -> immutableSetOf() // valid, but nothing to do
+        else                             -> immutableSetOf() // valid, but nothing to do
     }
 
 
@@ -133,7 +130,7 @@ private val nullableKey: Key<ThreeState> = Key.create<ThreeState>("jcc.bnf.isNul
 // so as to avoid running in quadratic time, in case of very long
 // call chains. This appears to be safe
 private fun <T : JccPsiElement> T.computeAndCacheNullability(alreadySeen: ImmutableList<T>,
-                                                                                                compute: T.(ImmutableList<T>) -> Boolean?): Boolean {
+                                                             compute: T.(ImmutableList<T>) -> Boolean?): Boolean {
 
     val isNullable = getUserData(nullableKey) ?: ThreeState.UNSURE
 

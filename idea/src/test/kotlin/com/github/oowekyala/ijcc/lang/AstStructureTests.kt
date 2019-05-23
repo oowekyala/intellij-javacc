@@ -124,7 +124,6 @@ class AstStructureTests : ParserTestDsl() {
 
             child<JccRegexExpansionUnit>(ignoreChildren = true) { }
 
-            // FIXME should be so, is an ExpansionUnitImpl!! bug in the parser generator
             child<JccScopedExpansionUnit>(ignoreChildren = true) { }
         }
 
