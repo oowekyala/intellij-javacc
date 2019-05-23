@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.util.takeUntil
-import com.intellij.openapi.util.Key
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
 import kotlinx.collections.immutable.immutableSetOf
@@ -22,23 +21,28 @@ data class AtomicUnresolvedProd(val ref: JccNonTerminalExpansionUnit) : AtomicUn
 data class AtomicProduction(val production: JccNonTerminalProduction) : AtomicUnit()
 
 /**
- * Returns true if this production can expand to the empty string.
+ * Returns the start set of this production. Unresolved references and Javacode
+ * productions are considered opaque and hence atomic.
  */
 fun JccNonTerminalProduction.startSet(): Set<AtomicUnit> = when (this) {
-    is JccBnfProduction -> computeStartSet(immutableListOf())
+    is JccBnfProduction -> computeStartSet(AlgoState())
     else                -> setOf(AtomicProduction(this))
 }
 
-fun JccExpansion.startSet(): Set<AtomicUnit> = startSet(immutableListOf())
+/** Returns the start set of this expansion. */
+fun JccExpansion.startSet(): Set<AtomicUnit> = startSet(AlgoState())
 
-private fun JccBnfProduction.computeStartSet(alreadySeen: ImmutableList<JccBnfProduction>): Set<AtomicUnit> =
-    computeAndCache(alreadySeen) { expansion?.startSet(it) ?: emptySet() }
+// The cache is local to a single analysis. It's here to speedup the
+// algorithm and avoid quadratic explosion, but the start set shouldn't
+// be cached in nodes.
+private fun JccBnfProduction.computeStartSet(state: StartSetState): Set<AtomicUnit> =
+    state.computeAndCache(this) { expansion?.startSet(it) ?: emptySet() }
     // if the method returns null, then this prod is in alreadySeen (left-recursion),
     // in which case we return the set of this
         ?: setOf(AtomicProduction(this))
 
 
-private fun JccExpansion.startSet(alreadySeen: ImmutableList<JccBnfProduction>): Set<AtomicUnit> =
+private fun JccExpansion.startSet(state: StartSetState): Set<AtomicUnit> =
     when (this) {
         is JccRegexExpansionUnit         ->
             this.referencedToken?.let {
@@ -49,50 +53,50 @@ private fun JccExpansion.startSet(alreadySeen: ImmutableList<JccBnfProduction>):
                     else                       -> emptySet() // weird
                 }
 
-        is JccScopedExpansionUnit        -> expansionUnit.startSet(alreadySeen)
-        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.startSet(alreadySeen) ?: emptySet()
-        is JccOptionalExpansionUnit      -> expansion?.startSet(alreadySeen) ?: emptySet()
-        is JccParenthesizedExpansionUnit -> expansion?.startSet(alreadySeen) ?: emptySet()
-        is JccTryCatchExpansionUnit      -> expansion?.startSet(alreadySeen) ?: emptySet()
+        is JccScopedExpansionUnit        -> expansionUnit.startSet(state)
+        is JccAssignedExpansionUnit      -> assignableExpansionUnit?.startSet(state) ?: emptySet()
+        is JccOptionalExpansionUnit      -> expansion?.startSet(state) ?: emptySet()
+        is JccParenthesizedExpansionUnit -> expansion?.startSet(state) ?: emptySet()
+        is JccTryCatchExpansionUnit      -> expansion?.startSet(state) ?: emptySet()
         is JccExpansionSequence          ->
             expansionUnitList.asSequence()
                 .takeUntil { !it.isEmptyMatchPossible() }
-                .map { it.startSet(alreadySeen) }
-                .fold(emptySet()) { a, b -> b + a } // b + a to use the add of immutableSet
+                .map { it.startSet(state) }
+                .fold(emptySet()) { a, b -> a + b }
         is JccExpansionAlternative       ->
             expansionList.asSequence()
-                .map { it.startSet(alreadySeen) }
-                .fold(emptySet()) { a, b -> b + a } // b + a to use the add of immutableSet
+                .map { it.startSet(state) }
+                .fold(emptySet()) { a, b -> a + b }
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
             when (it) {
-                is JccBnfProduction -> it.computeStartSet(alreadySeen)
+                is JccBnfProduction -> it.computeStartSet(state)
                 else                -> setOf(AtomicProduction(it))
             }
         } ?: setOf(AtomicUnresolvedProd(this))
         // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
         is JccExpansionUnit              ->
             childrenSequence()
-                .mapNotNull { (it as? JccExpansionUnit)?.startSet(alreadySeen) }
-                .fold(emptySet()) { a, b -> b + a }
-        else                             -> immutableSetOf() // valid, but nothing to do
+                .mapNotNull { (it as? JccExpansionUnit)?.startSet(state) }
+                .fold(emptySet()) { a, b -> a + b }
+        else                             -> emptySet() // valid, but nothing to do
     }
 
+private typealias StartSetState = AlgoState<JccNonTerminalProduction, Set<AtomicUnit>>
 
-private val startSetKey: Key<Set<AtomicUnit>> = Key.create("jcc.bnf.leftMostSet")
+private class AlgoState<T : JccPsiElement, V>(
+    // checks for left recursion
+    val alreadySeen: ImmutableList<T> = immutableListOf(),
+    val cache: MutableMap<T, V> = mutableMapOf()
+) {
+    fun computeAndCache(t: T, compute: T.(AlgoState<T, V>) -> V): V? {
 
+        val existing: V? = cache[t]
 
-private fun <T : JccPsiElement> T.computeAndCache(
-    alreadySeen: ImmutableList<T>,
-    compute: T.(ImmutableList<T>) -> Set<AtomicUnit>
-): Set<AtomicUnit>? {
+        if (existing == null && t !in alreadySeen) {
+            return t.compute(AlgoState(alreadySeen.add(t), cache))
+        }
 
-    val existing: Set<AtomicUnit>? = getUserData(startSetKey)
-
-    if (existing == null && this !in alreadySeen) {
-        val computed = this.compute(alreadySeen.add(this))
-//        putUserData(startSetKey, computed)
-        return computed
+        return existing
     }
-
-    return existing
 }
+
