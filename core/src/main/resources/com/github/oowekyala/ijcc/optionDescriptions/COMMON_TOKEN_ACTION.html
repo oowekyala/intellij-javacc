@@ -1,9 +1,0 @@
-When set to true, every call to the token manager's method <code>getNextToken</code>
-(see the description of the <a href="https://javacc.org/apiroutines">Java Compiler Compiler API</a>) will
-cause a call to a used defined method <code>CommonTokenAction</code> after
-the token has been scanned in by the token manager. The user
-must define this method within the <code>TOKEN_MGR_DECLS</code> section. The
-signature of this method is:
-<pre>
-    void CommonTokenAction(Token t)
-</pre>

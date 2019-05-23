@@ -6,11 +6,11 @@ import com.github.oowekyala.ijcc.lang.JccTypes.*
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.java.parser.JavaParser
 import com.intellij.lang.java.parser.JavaParserUtil
+import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.pom.java.LanguageLevel
 import com.intellij.psi.JavaTokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.java.IJavaElementType
-import org.intellij.grammar.parser.GeneratedParserUtilBase
 
 
 /**

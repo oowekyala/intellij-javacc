@@ -20,12 +20,12 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
 
     // this is for the parser util
-    compile("com.github.JetBrains:Grammar-Kit:2017.1.7")
+//    compile("com.github.JetBrains:Grammar-Kit:2017.1.7")
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        includeJars("platform-api")
+        includeJars("platform-api", "platform-impl", rootProject = rootProject)
     }
 
     grammarKit(intellijDep()) {
