@@ -86,7 +86,7 @@ object JccNonTerminalDocMaker {
                         str != null           -> psiLink(
                             builder = this,
                             linkTarget = JccDocUtil.linkRefToToken(it.token),
-                            linkText = str.text
+                            linkText = str.text.let(HtmlUtil::escapeHtml)
                         )
                         it.token.name != null -> psiLink(
                             builder = this,

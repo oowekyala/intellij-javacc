@@ -71,13 +71,13 @@ object JccTerminalDocMaker {
     class RegexDocVisitor(private val sb: StringBuilder) : RegexLikeDFVisitor() {
 
         override fun visitLiteralRegexUnit(o: JccLiteralRegexUnit) {
-            sb.append(o.text)
+            sb.append(HtmlUtil.escapeHtml(o.text))
         }
 
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
             val reffed = o.typedReference.resolveToken(exact = true)?.let { JccDocUtil.linkRefToToken(it) }
             if (reffed != null) {
-                psiLink(builder = sb, linkTarget = reffed, linkText = o.text)
+                psiLink(builder = sb, linkTarget = reffed, linkText = HtmlUtil.escapeHtml(o.text))
             } else {
                 o.unit.accept(this)
             }
@@ -95,7 +95,7 @@ object JccTerminalDocMaker {
             val reffed = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
+            val linkText = reffed?.asStringToken?.text?.let(HtmlUtil::escapeHtml) ?: angles(o.name!!)
 
             psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToToken(it) }, linkText = linkText)
         }
@@ -138,7 +138,7 @@ object JccTerminalDocMaker {
         }
 
         override fun visitCharacterDescriptor(o: JccCharacterDescriptor) {
-            sb.append(o.text.replace("\\s*", ""))
+            sb.append(o.text.replace("\\s*", "").let(HtmlUtil::escapeHtml))
         }
     }
 }

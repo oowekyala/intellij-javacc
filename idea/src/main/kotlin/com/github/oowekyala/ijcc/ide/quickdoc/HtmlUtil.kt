@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.intellij.codeInsight.documentation.DocumentationManagerProtocol
 import com.intellij.lang.documentation.DocumentationMarkup
+import com.intellij.openapi.util.text.StringUtil
 import org.intellij.lang.annotations.Language
 
 object HtmlUtil {
@@ -29,6 +30,8 @@ object HtmlUtil {
 
     @Language("HTML")
     fun link(target: String, text: String) = "<a href=\"$target\">$text</a>"
+
+    fun escapeHtml(text: String) = StringUtil.escapeXml(text)
 
     /**
      * Kotlin wrapper around [DocumentationManager.createHyperlink]
