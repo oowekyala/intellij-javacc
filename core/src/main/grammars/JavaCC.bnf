@@ -120,12 +120,6 @@
   // Use implements for fake rules
   // Use extends for real rules
 
-  // we override here the class hierarchy for scoped_expansion_unit
-  // so that it may be stub_based without stubbing all expansions (which
-  // may one day come I guess).
-  extends("scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.impl.JjtNodeClassOwnerImpl<com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub>"
-  implements("scoped_expansion_unit")="expansion_unit"
-
   methods("expansion_unit")=[
     scoped_expansion_unit=""
     expansion_unit=""

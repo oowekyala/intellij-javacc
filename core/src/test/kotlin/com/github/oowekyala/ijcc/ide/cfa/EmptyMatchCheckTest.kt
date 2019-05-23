@@ -73,10 +73,10 @@ class EmptyMatchCheckTest : JccCoreTestBase() {
 
     // fixme le parser bug ici
     @Test
-    fun testScopedExpansionPos() = "Foo() #Bar".pos<JccExpansionUnit>("Foo" to "[\"f\"]")
+    fun testScopedExpansionPos() = "Foo() #Bar".pos<JccScopedExpansionUnit>("Foo" to "[\"f\"]")
 
     @Test
-    fun testScopedExpansionNeg() = "Foo() #Bar".neg<JccExpansionUnit>("Foo" to "\"f\"")
+    fun testScopedExpansionNeg() = "Foo() #Bar".neg<JccScopedExpansionUnit>("Foo" to "\"f\"")
 
     @Test
     fun testAssignedExpansionPos() = "a=Foo()".pos<JccAssignedExpansionUnit>("Foo" to "[\"f\"]")
