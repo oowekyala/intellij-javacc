@@ -1,16 +1,15 @@
-package com.github.oowekyala.jjtx.util
+package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.JavaccFileType
-import com.github.oowekyala.ijcc.JavaccParserDefinition
-import com.github.oowekyala.ijcc.JjtreeFileType
-import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
-import com.github.oowekyala.jjtx.ide.JjtxOptionsService
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.pom.PomModel
+import com.intellij.pom.core.impl.PomModelImpl
+import com.intellij.pom.tree.TreeAspect
+import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import java.nio.file.Path
 
 /**
@@ -36,12 +35,15 @@ class JjtxCoreEnvironment private constructor(
 
 
         private fun createRootEnv(parentDisposable: Disposable): JjtxCoreEnvironment =
-            JjtxCoreEnvironment(parentDisposable, getOrCreateAppCoreEnv())
+            JjtxCoreEnvironment(
+                parentDisposable,
+                getOrCreateAppCoreEnv()
+            )
 
         fun createTestEnvironment(): JjtxCoreEnvironment {
             val disposable = Disposer.newDisposable()
             return createRootEnv(disposable).also {
-                it.registerProjectComponent(GrammarOptionsService::class.java, JjtxOptionsService())
+                // it.registerProjectComponent(GrammarOptionsService::class.java, JjtxOptionsService())
             }
         }
 

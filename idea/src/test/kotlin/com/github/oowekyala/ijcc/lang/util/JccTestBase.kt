@@ -5,13 +5,10 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.lang.LanguageCommenters
-import com.intellij.openapi.application.runWriteAction
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
@@ -36,24 +33,6 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
     override fun getProject(): Project {
         return super.getProject()
     }
-
-    protected fun replaceCaretMarker(text: String) = text.replace("/*caret*/", "<caret>")
-
-    /**
-     * Selects the caret with the given [id] from [this] grammar.
-     * This allows reusing the same grammar for tests that depend
-     * on caret position. Just write several caret markers like `/*caret[someId]*/`
-     * in the grammar, then call this method to keep only the caret
-     * marker with the given id and replace it with `<caret>`.
-     */
-    protected fun String.selectCaretMarker(id: String): String =
-        replace("/*caret[$id]*/", "<caret>")
-            .also {
-                check(this != it) {
-                    "No caret with id [$id] found"
-                }
-            }
-            .replace(Regex("/\\*caret.*?\\*/"), "")
 
 
     protected fun checkByText(
@@ -117,34 +96,6 @@ abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin 
         return result
     }
 
-    // got from intellij-kotlin,
-    fun Document.extractMarkerOffset(project: Project, caretMarker: String = "<caret>"): Int {
-        return extractMultipleMarkerOffsets(project, caretMarker).singleOrNull() ?: -1
-    }
-
-    private fun Document.extractMultipleMarkerOffsets(project: Project, caretMarker: String = "<caret>"): List<Int> {
-        val offsets = ArrayList<Int>()
-
-        runWriteAction {
-            val text = StringBuilder(text)
-            while (true) {
-                val offset = text.indexOf(caretMarker)
-                if (offset >= 0) {
-                    text.delete(offset, offset + caretMarker.length)
-                    setText(text.toString())
-
-                    offsets += offset
-                } else {
-                    break
-                }
-            }
-        }
-
-        PsiDocumentManager.getInstance(project).commitAllDocuments()
-        PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(this)
-
-        return offsets
-    }
 
     protected fun applyQuickFix(name: String) {
         val action = myFixture.findSingleIntention(name)

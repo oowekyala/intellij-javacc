@@ -8,7 +8,7 @@ import com.github.oowekyala.ijcc.lang.util.ParseUtilsMixin
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.Severity
-import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
+import com.github.oowekyala.ijcc.JjtxCoreEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile

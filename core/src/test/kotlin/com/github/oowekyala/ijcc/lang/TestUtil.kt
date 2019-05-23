@@ -1,5 +1,8 @@
 package com.github.oowekyala.ijcc.lang
 
+import io.kotlintest.matchers.types.shouldBeInstanceOf
+import io.kotlintest.shouldBe
+
 
 const val TestResourcesPath = "src/test/resources/"
 const val PackagePath = "com/github/oowekyala/ijcc/"
@@ -10,6 +13,22 @@ const val OptionsTestDataPath = "$TestResourcesPath${PackagePath}lang/options/$F
 const val InjectionTestDataPath = "$TestResourcesPath${PackagePath}lang/injection/$Fixtures"
 const val ParserTestDataPath = "$TestResourcesPath${PackagePath}lang/parser/$Fixtures"
 
+
+inline fun <reified T : Any> Any?.shouldBeA(t: (T) -> Unit) {
+    this.shouldBeInstanceOf<T>()
+    t(this as T)
+}
+
+fun <T : Any> Collection<T>.shouldContainOneSuch(t: (T) -> Unit) {
+    this.any {
+        try {
+            t(it)
+            true
+        } catch (ass: AssertionError) {
+            false
+        }
+    } shouldBe true
+}
 
 //fun KClass<*>.dataPath(vararg addSegments: String) =
 //        this.java.`package`.name

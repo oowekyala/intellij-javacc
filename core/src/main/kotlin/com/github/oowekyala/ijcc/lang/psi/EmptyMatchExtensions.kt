@@ -77,6 +77,9 @@ private fun JccExpansion.isEmptyMatchPossible(alreadySeen: ImmutableList<JccBnfP
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
             it is JccBnfProduction && it.computeNullability(alreadySeen)
         } == true
+        // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
+        is JccExpansionUnit              ->
+            childrenSequence().all { (it as? JccExpansionUnit)?.isEmptyMatchPossible(alreadySeen) == true }
         is JccTryCatchExpansionUnit      -> expansion?.isEmptyMatchPossible(alreadySeen) == true
         else                             -> false
     }

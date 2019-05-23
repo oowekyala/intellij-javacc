@@ -8,7 +8,7 @@ import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.*
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
-import com.github.oowekyala.jjtx.util.JjtxCoreEnvironment
+import com.github.oowekyala.ijcc.JjtxCoreEnvironment
 import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io

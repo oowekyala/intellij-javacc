@@ -5,17 +5,17 @@ import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.util.*
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.matchers.endWith
 import io.kotlintest.matchers.string.shouldStartWith
 import io.kotlintest.should
 import io.kotlintest.shouldBe
+import org.junit.Test
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
+class InjectedTreeBuilderTest : JccCoreTestBase() {
 
 
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,
@@ -29,6 +29,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
         }
 
 
+    @Test
     fun testExpansionSequences() {
 
         """ "ff" {jjtThis.foo();} """ should matchAsExpansion<MultiChildNode> {
@@ -38,6 +39,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
 
     }
 
+    @Test
     fun testNonterminalExpansions() {
 
         """ Ola(quetal) """ should matchAsExpansion<SurroundNode> {
@@ -61,6 +63,7 @@ class InjectedTreeBuilderTest : LightCodeInsightFixtureTestCase() {
         }
     }
 
+    @Test
     fun testBnfs() {
 
         val (tree, linear) = """

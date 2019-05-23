@@ -1,9 +1,13 @@
-package com.github.oowekyala.ijcc.lang.psi
+package com.github.oowekyala.ijcc.lang
 
 import com.github.oowekyala.ijcc.lang.model.RegexKind
-import com.github.oowekyala.ijcc.lang.parser.ParserTestDsl
+import com.github.oowekyala.ijcc.lang.psi.JccContainerRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
+import com.github.oowekyala.ijcc.lang.psi.isPrivate
+import com.github.oowekyala.ijcc.lang.psi.isUnclosed
+import com.github.oowekyala.ijcc.lang.util.project
 import io.kotlintest.shouldBe
+import org.junit.Test
 
 /**
  * @author Clément Fournier
@@ -12,6 +16,7 @@ import io.kotlintest.shouldBe
 class JccNodeExtensionsTest : ParserTestDsl() {
 
 
+    @Test
     fun `test JccRegexSpec isPrivate`() {
 
         val spec = project.jccEltFactory.createRegexSpec(RegexKind.TOKEN, "<#FOO: \"f\" >")
@@ -20,6 +25,7 @@ class JccNodeExtensionsTest : ParserTestDsl() {
 
     }
 
+    @Test
     fun `test unclosed container regex`() {
 
         "<".asRegex<JccContainerRegularExpression>().isUnclosed shouldBe true

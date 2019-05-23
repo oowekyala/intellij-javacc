@@ -2,7 +2,7 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.psi.JccRegexExpansionUnit
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
-import com.github.oowekyala.ijcc.lang.util.JccTestBase
+import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.haveSize
 import io.kotlintest.should
@@ -11,7 +11,7 @@ import io.kotlintest.should
  * @author Clément Fournier
  * @since 1.0
  */
-class LexicalGrammarTest : JccTestBase() {
+class LexicalGrammarTest : JccCoreTestBase() {
 
 
     fun testSyntheticTokens() {

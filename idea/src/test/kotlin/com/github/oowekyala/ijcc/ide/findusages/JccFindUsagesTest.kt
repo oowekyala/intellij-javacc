@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.psi.PsiElement
 import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.intellij.lang.annotations.Language
 
 /**
