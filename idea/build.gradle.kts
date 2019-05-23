@@ -21,7 +21,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation(kotlin("reflect")) // this could be avoided
 
-    compile(project(":core"))
+    compile(project(":core")) {
+        exclude(module = "Grammar-Kit")
+    }
     testCompile(project(":core").dependencyProject.sourceSets["test"].output)
 }
 

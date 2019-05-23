@@ -3,8 +3,10 @@
 # Release script for the idea plugin
 # Execute it from the root directory
 
-git checkout master -q
+set -e
 
+
+git checkout master -q
 
 CHANGELOG_LOCATION="idea/changelog.html"
 
@@ -60,7 +62,7 @@ git tag -a "$tagname" -F "$CHANGELOG_LOCATION"
 
 echo "Publishing plugin to repository..."
 
-gradlew :idea:publishPlugin
+./gradlew :idea:publishPlugin
 
 
 echo "Pushing objects..."
