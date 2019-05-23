@@ -8,9 +8,12 @@
             <li><b>Condensed FIRST set:</b> This is a set of tokens and productions
                 that is equivalent to the full FIRST set below. If some productions
                 in the FIRST set may yield at most one token, then they are not expanded.
-                So if you have a production A := "b" | "c" in the FIRST set, instead of
-                having "b" and "c" in the resulting set, you have A. This can dramatically
+                So if you have a production <code>A := "b" | "c"</code> in the FIRST set, instead of
+                having <code>"b"</code> and <code>"c"</code> in the resulting set, you have <code>A</code>. This can
+                dramatically
                 shorten this section for big grammars.
+            </li>
+            <li>
                 <b>FIRST set:</b> This is the fully expanded set of tokens. Note that
                 JAVACODE productions are included there since we can't break them down.
             </li>
@@ -29,7 +32,7 @@
         because no HTML escaping was performed.
     </li>
     <li>Parentheses between two scoped expansion units are not unnecessary, eg
-    <code> ( "foo" #Foo ) #Bar</code></li>
+        <code> ( "foo" #Foo ) #Bar</code></li>
     <li>Some empty parser actions blocks are not unnecessary, specifically when
         they occur as the last expansion of a JJTree node scope and are preceded
         by another parser actions unit. This is because JJTree inserts the code
