@@ -44,7 +44,7 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // ((..)?)          // unnecessary
         // ("(") #Node      // unnecessary
         // ("f" #Foo ) #Bar // necessary
-        inside is JccExpansionUnit                                        -> outside !is JccScopedExpansionUnit // expansions units are indivisible
+        inside is JccExpansionUnit                                        -> outside is JccScopedExpansionUnit // expansions units are indivisible
 
         //  ("(" Expr() ")")     #Node    // necessary unless doc
         outside is JccScopedExpansionUnit                                 -> true
