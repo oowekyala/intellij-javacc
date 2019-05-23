@@ -22,6 +22,9 @@ dependencies {
     ijdeps(intellijCoreDep()) { includeJars("intellij-core") }
     ijdeps(intellijDep()) {
         includeIjCoreDeps(rootProject)
+        // FIXME jjtricks should not depend on platform-impl,
+        // currently done just to get GeneratedParserUtilBase,
+        // but bloats the jar
         includeJars("platform-api", "platform-impl", rootProject = rootProject)
     }
 
