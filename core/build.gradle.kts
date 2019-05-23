@@ -19,9 +19,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
 
-    // this is for the parser util
-//    compile("com.github.JetBrains:Grammar-Kit:2017.1.7")
-
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)

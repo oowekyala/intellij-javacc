@@ -1,11 +1,11 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.SyntaxTraverser
 import com.intellij.psi.SyntaxTraverser.psiTraverser
 import com.intellij.psi.tree.IElementType
-import org.intellij.grammar.parser.GeneratedParserUtilBase
 
 /**
  * @author Clément Fournier

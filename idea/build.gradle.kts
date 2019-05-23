@@ -6,10 +6,6 @@ import com.github.oowekyala.ijccResource
 plugins {
     kotlin("jvm")
     id("java")
-    // Applying the grammarkit plugin allows resolving the grammarkit dependency
-    // bequested by the :core project... Idk there may be some repo stuff going
-    // on
-    id("org.jetbrains.grammarkit") version "2018.2.2"
     id("org.jetbrains.intellij") version "0.4.8"
 }
 

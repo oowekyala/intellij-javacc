@@ -4,10 +4,6 @@ import com.github.oowekyala.*
 plugins {
     kotlin("jvm")
     id("java")
-    // Applying the grammarkit plugin allows resolving the grammarkit dependency
-    // bequested by the :core project... Idk there may be some repo stuff going
-    // on
-    id("org.jetbrains.grammarkit") version "2018.2.2"
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
@@ -26,7 +22,7 @@ dependencies {
     ijdeps(intellijCoreDep()) { includeJars("intellij-core") }
     ijdeps(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        includeJars("platform-api")
+        includeJars("platform-api", "platform-impl", rootProject = rootProject)
     }
 
     // trick Idea into putting those on the classpath when
