@@ -30,8 +30,7 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
                     val parentScope =
                         o.ancestors(includeSelf = false)
                             .filterIsInstance<JjtNodeClassOwner>()
-                            .firstOrNull()
-                            ?.takeUnless { it.isVoid }
+                            .firstOrNull { it.isNotVoid }
 
                     if (parentScope != null && o.isNextStep(parentScope) && o.prevSiblingNoWhitespace is JccParserActionsUnit)
                         return

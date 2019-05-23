@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.lang.cfa.isNextStep
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.util.EnclosedLogger
@@ -44,11 +45,19 @@ class ConsecutiveParserActionsInspection : JccInspectionBase(DisplayName) {
 
                     rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
 
-                    while (rightEdge != null) {
+                    val ns =
+                    o.ancestors(includeSelf = false)
+                        .filterIsInstance<JjtNodeClassOwner>()
+                        .firstOrNull { it.isNotVoid }
+
+                    while (rightEdge != null && (ns == null || !rightEdge.isNextStep(ns))) {
                         last = rightEdge
                         myRange = myRange.union(rightEdge.textRange)
                         rightEdge = rightEdge.nextSiblingNoWhitespace as? JccParserActionsUnit
                     }
+
+                    if (rightEdge != null && rightEdge == last) return
+                    if (ns != null && last.isNextStep(ns)) return
 
                     holder.registerProblem(
                         ProblemDescriptorImpl(

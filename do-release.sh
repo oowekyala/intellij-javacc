@@ -1,6 +1,12 @@
 #!/bin/bash
 
+# Release script for the idea plugin
+# Execute it from the root directory
+
 git checkout master -q
+
+
+CHANGELOG_LOCATION="idea/changelog.html"
 
 function incr_ver_num() {
     ret=$(echo "$1" | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
@@ -15,7 +21,7 @@ branch="v$cur_version"
 
 git show-branch "v$cur_version" >> /dev/null
 
-if [ $? -eq 0 ]; then
+if [[ $? -eq 0 ]]; then
     echo "Preparing release for version $cur_version, from branch $branch..."
 else 
     branch=""
@@ -45,16 +51,16 @@ git br -d "$branch"
 
 read -p "Enter the name of the release tag (default v$cur_version): " tagname
 
-if [ -z "$tagname" ]; then 
+if [[ -z "$tagname" ]]; then
     tagname="v$cur_version"
 fi
 
-git tag -a "$tagname" -F changelog.html
+git tag -a "$tagname" -F "$CHANGELOG_LOCATION"
 
 
 echo "Publishing plugin to repository..."
 
-./gradlew publishPlugin
+gradlew :idea:publishPlugin
 
 
 echo "Pushing objects..."
@@ -67,7 +73,7 @@ default_nr=$(incr_ver_num "$cur_version")
 
 read -p "What's the version number of the next release? (default $default_nr)" next_release
  
-if [ -z "$next_release" ]; then 
+if [[ -z "$next_release" ]]; then
     next_release="$default_nr"
 fi
 
@@ -102,9 +108,9 @@ read -r -d '' DEFAULT_CHANGELOG <<'EOF'
 </ul>
 EOF
 
-echo "$DEFAULT_CHANGELOG" > changelog.html
+echo "$DEFAULT_CHANGELOG" > "$CHANGELOG_LOCATION"
 
-git add changelog.html
+git add "$CHANGELOG_LOCATION"
 git commit -m "Reset changelog"
 
 echo "\nSuccessfully released $cur_version, xoxo"

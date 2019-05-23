@@ -22,5 +22,44 @@ class ConsecutiveParserActionsInspectionTest : JccInspectionTestBase(Consecutive
 
     """)
 
+    fun `test warning range in node scope`() = checkByText("""
+       $DummyHeader
+
+
+        void Foo():
+        {}
+        {
+            ("foo" "bar" ${"{foo();} {bar;}".warn()} {lol.fo();}) #F "flab" {weLiveInASociety();}
+        }
+
+
+    """)
+
+    fun `test warning range in node scope 2`() = checkByText("""
+       $DummyHeader
+
+
+        void Foo():
+        {}
+        {
+            "foo" "bar" ${"{foo();} {bar;}".warn()} {lol.fo();}
+        }
+
+
+    """)
+
+    fun `test warning range in node scope 3`() = checkByText("""
+       $DummyHeader
+
+
+        void Foo():
+        {}
+        {
+            "foo" "bar" {foo();} {bar;}
+        }
+
+
+    """)
+
 
 }
