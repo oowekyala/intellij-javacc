@@ -18,4 +18,10 @@
     </li>
     <li>Parentheses between two scoped expansion units are not unnecessary, eg
     <code> ( "foo" #Foo ) #Bar</code></li>
+    <li>Some empty parser actions blocks are not unnecessary, specifically when
+        they occur as the last expansion of a JJTree node scope and are preceded
+        by another parser actions unit. This is because JJTree inserts the code
+        for closing the node <i>before</i> the last parser action, so eg the node
+        condition can't be affected anymore in the last unit.
+    </li>
 </ul>

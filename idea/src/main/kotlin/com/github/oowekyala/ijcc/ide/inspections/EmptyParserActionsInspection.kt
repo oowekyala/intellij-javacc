@@ -1,8 +1,8 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.ide.intentions.DeleteExpansionIntention
-import com.github.oowekyala.ijcc.lang.psi.JccParserActionsUnit
-import com.github.oowekyala.ijcc.lang.psi.JccVisitor
+import com.github.oowekyala.ijcc.lang.cfa.isNextStep
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.deleteWhitespace
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
@@ -26,6 +26,16 @@ class EmptyParserActionsInspection : JccInspectionBase(DisplayName) {
             override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
                 if (o.text.deleteWhitespace() == "{}") {
+
+                    val parentScope =
+                        o.ancestors(includeSelf = false)
+                            .filterIsInstance<JjtNodeClassOwner>()
+                            .firstOrNull()
+                            ?.takeUnless { it.isVoid }
+
+                    if (parentScope != null && o.isNextStep(parentScope) && o.prevSiblingNoWhitespace is JccParserActionsUnit)
+                        return
+
                     holder.registerProblem(
                         o,
                         ProblemDescription,
