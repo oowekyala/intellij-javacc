@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.ide.cfa
 
+import com.github.oowekyala.ijcc.lang.cfa.isEmptyMatchPossible
+import com.github.oowekyala.ijcc.lang.cfa.leftMostSet
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
 import io.kotlintest.matchers.collections.shouldContainExactly

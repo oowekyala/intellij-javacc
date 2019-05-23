@@ -1,6 +1,7 @@
-package com.github.oowekyala.ijcc.lang.psi
+package com.github.oowekyala.ijcc.lang.cfa
 
 import com.github.oowekyala.ijcc.lang.model.Token
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foldNullable
 import com.github.oowekyala.ijcc.util.takeUntil
 import kotlinx.collections.immutable.ImmutableList
@@ -27,8 +28,16 @@ data class AtomicProduction(val production: JccNonTerminalProduction) : AtomicUn
  * productions are considered opaque and hence atomic.
  */
 fun JccNonTerminalProduction.startSet(groupUnary: Boolean = false): Set<AtomicUnit> = when (this) {
-    is JccBnfProduction -> computeStartSet(StartSetStateImpl(groupUnary = groupUnary))
-    else                -> setOf(AtomicProduction(this))
+    is JccBnfProduction -> computeStartSet(
+        StartSetStateImpl(
+            groupUnary = groupUnary
+        )
+    )
+    else                                                   -> setOf(
+        AtomicProduction(
+            this
+        )
+    )
 }
 
 /** Returns the start set of this expansion. */
@@ -54,8 +63,12 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
                 immutableSetOf(AtomicToken(it))
             }   // then there's a token reference that couldn't be resolved
                 ?: when (val r = this.regularExpression) {
-                    is JccRefRegularExpression -> immutableSetOf(AtomicUnresolved(r))
-                    else                       -> emptySet() // weird
+                    is JccRefRegularExpression -> immutableSetOf(
+                        AtomicUnresolved(
+                            r
+                        )
+                    )
+                    else                                                          -> emptySet() // weird
                 }
 
         is JccScopedExpansionUnit        -> expansionUnit.startSetImpl(state)
@@ -75,7 +88,11 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction()?.let {
             when (it) {
                 is JccBnfProduction -> it.computeStartSet(state)
-                else                -> setOf(AtomicProduction(it))
+                else                                                   -> setOf(
+                    AtomicProduction(
+                        it
+                    )
+                )
             }
         } ?: setOf(AtomicUnresolvedProd(this))
         // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
@@ -83,7 +100,7 @@ private fun JccExpansion.startSetImpl(state: StartSetState): Set<AtomicUnit> =
             childrenSequence()
                 .mapNotNull { (it as? JccExpansionUnit)?.startSetImpl(state) }
                 .fold(emptySet()) { a, b -> a + b }
-        else                             -> emptySet() // valid, but nothing to do
+        else                                                                -> emptySet() // valid, but nothing to do
     }
 
 
@@ -131,7 +148,8 @@ private open class AlgoState<T : JccPsiElement, V>(
     val cache: MutableMap<T, V> = mutableMapOf()
 ) {
 
-    open fun next(t: T): AlgoState<T, V> = AlgoState(alreadySeen.add(t), cache)
+    open fun next(t: T): AlgoState<T, V> =
+        AlgoState(alreadySeen.add(t), cache)
 
     open fun computeAndCache(t: T, compute: T.(AlgoState<T, V>) -> V): V? {
 
@@ -155,7 +173,7 @@ private fun JccNonTerminalProduction.maxTokens(state: MaxTokensState): Int? =
                 if (it == null) 0 else it.maxTokens(st)
             }
         }
-        else                -> null
+        else                                                   -> null
     }
 
 /**
@@ -175,7 +193,7 @@ private fun JccExpansion.maxTokens(state: MaxTokensState): Int? =
             when (it) {
                 is JccZeroOrMore,
                 is JccOneOrMore -> null
-                else            -> expansion.let {
+                else                                               -> expansion.let {
                     if (it == null) 0 // no expansion is 0, we mustn't hide the null
                     else it.maxTokens(state)
                 }
@@ -190,12 +208,12 @@ private fun JccExpansion.maxTokens(state: MaxTokensState): Int? =
         is JccNonTerminalExpansionUnit   -> typedReference.resolveProduction().let {
             when (it) {
                 is JccBnfProduction -> it.maxTokens(state)
-                else                -> null
+                else                                                   -> null
             }
         }
         is JccTryCatchExpansionUnit      -> expansion?.maxTokens(state)
         // FIXME this is a parser bug, scoped exp unit is parsed as a raw expansion unit sometimes
         is JccExpansionUnit              ->
             childrenSequence().map { (it as? JccScopedExpansionUnit)?.maxTokens(state) }.foldNullable(0) { a, b -> a + b }
-        else                             -> 0
+        else                                                                -> 0
     }

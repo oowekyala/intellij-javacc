@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
+import com.github.oowekyala.ijcc.lang.cfa.LeftMostSet
+import com.github.oowekyala.ijcc.lang.cfa.leftMostSet
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeHighlighting.HighlightDisplayLevel

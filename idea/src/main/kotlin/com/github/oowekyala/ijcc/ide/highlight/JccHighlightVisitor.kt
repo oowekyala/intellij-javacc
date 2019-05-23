@@ -8,6 +8,7 @@ import com.github.oowekyala.ijcc.ide.highlight.JccHighlightUtil.wrongReferenceIn
 import com.github.oowekyala.ijcc.ide.intentions.ReplaceOptionValueIntention
 import com.github.oowekyala.ijcc.ide.intentions.ReplaceSupersedingUsageWithReferenceIntentionFix
 import com.github.oowekyala.ijcc.lang.JccTypes
+import com.github.oowekyala.ijcc.lang.cfa.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.JjtOption

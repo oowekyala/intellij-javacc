@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.cfa
 
+import com.github.oowekyala.ijcc.lang.cfa.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.shouldBeA
 import com.github.oowekyala.ijcc.lang.shouldContainOneSuch
