@@ -158,7 +158,7 @@
 
         <applicationService
                 serviceInterface="com.github.oowekyala.ijcc.ide.refs.JccRefVariantService"
-                implementationClass="com.github.oowekyala.ijcc.ide.refs.IdeRefVariantsService"/>
+                serviceImplementation="com.github.oowekyala.ijcc.ide.refs.IdeRefVariantsService"/>
 
 
         <completion.contributor

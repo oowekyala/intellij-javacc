@@ -2988,7 +2988,7 @@ void CatchStatement() :
 {
   "catch"
   "(" FormalParameter() ")"
-  Block()
+  Block() 
 }
 
 void FinallyStatement() :
