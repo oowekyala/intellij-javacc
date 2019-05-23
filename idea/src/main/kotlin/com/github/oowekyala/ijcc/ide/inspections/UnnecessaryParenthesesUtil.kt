@@ -43,7 +43,8 @@ fun JccParenthesizedExpansionUnit.isNecessary(config: ParenthesesConfig): Boolea
         // (["hello"])      // unnecessary
         // ((..)?)          // unnecessary
         // ("(") #Node      // unnecessary
-        inside is JccExpansionUnit                                        -> false // expansions units are indivisible
+        // ("f" #Foo ) #Bar // necessary
+        inside is JccExpansionUnit                                        -> outside !is JccScopedExpansionUnit // expansions units are indivisible
 
         //  ("(" Expr() ")")     #Node    // necessary unless doc
         outside is JccScopedExpansionUnit                                 -> true
@@ -117,6 +118,7 @@ void parens() :
  (try{""}catch(foo f){})          // unnecessary
  (["hello"])                      // unnecessary
  (("")?)                          // unnecessary
+ ("f" #Foo ) #Bar // necessary
 
  LOOKAHEAD( ("foo" | "bar") )     // unnecessary
  LOOKAHEAD(1, ("foo" | "bar") )   // unnecessary
