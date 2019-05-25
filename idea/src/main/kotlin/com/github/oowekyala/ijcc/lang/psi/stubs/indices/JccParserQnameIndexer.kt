@@ -10,6 +10,9 @@ import com.intellij.util.io.KeyDescriptor
 
 
 /**
+ * Indexes the qualified name of the parser class of a grammar file,
+ * in order to provide links from the generated parser to the grammar.
+ *
  * @author Clément Fournier
  * @since 1.2
  */

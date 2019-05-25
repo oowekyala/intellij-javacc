@@ -131,7 +131,7 @@
 
         <applicationService
                 serviceInterface="com.github.oowekyala.ijcc.lang.psi.stubs.StubIndexService"
-                implementationClass="com.github.oowekyala.ijcc.lang.psi.stubs.indices.IdeStubService"/>
+                serviceImplementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.IdeStubService"/>
 
         <!-- GUTTER -->
 

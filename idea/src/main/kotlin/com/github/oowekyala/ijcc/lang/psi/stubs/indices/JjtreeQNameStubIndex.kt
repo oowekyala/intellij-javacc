@@ -5,6 +5,9 @@ import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.stubs.StubIndexKey
 
 /**
+ * Indexes the node class owners of a grammar by qname, to provide
+ * links from the node classes to the productions.
+ *
  * @author Clément Fournier
  * @since 1.2
  */
