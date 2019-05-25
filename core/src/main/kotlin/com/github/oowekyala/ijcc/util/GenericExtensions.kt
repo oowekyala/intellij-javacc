@@ -143,8 +143,8 @@ fun <T> List<T>.tail(): List<T> =
 fun <T : Any, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?): MostlySingularMultiMap<K, T> =
     associateByToMostlySingular(keySelector) { it }
 
-fun <T, K, V : Any> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?,
-                                                            valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
+fun <T, K, V> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?,
+                                                      valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
     val multiMap = MostlySingularMultiMap<K, V>()
     for (element in this) {
         val k = keySelector(element)

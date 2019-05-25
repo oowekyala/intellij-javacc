@@ -8,6 +8,7 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.pom.Navigatable
+import com.intellij.util.containers.MostlySingularMultiMap
 
 /**
  * Root of the structure view tree.
@@ -32,14 +33,14 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
         // only iterates the tokens of the lexical grammar once instead of once per production.
 
         with(myFile) {
-            val syntheticTokensByProd =
+            val syntheticTokensByProd : MostlySingularMultiMap<JccNonTerminalProduction, JccRegexExpansionUnit?> =
                 lexicalGrammar
                     .defaultState
                     .tokens
                     .asSequence()
                     .mapNotNull { it as? SyntheticToken }
-                    .associateByToMostlySingular({ it.regularExpression!!.firstAncestorOrNull<JccNonTerminalProduction>()!! }) {
-                        it.declUnit!!
+                    .associateByToMostlySingular({ it.regularExpression?.firstAncestorOrNull<JccNonTerminalProduction>() }) {
+                        it.declUnit
                     }
 
 
@@ -59,7 +60,7 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
                     JccStructureTreeElement(
                         it,
                         jjtNodes
-                            .plus(syntheticTokensByProd[it])
+                            .plus(syntheticTokensByProd[it].filterNotNull())
                             .sortedBy { it.textOffset }
                             .map(::JccStructureTreeElement)
                             .toList()
