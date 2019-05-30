@@ -23,7 +23,7 @@ jjtx:
 
   visitors:
     defaultJjtreeVisitor:
-      templateFile: "/jjtx/templates/Visitor.java.vm"
+      templateFile: "/jjtx/templates/VisitorInterface.java.vm"
       formatter: "java"
       genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
       context:
@@ -48,7 +48,7 @@ jjtx:
           }
 
     parameterlessVisitor:
-      templateFile: "/jjtx/templates/Visitor.java.vm"
+      templateFile: "/jjtx/templates/VisitorInterface.java.vm"
       genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
       formatter: java
       context:
