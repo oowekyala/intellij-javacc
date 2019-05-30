@@ -29,27 +29,6 @@
         }
       }
     },
-    "nodeGenTask": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "formatter": {
-          "$ref": "#/definitions/formatter"
-        },
-        "genClassName": {
-          "type": "string"
-        },
-        "template": {
-          "type": "string"
-        },
-        "templateFile": {
-          "type": "string"
-        },
-        "context": {
-          "type": "object"
-        }
-      }
-    },
     "vanillaJjtreeOpts": {
       "type": "object",
       "description": "Configuration of the compatibility JJTree builder. Output of this profile closely resembles JJTree output, but can be tweaked with the bindings of this object. Default values match most closely JJTree's behaviour.",
