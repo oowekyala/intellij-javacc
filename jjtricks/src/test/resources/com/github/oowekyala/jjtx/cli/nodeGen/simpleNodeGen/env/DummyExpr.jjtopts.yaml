@@ -1,10 +1,9 @@
-
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
     parameterlessVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/parameterlessVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
 
   activeGenScheme: myGen
   nodeGenerationSchemes:
@@ -51,7 +50,6 @@ jjtx:
     "%Root":
       - "Expression":
           - "r:.*Expression"
-          - match: Literal
-            children:
+          - Literal:
               - NullLiteral
               - IntegerLiteral

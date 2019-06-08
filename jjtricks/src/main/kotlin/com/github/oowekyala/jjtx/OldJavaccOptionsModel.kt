@@ -30,7 +30,7 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val nodePrefix: String = grammarOptions.nodePrefix
 
-    override val visitors: Map<String, FileGenBean> = emptyMap()
+    override val commonGen: Map<String, FileGenBean> = emptyMap()
 
     override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> = emptyMap() // TODO JJTree generation scheme
 

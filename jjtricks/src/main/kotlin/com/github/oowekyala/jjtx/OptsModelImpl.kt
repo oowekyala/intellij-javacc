@@ -49,7 +49,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
             parentModel.templateContext + deepest
         }.lazily()
 
-    override val visitors: Map<String, FileGenBean> by jjtx.withDefault("visitors") {
+    override val commonGen: Map<String, FileGenBean> by jjtx.withDefault("commonGen") {
         emptyMap<String, FileGenBean>()
     }
 

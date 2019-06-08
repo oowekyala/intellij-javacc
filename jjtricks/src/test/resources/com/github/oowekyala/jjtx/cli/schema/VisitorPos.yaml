@@ -28,7 +28,7 @@ jjtx:
        *
        */
 
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
       templateFile: "/jjtx/templates/VisitorInterface.java.vm"
       formatter: "java"

@@ -1,5 +1,5 @@
 jjtx:
-  visitors:
+  commonGen:
     parameterlessVisitor: !from '#/jjtx/visitors/defaultJjtreeVisitor'
 
   nodeGen:

@@ -11,7 +11,7 @@ internal fun OptsModelImpl.toYaml(): String = toDataNode().toYamlString()
 
 internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
-    val visitors = visitors.toDataNode()
+    val visitors = commonGen.toDataNode()
 
     val th = resolvedTypeHierarchy.toDataNode()
 

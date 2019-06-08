@@ -179,7 +179,7 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<
     override val exceptionCtx: String = "Generating visitor"
 
     override val generationTasks: Collection<VisitorGenerationTask> by lazy {
-        ctx.jjtxOptsModel.visitors.mapNotNull { (k, v) ->
+        ctx.jjtxOptsModel.commonGen.mapNotNull { (k, v) ->
             v.toFileGen(ctx, null, k)
         }
     }

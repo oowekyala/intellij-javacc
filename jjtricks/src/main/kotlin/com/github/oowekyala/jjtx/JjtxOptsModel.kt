@@ -47,7 +47,7 @@ interface JjtxOptsModel : IGrammarOptions {
     /**
      * Map of ids to runnable visitor generation tasks.
      */
-    val visitors: Map<String, FileGenBean>
+    val commonGen: Map<String, FileGenBean>
 
     /**
      * The node generation scheme, not merged if provided.

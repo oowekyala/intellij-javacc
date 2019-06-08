@@ -1,8 +1,8 @@
 
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
 
   nodePrefix: AST
   nodePackage: "org.parent"

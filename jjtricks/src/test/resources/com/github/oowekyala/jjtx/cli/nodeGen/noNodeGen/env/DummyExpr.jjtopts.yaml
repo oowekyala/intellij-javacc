@@ -1,6 +1,6 @@
 
 jjtx:
-  visitors:
+  commonGen:
 
   nodePrefix: Ex
   nodePackage: "org.expr"

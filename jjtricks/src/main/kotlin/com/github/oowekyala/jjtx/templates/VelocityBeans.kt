@@ -178,7 +178,7 @@ data class RunVBean(
             val visitors =
                 ctx.jjtxOptsModel
                     .let { it as? OptsModelImpl }
-                    ?.visitors
+                    ?.commonGen
                     ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
                     ?: emptyMap()
 

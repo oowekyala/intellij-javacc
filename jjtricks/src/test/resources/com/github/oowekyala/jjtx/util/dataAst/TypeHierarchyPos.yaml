@@ -1,5 +1,5 @@
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
       templateFile: foo/bar/VisitorTest.vm
     parameterlessVisitor:
