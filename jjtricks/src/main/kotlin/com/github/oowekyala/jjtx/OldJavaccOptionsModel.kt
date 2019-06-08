@@ -32,9 +32,7 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val commonGen: Map<String, FileGenBean> = emptyMap()
 
-    override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> = emptyMap() // TODO JJTree generation scheme
-
-    override val activeNodeGenerationScheme: String? = null
+    override val nodeGen: GrammarGenerationScheme? = null // TODO JJTree generation scheme
 
     override val javaccGen: JavaccGenOptions = JavaccGenOptions.FullJjtreeCompat
 

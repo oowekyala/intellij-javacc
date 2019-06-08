@@ -6,7 +6,7 @@ import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
 import com.github.oowekyala.jjtx.templates.FileGenBean
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
-import com.github.oowekyala.jjtx.templates.toNodeGenerationSchemes
+import com.github.oowekyala.jjtx.templates.toNodeGenerationScheme
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
@@ -72,19 +72,11 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     }
 
 
-    private val ngs: DataAstNode? by JsonProperty(jjtx, "nodeGenerationSchemes")
+    private val rawNodeGens: DataAstNode? by JsonProperty(jjtx, "nodeGen")
 
-    private val myGenSchemes: Map<String, GrammarGenerationScheme> by lazy {
-        ngs?.toNodeGenerationSchemes(ctx) ?: emptyMap()
-    }
-
-    override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> by lazy {
+    override val nodeGen: GrammarGenerationScheme? by lazy {
         // keep all parent keys, but override them
-        parentModel.grammarGenerationSchemes + myGenSchemes
-    }
-
-    override val activeNodeGenerationScheme: String? by jjtx.withDefault<String?>("activeGenScheme") {
-        null
+        rawNodeGens?.toNodeGenerationScheme(ctx) ?: parentModel.nodeGen
     }
 
 }

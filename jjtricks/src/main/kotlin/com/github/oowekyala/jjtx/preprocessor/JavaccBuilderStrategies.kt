@@ -6,6 +6,10 @@ import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
 
+/**
+ * Strategy responsible for the rendering of hooks and API-dependent stuff.
+ * Also responsible for generating the relevant support files
+ */
 interface JjtxBuilderStrategy {
 
     fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar?

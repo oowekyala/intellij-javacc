@@ -27,7 +27,7 @@ class NodeGenCliTests : JjtxCliTestBase() {
     fun testTemplateException() = doTest("DummyExpr", "gen:*")
 
     @Test
-    fun testVisitorCompletion() = doTest("DummyExpr", "gen:visitors")
+    fun testVisitorCompletion() = doTest("DummyExpr", "gen:common")
 
 
 }

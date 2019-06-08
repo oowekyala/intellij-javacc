@@ -332,8 +332,7 @@ private fun JccExpansion.findThrown(): Set<String> =
         .mapNotNull { it.typedReference.resolveProduction() }
         .flatMap { it.thrownExceptions.asSequence() }
         .toSet()
-        .plus("ParseException")
-        .plus("RuntimeException")
+        .plus(listOf("ParseException", "RuntimeException"))
 
 
 val JccNonTerminalProduction.thrownExceptions: Set<String>

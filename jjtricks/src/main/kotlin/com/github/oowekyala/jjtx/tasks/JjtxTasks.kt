@@ -28,7 +28,7 @@ import java.nio.file.Path
 
 enum class JjtxTaskKey(val ref: String) {
     DUMP_CONFIG("help:dump-config"),
-    GEN_VISITORS("gen:visitors"),
+    GEN_VISITORS("gen:common"),
     GEN_NODES("gen:nodes"),
     GEN_JAVACC("gen:javacc");
 
@@ -131,7 +131,7 @@ abstract class GenerationTaskBase(
 
         val rootCtx = rootCtx()
 
-        ctx.messageCollector.reportNormal("Executing profiles '$configString'")
+        ctx.messageCollector.reportNormal(configString?.let { "Executing tasks '$it'" } ?: "Executing")
 
         for (gen in tasks) {
 
@@ -163,7 +163,7 @@ abstract class GenerationTaskBase(
     }
 
     protected abstract val generationTasks: Collection<FileGenTask>
-    protected abstract val configString: String
+    protected abstract val configString: String?
     protected abstract val exceptionCtx: String
 
     protected open fun rootCtx(): VelocityContext = ctx.globalVelocityContext
@@ -200,38 +200,26 @@ class GenerateNodesTask(ctx: JjtxContext,
                         otherSourceRoots: List<Path>) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
 
     override val generationTasks: List<FileGenTask> by lazy {
-        val activeId = ctx.jjtxOptsModel.activeNodeGenerationScheme
-        val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
-
-        if (activeId == null) {
-            ctx.messageCollector.reportNormal("No node generation schemes configured (set jjtx.activeGenScheme)")
-            return@lazy emptyList<FileGenTask>()
-        }
-
-        val scheme = schemes[activeId] ?: run {
-            ctx.messageCollector.reportNonFatal(
-                "Node generation scheme '$activeId' not found, available ones are ${schemes.keys}",
-                null
-            )
-            return@lazy emptyList<FileGenTask>()
-        }
-
-        scheme.templates.flatMap { it.toFileGenTasks() }
+        ctx.jjtxOptsModel
+            .nodeGen
+            ?.templates
+            ?.flatMap { it.toFileGenTasks() }
+            ?: run {
+                ctx.messageCollector.reportNormal("No node generation scheme found (set jjtx.nodeGen)")
+                emptyList<FileGenTask>()
+            }
     }
 
     override fun rootCtx(): VelocityContext =
         VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
 
-
-    override val configString: String
-        get() = ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
-
+    override val configString: String? = null
     override val exceptionCtx: String = "Generating nodes"
 }
 
 
 /**
- * Generate the visitors marked for execution in the opts file.
+ * Compile the grammar to a JavaCC file.
  */
 class GenerateJavaccTask(val ctx: JjtxContext,
                          private val outputDir: Path) : JjtxTask() {

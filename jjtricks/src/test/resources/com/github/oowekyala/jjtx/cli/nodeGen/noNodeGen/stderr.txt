@@ -5,4 +5,4 @@ Running tasks [gen:nodes]
 [init]
     [INFO]     Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 [gen:nodes]
-    [INFO]     No node generation schemes configured (set jjtx.activeGenScheme)
+    [INFO]     No node generation scheme found (set jjtx.nodeGen)

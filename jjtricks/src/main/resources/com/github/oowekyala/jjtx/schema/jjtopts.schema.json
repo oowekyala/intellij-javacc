@@ -91,7 +91,10 @@
               "default": true,
               "description": "If true, the generated parser will assert that any checked exceptions caught in parser methods are declared in 'throws' clauses of productions. This makes the parser fail at runtime with a ClassCastException if you haven't declared a checked exception. This is what JJTree does by default, but you can disable it since it obfuscates the .jj file, and may be unnecessary."
             }
-          }
+          },
+          "required": [
+            "profile"
+          ]
         }
       ]
     },
@@ -229,7 +232,7 @@
             }
           ]
         },
-        "nodeGenerationTask": {
+        "nodeGen": {
           "description": "Map of node selectors to node generation scheme. Each node of the grammar is matched against the selectors from top to bottom until a match is found. The matched selector specifies which file generation tasks are executed for this node. Those generation tasks will have the NodeVBean under the 'node' key.",
           "additionalProperties": {
             "type": "object",

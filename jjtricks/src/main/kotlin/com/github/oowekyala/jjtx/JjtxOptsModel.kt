@@ -52,10 +52,8 @@ interface JjtxOptsModel : IGrammarOptions {
     /**
      * The node generation scheme, not merged if provided.
      */
-    val grammarGenerationSchemes: Map<String, GrammarGenerationScheme>
+    val nodeGen: GrammarGenerationScheme?
 
-
-    val activeNodeGenerationScheme: String?
 
     /**
      * Generation options for the JavaCC file.

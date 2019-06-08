@@ -5,44 +5,42 @@ jjtx:
     parameterlessVisitor:
       <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
 
-  activeGenScheme: myGen
-  nodeGenerationSchemes:
-    myGen:
-      # Match predicates in order
-      # v:X template X with node generation context
-      "v: $node == $grammar.rootNode":
-        - template: |
-            #if( !$node.class.package.empty )
-            package $node.class.package;
-            #end
-            public interface ${node.class.simpleName} {
+  nodeGen:
+    # Match predicates in order
+    # v:X template X with node generation context
+    "v: $node == $grammar.rootNode":
+      - template: |
+          #if( !$node.class.package.empty )
+          package $node.class.package;
+          #end
+          public interface ${node.class.simpleName} {
 
-            }
+          }
 
-          formatter: "java"
+        formatter: "java"
 
-      "BinaryExpression":
-      "v: !$node.subNodes.isEmpty()":
-        - template: |
-            #if( !$package.empty )
-            package $package;
-            #end
-            public abstract class $simpleName {
+    "BinaryExpression":
+    "v: !$node.subNodes.isEmpty()":
+      - template: |
+          #if( !$package.empty )
+          package $package;
+          #end
+          public abstract class $simpleName {
 
-            }
-          formatter: "java"
-        - template: |
-            #if( !$package.empty )
-            package $package;
-            #end
-            public class $simpleName extends ${node.class.qualifiedName} {
+          }
+        formatter: "java"
+      - template: |
+          #if( !$package.empty )
+          package $package;
+          #end
+          public class $simpleName extends ${node.class.qualifiedName} {
 
-            }
-          genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
-          formatter: "java"
-      "r:.*":
-        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
-          formatter: "java"
+          }
+        genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
+        formatter: "java"
+    "r:.*":
+      - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+        formatter: "java"
 
   nodePrefix: Ex
   nodePackage: "org.expr"

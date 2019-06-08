@@ -4,13 +4,32 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.reporting.reportFatal
-import com.github.oowekyala.jjtx.reporting.reportNonFatal
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.dataAst.*
+import com.github.oowekyala.jjtx.util.evaluate
 import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.util.regex.PatternSyntaxException
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.emptyList
+import kotlin.collections.isNotEmpty
+import kotlin.collections.iterator
+import kotlin.collections.joinToString
+import kotlin.collections.listOfNotNull
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.mapOf
+import kotlin.collections.minus
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.partition
+import kotlin.collections.plus
+import kotlin.collections.plusAssign
+import kotlin.collections.toTypedArray
 
 
 //    # Match predicates in order
@@ -33,20 +52,10 @@ import java.util.regex.PatternSyntaxException
 //        formatter: "java"
 
 
-internal fun DataAstNode.toNodeGenerationSchemes(ctx: JjtxContext): Map<String, GrammarGenerationScheme> =
-    when (this) {
-        is AstMap -> this.mapValues { (id, node) -> node.toSingleNodeGenerationScheme(ctx, id) }
-        else                                             -> {
-            ctx.messageCollector.report(
-                "Expected map of ids to node generation schemes",
-                MessageCategory.WRONG_TYPE,
-                position
-            )
-            emptyMap()
-        }
-    }
+internal fun DataAstNode.toNodeGenerationScheme(ctx: JjtxContext): GrammarGenerationScheme =
+    this.toSingleNodeGenerationScheme(ctx)
 
-private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: String): GrammarGenerationScheme {
+private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext): GrammarGenerationScheme {
 
     val normalisedMap = when (this) {
         is AstMap    -> this
@@ -56,17 +65,20 @@ private fun DataAstNode.toSingleNodeGenerationScheme(ctx: JjtxContext, id: Strin
                 position = this.position
             )
         is AstScalar -> {
-            ctx.messageCollector.reportFatal("Expected map or sequence", position)
+            ctx.messageCollector.reportFatal(
+                "Expected map or sequence, couldn't parse node generation scheme",
+                position
+            )
         }
     }
 
-    return normalisedMap.toNodeGenerationSchemeImpl(ctx, id)
+    return normalisedMap.toNodeGenerationSchemeImpl(ctx)
 }
 
 /**
  * @receiver This is the map of patterns to filegen tasks
  */
-private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): GrammarGenerationScheme {
+private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerationScheme {
 
     val found = mutableSetOf<NodeVBean>()
 
@@ -147,7 +159,7 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext, id: String): Gra
         )
     }
 
-    return GrammarGenerationScheme(allSchemes, id)
+    return GrammarGenerationScheme(allSchemes)
 }
 
 fun String.findMatchingNodes(ctx: JjtxContext, positionInfo: Position?): List<NodeVBean> {
@@ -257,7 +269,5 @@ data class NodeGenerationScheme(
 
 
 data class GrammarGenerationScheme(
-    val templates: List<NodeGenerationScheme>,
-    val id: String
-
+    val templates: List<NodeGenerationScheme>
 )

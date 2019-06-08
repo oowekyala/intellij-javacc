@@ -3,7 +3,7 @@ JJTricks v1.0
 Running tasks [gen:nodes]
 
 [init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[gen:visitors]      Executing profiles 'defaultJjtreeVisitor, parameterlessVisitor'
-[gen:visitors]      Generated 2 classes in @output@
-[gen:nodes]         Executing profiles 'myGen'
+[gen:common]        Executing tasks 'defaultJjtreeVisitor, parameterlessVisitor'
+[gen:common]        Generated 2 classes in @output@
+[gen:nodes]         Executing
 [gen:nodes]         Generated 9 classes in @output@

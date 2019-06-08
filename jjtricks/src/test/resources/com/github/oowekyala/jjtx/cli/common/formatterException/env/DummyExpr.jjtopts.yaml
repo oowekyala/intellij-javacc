@@ -1,19 +1,16 @@
-
 jjtx:
 
-  activeGenScheme: myGen
-  nodeGenerationSchemes:
-    myGen:
-      "r:.*":
-        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
-          template: |
-            #if( !$package.empty )
-            package $package;
-            #end
-            public class extends ${node.class.qualifiedName} {
+  nodeGen:
+    "r:.*":
+      - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+        template: |
+          #if( !$package.empty )
+          package $package;
+          #end
+          public class extends ${node.class.qualifiedName} {
 
-            }
-          formatter: "java"
+          }
+        formatter: "java"
 
   nodePrefix: Ex
   nodePackage: "org.expr"
