@@ -39,7 +39,7 @@ import java.util.*
  *
  * @author Clément Fournier
  */
-abstract class JjtxCliTestBase(val replaceExpected: Boolean = false) {
+abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
 
 
     inner class TestBuilder(var subpath: String) {

@@ -1,0 +1,4 @@
+vanilla:
+  "r:.*":
+    - templateFile: "/jjtx/VanillaJjtreeNode.java.vm"
+      formatter: java

@@ -1,8 +1,8 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
-import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.dataAst.position
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
-import com.github.oowekyala.jjtx.util.toFilePos
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.emitter.Emitter
@@ -20,7 +20,10 @@ object YamlLang : DataLanguage {
     override fun parse(input: NamedInputStream): DataAstNode =
         input.newInputStream().use { istream ->
             val reader = UnicodeReader(istream).buffered()
-            Yaml().compose(reader).yamlToData(input.filename)
+            Yaml().compose(reader)?.yamlToData(input.filename) ?: AstMap(
+                position = LineAndCol(1, 1),
+                map = emptyMap()
+            )
         }
 
     override fun write(data: DataAstNode, out: Writer) {

@@ -55,4 +55,10 @@ class JccTranslationCliTests : JjtxCliTestBase() {
         "gen:javacc"
     )
 
+    @Test
+    fun testCommentBug() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
 }

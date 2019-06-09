@@ -7,10 +7,10 @@ import java.io.PrintStream
 /**
  * DSL for a printstream, easier to read and write.
  */
-internal class DslPrintStream(
+internal class DslPrintStream private constructor(
     outputStream: OutputStream,
     private val baseIndentString: String
-) : PrintStream(TrailingSpacesFilterOutputStream(outputStream)) {
+) : PrintStream(outputStream) {
 
     var indentString: String = ""
 
@@ -69,12 +69,14 @@ internal class DslPrintStream(
 
     companion object {
 
-        fun forJavaccOutput(out: OutputStream): DslPrintStream {
+        fun forTestOutput(out: OutputStream): DslPrintStream {
             val baseIndent = "    "
             val os = out.let(::TrailingSpacesFilterOutputStream)
 
             return DslPrintStream(os, baseIndent)
         }
+
+        fun forJavaccOutput(out: OutputStream): DslPrintStream = DslPrintStream(out, "    ")
 
 
     }

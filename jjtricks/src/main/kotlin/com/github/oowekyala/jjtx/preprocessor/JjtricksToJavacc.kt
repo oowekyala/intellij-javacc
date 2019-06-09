@@ -156,7 +156,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +bgen(nodeVar.nodeName) + Endl
                 emitOpenNodeCode(nodeVar)
                 +egen() + Endl
-                -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
+                +o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar) + Endl
             } + Endl
 
             stack.push(nodeVar)

@@ -1,0 +1,152 @@
+options {
+    // MULTI = true;
+}
+PARSER_BEGIN(SimpleExprParser)
+    package com.jjtx.exprs;
+    import com.jjtx.exprs.*;
+    /**
+     *  This is my parser declaration
+     */
+    public class SimpleExprParser/*@bgen(jjtree)*/implements SimpleExprParserTreeConstants/*@egen*/  {/*@bgen(jjtree)*/
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
+    }
+PARSER_END(SimpleExprParser)
+// Some token declarations
+<DEFAULT>
+TOKEN :{
+  < PLUS: "+" >
+| < MINUS: "-" >
+| < NULL: "null" >
+| < INTEGER: ["+",  "-"] <DIGITS> >
+| < #DIGITS: (["0"-"9"])+ >
+}
+void Expression() :
+{
+    jjtThis.setImage("Expr"); // Do it
+}
+{
+      BinaryExpression()
+    | /*@bgen(jjtree) NullLiteral */
+{
+    ASTNullLiteral jjtn000 = new ASTNullLiteral(JJTNULLLITERAL);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+} try {
+    /*@egen*/ <NULL>
+    /*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+    } else {
+        jjtree.popNode();
+    }
+    // This chain of casts is meant to force you to declare
+    // checked exceptions explicitly on the productions, else it fails
+    // with a ClassCastException on the Error branch
+    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+    throw (Error) jjte000;
+} finally {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+    }
+}
+/*@egen*/
+}
+void BinaryExpression(): {
+    /*@bgen(jjtree) BinaryExpr */
+    ASTBinaryExpr jjtn000 = new ASTBinaryExpr(JJTBINARYEXPR);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+    /*@egen*/
+    jjtn000.setImage("Expr"); // Do it
+}
+{
+    /*@bgen(jjtree) BinaryExpr */
+     try {
+        /*@egen*/ UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+        /*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+            jjtc000 = false;
+        } else {
+            jjtree.popNode();
+        }
+        // This chain of casts is meant to force you to declare
+        // checked exceptions explicitly on the productions, else it fails
+        // with a ClassCastException on the Error branch
+        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+        throw (Error) jjte000;
+    } finally {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+        }
+    }
+    /*@egen*/
+}
+void UnaryExpr() : {}
+{
+  /*@bgen(jjtree) ParenthesizedExpr */
+{
+    ASTParenthesizedExpr jjtn000 = new ASTParenthesizedExpr(JJTPARENTHESIZEDEXPR);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+} try {
+    /*@egen*/ ("(" Expression() ")")
+    /*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+    } else {
+        jjtree.popNode();
+    }
+    // This chain of casts is meant to force you to declare
+    // checked exceptions explicitly on the productions, else it fails
+    // with a ClassCastException on the Error branch
+    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+    throw (Error) jjte000;
+} finally {
+    if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+    }
+}
+/*@egen*/
+ | Integer()
+}
+void Integer(): {
+    /*@bgen(jjtree) IntegerLiteral */
+    ASTIntegerLiteral jjtn000 = new ASTIntegerLiteral(JJTINTEGERLITERAL);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+    /*@egen*/
+}
+{
+    /*@bgen(jjtree) IntegerLiteral */
+     try {
+        /*@egen*/ <INTEGER>
+        /*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtc000 = false;
+        } else {
+            jjtree.popNode();
+        }
+        // This chain of casts is meant to force you to declare
+        // checked exceptions explicitly on the productions, else it fails
+        // with a ClassCastException on the Error branch
+        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
+        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
+        throw (Error) jjte000;
+    } finally {
+        if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+        }
+    }
+    /*@egen*/
+}
