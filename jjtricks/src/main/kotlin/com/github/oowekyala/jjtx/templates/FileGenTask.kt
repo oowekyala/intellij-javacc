@@ -4,9 +4,12 @@ import com.github.oowekyala.ijcc.util.deleteWhitespace
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.createFile
+import com.github.oowekyala.jjtx.util.evaluate
+import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.readText
+import com.github.oowekyala.jjtx.util.isDirectory
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.nio.file.Path
@@ -32,6 +35,9 @@ open class FileGenTask internal constructor(
     val template: StringSource,
     private val formatter: SourceFormatter?,
     private val genFqcn: String,
+    /**
+     * Local bindings.
+     */
     val context: Map<String, Any?>
 ) {
 
@@ -132,14 +138,12 @@ open class FileGenTask internal constructor(
             o.createFile()
         }
 
-        val (pack, simpleName) = fqcn.splitAroundLast('.')
-
         val fullCtx =
             withLocalBindings(
                 context,
                 sharedCtx,
-                "package" to pack,
-                "simpleName" to simpleName,
+                "thisClass" to ClassVBean(qualifiedName = fqcn),
+                "thisFile" to FileVBean(absolutePath = o),
                 "timestamp" to ctx.io.now()
             )
 

@@ -1,10 +1,14 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
+import com.github.oowekyala.ijcc.lang.model.addNodePackage
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
+import com.github.oowekyala.jjtx.templates.FileGenTask
+import com.github.oowekyala.jjtx.templates.FormatterRegistry
+import com.github.oowekyala.jjtx.util.io.StringSource
 
 /**
  * Strategy responsible for the rendering of hooks and API-dependent stuff.
@@ -40,6 +44,7 @@ interface JjtxBuilderStrategy {
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
+    val supportFileGen: List<FileGenTask>
 
 }
 
@@ -183,6 +188,16 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
         expression.replace("jjtThis", nodeVar.varName)
 
+    override val supportFileGen: List<FileGenTask> = listOf(
+        parserStateGen()
+    )
+
+    private fun parserStateGen() = FileGenTask(
+        genFqcn = grammarOptions.addNodePackage(parserStateSimpleName),
+        formatter = FormatterRegistry.JAVA,
+        context = emptyMap(),
+        template = StringSource.File("/jjtx/templates/VanillaJjtreeBuilder.java.vm")
+    )
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 }

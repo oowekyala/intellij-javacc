@@ -21,24 +21,24 @@ jjtx:
         formatter: "java"
     "v: !$node.subNodes.isEmpty()":
       - template: |
-          #if( !$package.empty )
-          package $package;
+          #if( !$thisClass.package.empty )
+          package $thisClass.package;
           #end
-          public abstract class $simpleName {
+          public abstract class $thisClass.simpleName {
 
           }
         formatter: "java"
       - template: |
-          #if( !$package.empty )
-          package $package;
+          #if( !$thisClass.package.empty )
+          package $thisClass.package;
           #end
-          public class $simpleName extends ${node.class.qualifiedName} {
+          public class $thisClass.simpleName extends ${node.class.qualifiedName} {
 
           }
         genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
         formatter: "java"
     "r:.*":
-      - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
+      - templateFile: "/jjtx/templates/VanillaJjtreeNode.java.vm" # Whitespace trouble
         formatter: "java"
 
   nodePrefix: Ex

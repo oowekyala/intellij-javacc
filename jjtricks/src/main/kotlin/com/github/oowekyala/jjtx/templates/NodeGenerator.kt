@@ -48,7 +48,7 @@ import kotlin.collections.toTypedArray
 //        genClassName: "${grammar.nodePackage}.Abstract${node.name}"
 //        formatter: "java"
 //    "r:.*":
-//      - templateFile: "/jjtx/templates/Node.java.vm"
+//      - templateFile: "/jjtx/templates/VanillaJjtreeNode.java.vm"
 //        formatter: "java"
 
 

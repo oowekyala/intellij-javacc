@@ -4,9 +4,9 @@ import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.preprocessor.VanillaJjtreeBuilder
 import com.github.oowekyala.jjtx.preprocessor.toJavacc
 import com.github.oowekyala.jjtx.reporting.reportException
-import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.reporting.reportNormal
 import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
 import com.github.oowekyala.jjtx.templates.FileGenTask
@@ -244,9 +244,11 @@ class GenerateJavaccTask(val ctx: JjtxContext,
 
         try {
 
+            val builder = VanillaJjtreeBuilder(ctx.grammarFile.grammarOptions, opts)
+
             FileOutputStream(o.toFile()).buffered()
                 .use {
-                    toJavacc(ctx.grammarFile, it, opts)
+                    toJavacc(ctx.grammarFile, it, opts, builder)
                 }
 
             ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")

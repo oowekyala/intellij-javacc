@@ -9,10 +9,13 @@ import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.TreeOps
+import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.github.oowekyala.treeutils.DoublyLinkedTreeLikeAdapter
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 import org.apache.velocity.VelocityContext
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /*
     Beans used to present data inside a Velocity context.
@@ -122,16 +125,21 @@ data class NodeVBean(
  * Represents a file.
  */
 data class FileVBean(
-    val fileName: String,
-    val absolutePath: String,
-    val extension: String?
+    val absolutePath: String
 ) {
+
+    val fileName: String
+    val extension: String?
+
+    init {
+        val p = Paths.get(absolutePath)
+        fileName = p.fileName.toString()
+        extension = p.extension
+    }
+
     companion object {
-        fun create(jccFile: JccFile): FileVBean = FileVBean(
-            fileName = jccFile.name,
-            absolutePath = jccFile.virtualFile.path,
-            extension = jccFile.virtualFile.extension
-        )
+        fun create(jccFile: JccFile): FileVBean = FileVBean(absolutePath = jccFile.virtualFile.path)
+        operator fun invoke(absolutePath: Path): FileVBean = FileVBean(absolutePath = absolutePath.toString())
     }
 }
 
@@ -193,13 +201,13 @@ data class RunVBean(
  * Presents information about the whole grammar.
  *
  * @property name The name of the grammar
- * @property file A [FileVBean] describing the main grammar file
+ * @property grammarFile A [FileVBean] describing the main grammar file
  * @property nodePackage The package in which the nodes live, as defined by [JjtxOptsModel.nodePackage]
  * @property typeHierarchy The list of all [NodeVBean]s defined in the grammar
  */
 data class GrammarVBean(
     val name: String,
-    val file: FileVBean,
+    val grammarFile: FileVBean,
     val nodePackage: String,
     val parser: ParserVBean,
     val rootNode: NodeVBean,
@@ -211,7 +219,7 @@ data class GrammarVBean(
 
             return GrammarVBean(
                 name = ctx.grammarName,
-                file = FileVBean.create(ctx.grammarFile),
+                grammarFile = FileVBean.create(ctx.grammarFile),
                 nodePackage = ctx.jjtxOptsModel.nodePackage,
                 parser = ParserVBean(ClassVBean(ctx.jjtxOptsModel.inlineBindings.parserQualifiedName)),
                 rootNode = ctx.jjtxOptsModel.typeHierarchy,

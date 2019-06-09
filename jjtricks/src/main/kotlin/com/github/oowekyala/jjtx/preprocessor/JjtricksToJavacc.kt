@@ -13,15 +13,22 @@ import java.io.OutputStream
 import java.util.*
 
 
-fun toJavacc(input: JccFile, out: OutputStream, options: JavaccGenOptions) {
+fun toJavacc(input: JccFile,
+             out: OutputStream,
+             options: JavaccGenOptions,
+             builder: JjtxBuilderStrategy) {
 
-    val visitor = JjtxCompilVisitor(input, out, options, VanillaJjtreeBuilder(input.grammarOptions, options))
+    val visitor = JjtxCompilVisitor(input, out, options, builder)
     input.grammarFileRoot!!.accept(visitor)
 }
 
-fun toJavaccString(input: JccFile, options: JavaccGenOptions = JavaccGenOptions()): String {
+fun toJavaccString(
+    input: JccFile,
+    options: JavaccGenOptions = JavaccGenOptions(),
+    builder: JjtxBuilderStrategy
+): String {
     val bos = ByteArrayOutputStream()
-    toJavacc(input, bos, options)
+    toJavacc(input, bos, options, builder)
     return bos.toString(Charsets.UTF_8.name())
 }
 

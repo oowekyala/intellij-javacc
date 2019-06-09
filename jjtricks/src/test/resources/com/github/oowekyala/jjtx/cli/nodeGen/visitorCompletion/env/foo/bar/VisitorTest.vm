@@ -3,12 +3,12 @@
 * Not intended for manual editing.
 */
 
-#if( !$package.empty )
-package $package;
+#if( !$thisClass.package.empty )
+package $thisClass.package;
 #end
 
 
-public interface ${simpleName} {
+public interface ${thisClass.simpleName} {
 
 #foreach($node in $grammar.typeHierarchy)
 
