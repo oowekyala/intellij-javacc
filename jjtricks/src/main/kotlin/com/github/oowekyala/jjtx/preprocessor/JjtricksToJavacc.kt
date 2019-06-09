@@ -40,7 +40,7 @@ private fun bgen(arg: String = ""): String {
 
 private fun egen() = "/*@egen*/ "
 
-private fun JccJavaCompilationUnit.guessIndent():String {
+private fun JccJavaCompilationUnit.guessIndent(): String {
 
     // The indent preceding the first non-whitespace of the JCU
     // is in the previous sibling
@@ -56,7 +56,7 @@ private fun JccJavaCompilationUnit.guessIndent():String {
 }
 
 private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
-    val unit= this.text!!
+    val unit = this.text!!
     val indent = guessIndent()
 
 
@@ -140,7 +140,10 @@ private class JjtxCompilVisitor(val file: JccFile,
 
         val indent = o.guessIndent()
 
-        sb.insert(bracePoint.range.endInclusive + 1, bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen())
+        sb.insert(
+            bracePoint.range.endInclusive + 1,
+            bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen()
+        )
 
         out.printSource(sb.toString())
     }
@@ -202,22 +205,30 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     }
 
+    override fun visitJavaExpression(o: JccJavaExpression) {
+        stack.top()?.let {
+            with(out) {
+                -o.text.escapeJjtThis(it)
+            }
+        } ?: super.visitJavaExpression(o)
+    }
+
     override fun visitJjtreeNodeDescriptor(o: JccJjtreeNodeDescriptor) {
         out.printWhiteOut(o.text)
     }
 
     override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-        val enclosing = stack.lastOrNull() ?: return super.visitParserActionsUnit(o)
+        val enclosing = stack.top() ?: return super.visitParserActionsUnit(o)
 
         val endOfSequence =
             o.ancestors(includeSelf = false)
                 .takeWhile { it != enclosing.owner }
                 .all {
                     when {
-                        it.parent is JccExpansionSequence   -> it.parent.lastChild == it
+                        it.parent is JccExpansionSequence -> it.parent.lastChild == it
                         it is JccParenthesizedExpansionUnit -> it.occurrenceIndicator == null
-                        else                                -> it !is JccOptionalExpansionUnit
+                        else -> it !is JccOptionalExpansionUnit
                     }
                 }
 
@@ -231,7 +242,10 @@ private class JjtxCompilVisitor(val file: JccFile,
             }
         }
 
-        super.visitParserActionsUnit(o)
+        with(out) {
+            -o.text.escapeJjtThis(enclosing)
+        }
+
     }
 
     private fun DslPrintStream.emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = this.apply {
@@ -242,7 +256,9 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
 
-    private fun DslPrintStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: DslPrintStream.() -> Unit) =
+    private fun DslPrintStream.emitTryCatch(nodeVar: NodeVar,
+                                            thrownExceptions: Set<String>,
+                                            insides: DslPrintStream.() -> Unit) =
         this.apply {
             +" try " + {
                 +egen()

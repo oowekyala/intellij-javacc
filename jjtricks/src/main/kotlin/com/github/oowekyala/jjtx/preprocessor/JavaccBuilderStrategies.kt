@@ -147,7 +147,6 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         }.sorted()
 
 
-
     override fun parserDeclarations(): String = """
         protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
 
@@ -175,11 +174,11 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
         return when {
-            d == null -> "jjtree.closeNodeScope($n, true);"
+            d == null        -> "jjtree.closeNodeScope($n, true);"
             d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(
                 nodeVar
             )});"
-            else -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
+            else             -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
         }
     }
 
@@ -188,17 +187,18 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
 
     override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
-        expression.replace("jjtThis", nodeVar.varName)
+        jjtThisRegex.replace(expression, nodeVar.varName)
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 
     private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
     private val parserConstantsSimpleName = "${grammarOptions.parserSimpleName}TreeConstants"
 
-    override val supportFileGen: List<FileGenTask> get() = listOf(
-        parserStateGen(),
-        parserConstantsGen()
-    )
+    override val supportFileGen: List<FileGenTask>
+        get() = listOf(
+            parserStateGen(),
+            parserConstantsGen()
+        )
 
     private fun parserStateGen() = FileGenTask(
         genFqcn = grammarOptions.addNodePackage(parserStateSimpleName),
@@ -215,3 +215,5 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     )
 
 }
+
+private val jjtThisRegex = Regex("\\bjjtThis\\b")
