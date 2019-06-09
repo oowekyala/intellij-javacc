@@ -7,9 +7,6 @@ import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.JsonPointer
 import kotlinx.collections.immutable.toImmutableList
 import org.everit.json.schema.ValidationException
-import org.everit.json.schema.loader.SchemaLoader
-import org.json.JSONObject
-import org.json.JSONTokener
 
 
 fun DataAstNode.validateJjtopts(ctx: JjtxContext): Int =

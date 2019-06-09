@@ -2,8 +2,8 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.CommonGenTask
+import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean

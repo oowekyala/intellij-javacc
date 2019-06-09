@@ -143,14 +143,14 @@ data class FileVBean(
     }
 }
 
-data class VisitorVBean(
+data class FileGenVBean(
     val id: String,
     val `class`: ClassVBean,
     val context: Map<String, Any?>
 ) {
 
     companion object {
-        fun fromVisitorBean(id: String, bean: FileGenBean) = VisitorVBean(
+        fun fromVisitorBean(id: String, bean: FileGenBean) = FileGenVBean(
             id = id,
             `class` = ClassVBean(bean.genClassName!!),
             context = bean.context ?: emptyMap()
@@ -179,7 +179,7 @@ data class ParserVBean(
 )
 
 data class RunVBean(
-    val visitors: Map<String, VisitorVBean>
+    val commonGen: Map<String, FileGenVBean>
 ) {
     companion object {
         fun create(ctx: JjtxContext): RunVBean {
@@ -187,11 +187,11 @@ data class RunVBean(
                 ctx.jjtxOptsModel
                     .let { it as? OptsModelImpl }
                     ?.commonGen
-                    ?.mapValues { VisitorVBean.fromVisitorBean(it.key, it.value) }
+                    ?.mapValues { FileGenVBean.fromVisitorBean(it.key, it.value) }
                     ?: emptyMap()
 
             return RunVBean(
-                visitors = visitors
+                commonGen = visitors
             )
         }
     }

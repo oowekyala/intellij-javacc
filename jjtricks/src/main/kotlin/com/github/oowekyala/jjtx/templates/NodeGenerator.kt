@@ -11,25 +11,9 @@ import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
 import java.util.regex.PatternSyntaxException
-import kotlin.collections.List
-import kotlin.collections.Map
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.emptyList
-import kotlin.collections.isNotEmpty
-import kotlin.collections.iterator
-import kotlin.collections.joinToString
-import kotlin.collections.listOfNotNull
 import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mapOf
-import kotlin.collections.minus
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableSetOf
-import kotlin.collections.partition
-import kotlin.collections.plus
-import kotlin.collections.plusAssign
-import kotlin.collections.toTypedArray
 
 
 //    # Match predicates in order
@@ -138,6 +122,12 @@ private fun AstMap.toNodeGenerationSchemeImpl(ctx: JjtxContext): GrammarGenerati
             is AstScalar -> {
                 if (node.type == ScalarType.NULL) {
                     waitingForNextPattern += newMatches
+                } else {
+                    ctx.messageCollector.report(
+                        "Unexpected scalar, will be ignored",
+                        MessageCategory.WRONG_TYPE,
+                        position
+                    )
                 }
                 emptyList()
             }

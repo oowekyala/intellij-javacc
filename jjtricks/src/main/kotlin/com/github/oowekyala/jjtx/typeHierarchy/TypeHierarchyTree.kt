@@ -5,7 +5,9 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.MessageCategory.*
 import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.JsonPointer
+import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.TreeOps
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
