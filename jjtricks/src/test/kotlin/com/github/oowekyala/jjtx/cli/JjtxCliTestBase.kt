@@ -3,17 +3,16 @@ package com.github.oowekyala.jjtx.cli
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.testutil.SrcTestResources
 import com.github.oowekyala.jjtx.testutil.getStackFrame
-import com.github.oowekyala.jjtx.util.exists
+import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.TrailingSpacesFilterOutputStream
-import com.github.oowekyala.jjtx.util.isDirectory
-import com.github.oowekyala.jjtx.util.isFile
 import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
 import junit.framework.Assert.assertEquals
+import junit.framework.ComparisonFailure
 import org.apache.commons.io.FileUtils.copyDirectory
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -40,7 +39,7 @@ import java.util.*
  *
  * @author Clément Fournier
  */
-abstract class JjtxCliTestBase {
+abstract class JjtxCliTestBase(val replaceExpected: Boolean = false) {
 
 
     inner class TestBuilder(var subpath: String) {
@@ -157,7 +156,7 @@ abstract class JjtxCliTestBase {
 
         if (test.expectedOutput != null) {
             try {
-                assertDirEquals(test.expectedOutput, test.actualOutput)
+                assertDirEquals(test.expectedOutput, test.actualOutput, doReplaceExpected = replaceExpected)
             } catch (e: FileComparisonFailure) {
                 throw e
             }
@@ -191,7 +190,7 @@ abstract class JjtxCliTestBase {
 
 }
 
-private fun assertDirEquals(expected: Path, actual: Path) {
+private fun assertDirEquals(expected: Path, actual: Path, doReplaceExpected: Boolean) {
 
     /**
      * Returns the set of paths that exist in the [reference] and
@@ -199,7 +198,7 @@ private fun assertDirEquals(expected: Path, actual: Path) {
      * Throws [FileComparisonFailure] if some files in [reference]
      * don't match their [inspected] counterpart.
      */
-    fun walk(reference: Path, inspected: Path): Set<Path> {
+    fun walk(reference: Path, inspected: Path, doReplaceExpected: Boolean): Set<Path> {
         val found = mutableSetOf<Path>()
 
         if (!reference.exists()) {
@@ -211,32 +210,47 @@ private fun assertDirEquals(expected: Path, actual: Path) {
             override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
                 val result = super.visitFile(file, attrs)
 
+                if (file.extension == "css") return result // IGNORE CSS FILES
+
                 // get the relative file name from path "one"
                 val relativize = reference.relativize(file)
                 // construct the path for the counterpart file in "other"
                 val actualFile = inspected.resolve(relativize)
 
-                val expectedText = file.readText()
+                fun String.normalize() = replace(Regex("\\s+\n"), "\n").trim()
+
+
+                val expectedText = file.readText().normalize()
 
                 if (!actualFile.exists()) {
-
-                    throw FileComparisonFailure(
-                        "File $relativize missing in $inspected",
-                        expectedText,
-                        "",
-                        actualFile.toString()
-                    )
+                    if (doReplaceExpected) {
+                        actualFile.overwrite {
+                            expectedText
+                        }
+                    } else
+                        throw ComparisonFailure(
+                            "File $relativize missing in $inspected",
+                            expectedText,
+                            ""
+                        )
                 }
 
-                val actualText = actualFile.readText()
+                val actualText = actualFile.readText().normalize()
 
-                if (!Comparing.equal(expectedText, actualText)) {
-                    throw FileComparisonFailure(
-                        "Text mismatch in file $actualFile",
-                        expectedText,
-                        actualText,
-                        file.toString()
-                    )
+
+
+                if (expectedText != actualText) {
+                    if (doReplaceExpected) {
+                        file.overwrite {
+                            actualText
+                        }
+                    } else {
+                        throw ComparisonFailure(
+                            "Text mismatch in file $actualFile",
+                            expectedText,
+                            actualText
+                        )
+                    }
                 }
 
                 found.add(relativize)
@@ -248,8 +262,7 @@ private fun assertDirEquals(expected: Path, actual: Path) {
         return found
     }
 
-    val expectedInActual = walk(expected, actual)
-    val actualInExpected = walk(actual, expected)
+    val expectedInActual = walk(expected, actual, doReplaceExpected)
+    val actualInExpected = walk(actual, expected, doReplaceExpected)
     assertEquals(expectedInActual, actualInExpected)
 }
-

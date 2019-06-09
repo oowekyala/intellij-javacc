@@ -21,7 +21,8 @@ class JccTranslationCliTests : JjtxCliTestBase() {
     @Test
     fun testNoCastExceptions() = doTest(
         "SimpleExprs",
-        "gen:javacc"
+        "gen:javacc",
+        "--warn"
     )
 
     @Test

@@ -44,6 +44,9 @@ interface JjtxBuilderStrategy {
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
+    /**
+     * List of supporting files this strategy needs to generate.
+     */
     val supportFileGen: List<FileGenTask>
 
 }

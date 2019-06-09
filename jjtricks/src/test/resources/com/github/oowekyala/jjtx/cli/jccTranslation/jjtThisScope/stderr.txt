@@ -2,5 +2,9 @@ JJTricks v1.0
 (Run with -h parameter for a usage summary)
 Running tasks [gen:javacc]
 
-[init]              Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-[gen:javacc]        Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+[init]                Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+[gen:javacc-support]  Generated 1 class in @output@
+[gen:javacc]          Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+
+JJTricks exited with 1 warning
+Rerun with --warn option for more details

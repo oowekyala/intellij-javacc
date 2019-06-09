@@ -3,8 +3,6 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.intellij.openapi.util.text.StringUtil
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.velocity.VelocityContext
@@ -55,36 +53,14 @@ fun Path.createFile() {
 fun String.wrap(lineLength: Int, indent: Int = 0): String =
     WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)
 
+fun Path.overwrite(contents: () -> String) = toFile().apply {
+    parentFile.mkdirs()
+    createNewFile()
+    writeText(contents())
+}
 
 fun String.toPath() = Paths.get(this)
 
-fun JsonObject.asMap(): Map<String, JsonElement> {
-    return object : Map<String, JsonElement> {
-        val obj = this@asMap
-
-        override val keys: Set<String>
-            get() = obj.keySet()
-        override val size: Int
-            get() = obj.size()
-        override val values: Collection<JsonElement>
-            get() = obj.entrySet().map { it.value }
-
-        override fun containsKey(key: String): Boolean = obj.has(key)
-
-        override fun containsValue(value: JsonElement): Boolean =
-            obj.entrySet().any {
-                it.value == value
-            }
-
-        override fun get(key: String): JsonElement? = obj[key]
-
-        override fun isEmpty(): Boolean = obj.keySet().isEmpty()
-
-        override val entries: Set<Map.Entry<String, JsonElement>>
-            get() = obj.entrySet()
-
-    }
-}
 
 fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
     StringWriter().also {

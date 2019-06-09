@@ -22,21 +22,26 @@ import com.github.oowekyala.jjtx.util.splitAroundFirst
 import org.apache.velocity.VelocityContext
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.PrintStream
 import java.nio.file.Path
 
 
-enum class JjtxTaskKey(val ref: String) {
-    DUMP_CONFIG("help:dump-config"),
-    GEN_VISITORS("gen:common"),
-    GEN_NODES("gen:nodes"),
-    GEN_JAVACC("gen:javacc");
+enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> JjtxTask) {
+    DUMP_CONFIG("help:dump-config", ::DumpConfigTask),
+    GEN_COMMON("gen:common", ::CommonGenTask),
+    GEN_NODES("gen:nodes", ::GenerateNodesTask),
+    GEN_JAVACC("gen:javacc", ::GenerateJavaccTask),
+
+    GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask);
 
 
     val namespace = ref.substringBefore(':')
     val localName = ref.substringAfter(':')
 
     override fun toString(): String = ref
+
+
+    fun execute(taskCtx: TaskCtx) = taskBuilder(taskCtx).execute()
+
 
     companion object {
         private val nss = mutableMapOf<String, MutableList<String>>()
@@ -95,29 +100,36 @@ val JjtxContext.chainDump
             .joinToString(separator = " -> ")
 
 
-/**
- * Dumps the flattened configuration as a YAML file to stdout.
- */
-class DumpConfigTask(private val ctx: JjtxContext,
-                     private val out: PrintStream) : JjtxTask() {
-
-    override fun execute() {
-
-        val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
-
-
-        out.println("# Fully resolved JJTricks configuration")
-        out.println("# Config file chain: ${ctx.chainDump}")
-        out.println(opts.toYaml())
-        out.flush()
-    }
-}
-
-abstract class GenerationTaskBase(
+data class TaskCtx(
     val ctx: JjtxContext,
     val outputDir: Path,
     val otherSourceRoots: List<Path>
-) : JjtxTask() {
+)
+
+/**
+ * Dumps the flattened configuration as a YAML file to stdout.
+ */
+class DumpConfigTask(private val ctx: TaskCtx) : JjtxTask() {
+
+    override fun execute() {
+        ctx.run {
+            val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return // TODO report
+
+            ctx.io.stdout.run {
+                println("# Fully resolved JJTricks configuration")
+                println("# Config file chain: ${ctx.chainDump}")
+                println(opts.toYaml())
+                flush()
+            }
+        }
+    }
+}
+
+abstract class GenerationTaskBase(taskCtx: TaskCtx) : JjtxTask() {
+
+    protected val ctx: JjtxContext = taskCtx.ctx
+    private val outputDir: Path = taskCtx.outputDir
+    private val otherSourceRoots: List<Path> = taskCtx.otherSourceRoots
 
     final override fun execute() {
 
@@ -131,7 +143,7 @@ abstract class GenerationTaskBase(
 
         val rootCtx = rootCtx()
 
-        ctx.messageCollector.reportNormal(configString?.let { "Executing tasks '$it'" } ?: "Executing")
+        configString?.let { ctx.messageCollector.reportNormal("Executing tasks '$it'") }
 
         for (gen in tasks) {
 
@@ -153,13 +165,22 @@ abstract class GenerationTaskBase(
             }
         }
 
-        if (generated > 0)
-            ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
-        if (aborted > 0)
-            ctx.messageCollector.reportNormal("$aborted classes were not generated because found in other output roots")
-        if (ex > 0)
-            ctx.messageCollector.reportNormal("$ex classes were not generated because of an exception")
+        fun reportNum(i: Int, message: (Pair<String, String>) -> String) {
+            if (i > 0) {
+                val withClass = if (i == 1) "1 class" to "was" else "$i classes" to "were"
+                ctx.messageCollector.reportNormal(message(withClass))
+            }
+        }
 
+        reportNum(generated) { (num, _) ->
+            "Generated $num in $outputDir"
+        }
+        reportNum(aborted) { (num, verb) ->
+            "$num $verb not generated because found in other output roots"
+        }
+        reportNum(ex) { (num, verb) ->
+            "$num $verb not generated because of an exception"
+        }
     }
 
     protected abstract val generationTasks: Collection<FileGenTask>
@@ -170,13 +191,12 @@ abstract class GenerationTaskBase(
 }
 
 /**
- * Generate the visitors marked for execution in the opts file.
+ * Generate the files that don't depend on any node bean.
  */
-class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<Path>)
-    : GenerationTaskBase(ctx, outputDir, sourceRoots) {
+class CommonGenTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
 
 
-    override val exceptionCtx: String = "Generating visitor"
+    override val exceptionCtx: String = "Generating common files"
 
     override val generationTasks: Collection<VisitorGenerationTask> by lazy {
         ctx.jjtxOptsModel.commonGen.mapNotNull { (k, v) ->
@@ -195,9 +215,7 @@ class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<
 /**
  * Generate the visitors marked for execution in the opts file.
  */
-class GenerateNodesTask(ctx: JjtxContext,
-                        outputDir: Path,
-                        otherSourceRoots: List<Path>) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
+class GenerateNodesTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
 
     override val generationTasks: List<FileGenTask> by lazy {
         ctx.jjtxOptsModel
@@ -214,47 +232,62 @@ class GenerateNodesTask(ctx: JjtxContext,
         VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
 
     override val configString: String? = null
-    override val exceptionCtx: String = "Generating nodes"
+    override val exceptionCtx: String = "Generating node files"
 }
 
 
 /**
  * Compile the grammar to a JavaCC file.
  */
-class GenerateJavaccTask(val ctx: JjtxContext,
-                         private val outputDir: Path) : JjtxTask() {
+class GenerateJavaccTask(private val taskCtx: TaskCtx) : JjtxTask() {
 
 
     override fun execute() {
 
+        taskCtx.run {
 
-        val invalidSyntax = ctx.grammarFile.reportSyntaxErrors(ctx)
+            val invalidSyntax = ctx.grammarFile.reportSyntaxErrors(ctx)
 
-        if (invalidSyntax) {
-            return
-        }
+            if (invalidSyntax) {
+                return
+            }
 
-        val o = outputDir.resolve(ctx.jjtxOptsModel.parserPackage.replace('.', '/')).resolve(ctx.grammarName + ".jj")
+            val o =
+                outputDir.resolve(ctx.jjtxOptsModel.parserPackage.replace('.', '/')).resolve(ctx.grammarName + ".jj")
 
-        if (!o.exists()) {
-            o.createFile()
-        }
+            if (!o.exists()) {
+                o.createFile()
+            }
 
-        val opts = ctx.jjtxOptsModel.javaccGen
+            val opts = ctx.jjtxOptsModel.javaccGen
 
-        try {
+            try {
 
-            val builder = VanillaJjtreeBuilder(ctx.grammarFile.grammarOptions, opts)
+                val builder = VanillaJjtreeBuilder(ctx.grammarFile.grammarOptions, opts)
 
-            FileOutputStream(o.toFile()).buffered()
-                .use {
-                    toJavacc(ctx.grammarFile, it, opts, builder)
-                }
+                FileOutputStream(o.toFile()).buffered()
+                    .use {
+                        toJavacc(ctx.grammarFile, it, opts, builder)
+                    }
 
-            ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")
+                ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")
 
-        } catch (ioe: IOException) {
-            ctx.messageCollector.reportException(ioe, contextStr = "Generating JavaCC file", fatal = false)
+            } catch (ioe: IOException) {
+                ctx.messageCollector.reportException(ioe, contextStr = "Generating JavaCC file", fatal = false)
+            }
         }
     }
 }
+
+class GenerateJavaccSupportFilesTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
+
+    override val configString: String? = null
+    override val exceptionCtx: String = "Generating JavaCC support files"
+
+    override val generationTasks: Collection<FileGenTask> by lazy {
+        VanillaJjtreeBuilder(ctx.grammarFile.grammarOptions, ctx.jjtxOptsModel.javaccGen).supportFileGen
+    }
+
+}
+
+

@@ -3,7 +3,7 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
-import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
+import com.github.oowekyala.jjtx.tasks.CommonGenTask
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean
@@ -76,7 +76,7 @@ interface JjtxContext {
     /**
      * Velocity context shared by every file generation task.
      * This doesn't contain the visitors, because that would
-     * introduce a cyclic dependency. After the [GenerateVisitorsTask]
+     * introduce a cyclic dependency. After the [CommonGenTask]
      * is done, the [GenerateNodesTask] uses the completed
      * visitor beans under the key "run", a [RunVBean].
      */

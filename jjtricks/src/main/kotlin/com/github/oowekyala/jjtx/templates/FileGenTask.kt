@@ -96,9 +96,9 @@ open class FileGenTask internal constructor(
                                   sharedCtx: VelocityContext,
                                   vararg additionalBindings: Pair<String, Any>): VelocityContext {
 
-        val local = VelocityContext(additionalBindings.toMap(), sharedCtx)
+        val local = VelocityContext(additionalBindings.toMap(mutableMapOf()), sharedCtx)
 
-        return VelocityContext(context, local)
+        return VelocityContext(context.toMutableMap(), local)
     }
 
 

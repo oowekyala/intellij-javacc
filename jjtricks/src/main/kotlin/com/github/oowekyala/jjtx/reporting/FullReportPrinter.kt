@@ -33,7 +33,7 @@ class FullReportPrinter(
             minSeverity = minSeverity,
             contextStr = contextStr,
             printStackTrace = printStackTrace,
-            indent = indent + baseIndent
+            indent = baseIndent
         )
 
 

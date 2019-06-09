@@ -25,6 +25,7 @@ class AggregateReportPrinter private constructor(
             stream = stream,
             minSeverity = Severity.IGNORE,
             printStackTrace = false,
+            contextStr = context,
             indent = if (context == null) "" else baseIndent
         )
 
@@ -79,10 +80,7 @@ class AggregateReportPrinter private constructor(
         if (reportEntry.severity > Severity.NORMAL) {
 
             val thrown = reportEntry.thrown
-            if (thrown != null && exceptionMerger.add(
-                    thrown,
-                    reportEntry.message
-                ) && reportEntry.positions.isNotEmpty()) {
+            if (thrown != null && exceptionMerger.add(thrown, reportEntry.message) && reportEntry.positions.isNotEmpty()) {
                 myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
             } else {
                 // an error

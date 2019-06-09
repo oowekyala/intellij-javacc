@@ -19,10 +19,11 @@ import kotlin.reflect.KProperty
  *
  * @author Clément Fournier
  */
-internal class OptsModelImpl(val ctx: JjtxContext,
+internal class OptsModelImpl(rootCtx: JjtxContext,
                              override val parentModel: JjtxOptsModel,
                              data: AstMap) : JjtxOptsModel {
 
+    private val ctx = rootCtx.subContext("optsParsing")
 
     private val jjtx: Namespacer = data namespace "jjtx"
 
@@ -54,7 +55,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     }
 
     private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
-        TypeHierarchyTree.fromData(it, ctx)
+        TypeHierarchyTree.fromData(it, ctx.subContext("typeHierarchy"))
     }
 
     /**
@@ -63,7 +64,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
      * This is what's printed by help:dump-config
      */
     internal val resolvedTypeHierarchy: TypeHierarchyTree by lazy {
-        th.process(ctx)
+        th.process(ctx.subContext("typeHierarchy"))
     }
 
     override val typeHierarchy: NodeVBean by lazy {
@@ -76,7 +77,7 @@ internal class OptsModelImpl(val ctx: JjtxContext,
 
     override val nodeGen: GrammarGenerationScheme? by lazy {
         // keep all parent keys, but override them
-        rawNodeGens?.toNodeGenerationScheme(ctx) ?: parentModel.nodeGen
+        rawNodeGens?.toNodeGenerationScheme(ctx.subContext("nodeGen")) ?: parentModel.nodeGen
     }
 
 }

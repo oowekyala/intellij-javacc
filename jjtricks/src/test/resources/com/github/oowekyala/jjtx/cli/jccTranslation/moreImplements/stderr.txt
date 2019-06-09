@@ -2,6 +2,7 @@ JJTricks v1.0
 (Run with -h parameter for a usage summary)
 Running tasks [gen:javacc]
 
-[init]              No jjtopts file found for grammar SimpleExprs
-[init]              Config chain: /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-[gen:javacc]        Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+[init]                No jjtopts file found for grammar SimpleExprs
+[init]                Config chain: /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+[gen:javacc-support]  Generated 1 class in @output@
+[gen:javacc]          Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj

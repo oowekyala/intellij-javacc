@@ -1,9 +1,9 @@
 JJTricks v1.0
 (Run with -h parameter for a usage summary)
-Running tasks [gen:common, gen:nodes, gen:javacc]
+Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
 
-[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[gen:nodes]         Executing
+[init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+[gen:nodes]
     [ERROR]    com.google.googlejavaformat.java.FormatterException
                <identifier> expected
                in @output@/org/expr/Root.java:2:13:
@@ -24,8 +24,9 @@ Running tasks [gen:common, gen:nodes, gen:javacc]
                in @output@/org/expr/ExIntegerLiteral.java:2:13:
                   public class extends org.expr.ExIntegerLiteral {
                                ^
-[gen:nodes]         Generated 6 classes in @output@
-[gen:javacc]        Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
+[gen:nodes]           Generated 6 classes in @output@
+[gen:javacc-support]  Generated 1 class in @output@
+[gen:javacc]          Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
 
 JJTricks exited with 6 errors
 Rerun with --warn option for more details

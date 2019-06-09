@@ -2,5 +2,14 @@ JJTricks v1.0
 (Run with -h parameter for a usage summary)
 Running tasks [gen:javacc]
 
-[init]              Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-[gen:javacc]        Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+[init]
+    [INFO]     Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+[:optsParsing:typeHierarchy]
+    [WARNING]  Regex pattern matches no nodes
+               in @tmp@/SimpleExprs.jjtopts.yaml:13:12:
+                            - "r:.*Expression"
+                              ^
+[gen:javacc-support]
+    [INFO]     Generated 1 class in @output@
+[gen:javacc]
+    [INFO]     Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj

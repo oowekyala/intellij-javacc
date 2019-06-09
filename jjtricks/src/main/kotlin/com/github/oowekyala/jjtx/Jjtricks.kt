@@ -1,14 +1,16 @@
 package com.github.oowekyala.jjtx
 
+import com.github.oowekyala.ijcc.JjtxCoreEnvironment
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.tasks.*
+import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
-import com.github.oowekyala.ijcc.JjtxCoreEnvironment
+import com.github.oowekyala.jjtx.tasks.TaskCtx
+import com.github.oowekyala.jjtx.tasks.chainDump
 import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
@@ -160,38 +162,33 @@ class Jjtricks(
 
         env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
 
-
-        if (DUMP_CONFIG in tasks) {
-            ctx.subContext(DUMP_CONFIG).let {
+        fun runTask(key: JjtxTaskKey) {
+            ctx.subContext(key).let {
                 it.messageCollector.catchException(null) {
-                    DumpConfigTask(it, io.stdout).execute()
+                    key.execute(TaskCtx(it, outputRoot, sourceRoots.toList()))
                 }
             }
         }
 
-        // node generation depends on the visitors
-        if (GEN_VISITORS in tasks || GEN_NODES in tasks) {
-            ctx.subContext(GEN_VISITORS).let {
-                it.messageCollector.catchException(null) {
-                    GenerateVisitorsTask(it, outputRoot, sourceRoots.toList()).execute()
-                }
-            }
+        if (DUMP_CONFIG in tasks) {
+            runTask(DUMP_CONFIG)
+        }
+
+        // node generation depends on the visitors TODO is that sensible?
+        if (GEN_COMMON in tasks || GEN_NODES in tasks) {
+            runTask(GEN_COMMON)
         }
 
         if (GEN_NODES in tasks) {
-            ctx.subContext(GEN_NODES).let {
-                it.messageCollector.catchException(null) {
-                    GenerateNodesTask(it, outputRoot, sourceRoots.toList()).execute()
-                }
-            }
+            runTask(GEN_NODES)
+        }
+
+        if (GEN_SUPPORT in tasks || GEN_JAVACC in tasks) {
+            runTask(GEN_SUPPORT)
         }
 
         if (GEN_JAVACC in tasks) {
-            ctx.subContext(GEN_JAVACC).let {
-                it.messageCollector.catchException(null) {
-                    GenerateJavaccTask(it, outputRoot).execute()
-                }
-            }
+            runTask(GEN_JAVACC)
         }
 
         ctx.messageCollector.concludeReport()
