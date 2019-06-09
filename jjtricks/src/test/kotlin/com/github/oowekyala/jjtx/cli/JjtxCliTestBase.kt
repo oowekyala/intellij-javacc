@@ -228,10 +228,11 @@ private fun assertDirEquals(expected: Path, actual: Path, doReplaceExpected: Boo
                             expectedText
                         }
                     } else
-                        throw ComparisonFailure(
+                        throw FileComparisonFailure(
                             "File $relativize missing in $inspected",
                             expectedText,
-                            ""
+                            "",
+                            actualFile.toString()
                         )
                 }
 
@@ -245,10 +246,11 @@ private fun assertDirEquals(expected: Path, actual: Path, doReplaceExpected: Boo
                             actualText
                         }
                     } else {
-                        throw ComparisonFailure(
+                        throw FileComparisonFailure(
                             "Text mismatch in file $actualFile",
                             expectedText,
-                            actualText
+                            actualText,
+                            file.toString()
                         )
                     }
                 }

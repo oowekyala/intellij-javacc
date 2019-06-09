@@ -9,15 +9,15 @@ public interface SimpleExprParserTreeConstants {
   public int JJTLITERAL = 2;
   public int JJTNULLLITERAL = 3;
   public int JJTINTEGERLITERAL = 4;
-  public int JJTEXPARENTHESIZEDEXPR = 5;
-  public int JJTEXBINARYEXPR = 6;
+  public int JJTPARENTHESIZEDEXPR = 5;
+  public int JJTBINARYEXPR = 6;
   public String[] jjtNodeName = {
     "MyNodeParent",
     "Expression",
     "Literal",
     "NullLiteral",
     "IntegerLiteral",
-    "ExParenthesizedExpr",
-    "ExBinaryExpr",
+    "ParenthesizedExpr",
+    "BinaryExpr",
   };
 }

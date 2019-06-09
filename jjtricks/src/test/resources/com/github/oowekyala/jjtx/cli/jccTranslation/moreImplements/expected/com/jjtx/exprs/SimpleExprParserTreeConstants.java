@@ -5,11 +5,11 @@
 package com.jjtx.exprs;
 public interface SimpleExprParserTreeConstants {
   public int JJTASTNODE = 0;
-  public int JJTASTPARENTHESIZEDEXPR = 1;
-  public int JJTASTINTEGERLITERAL = 2;
-  public int JJTASTBINARYEXPR = 3;
-  public int JJTASTNULLLITERAL = 4;
+  public int JJTPARENTHESIZEDEXPR = 1;
+  public int JJTINTEGERLITERAL = 2;
+  public int JJTBINARYEXPR = 3;
+  public int JJTNULLLITERAL = 4;
   public String[] jjtNodeName = {
-    "ASTNode", "ASTParenthesizedExpr", "ASTIntegerLiteral", "ASTBinaryExpr", "ASTNullLiteral",
+    "ASTNode", "ParenthesizedExpr", "IntegerLiteral", "BinaryExpr", "NullLiteral",
   };
 }
