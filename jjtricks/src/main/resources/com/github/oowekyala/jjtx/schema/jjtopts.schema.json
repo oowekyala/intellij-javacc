@@ -244,6 +244,13 @@
             }
           }
         },
+        "commonGenExcludes": {
+          "type": "array",
+          "description": "IDs of excluded tasks, perhaps inherited from the parent config file.",
+          "items": {
+            "type": "string"
+          }
+        },
         "commonGen": {
           "type": "object",
           "description": "Map of ids to file generation tasks. Those tasks will be executed with the global context of the run.",
@@ -254,5 +261,4 @@
       }
     }
   }
-}
 }

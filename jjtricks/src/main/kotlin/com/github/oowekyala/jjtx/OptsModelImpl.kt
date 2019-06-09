@@ -36,11 +36,11 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
     override val isTrackTokens: Boolean by jjtx.withDefault { parentModel.isTrackTokens }
 
-    private val javaccGenImpl by jjtx.withDefault<JjtreeCompatBean?>("javaccGen") { null }
-
-    override val javaccGen: JavaccGenOptions by lazy {
-        javaccGenImpl?.toModel() ?: parentModel.javaccGen
-    }
+    override val javaccGen: JavaccGenOptions by jjtx.withDefault<JjtreeCompatBean?>("javaccGen") {
+        null
+    }.map {
+        it?.toModel() ?: parentModel.javaccGen
+    }.lazily()
 
 
     override val templateContext: Map<String, Any> by
@@ -50,21 +50,21 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
             parentModel.templateContext + deepest
         }.lazily()
 
-    override val commonGen: Map<String, FileGenBean> by jjtx.withDefault("commonGen") {
-        emptyMap<String, FileGenBean>()
+    private val commonGenExcludes by jjtx.withDefault { emptyList<String>() }
+
+    override val commonGen: Map<String, FileGenBean> by jjtx.processing("commonGen") {
+        ((it ?: emptyMap()) - commonGenExcludes)
     }
 
-    private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
-        TypeHierarchyTree.fromData(it, ctx.subContext("typeHierarchy"))
-    }
 
     /**
      * Type hierarchy after resolution against the grammar, before
      * transformation to [NodeVBean] (which is just a mapping process).
      * This is what's printed by help:dump-config
      */
-    internal val resolvedTypeHierarchy: TypeHierarchyTree by lazy {
-        th.process(ctx.subContext("typeHierarchy"))
+    internal val resolvedTypeHierarchy: TypeHierarchyTree by jjtx.parsing("typeHierarchy") {
+        val subCtx = ctx.subContext("typeHierarchy")
+        TypeHierarchyTree.fromData(it, subCtx).process(subCtx)
     }
 
     override val typeHierarchy: NodeVBean by lazy {
@@ -72,12 +72,9 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
         NodeVBean.toBean(resolvedTypeHierarchy, ctx)
     }
 
-
-    private val rawNodeGens: DataAstNode? by JsonProperty(jjtx, "nodeGen")
-
-    override val nodeGen: GrammarGenerationScheme? by lazy {
+    override val nodeGen: GrammarGenerationScheme? by jjtx.parsing {
         // keep all parent keys, but override them
-        rawNodeGens?.toNodeGenerationScheme(ctx.subContext("nodeGen")) ?: parentModel.nodeGen
+        it?.toNodeGenerationScheme(ctx.subContext("nodeGen")) ?: parentModel.nodeGen
     }
 
 }
@@ -88,6 +85,17 @@ private inline fun <reified T> Namespacer.withDefault(propName: String? = null,
         .map {
             it?.load<T>() ?: default()
         }.lazily()
+
+private inline fun <reified T> Namespacer.processing(propName: String? = null,
+                                                     crossinline mapper: (T?) -> T): ReadOnlyProperty<Any, T> =
+    JsonProperty(this, propName)
+        .map {
+            mapper(it?.load<T>())
+        }.lazily()
+
+private inline fun <reified T> Namespacer.parsing(propName: String? = null,
+                                                  crossinline mapper: (DataAstNode?) -> T): ReadOnlyProperty<Any, T> =
+    JsonProperty(this, propName).map { mapper(it) }.lazily()
 
 
 private class JsonProperty(private val namespacer: Namespacer, val name: String? = null) :
