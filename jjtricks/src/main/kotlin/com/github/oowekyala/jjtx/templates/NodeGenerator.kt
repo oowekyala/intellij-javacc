@@ -245,14 +245,14 @@ data class NodeGenerationScheme(
     val formatter: SourceFormatter?
 ) {
 
-    fun toFileGenTasks(): List<FileGenTask> =
+    fun toFileGenTasks(ctx: JjtxContext): List<FileGenTask> =
         nodeBeans.map {
             FileGenTask(
                 template = template,
                 context = mapOf("node" to it).plus(context),
                 formatter = formatter,
                 genFqcn = genClassTemplate ?: it.klass.qualifiedName
-            )
+            ).resolveStaticTemplates(ctx)
         }
 
 }

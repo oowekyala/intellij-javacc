@@ -2,8 +2,6 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.tasks.CommonGenTask
-import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.GrammarVBean
 import com.github.oowekyala.jjtx.templates.RunVBean
@@ -14,6 +12,7 @@ import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.ResourceResolver
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.jjtx.util.path
+import com.github.oowekyala.jjtx.util.plus
 import com.intellij.openapi.project.Project
 import org.apache.velocity.VelocityContext
 import java.nio.file.Path
@@ -76,12 +75,17 @@ interface JjtxContext {
     /**
      * Velocity context shared by every file generation task.
      * This doesn't contain the visitors, because that would
-     * introduce a cyclic dependency. After the [CommonGenTask]
-     * is done, the [GenerateNodesTask] uses the completed
-     * visitor beans under the key "run", a [RunVBean].
+     * introduce a cyclic dependency. This is used to evaluate
+     * the static templates of the options file itself.
+     */
+    val initialVelocityContext: VelocityContext
+
+    /**
+     * This is the root context used by all file gen tasks,
+     * it has a [RunVBean] under key "run" to represent the
+     * resolved tasks to run.
      */
     val globalVelocityContext: VelocityContext
-
 
     val resourceResolver: ResourceResolver<NamedInputStream>
 
@@ -152,12 +156,17 @@ private class JjtxRootContext(
     }
 
 
-    override val globalVelocityContext: VelocityContext by lazy {
+    override val initialVelocityContext: VelocityContext by lazy {
         VelocityContext().also {
             it["grammar"] = GrammarVBean.create(this)
             it["global"] = jjtxOptsModel.templateContext
+            // allows escaping the "#" easily.
             it["H"] = "#"
         }
+    }
+
+    override val globalVelocityContext: VelocityContext by lazy {
+        initialVelocityContext + mapOf("run" to RunVBean.create(this))
     }
 
 

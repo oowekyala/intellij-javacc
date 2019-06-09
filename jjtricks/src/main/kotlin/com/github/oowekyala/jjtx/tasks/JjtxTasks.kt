@@ -10,9 +10,7 @@ import com.github.oowekyala.jjtx.reporting.reportException
 import com.github.oowekyala.jjtx.reporting.reportNormal
 import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
 import com.github.oowekyala.jjtx.templates.FileGenTask
-import com.github.oowekyala.jjtx.templates.RunVBean
 import com.github.oowekyala.jjtx.templates.Status
-import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
 import com.github.oowekyala.jjtx.util.createFile
 import com.github.oowekyala.jjtx.util.dataAst.toYaml
 import com.github.oowekyala.jjtx.util.exists
@@ -198,15 +196,13 @@ class CommonGenTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
 
     override val exceptionCtx: String = "Generating common files"
 
-    override val generationTasks: Collection<VisitorGenerationTask> by lazy {
-        ctx.jjtxOptsModel.commonGen.mapNotNull { (k, v) ->
-            v.toFileGen(ctx, null, k)
-        }
+    override val generationTasks: Collection<FileGenTask> by lazy {
+        ctx.jjtxOptsModel.commonGen.values
     }
 
 
     override val configString: String by lazy {
-        generationTasks.joinToString { it.id }
+        ctx.jjtxOptsModel.commonGen.keys.joinToString()
     }
 
 
@@ -221,15 +217,12 @@ class GenerateNodesTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
         ctx.jjtxOptsModel
             .nodeGen
             ?.templates
-            ?.flatMap { it.toFileGenTasks() }
+            ?.flatMap { it.toFileGenTasks(ctx) }
             ?: run {
                 ctx.messageCollector.reportNormal("No node generation scheme found (set jjtx.nodeGen)")
                 emptyList<FileGenTask>()
             }
     }
-
-    override fun rootCtx(): VelocityContext =
-        VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
 
     override val configString: String? = null
     override val exceptionCtx: String = "Generating node files"

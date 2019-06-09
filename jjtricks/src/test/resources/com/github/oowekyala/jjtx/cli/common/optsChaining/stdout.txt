@@ -1,6 +1,7 @@
 # Fully resolved JJTricks configuration
 # Config file chain: DummyExpr.jjtopts.yaml -> DummyExprParent.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
+  commonGen: {}
   nodePackage: org.expr
   nodePrefix: Ex
   templateContext: {}
@@ -10,5 +11,4 @@ jjtx:
     - org.expr.ExExpression
     - org.expr.ExNullLiteral
     - org.expr.ExBinaryExpression
-  visitors: {}
 

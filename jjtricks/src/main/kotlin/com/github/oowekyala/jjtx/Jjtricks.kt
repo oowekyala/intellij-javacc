@@ -174,8 +174,7 @@ class Jjtricks(
             runTask(DUMP_CONFIG)
         }
 
-        // node generation depends on the visitors TODO is that sensible?
-        if (GEN_COMMON in tasks || GEN_NODES in tasks) {
+        if (GEN_COMMON in tasks) {
             runTask(GEN_COMMON)
         }
 

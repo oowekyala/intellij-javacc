@@ -25,7 +25,7 @@ Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
                   public class extends org.expr.ExIntegerLiteral {
                                ^
 [gen:nodes]           Generated 6 classes in @output@
-[gen:javacc-support]  Generated 1 class in @output@
+[gen:javacc-support]  Generated 2 classes in @output@
 [gen:javacc]          Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
 
 JJTricks exited with 6 errors

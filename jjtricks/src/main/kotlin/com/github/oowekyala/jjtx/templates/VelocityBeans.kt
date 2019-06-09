@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.OptsModelImpl
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.TreeOps
@@ -150,10 +149,10 @@ data class FileGenVBean(
 ) {
 
     companion object {
-        fun fromVisitorBean(id: String, bean: FileGenBean) = FileGenVBean(
+        fun fromGenTask(id: String, bean: FileGenTask) = FileGenVBean(
             id = id,
-            `class` = ClassVBean(bean.genClassName!!),
-            context = bean.context ?: emptyMap()
+            `class` = ClassVBean(bean.genFqcn),
+            context = bean.context
         )
     }
 
@@ -184,11 +183,7 @@ data class RunVBean(
     companion object {
         fun create(ctx: JjtxContext): RunVBean {
             val visitors =
-                ctx.jjtxOptsModel
-                    .let { it as? OptsModelImpl }
-                    ?.commonGen
-                    ?.mapValues { FileGenVBean.fromVisitorBean(it.key, it.value) }
-                    ?: emptyMap()
+                ctx.jjtxOptsModel.commonGen.mapValues { (id, task) -> FileGenVBean.fromGenTask(id, task) }
 
             return RunVBean(
                 commonGen = visitors

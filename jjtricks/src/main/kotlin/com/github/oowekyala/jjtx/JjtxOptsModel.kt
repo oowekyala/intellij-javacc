@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.reporting.subKey
 import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 import com.github.oowekyala.jjtx.util.dataAst.AstMap
@@ -47,7 +48,7 @@ interface JjtxOptsModel : IGrammarOptions {
     /**
      * Map of ids to runnable visitor generation tasks.
      */
-    val commonGen: Map<String, FileGenBean>
+    val commonGen: Map<String, FileGenTask>
 
     /**
      * The node generation scheme, not merged if provided.

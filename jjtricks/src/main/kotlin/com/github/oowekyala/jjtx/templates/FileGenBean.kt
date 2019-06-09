@@ -5,8 +5,7 @@ import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.io.StringSource
-import org.apache.velocity.VelocityContext
-import java.nio.file.Path
+import java.util.*
 
 
 // The field names of this class are public API, because they're serialized
@@ -59,7 +58,7 @@ data class FileGenBean(
     }
 
     /**
-     * Creates a runnable [VisitorGenerationTask] from this configuration,
+     * Creates a runnable [FileGenTask] from this configuration,
      * validating the parameters.
      *
      * @return A generation task if all parameters are valid. If [execute] is
@@ -67,7 +66,7 @@ data class FileGenBean(
      *
      * @throws IllegalStateException if this config is invalid
      */
-    fun toFileGen(ctx: JjtxContext, positionInfo: Position?, id: String): VisitorGenerationTask? {
+    fun toFileGen(ctx: JjtxContext, positionInfo: Position?, id: String): FileGenTask? {
 
         val t = getTemplate(ctx, positionInfo) ?: return null
 
@@ -76,52 +75,21 @@ data class FileGenBean(
             return null
         }
 
-        return VisitorGenerationTask(
-            myBean = this,
-            id = id,
+        return FileGenTask(
             template = t,
             formatter = FormatterRegistry.getOrDefault(formatter),
             genFqcn = genClassName!!,
             context = context ?: emptyMap()
         )
     }
+
 }
 
-/**
- * Gathers the info required by a visitor generation task.
- *
- * Visitor generation generates a single file using a velocity
- * template.
- *
- * The velocity context is build as follows:
- *
- * - The [GrammarVBean] is put under key "grammar". This provides
- * access to the full type hierarchy, among other things.
- * - The user can add their own variables shared by all visitor
- * runs by using the "jjtx.templateContext" key in the [JjtxOptsModel].
- * This is put under the key "global". Those are chained following
- * the option file config chain.
- * - Visitor-specific mappings, specified in visitor's [context]
- * element, are put directly into the inner context.
- *
- * @author Clément Fournier
- */
-class VisitorGenerationTask internal constructor(
-    private val myBean: FileGenBean,
-    val id: String,
-    template: StringSource,
-    formatter: SourceFormatter?,
-    genFqcn: String,
-    context: Map<String, Any?>
-) : FileGenTask(template, formatter, genFqcn, context) {
-
-    override fun execute(ctx: JjtxContext,
-                         sharedCtx: VelocityContext,
-                         outputDir: Path,
-                         otherSourceRoots: List<Path>): Triple<Status, String, Path> {
-        val ret = super.execute(ctx, sharedCtx, outputDir, otherSourceRoots)
-        myBean.genClassName = ret.second
-        return ret
-    }
-}
-
+fun FileGenTask.toBean() =
+    FileGenBean(
+        templateFile = (template as? StringSource.File)?.fname,
+        template = (template as? StringSource.Str)?.source,
+        genClassName = genFqcn,
+        formatter = formatter?.name?.toLowerCase(Locale.ROOT),
+        context = context
+    )

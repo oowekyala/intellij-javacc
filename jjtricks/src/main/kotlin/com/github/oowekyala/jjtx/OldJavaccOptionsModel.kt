@@ -4,7 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.ClassVBean
-import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
 import com.github.oowekyala.jjtx.templates.NodeVBean
 
@@ -30,7 +30,7 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val nodePrefix: String = grammarOptions.nodePrefix
 
-    override val commonGen: Map<String, FileGenBean> = emptyMap()
+    override val commonGen: Map<String, FileGenTask> = emptyMap()
 
     override val nodeGen: GrammarGenerationScheme? = null // TODO JJTree generation scheme
 

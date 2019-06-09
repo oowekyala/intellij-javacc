@@ -1,17 +1,7 @@
 # Fully resolved JJTricks configuration
 # Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
-  nodePackage: org.exprs.ast
-  nodePrefix: Ex
-  templateContext: {}
-  typeHierarchy:
-    org.exprs.ast.MyNodeParent:
-    - org.exprs.ast.ExExpression:
-      - org.exprs.ast.ExBinaryExpression
-      - org.exprs.ast.ExLiteral:
-        - org.exprs.ast.ExNullLiteral
-        - org.exprs.ast.ExIntegerLiteral
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
       context:
         acceptMethod: |
@@ -53,7 +43,7 @@ jjtx:
            *
            */
       formatter: java
-      genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
+      genClassName: org.exprs.ast.DummyExprParserVisitor
       templateFile: foo/bar/VisitorTest.vm
     parameterlessVisitor:
       context:
@@ -96,6 +86,16 @@ jjtx:
            *
            */
       formatter: java
-      genClassName: ${grammar.name}VisitorX
+      genClassName: DummyExprVisitorX
       templateFile: foo/bar/VisitorTest.vm
+  nodePackage: org.exprs.ast
+  nodePrefix: Ex
+  templateContext: {}
+  typeHierarchy:
+    org.exprs.ast.MyNodeParent:
+    - org.exprs.ast.ExExpression:
+      - org.exprs.ast.ExBinaryExpression
+      - org.exprs.ast.ExLiteral:
+        - org.exprs.ast.ExNullLiteral
+        - org.exprs.ast.ExIntegerLiteral
 

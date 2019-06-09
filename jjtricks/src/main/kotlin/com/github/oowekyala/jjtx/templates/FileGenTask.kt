@@ -3,15 +3,17 @@ package com.github.oowekyala.jjtx.templates
 import com.github.oowekyala.ijcc.util.deleteWhitespace
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.util.createFile
-import com.github.oowekyala.jjtx.util.evaluate
-import com.github.oowekyala.jjtx.util.exists
+import com.github.oowekyala.jjtx.reporting.JjtricksExceptionWrapper
+import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.report
+import com.github.oowekyala.jjtx.reporting.reportWrappedException
+import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.readText
-import com.github.oowekyala.jjtx.util.isDirectory
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.nio.file.Path
 
 
@@ -33,17 +35,30 @@ import java.nio.file.Path
  */
 open class FileGenTask internal constructor(
     val template: StringSource,
-    private val formatter: SourceFormatter?,
-    private val genFqcn: String,
+    val formatter: SourceFormatter?,
+    val genFqcn: String,
     /**
      * Local bindings.
      */
     val context: Map<String, Any?>
 ) {
 
-    // somewhat lenient to catch stupid empty package errors
-    private fun recogniseQname(fqcn: String): String =
-        fqcn.deleteWhitespace().removePrefix(".").replace(Regex("\\.+"), ".")
+    /**
+     * Evaluate the static templates of the options file to
+     * produce a potentially runnable task.
+     */
+    fun resolveStaticTemplates(ctx: JjtxContext): FileGenTask {
+        val engine = VelocityEngine()
+        val staticCtx = ctx.initialVelocityContext + context
+
+        return FileGenTask(
+            context = context,
+            formatter = formatter,
+            genFqcn = engine.evaluate(staticCtx, genFqcn).let(::recogniseQname),
+            template = template // TODO template the file?
+        )
+    }
+
 
 
     /**
@@ -51,28 +66,21 @@ open class FileGenTask internal constructor(
      * and the path where the file should be put in the [outputDir].
      * The path may not exist.
      */
-    private fun resolveOutput(ctx: JjtxContext,
-                              genFqcn: String,
-                              velocityContext: VelocityContext,
+    private fun resolveOutput(genFqcn: String,
                               outputDir: Path): Pair<String, Path> {
 
-        val engine = VelocityEngine()
-
-        val templated = engine.evaluate(velocityContext, genFqcn)
-
-        val fqcn = recogniseQname(templated)
+        val fqcn = recogniseQname(genFqcn)
         if (!fqcn.matches(StrictFqcnRegex)) {
-            ctx.messageCollector.reportFatal("'genClassName' should be a fully qualified class name, but was $templated")
+            throw RuntimeException("'genClassName' should be a fully qualified class name, but was $genFqcn")
         }
 
         val o: Path = outputDir.resolve(fqcn.replace('.', '/') + ".java").toAbsolutePath()
 
         if (o.isDirectory()) {
-            // TODO is this really fatal?
-            ctx.messageCollector.reportFatal("Output file $o is a directory")
+            throw IOException("Output file $o is a directory")
         }
 
-        return Pair(templated, o)
+        return Pair(genFqcn, o)
     }
 
 
@@ -83,22 +91,11 @@ open class FileGenTask internal constructor(
             is StringSource.File -> {
 
                 val nis = ctx.resolveResource(template.fname)
-                    ?: ctx.messageCollector.reportFatal("File not found ${template.fname}")
+                    ?: throw FileNotFoundException("File not found ${template.fname}")
 
                 return nis.readText()
             }
         }
-
-
-    }
-
-    private fun withLocalBindings(context: Map<String, Any?>,
-                                  sharedCtx: VelocityContext,
-                                  vararg additionalBindings: Pair<String, Any>): VelocityContext {
-
-        val local = VelocityContext(additionalBindings.toMap(mutableMapOf()), sharedCtx)
-
-        return VelocityContext(context.toMutableMap(), local)
     }
 
 
@@ -114,12 +111,7 @@ open class FileGenTask internal constructor(
                      outputDir: Path,
                      otherSourceRoots: List<Path>): Triple<Status, String, Path> {
 
-        val tmpCtx = withLocalBindings(context, sharedCtx)
-
-        val template = resolveTemplate(ctx, template)
-        val engine = VelocityEngine()
-
-        val (fqcn, o) = resolveOutput(ctx, genFqcn, tmpCtx, outputDir)
+        val (fqcn, o) = resolveOutput(genFqcn, outputDir)
 
         val rel = outputDir.relativize(o)
 
@@ -139,15 +131,16 @@ open class FileGenTask internal constructor(
         }
 
         val fullCtx =
-            withLocalBindings(
-                context,
-                sharedCtx,
+            sharedCtx + context + mapOf(
                 "thisClass" to ClassVBean(qualifiedName = fqcn),
                 "thisFile" to FileVBean(absolutePath = o),
                 "timestamp" to ctx.io.now()
             )
 
-        val rendered = engine.evaluate(fullCtx, logId = o.toString(), template = template) {
+        val template = resolveTemplate(ctx, template)
+
+
+        val rendered = VelocityEngine().evaluate(fullCtx, logId = o.toString(), template = template) {
             throw JjtricksExceptionWrapper.withKnownFileCtx(it, template, o)
         }
 
@@ -179,6 +172,11 @@ open class FileGenTask internal constructor(
 
     companion object {
         private val StrictFqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
+
+        // somewhat lenient to catch stupid empty package errors
+        private fun recogniseQname(fqcn: String): String =
+            fqcn.deleteWhitespace().removePrefix(".").replace(Regex("\\.+"), ".")
+
     }
 }
 

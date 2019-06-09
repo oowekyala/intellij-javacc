@@ -1,8 +1,11 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.templates.SourceFormatter
+import com.github.oowekyala.jjtx.templates.toBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
+import com.github.oowekyala.jjtx.util.io.StringSource
 import java.lang.reflect.Method
 import java.util.*
 import org.yaml.snakeyaml.nodes.Node as YamlNode
@@ -11,7 +14,7 @@ internal fun OptsModelImpl.toYaml(): String = toDataNode().toYamlString()
 
 internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
-    val visitors = commonGen.toDataNode()
+    val common = commonGen.mapValues { it.value.toBean() }.toDataNode()
 
     val th = resolvedTypeHierarchy.toDataNode()
 
@@ -21,7 +24,7 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
                 mapOf(
                     "nodePrefix" to nodePrefix.toDataNode(),
                     "nodePackage" to nodePackage.toDataNode(),
-                    "visitors" to visitors,
+                    "commonGen" to common,
                     "templateContext" to templateContext.toDataNode(),
                     "typeHierarchy" to th
                 )
@@ -45,18 +48,21 @@ internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
 
 internal fun Any?.toDataNode(): DataAstNode {
     return when (this) {
-        null             -> AstScalar("null", NULL)
-        is String        -> AstScalar(this, STRING)
-        is Number        -> AstScalar(this.toString(), NUMBER)
-        is Boolean       -> AstScalar(this.toString(), BOOLEAN)
-        is Collection<*> -> AstSeq(this.map { it.toDataNode() })
-        is Map<*, *>     ->
+        null                 -> AstScalar("null", NULL)
+        is String            -> AstScalar(this, STRING)
+        is Number            -> AstScalar(this.toString(), NUMBER)
+        is Boolean           -> AstScalar(this.toString(), BOOLEAN)
+        is Collection<*>     -> AstSeq(this.map { it.toDataNode() })
+        is StringSource.File -> AstScalar(this.fname, STRING)
+        is StringSource.Str  -> AstScalar(this.source, STRING)
+        is SourceFormatter   -> AstScalar(this.name.toLowerCase(Locale.ROOT), STRING)
+        is Map<*, *>         ->
             AstMap(
                 this.mapNotNull { (k, v) ->
                     v?.let { Pair(k.toDataNode(), v.toDataNode()) }
                 }.toMap()
             )
-        else             -> {
+        else                 -> {
             AstMap(this.propertiesMap().filterValues { it !is AstScalar || it.type != NULL })
         }
     }

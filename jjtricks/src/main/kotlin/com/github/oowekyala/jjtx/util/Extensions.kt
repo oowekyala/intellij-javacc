@@ -62,8 +62,13 @@ fun Path.overwrite(contents: () -> String) = toFile().apply {
 fun String.toPath() = Paths.get(this)
 
 
+operator fun VelocityContext.plus(map: Map<String, Any?>) = VelocityContext(map.toMutableMap(), this)
+
 fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
-    StringWriter().also {
+    if (template.indexOfAny(charArrayOf('$', '#')) < 0)
+    // shortcut when the string is a constant template (has no meta characters)
+        template
+    else StringWriter().also {
         this.evaluate(ctx, it, logId, template)
     }.toString()
 
@@ -71,13 +76,11 @@ inline fun VelocityEngine.evaluate(ctx: VelocityContext,
                                    template: String,
                                    logId: String = "jjtx-velocity",
                                    onException: (Throwable) -> Nothing): String =
-    StringWriter().also {
         try {
-            this.evaluate(ctx, it, logId, template)
+            this.evaluate(ctx = ctx, logId = logId, template = template)
         } catch (e: Throwable) {
             onException(e)
         }
-    }.toString()
 
 internal fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     object : ReadOnlyProperty<R, T> {
