@@ -34,7 +34,7 @@ dependencies {
     runtimeOnly(ijdeps)
 
     api("com.google.guava:guava:27.0.1-jre")
-    api("org.apache.velocity:velocity:1.6.2")
+    api("org.apache.velocity:velocity:1.7")
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation("com.google.code.gson:gson:2.8.5")

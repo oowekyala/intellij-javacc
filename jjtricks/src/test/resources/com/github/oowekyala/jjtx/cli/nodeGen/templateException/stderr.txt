@@ -18,7 +18,7 @@ Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
                    <FLOATING_POINT_LITERAL> ...
                    <IDENTIFIER> ...
                    "{" ...
-                   <LOGICAL_NOT> ...
+                   <WHITESPACE> ...
                in @output@/org/expr/Root.java:2:8:
                   package $package;
                           ^
@@ -38,7 +38,7 @@ Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
                   package $package;
                           ^
 [gen:nodes]           6 classes were not generated because of an exception
-[gen:javacc-support]  Generated 1 class in @output@
+[gen:javacc-support]  Generated 2 classes in @output@
 [gen:javacc]          Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
 
 JJTricks exited with 6 errors

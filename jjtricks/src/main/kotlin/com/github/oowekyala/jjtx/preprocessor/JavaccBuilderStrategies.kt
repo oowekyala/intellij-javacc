@@ -147,7 +147,6 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         }.sorted()
 
 
-    private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
 
     override fun parserDeclarations(): String = """
         protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
@@ -191,8 +190,14 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
         expression.replace("jjtThis", nodeVar.varName)
 
-    override val supportFileGen: List<FileGenTask> = listOf(
-        parserStateGen()
+    override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
+
+    private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
+    private val parserConstantsSimpleName = "${grammarOptions.parserSimpleName}TreeConstants"
+
+    override val supportFileGen: List<FileGenTask> get() = listOf(
+        parserStateGen(),
+        parserConstantsGen()
     )
 
     private fun parserStateGen() = FileGenTask(
@@ -202,5 +207,11 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         template = StringSource.File("/jjtx/templates/VanillaJjtreeBuilder.java.vm")
     )
 
-    override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
+    private fun parserConstantsGen() = FileGenTask(
+        genFqcn = grammarOptions.addNodePackage(parserConstantsSimpleName),
+        formatter = FormatterRegistry.JAVA,
+        context = emptyMap(),
+        template = StringSource.File("/jjtx/templates/VanillaJjtreeConstants.java.vm")
+    )
+
 }
