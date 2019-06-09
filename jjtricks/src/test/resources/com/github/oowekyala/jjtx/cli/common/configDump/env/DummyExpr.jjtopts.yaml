@@ -1,10 +1,10 @@
 jjtx:
   commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/java8/defaultJjtreeVisitor'
       templateFile: foo/bar/VisitorTest.vm
     parameterlessVisitor:
-      <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/java8/parameterlessVisitor'
       templateFile: foo/bar/VisitorTest.vm
       genClassName: "${grammar.name}VisitorX"
 
