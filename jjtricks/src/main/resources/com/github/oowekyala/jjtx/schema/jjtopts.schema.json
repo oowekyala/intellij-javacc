@@ -234,14 +234,21 @@
         },
         "nodeGen": {
           "description": "Map of node selectors to node generation scheme. Each node of the grammar is matched against the selectors from top to bottom until a match is found. The matched selector specifies which file generation tasks are executed for this node. Those generation tasks will have the NodeVBean under the 'node' key.",
+          "propertyNames": {
+            "$ref": "#/definitions/nodeGenSelector"
+          },
           "additionalProperties": {
-            "type": "object",
-            "propertyNames": {
-              "$ref": "#/definitions/nodeGenSelector"
-            },
-            "additionalProperties": {
-              "$ref": "#/definitions/nodeGenerationTask"
-            }
+            "anyOf": [
+              {
+                "$ref": "#/definitions/nodeGenerationTask"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/nodeGenerationTask"
+                }
+              }
+            ]
           }
         },
         "commonGenExcludes": {

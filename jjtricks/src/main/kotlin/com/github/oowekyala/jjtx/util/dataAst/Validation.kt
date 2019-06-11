@@ -7,6 +7,9 @@ import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.util.JsonPointer
 import kotlinx.collections.immutable.toImmutableList
 import org.everit.json.schema.ValidationException
+import org.everit.json.schema.loader.SchemaLoader
+import org.json.JSONObject
+import org.json.JSONTokener
 
 
 fun DataAstNode.validateJjtopts(ctx: JjtxContext): Int =
@@ -40,16 +43,15 @@ fun AstMap.findJsonPointer(pointer: String): DataAstNode? =
 
 fun DataAstNode.validateJjtopts(onErrors: ValidationException.() -> Unit): Int =
     Jjtricks.getResourceAsStream("/jjtx/schema/jjtopts.schema.json")!!.newInputStream().use { inputStream ->
-        // FIXME
-//        val rawSchema = JSONObject(JSONTokener(inputStream))
-//        val schema = SchemaLoader.load(rawSchema)
-//        val doc = JsonLang.writeToString(this)
-//        try {
-//            schema.validate(JSONObject(doc))
-//        } catch (e: ValidationException) {
-//            e.onErrors()
-//            e.violationCount
-//        }
+        val rawSchema = JSONObject(JSONTokener(inputStream))
+        val schema = SchemaLoader.load(rawSchema)
+        val doc = JsonLang.writeToString(this)
+        try {
+            schema.validate(JSONObject(doc))
+        } catch (e: ValidationException) {
+            e.onErrors()
+            e.violationCount
+        }
         0
     }
 

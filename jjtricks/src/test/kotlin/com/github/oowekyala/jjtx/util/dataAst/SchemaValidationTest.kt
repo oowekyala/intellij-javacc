@@ -62,9 +62,6 @@ class SchemaValidationTest {
     fun typeHierarchyPos() = pos("TypeHierarchyPos.yaml")
 
     @Test
-    fun typeHierarchyNeg() = pos("TypeHierarchyPos.yaml")
-
-    @Test
     fun noThRoot() = neg("NoThRoot.yaml")
 
     @Test
