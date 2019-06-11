@@ -4,7 +4,7 @@ Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
 
 [init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 
-[FATAL]    org.yaml.snakeyaml.scanner.ScannerException
+[ERROR]    YAML syntax error
            mapping values are not allowed here
            in @tmp@/DummyExpr.jjtopts.yaml:15:17:
                 nodePrefix: bar:

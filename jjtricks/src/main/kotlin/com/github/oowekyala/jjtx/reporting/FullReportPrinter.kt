@@ -5,7 +5,10 @@ import com.github.oowekyala.jjtx.util.baseIndent
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.PrintStream
 
-
+/**
+ * Prints every message without aggregation, also used as an exception
+ * printer by [AggregateReportPrinter].
+ */
 class FullReportPrinter(
     private val stream: PrintStream,
     private val minSeverity: Severity,
@@ -54,7 +57,7 @@ class FullReportPrinter(
         }
 
         with(reportEntry) {
-            val header = if (thrown != null) thrown.javaClass.name else message ?: return
+            val header = if (thrown != null) ExceptionNameInterpreter.getHeader(thrown) else message ?: return
 
             iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
             if (thrown != null && message != null) {

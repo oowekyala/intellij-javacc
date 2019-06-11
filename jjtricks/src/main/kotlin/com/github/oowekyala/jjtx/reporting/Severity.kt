@@ -8,7 +8,7 @@ enum class Severity(dName: String? = null) {
     /** Normal execution messages. */
     NORMAL("INFO"),
     NON_FATAL("ERROR"),
-    FAIL("FATAL");
+    FAIL("ERROR");
 
     val displayName = dName ?: name
 }

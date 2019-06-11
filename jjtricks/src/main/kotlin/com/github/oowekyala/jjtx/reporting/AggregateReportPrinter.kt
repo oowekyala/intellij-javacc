@@ -89,8 +89,8 @@ class AggregateReportPrinter private constructor(
             if (thrown != null && exceptionMerger.add(thrown, reportEntry.message) && reportEntry.positions.isNotEmpty()) {
                 myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
             } else {
-                stream.println()
                 // an error
+                stream.println()
                 myErrorPrinter.reportEntry(reportEntry)
             }
         }
