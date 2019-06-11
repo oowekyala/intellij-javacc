@@ -1,16 +1,23 @@
 options {
     // MULTI = true;
 }
+
 PARSER_BEGIN(SimpleExprParser)
+
     package com.jjtx.exprs;
     import com.jjtx.exprs.*;
+
+
     /**
      *  This is my parser declaration
      */
     public class SimpleExprParser/*@bgen(jjtree)*/implements SimpleExprParserTreeConstants/*@egen*/  {/*@bgen(jjtree)*/
-    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/ 
+
     }
+
 PARSER_END(SimpleExprParser)
+
 // Some token declarations
 <DEFAULT>
 TOKEN :{
@@ -20,6 +27,8 @@ TOKEN :{
 | < INTEGER: ["+",  "-"] <DIGITS> >
 | < #DIGITS: (["0"-"9"])+ >
 }
+
+
 void Expression() :
 {
     jjtThis.setImage("Expr"); // Do it
@@ -52,14 +61,16 @@ void Expression() :
         jjtree.closeNodeScope(jjtn000, true);
     }
 }
-/*@egen*/
+/*@egen*/ 
+
 }
+
 ASTBinaryExpr BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
     ASTBinaryExpr jjtn000 = new ASTBinaryExpr(JJTBINARYEXPR);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
-    /*@egen*/
+    /*@egen*/ 
     jjtn000.setImage("Expr"); // Do it
 }
 {
@@ -86,8 +97,10 @@ ASTBinaryExpr BinaryExpression(): {
             jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
         }
     }
-    /*@egen*/
+    /*@egen*/ 
 }
+
+
 void UnaryExpr() : {}
 {
   /*@bgen(jjtree) ParenthesizedExpr */
@@ -116,15 +129,17 @@ void UnaryExpr() : {}
         jjtree.closeNodeScope(jjtn000, true);
     }
 }
-/*@egen*/
+/*@egen*/ 
  {jjtThis.foo();} | Integer()
 }
+
 void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
     ASTIntegerLiteral jjtn000 = new ASTIntegerLiteral(JJTINTEGERLITERAL);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
-    /*@egen*/
+    /*@egen*/ 
+    
 }
 {
     /*@bgen(jjtree) IntegerLiteral */
@@ -149,5 +164,5 @@ void Integer(): {
             jjtree.closeNodeScope(jjtn000, true);
         }
     }
-    /*@egen*/
+    /*@egen*/ 
 }

@@ -228,7 +228,7 @@ private fun assertDirEquals(expected: Path, actual: Path, doReplaceExpected: Boo
                 // construct the path for the counterpart file in "other"
                 val actualFile = inspected.resolve(relativize)
 
-                fun String.normalize() = replace(Regex("\\s+\n"), "\n").trim()
+                fun String.normalize() = replace(Regex("\\s+$"), "").trim()
 
 
                 val expectedText = file.readText().normalize()
