@@ -3,8 +3,9 @@ JJTricks v1.0
 Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
 
 [init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+
 [gen:nodes]
-    [ERROR]    org.apache.velocity.exception.ParseErrorException
+    [ERROR]    Velocity parse error
                Encountered "package"
                Was expecting one of:
                    "[" ...
@@ -38,8 +39,8 @@ Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
                   package $package;
                           ^
 [gen:nodes]           6 classes were not generated because of an exception
-[gen:javacc-support]  Generated 2 classes in @output@
+[gen:javacc-support]  Generated 3 classes in @output@
 [gen:javacc]          Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
 
 JJTricks exited with 6 errors
-Rerun with --warn option for more details
+Rerun with --warn option for more details (e.g. stack traces)

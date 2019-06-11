@@ -38,7 +38,7 @@ private fun bgen(arg: String = ""): String {
     return "/*@bgen(jjtree)$a*/" // FIXME "jjtree" is hardcoded in JavaCC's codebase
 }
 
-private fun egen() = "/*@egen*/ "
+private fun egen() = "/*@egen*/"
 
 private fun JccJavaCompilationUnit.guessIndent(): String {
 
@@ -184,7 +184,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
     private fun JccJavaBlock.reindentJava(indent: String): String =
-        text.removeSurrounding("{", "}").replaceIndent(indent).trim()
+        text.removeSurrounding("{", "}").trim().replaceIndent(indent)
 
     private fun String.escapeJjtThis(nodeVar: NodeVar): String = builder.escapeJjtThis(nodeVar, this)
 

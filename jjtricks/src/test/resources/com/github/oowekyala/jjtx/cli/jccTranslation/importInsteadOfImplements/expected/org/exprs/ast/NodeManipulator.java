@@ -13,8 +13,6 @@ public final class NodeManipulator {
 
   public static final NodeManipulator DEFAULT_INSTANCE = new NodeManipulator();
 
-  private NodeManipulator() {}
-
   /**
    * Called when a node is first open. In this state, the node has no children yet, and no parent.
    * The default implementation calls {@code jjtOpen}.

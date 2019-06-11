@@ -116,7 +116,7 @@ public class ${thisClass.simpleName} {
             mk = marks.pop();
             while (a-- > 0) {
                 $topNode c = popNode();
-                manipulator.addChild(this, n, c, num);
+                manipulator.addChild(this, n, c, a);
             }
             manipulator.onPush(this, n);
             pushNode(n);

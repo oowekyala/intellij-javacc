@@ -18,9 +18,6 @@ public final class ${thisClass.simpleName} {
 
     public static final ${thisClass.simpleName} DEFAULT_INSTANCE = new ${thisClass.simpleName}();
 
-    private ${thisClass.simpleName}() {
-    }
-
     /** Called when a node is first open. In this state, the node has no children
       * yet, and no parent. The default implementation calls {@code jjtOpen}.
       */

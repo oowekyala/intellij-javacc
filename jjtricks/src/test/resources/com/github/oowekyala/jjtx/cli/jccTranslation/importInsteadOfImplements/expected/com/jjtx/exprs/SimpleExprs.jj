@@ -39,7 +39,7 @@ void Expression() : {}
     boolean nullLiteralNeedsClose = true;
     jjtree.openNodeScope(nullLiteral);
 } try {
-    /*@egen*/ <NULL>
+    /*@egen*/<NULL>
     /*@bgen(jjtree)*/
 } catch (Throwable nullLiteralException) {
     if (nullLiteralNeedsClose) {
@@ -69,12 +69,12 @@ void BinaryExpression(): {
     boolean binaryExprNeedsClose = true;
     jjtree.openNodeScope(binaryExpr);
     /*@egen*/
-
+    
 }
 {
     /*@bgen(jjtree) BinaryExpr */
      try {
-        /*@egen*/ UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+        /*@egen*/UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
         /*@bgen(jjtree)*/
     } catch (Throwable binaryExprException) {
         if (binaryExprNeedsClose) {
@@ -106,7 +106,7 @@ void UnaryExpr() : {}
     boolean parenthesizedExprNeedsClose = true;
     jjtree.openNodeScope(parenthesizedExpr);
 } try {
-    /*@egen*/ ("(" Expression() ")")
+    /*@egen*/("(" Expression() ")")
     /*@bgen(jjtree)*/
 } catch (Throwable parenthesizedExprException) {
     if (parenthesizedExprNeedsClose) {
@@ -136,12 +136,12 @@ void Integer(): {
     boolean integerLiteralNeedsClose = true;
     jjtree.openNodeScope(integerLiteral);
     /*@egen*/
-
+    
 }
 {
     /*@bgen(jjtree) IntegerLiteral */
      try {
-        /*@egen*/ <INTEGER>
+        /*@egen*/<INTEGER>
         /*@bgen(jjtree)*/
     } catch (Throwable integerLiteralException) {
         if (integerLiteralNeedsClose) {

@@ -113,7 +113,7 @@ public class JJTSimpleExprParserState {
       mk = marks.pop();
       while (a-- > 0) {
         ASTNode c = popNode();
-        manipulator.addChild(this, n, c, num);
+        manipulator.addChild(this, n, c, a);
       }
       manipulator.onPush(this, n);
       pushNode(n);
