@@ -133,6 +133,7 @@ tasks {
 
         minimize {
             exclude(dependency("org.apache.velocity:velocity:.*"))
+            exclude(dependency("commons-logging:commons-logging:.*"))
             exclude(dependency("org.jetbrains.kotlin:.*:.*"))
             exclude(dependency("com.google.googlejavaformat:.*:.*"))
             exclude(dependency("com.google.guava:.*:.*"))

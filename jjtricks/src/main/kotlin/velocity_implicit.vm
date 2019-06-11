@@ -1,4 +1,5 @@
 #* @implicitly included *#
+#* @vtlvariable name="sorter" type="org.apache.velocity.tools.generic.SortTool" *#
 #* @vtlvariable name="jjtx" type="com.github.oowekyala.jjtx.templates.vbeans.JjtricksGenVBean" *#
 #* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.vbeans.ClassVBean" *#
 #* @vtlvariable name="thisFile" type="com.github.oowekyala.jjtx.templates.vbeans.FileVBean" *#

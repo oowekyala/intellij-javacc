@@ -9,6 +9,7 @@ import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.reporting.reportWrappedException
 import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import com.github.oowekyala.jjtx.templates.vbeans.FileVBean
+import com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean
 import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.readText
