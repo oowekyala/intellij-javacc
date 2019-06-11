@@ -8,11 +8,11 @@ package $thisClass.package;
 #end
 
 #set ( $topNode = $grammar.rootNode.klass.simpleName )
-#set ( $treeBuilder = $jjtx.treeBuilder.simpleName )
+#set ( $treeBuilder =  $run.javaccGen.support.treeBuilder.class.simpleName )
 
 import $grammar.rootNode.klass.qualifiedName;
 import java.util.Stack;
-import $jjtx.treeBuilder.qualifiedName;
+import $run.javaccGen.support.treeBuilder.class.qualifiedName;
 
 public final class ${thisClass.simpleName} {
 

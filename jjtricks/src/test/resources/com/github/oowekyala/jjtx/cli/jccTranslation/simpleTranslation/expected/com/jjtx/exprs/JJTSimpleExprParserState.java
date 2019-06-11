@@ -7,10 +7,17 @@ package com.jjtx.exprs;
 
 import com.jjtx.exprs.ASTNode;
 import java.util.Stack;
+import com.jjtx.exprs.NodeManipulator;
 
+/**
+ * This class is responsible for building the tree as the parser operates. Nodes are kept on a stack
+ * and linked together when closed. Hooks defined on a {@link NodeManipulator manipulator} instance
+ * allow interacting with {@link ASTNode} without forcing it to have a specific interface.
+ */
 public class JJTSimpleExprParserState {
   private final Stack<ASTNode> nodes = new Stack<ASTNode>();
   private final Stack<Integer> marks = new Stack<Integer>();
+  private final NodeManipulator manipulator = new NodeManipulator();
 
   /**
    * Index of the first child of this node. If equal to {@link #nodes.size()}, no children are
@@ -75,7 +82,7 @@ public class JJTSimpleExprParserState {
   public void openNodeScope(ASTNode n) {
     marks.push(mk);
     mk = nodes.size();
-    n.jjtOpen();
+    manipulator.onOpen(this, n);
   }
 
   /**
@@ -87,10 +94,9 @@ public class JJTSimpleExprParserState {
     mk = marks.pop();
     while (num-- > 0) {
       ASTNode c = popNode();
-      c.jjtSetParent(n);
-      n.jjtAddChild(c, num);
+      manipulator.addChild(this, n, c, num);
     }
-    n.jjtClose();
+    manipulator.onPush(this, n);
     pushNode(n);
     nodeCreated = true;
   }
@@ -107,10 +113,9 @@ public class JJTSimpleExprParserState {
       mk = marks.pop();
       while (a-- > 0) {
         ASTNode c = popNode();
-        c.jjtSetParent(n);
-        n.jjtAddChild(c, a);
+        manipulator.addChild(this, n, c, num);
       }
-      n.jjtClose();
+      manipulator.onPush(this, n);
       pushNode(n);
       nodeCreated = true;
     } else {

@@ -8,20 +8,21 @@ package $thisClass.package;
 #end
 
 #set ( $topNode = $grammar.rootNode.klass.simpleName )
+#set ( $manipulatorClass = $run.javaccGen.support.manipulator.class )
 
 import $grammar.rootNode.class.qualifiedName;
 import java.util.Stack;
-import $jjtx.manipulator.qualifiedName;
+import $manipulatorClass.qualifiedName;
 
 /** This class is responsible for building the tree as the parser operates.
   * Nodes are kept on a stack and linked together when closed. Hooks defined
-  * on a {@link $jjtx.manipulator.simpleName manipulator} instance allow interacting
+  * on a {@link $manipulatorClass.simpleName manipulator} instance allow interacting
   * with {@link $topNode} without forcing it to have a specific interface.
   */
 public class ${thisClass.simpleName} {
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
-    private final $jjtx.manipulator.simpleName manipulator = #evaluate( $jjtx.newManipulator );
+    private final $manipulatorClass.simpleName manipulator = new ${manipulatorClass.simpleName}();
 
     /** Index of the first child of this node. If equal to {@link #nodes.size()}, no children are pushed. */
     private int mk = 0;

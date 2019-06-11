@@ -278,7 +278,7 @@ class GenerateJavaccSupportFilesTask(taskCtx: TaskCtx) : GenerationTaskBase(task
     override val exceptionCtx: String = "Generating JavaCC support files"
 
     override val generationTasks: Collection<FileGenTask> by lazy {
-        VanillaJjtreeBuilder(ctx.grammarFile.grammarOptions, ctx.jjtxOptsModel.javaccGen).supportFileGen
+        ctx.jjtxOptsModel.javaccGen.supportFiles.values
     }
 
 }

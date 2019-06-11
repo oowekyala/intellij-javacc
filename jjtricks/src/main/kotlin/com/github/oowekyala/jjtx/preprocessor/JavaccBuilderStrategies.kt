@@ -1,14 +1,13 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.addNodePackage
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
-import com.github.oowekyala.jjtx.templates.FileGenTask
-import com.github.oowekyala.jjtx.templates.FormatterRegistry
-import com.github.oowekyala.jjtx.util.io.StringSource
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.report
 
 /**
  * Strategy responsible for the rendering of hooks and API-dependent stuff.
@@ -44,10 +43,7 @@ interface JjtxBuilderStrategy {
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
-    /**
-     * List of supporting files this strategy needs to generate.
-     */
-    val supportFileGen: List<FileGenTask>
+    fun validateSupportFiles(ctx: JjtxContext): Boolean
 
 }
 
@@ -148,7 +144,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
 
     override fun parserDeclarations(): String = """
-        protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
+        protected final $parserStateSimpleName jjtree = new $parserStateSimpleName();
 
     """.trimIndent()
 
@@ -191,28 +187,21 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 
-    private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
-    private val parserConstantsSimpleName = "${grammarOptions.parserSimpleName}TreeConstants"
+    private val parserStateSimpleName: String get() = compat.supportFiles.getValue("treeBuilder").genFqcn
 
-    override val supportFileGen: List<FileGenTask>
-        get() = listOf(
-            parserStateGen(),
-            parserConstantsGen()
-        )
+    override fun validateSupportFiles(ctx: JjtxContext): Boolean {
+        val support = ctx.jjtxOptsModel.javaccGen.supportFiles
 
-    private fun parserStateGen() = FileGenTask(
-        genFqcn = grammarOptions.addNodePackage(parserStateSimpleName),
-        formatter = FormatterRegistry.JAVA,
-        context = emptyMap(),
-        template = StringSource.File("/jjtx/templates/TreeBuilder.java.vm")
-    )
+        if ("treeBuilder" !in support) {
+            ctx.messageCollector.report(
+                "Javacc grammar generation needs a 'treeBuilder' file generation task!",
+                MessageCategory.NON_FATAL
+            )
+            return false
+        }
 
-    private fun parserConstantsGen() = FileGenTask(
-        genFqcn = grammarOptions.addNodePackage(parserConstantsSimpleName),
-        formatter = FormatterRegistry.JAVA,
-        context = emptyMap(),
-        template = StringSource.File("/jjtx/templates/VanillaJjtreeConstants.java.vm")
-    )
+        return true
+    }
 
 }
 

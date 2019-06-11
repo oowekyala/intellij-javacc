@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
@@ -163,11 +164,14 @@ data class FileGenVBean(
 }
 
 data class JjtricksGenVBean(
-    val manipulator: ClassVBean,
-    val treeBuilder: ClassVBean,
-    /** VTL */
-    val newManipulator: String
-)
+    val support: Map<String, FileGenVBean>
+) {
+    companion object {
+        fun create(opts: JavaccGenOptions) = JjtricksGenVBean(
+            support = opts.supportFiles.mapValues { (id, fileGen) -> FileGenVBean.fromGenTask(id, fileGen) }
+        )
+    }
+}
 
 
 data class ClassVBean(
@@ -189,20 +193,24 @@ data class ParserVBean(
 )
 
 data class RunVBean(
-    val commonGen: Map<String, FileGenVBean>
+    val commonGen: Map<String, FileGenVBean>,
+    val javaccGen: JjtricksGenVBean
 ) {
     companion object {
         fun create(ctx: JjtxContext): RunVBean {
             val visitors =
                 ctx.jjtxOptsModel.commonGen.mapValues { (id, task) ->
-                    FileGenVBean.fromGenTask(
-                        id,
-                        task
-                    )
+                    FileGenVBean.fromGenTask(id, task)
+                }
+
+            val supportFiles =
+                ctx.jjtxOptsModel.javaccGen.supportFiles.mapValues { (id, task) ->
+                    FileGenVBean.fromGenTask(id, task)
                 }
 
             return RunVBean(
-                commonGen = visitors
+                commonGen = visitors,
+                javaccGen = JjtricksGenVBean.create(ctx.jjtxOptsModel.javaccGen)
             )
         }
     }

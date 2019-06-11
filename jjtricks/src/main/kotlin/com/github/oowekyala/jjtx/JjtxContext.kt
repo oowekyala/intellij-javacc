@@ -168,7 +168,9 @@ private class JjtxRootContext(
     }
 
     override val globalVelocityContext: VelocityContext by lazy {
-        initialVelocityContext + mapOf("run" to RunVBean.create(this))
+        initialVelocityContext + mapOf(
+            "run" to RunVBean.create(this)
+        )
     }
 
 
