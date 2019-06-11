@@ -162,6 +162,13 @@ data class FileGenVBean(
 
 }
 
+data class JjtricksGenVBean(
+    val manipulator: ClassVBean,
+    val treeBuilder: ClassVBean,
+    /** VTL */
+    val newManipulator: String
+)
+
 
 data class ClassVBean(
     val qualifiedName: String

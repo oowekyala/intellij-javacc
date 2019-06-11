@@ -9,12 +9,19 @@ package $thisClass.package;
 
 #set ( $topNode = $grammar.rootNode.klass.simpleName )
 
-import $grammar.rootNode.klass.qualifiedName;
+import $grammar.rootNode.class.qualifiedName;
 import java.util.Stack;
+import $jjtx.manipulator.qualifiedName;
 
+/** This class is responsible for building the tree as the parser operates.
+  * Nodes are kept on a stack and linked together when closed. Hooks defined
+  * on a {@link $jjtx.manipulator.simpleName manipulator} instance allow interacting
+  * with {@link $topNode} without forcing it to have a specific interface.
+  */
 public class ${thisClass.simpleName} {
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
+    private final $jjtx.manipulator.simpleName manipulator = #evaluate( $jjtx.newManipulator );
 
     /** Index of the first child of this node. If equal to {@link #nodes.size()}, no children are pushed. */
     private int mk = 0;
@@ -76,7 +83,7 @@ public class ${thisClass.simpleName} {
     public void openNodeScope($topNode n) {
         marks.push(mk);
         mk = nodes.size();
-        n.jjtOpen();
+        manipulator.onOpen(this, n);
     }
 
 
@@ -89,10 +96,9 @@ public class ${thisClass.simpleName} {
         mk = marks.pop();
         while (num-- > 0) {
             $topNode c = popNode();
-            c.jjtSetParent(n);
-            n.jjtAddChild(c, num);
+            manipulator.addChild(this, n, c, num);
         }
-        n.jjtClose();
+        manipulator.onPush(this, n);
         pushNode(n);
         nodeCreated = true;
     }
@@ -109,10 +115,9 @@ public class ${thisClass.simpleName} {
             mk = marks.pop();
             while (a-- > 0) {
                 $topNode c = popNode();
-                c.jjtSetParent(n);
-                n.jjtAddChild(c, a);
+                manipulator.addChild(this, n, c, num);
             }
-            n.jjtClose();
+            manipulator.onPush(this, n);
             pushNode(n);
             nodeCreated = true;
         } else {

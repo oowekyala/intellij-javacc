@@ -1,4 +1,5 @@
 #* @implicitly included *#
+#* @vtlvariable name="jjtx" type="com.github.oowekyala.jjtx.templates.vbeans.JjtricksGenVBean" *#
 #* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.vbeans.ClassVBean" *#
 #* @vtlvariable name="thisFile" type="com.github.oowekyala.jjtx.templates.vbeans.FileVBean" *#
 #* @vtlvariable name="grammar" type="com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean" *#
