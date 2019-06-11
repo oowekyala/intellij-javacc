@@ -12,6 +12,8 @@ import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
 import com.github.oowekyala.jjtx.util.map
 import com.github.oowekyala.jjtx.util.mapValuesNotNull
+import kotlinx.collections.immutable.toImmutableMap
+import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -49,7 +51,7 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     jjtx.withDefault { emptyMap<String, Any>() }
         .map { deepest ->
             // keep all parent keys, but override them
-            parentModel.templateContext + deepest
+            Collections.unmodifiableMap(parentModel.templateContext + deepest)
         }.lazily()
 
     private val commonGenExcludes by jjtx.withDefault { emptyList<String>() }
@@ -66,19 +68,11 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     }
 
 
-    /**
-     * Type hierarchy after resolution against the grammar, before
-     * transformation to [NodeVBean] (which is just a mapping process).
-     * This is what's printed by help:dump-config
-     */
-    internal val resolvedTypeHierarchy: TypeHierarchyTree by jjtx.parsing("typeHierarchy") {
-        val subCtx = ctx.subContext("typeHierarchy")
-        TypeHierarchyTree.fromData(it, subCtx).process(subCtx)
-    }
-
-    override val typeHierarchy: NodeVBean by lazy {
+    override val typeHierarchy: NodeVBean by jjtx.parsing("typeHierarchy") {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        NodeVBean.toBean(resolvedTypeHierarchy, ctx)
+        val subCtx = ctx.subContext("typeHierarchy")
+        val th = TypeHierarchyTree.fromData(it, subCtx).process(subCtx)
+        NodeVBean.toBean(th, ctx)
     }
 
     override val nodeGen: GrammarGenerationScheme? by jjtx.parsing {
