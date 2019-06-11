@@ -12,7 +12,7 @@ PARSER_BEGIN(SimpleExprParser)
      *  This is my parser declaration
      */
     public class SimpleExprParser/*@bgen(jjtree)*/implements SimpleExprParserTreeConstants/*@egen*/  {/*@bgen(jjtree)*/
-    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/ 
+    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
 
     }
 
@@ -61,7 +61,7 @@ void Expression() :
         jjtree.closeNodeScope(jjtn000, true);
     }
 }
-/*@egen*/ 
+/*@egen*/
 
 }
 
@@ -70,7 +70,7 @@ void BinaryExpression(): {
     ASTBinaryExpr jjtn000 = new ASTBinaryExpr(JJTBINARYEXPR);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
-    /*@egen*/ 
+    /*@egen*/
     jjtn000.setImage("Expr"); // Do it
 }
 {
@@ -96,7 +96,7 @@ void BinaryExpression(): {
             jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
         }
     }
-    /*@egen*/ 
+    /*@egen*/
 }
 
 
@@ -128,7 +128,7 @@ void UnaryExpr() : {}
         jjtree.closeNodeScope(jjtn000, true);
     }
 }
-/*@egen*/ 
+/*@egen*/
  | Integer()
 }
 
@@ -137,8 +137,8 @@ void Integer(): {
     ASTIntegerLiteral jjtn000 = new ASTIntegerLiteral(JJTINTEGERLITERAL);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
-    /*@egen*/ 
-    
+    /*@egen*/
+
 }
 {
     /*@bgen(jjtree) IntegerLiteral */
@@ -163,5 +163,5 @@ void Integer(): {
             jjtree.closeNodeScope(jjtn000, true);
         }
     }
-    /*@egen*/ 
+    /*@egen*/
 }

@@ -76,7 +76,7 @@ internal class DslPrintStream private constructor(
             return DslPrintStream(os, baseIndent)
         }
 
-        fun forJavaccOutput(out: OutputStream): DslPrintStream = DslPrintStream(out, "    ")
+        fun forJavaccOutput(out: OutputStream): DslPrintStream = DslPrintStream(out.let(::TrailingSpacesFilterOutputStream), "    ")
 
 
     }
