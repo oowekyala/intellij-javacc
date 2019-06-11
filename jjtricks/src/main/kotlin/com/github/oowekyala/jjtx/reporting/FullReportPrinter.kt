@@ -64,7 +64,7 @@ class FullReportPrinter(
                 printExceptionPosition(it)
             }
 
-            if (printStackTrace) {
+            if (printStackTrace || severity == Severity.FAIL) {
                 thrown?.printStackTrace(stream)
             }
         }
