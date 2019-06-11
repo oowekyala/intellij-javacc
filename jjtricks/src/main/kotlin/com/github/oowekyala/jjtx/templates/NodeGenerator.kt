@@ -4,6 +4,7 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.reporting.reportFatal
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.evaluate

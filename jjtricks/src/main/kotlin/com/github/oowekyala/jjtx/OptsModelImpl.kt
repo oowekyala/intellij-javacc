@@ -4,6 +4,9 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
 import com.github.oowekyala.jjtx.templates.*
+import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
+import com.github.oowekyala.jjtx.templates.toFileGen
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
@@ -49,7 +52,7 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
 
     private val commonGenExcludes by jjtx.withDefault { emptyList<String>() }
 
-    override val commonGen: Map<String, FileGenTask> by jjtx.processing<Map<String,FileGenBean>>("commonGen") {
+    override val commonGen: Map<String, FileGenTask> by jjtx.processing<Map<String, FileGenBean>>("commonGen") {
         ((it ?: emptyMap()) - commonGenExcludes)
     }.map {
         it.mapValues { (id, v) -> v.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx) }

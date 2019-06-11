@@ -3,9 +3,9 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
-import com.github.oowekyala.jjtx.templates.GrammarVBean
-import com.github.oowekyala.jjtx.templates.RunVBean
-import com.github.oowekyala.jjtx.templates.set
+import com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean
+import com.github.oowekyala.jjtx.templates.vbeans.RunVBean
+import com.github.oowekyala.jjtx.templates.vbeans.set
 import com.github.oowekyala.jjtx.util.io.DefaultResourceResolver
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream

@@ -2,8 +2,8 @@ package com.github.oowekyala.jjtx.testutil
 
 import com.github.oowekyala.ijcc.lang.util.AssertionMatcher
 import com.github.oowekyala.jjtx.cli.JjtxCliTestBase
-import com.github.oowekyala.jjtx.templates.NodeVBean
-import com.github.oowekyala.jjtx.templates.NodeVBean.Companion.TreeLikeWitness
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean.Companion.TreeLikeWitness
 import com.github.oowekyala.jjtx.util.toPath
 import com.github.oowekyala.treeutils.matchers.MatchingConfig
 import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper

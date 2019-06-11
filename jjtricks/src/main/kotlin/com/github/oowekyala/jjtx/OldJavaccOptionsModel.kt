@@ -3,10 +3,10 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
-import com.github.oowekyala.jjtx.templates.ClassVBean
+import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeVBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 
 /**
  * Wraps an [InlineGrammarOptions] and implements [JjtxOptsModel].
@@ -37,12 +37,13 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
     override val javaccGen: JavaccGenOptions = JavaccGenOptions.FullJjtreeCompat
 
 
-    override val typeHierarchy: NodeVBean = NodeVBean(
-        name = grammarOptions.rootNodeClass.substringAfterLast('.'),
-        `class` = ClassVBean(grammarOptions.rootNodeClass),
-        superNode = null,
-        subNodes = emptyList()
-    )
+    override val typeHierarchy: NodeVBean =
+        NodeVBean(
+            name = grammarOptions.rootNodeClass.substringAfterLast('.'),
+            `class` = ClassVBean(grammarOptions.rootNodeClass),
+            superNode = null,
+            subNodes = emptyList()
+        )
 
     override val templateContext: Map<String, Any> = emptyMap()
 }

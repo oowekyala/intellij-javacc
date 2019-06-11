@@ -1,10 +1,11 @@
-package com.github.oowekyala.jjtx.templates
+package com.github.oowekyala.jjtx.templates.vbeans
 
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.typeHierarchy.Specificity
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.TreeOps
@@ -37,7 +38,8 @@ data class NodeVBean(
     val subNodes: List<NodeVBean>
 ) : TreeOps<NodeVBean> {
 
-    override val adapter: TreeLikeAdapter<NodeVBean> = TreeLikeWitness
+    override val adapter: TreeLikeAdapter<NodeVBean> =
+        TreeLikeWitness
 
     val klass = `class`
 
@@ -137,8 +139,10 @@ data class FileVBean(
     }
 
     companion object {
-        fun create(jccFile: JccFile): FileVBean = FileVBean(absolutePath = jccFile.virtualFile.path)
-        operator fun invoke(absolutePath: Path): FileVBean = FileVBean(absolutePath = absolutePath.toString())
+        fun create(jccFile: JccFile): FileVBean =
+            FileVBean(absolutePath = jccFile.virtualFile.path)
+        operator fun invoke(absolutePath: Path): FileVBean =
+            FileVBean(absolutePath = absolutePath.toString())
     }
 }
 
@@ -149,11 +153,12 @@ data class FileGenVBean(
 ) {
 
     companion object {
-        fun fromGenTask(id: String, bean: FileGenTask) = FileGenVBean(
-            id = id,
-            `class` = ClassVBean(bean.genFqcn),
-            context = bean.context
-        )
+        fun fromGenTask(id: String, bean: FileGenTask) =
+            FileGenVBean(
+                id = id,
+                `class` = ClassVBean(bean.genFqcn),
+                context = bean.context
+            )
     }
 
 }
@@ -183,7 +188,12 @@ data class RunVBean(
     companion object {
         fun create(ctx: JjtxContext): RunVBean {
             val visitors =
-                ctx.jjtxOptsModel.commonGen.mapValues { (id, task) -> FileGenVBean.fromGenTask(id, task) }
+                ctx.jjtxOptsModel.commonGen.mapValues { (id, task) ->
+                    FileGenVBean.fromGenTask(
+                        id,
+                        task
+                    )
+                }
 
             return RunVBean(
                 commonGen = visitors
@@ -216,7 +226,11 @@ data class GrammarVBean(
                 name = ctx.grammarName,
                 grammarFile = FileVBean.create(ctx.grammarFile),
                 nodePackage = ctx.jjtxOptsModel.nodePackage,
-                parser = ParserVBean(ClassVBean(ctx.jjtxOptsModel.inlineBindings.parserQualifiedName)),
+                parser = ParserVBean(
+                    ClassVBean(
+                        ctx.jjtxOptsModel.inlineBindings.parserQualifiedName
+                    )
+                ),
                 rootNode = ctx.jjtxOptsModel.typeHierarchy,
                 typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
             )

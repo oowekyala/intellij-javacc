@@ -3,10 +3,9 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.reporting.subKey
-import com.github.oowekyala.jjtx.templates.FileGenBean
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeVBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.util.dataAst.AstMap
 import com.github.oowekyala.jjtx.util.dataAst.parseAndResolveIncludes
 import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts

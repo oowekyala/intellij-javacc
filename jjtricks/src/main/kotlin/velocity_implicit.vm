@@ -1,8 +1,8 @@
 #* @implicitly included *#
-#* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.ClassVBean" *#
-#* @vtlvariable name="thisFile" type="com.github.oowekyala.jjtx.templates.FileVBean" *#
-#* @vtlvariable name="grammar" type="com.github.oowekyala.jjtx.templates.GrammarVBean" *#
-#* @vtlvariable name="run" type="com.github.oowekyala.jjtx.templates.RunVBean" *#
+#* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.vbeans.ClassVBean" *#
+#* @vtlvariable name="thisFile" type="com.github.oowekyala.jjtx.templates.vbeans.FileVBean" *#
+#* @vtlvariable name="grammar" type="com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean" *#
+#* @vtlvariable name="run" type="com.github.oowekyala.jjtx.templates.vbeans.RunVBean" *#
 #* @vtlvariable name="timestamp" type="java.util.Date" *#
-#* @vtlvariable name="node" type="com.github.oowekyala.jjtx.templates.NodeVBean" *#
+#* @vtlvariable name="node" type="com.github.oowekyala.jjtx.templates.vbeans.NodeVBean" *#
 #* @vtlvariable name="global" type="kotlin.collections.Map" *#
