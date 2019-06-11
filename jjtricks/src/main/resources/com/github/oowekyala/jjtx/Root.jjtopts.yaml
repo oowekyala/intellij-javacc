@@ -1,4 +1,19 @@
 # Root file at the top of option file chains
 
 jjtx:
-  templateContext:
+  javaccGen:
+    supportFiles:
+      manipulator:
+        genClassName: "${grammar.nodePackage}.NodeManipulator"
+        formatter: java
+        templateFile: "/jjtx/templates/DefaultManipulator.java.vm"
+
+      treeBuilder:
+        genClassName: "${grammar.nodePackage}.JJT${grammar.parser.class.simpleName}State"
+        formatter: java
+        templateFile: "/jjtx/templates/TreeBuilder.java.vm"
+
+      treeConstants:
+        genClassName: "${grammar.nodePackage}.${grammar.parser.class.simpleName}TreeConstants"
+        formatter: java
+        templateFile: "/jjtx/templates/VanillaJjtreeConstants.java.vm"

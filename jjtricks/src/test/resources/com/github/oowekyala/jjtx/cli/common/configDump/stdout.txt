@@ -88,6 +88,28 @@ jjtx:
       formatter: java
       genClassName: DummyExprVisitorX
       templateFile: foo/bar/VisitorTest.vm
+  javaccGen:
+    descriptiveVariableNames: 'true'
+    fixJjtThisConditionScope: 'true'
+    forceCheckedExceptionsDeclaration: 'true'
+    implementNodeConstants: 'true'
+    setTokensBeforeHooks: 'false'
+    supportFiles:
+      manipulator:
+        context: {}
+        formatter: java
+        genClassName: org.exprs.ast.NodeManipulator
+        templateFile: /jjtx/templates/DefaultManipulator.java.vm
+      treeBuilder:
+        context: {}
+        formatter: java
+        genClassName: org.exprs.ast.JJTDummyExprParserState
+        templateFile: /jjtx/templates/TreeBuilder.java.vm
+      treeConstants:
+        context: {}
+        formatter: java
+        genClassName: org.exprs.ast.DummyExprParserTreeConstants
+        templateFile: /jjtx/templates/VanillaJjtreeConstants.java.vm
   nodePackage: org.exprs.ast
   nodePrefix: Ex
   templateContext: {}

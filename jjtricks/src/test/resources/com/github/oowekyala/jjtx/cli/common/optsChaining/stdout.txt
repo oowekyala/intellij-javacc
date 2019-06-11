@@ -1,7 +1,72 @@
 # Fully resolved JJTricks configuration
 # Config file chain: DummyExpr.jjtopts.yaml -> DummyExprParent.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
-  commonGen: {}
+  commonGen:
+    defaultJjtreeVisitor:
+      context:
+        acceptMethod: |
+          @Override
+          public Object jjtAccept($visitor.class.qualifiedName visitor, Object data) {
+             return visitor.visit(this, data);
+          }
+        methodTemplate: |
+          #macro( methodAnchor $n)
+          visit($n.class.simpleName,Object)
+          #end
+
+          #evaluate($visitorMethodComment)
+          default Object visit($node.class.simpleName node, Object data) {
+              #if ($node.superNode)
+              return visit(($node.superNode.class.simpleName) node, data);
+              #else
+              return node.childrenAccept(this, data);
+              #end
+          }
+        visitorMethodComment: |
+          /**
+           * Visits {@linkplain $node.class.simpleName $node.name}.
+             #if ( $node.superNode )
+           * Delegates to {@link $H#methodAnchor($node.superNode)}
+           * if unimplemented.
+           *
+            #if ( !$node.subNodes.empty )
+           * This method is delegated to by:
+           * <ul>
+              #foreach($sub in $node.subNodes)
+           *   <li>{@link $H#methodAnchor($sub)}</li>
+              #end
+           * </ul>
+            #end
+            #else
+           *   This is the root of the delegation chain.
+            #end
+           *
+           */
+      formatter: java
+      genClassName: org.expr.DummyExprParserVisitor
+      templateFile: /jjtx/templates/VisitorInterface.java.vm
+  javaccGen:
+    descriptiveVariableNames: 'true'
+    fixJjtThisConditionScope: 'true'
+    forceCheckedExceptionsDeclaration: 'true'
+    implementNodeConstants: 'true'
+    setTokensBeforeHooks: 'false'
+    supportFiles:
+      manipulator:
+        context: {}
+        formatter: java
+        genClassName: org.expr.NodeManipulator
+        templateFile: /jjtx/templates/DefaultManipulator.java.vm
+      treeBuilder:
+        context: {}
+        formatter: java
+        genClassName: org.expr.JJTDummyExprParserState
+        templateFile: /jjtx/templates/TreeBuilder.java.vm
+      treeConstants:
+        context: {}
+        formatter: java
+        genClassName: org.expr.DummyExprParserTreeConstants
+        templateFile: /jjtx/templates/VanillaJjtreeConstants.java.vm
   nodePackage: org.expr
   nodePrefix: Ex
   templateContext: {}

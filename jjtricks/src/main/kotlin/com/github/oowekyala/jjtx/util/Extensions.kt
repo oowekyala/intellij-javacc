@@ -50,6 +50,9 @@ fun Path.createFile() {
     Files.createFile(this)
 }
 
+fun <K, V, R> Map<K, V>.mapValuesNotNull(f: (Map.Entry<K, V>) -> R?): Map<K, R> =
+    mapValuesTo(mutableMapOf(), f).filterValues { it != null } as Map<K, R>
+
 fun String.wrap(lineLength: Int, indent: Int = 0): String =
     WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)
 

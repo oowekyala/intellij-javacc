@@ -1,5 +1,9 @@
 package com.github.oowekyala.jjtx.preprocessor
 
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.templates.*
+import com.github.oowekyala.jjtx.util.mapValuesNotNull
+
 /**
  * Compatibility options for JJTree.
  */
@@ -32,14 +36,14 @@ data class JavaccGenOptions(
      * and close hooks. This is better as the tokens are then available
      * inside those hooks.
      */
-    val setTokensBeforeHooks: Boolean = true,
+    val setTokensBeforeHooks: Boolean = false,
 
     /**
      * If set to true, the parser will implement the interface containing
      * the constants. This is a code smell and is kept only for compatibility
      * with Jjtree.
      */
-    val implementNodeConstants: Boolean = false,
+    val implementNodeConstants: Boolean = true,
 
     /**
      * Use descriptive variable names for generated variables, instead
@@ -52,43 +56,49 @@ data class JavaccGenOptions(
      * If you trust your own code, set it to false exceptions to throw exceptions
      * immediately.
      */
-    val castExceptions: Boolean = false
-) {
+    val castExceptions: Boolean = true,
 
-
-    companion object {
-
-        /**
-         * Compatibility options mimicking JJTree output the closest.
-         */
-        val FullJjtreeCompat = JavaccGenOptions(
-            dontCloseBeforeLastParserAction = false,
-            fixJjtThisConditionScope = false,
-            setTokensBeforeHooks = false,
-            implementNodeConstants = true,
-            descriptiveVariableNames = false,
-            castExceptions = true
-        )
-    }
-}
+    val supportFiles: Map<String, FileGenTask> = emptyMap()
+)
 
 /**
- * Defaults correspond to [JavaccGenOptions.FullJjtreeCompat].
+ * Defaults correspond to full jjtree compatibility.
  */
 data class JjtreeCompatBean(
-    var fixJjtThisConditionScope: Boolean = false,
-    var implementNodeConstants: Boolean = true,
+    var fixJjtThisConditionScope: Boolean? = null,
+    var implementNodeConstants: Boolean? = null,
     //    var dontCloseBeforeLastParserAction: Boolean = false,
-    var setTokensBeforeHooks: Boolean = false,
-    var descriptiveVariableNames: Boolean = false,
-    var forceCheckedExceptionsDeclaration: Boolean = true
-) {
+    var setTokensBeforeHooks: Boolean? = null,
+    var descriptiveVariableNames: Boolean? = null,
+    var forceCheckedExceptionsDeclaration: Boolean? = null,
+    val supportFiles: Map<String, FileGenBean>? = null
+)
 
-    fun toModel(): JavaccGenOptions = JavaccGenOptions(
-        fixJjtThisConditionScope = fixJjtThisConditionScope,
-        implementNodeConstants = implementNodeConstants,
-        setTokensBeforeHooks = setTokensBeforeHooks,
-        descriptiveVariableNames = descriptiveVariableNames,
-        castExceptions = forceCheckedExceptionsDeclaration
-    )
-}
+fun JjtreeCompatBean.completeWith(parent: JjtreeCompatBean) = JjtreeCompatBean(
+    implementNodeConstants = implementNodeConstants ?: parent.implementNodeConstants,
+    fixJjtThisConditionScope = fixJjtThisConditionScope ?: parent.fixJjtThisConditionScope,
+    setTokensBeforeHooks = setTokensBeforeHooks ?: parent.setTokensBeforeHooks,
+    descriptiveVariableNames = descriptiveVariableNames ?: parent.descriptiveVariableNames,
+    forceCheckedExceptionsDeclaration = forceCheckedExceptionsDeclaration ?: parent.forceCheckedExceptionsDeclaration,
+    supportFiles = supportFiles.completeWith(parent.supportFiles.orEmpty(), emptySet())
+)
+
+internal fun JjtreeCompatBean.toModel(ctx: JjtxContext): JavaccGenOptions = JavaccGenOptions(
+    fixJjtThisConditionScope = fixJjtThisConditionScope ?: true,
+    implementNodeConstants = implementNodeConstants ?: true,
+    setTokensBeforeHooks = setTokensBeforeHooks ?: false,
+    descriptiveVariableNames = descriptiveVariableNames ?: true,
+    castExceptions = forceCheckedExceptionsDeclaration ?: true,
+    supportFiles = supportFiles?.mapValuesNotNull { (id, fgb) ->
+        fgb.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
+    } ?: emptyMap()
+)
+
+fun JavaccGenOptions.toBean() = JjtreeCompatBean(
+    fixJjtThisConditionScope = fixJjtThisConditionScope,
+    implementNodeConstants = implementNodeConstants,
+    setTokensBeforeHooks = setTokensBeforeHooks,
+    descriptiveVariableNames = descriptiveVariableNames,
+    forceCheckedExceptionsDeclaration = castExceptions,
+    supportFiles = supportFiles.mapValues { (_, v) -> v.toBean() }
+)

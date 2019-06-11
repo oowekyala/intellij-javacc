@@ -3,12 +3,15 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
 import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
+import com.github.oowekyala.jjtx.preprocessor.completeWith
+import com.github.oowekyala.jjtx.preprocessor.toModel
 import com.github.oowekyala.jjtx.templates.*
 import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
 import com.github.oowekyala.jjtx.util.map
+import com.github.oowekyala.jjtx.util.mapValuesNotNull
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -34,12 +37,13 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
     override val isTrackTokens: Boolean by jjtx.withDefault { parentModel.isTrackTokens }
 
-    override val javaccGen: JavaccGenOptions by jjtx.withDefault<JjtreeCompatBean?>("javaccGen") {
-        null
-    }.map {
-        it?.toModel() ?: parentModel.javaccGen
-    }.lazily()
+    val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
+        (parentModel as? OptsModelImpl)?.javaccBean?.let { p -> it?.completeWith(p) ?: it ?: p } ?: it ?: JjtreeCompatBean()
+    }
 
+    override val javaccGen: JavaccGenOptions by lazy {
+        javaccBean.toModel(ctx.subContext("javaccGen.supportFiles"))
+    }
 
     override val templateContext: Map<String, Any> by
     jjtx.withDefault { emptyMap<String, Any>() }
@@ -51,19 +55,14 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     private val commonGenExcludes by jjtx.withDefault { emptyList<String>() }
 
 
-    internal val commonGenBeans: Map<String, FileGenBean> by jjtx.processing("commonGen") {
-        val parentBeans = (parentModel as? OptsModelImpl)?.commonGenBeans.orEmpty()
-        parentBeans + (it.orEmpty() - commonGenExcludes).mapValues { (id, bean) ->
-            parentBeans[id]?.let { bean.completeWith(it) } ?: bean
-        }
+    private val commonGenBeans: Map<String, FileGenBean> by jjtx.processing("commonGen") {
+        it.completeWith((parentModel as? OptsModelImpl)?.commonGenBeans.orEmpty(), commonGenExcludes)
     }
 
     override val commonGen: Map<String, FileGenTask> by lazy {
-        commonGenBeans.mapValues { (id, v) ->
+        commonGenBeans.mapValuesNotNull { (id, v) ->
             v.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
         }
-            .filterValues { it != null }
-            as Map<String, FileGenTask>
     }
 
 

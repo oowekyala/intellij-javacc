@@ -3,9 +3,9 @@ package com.github.oowekyala.jjtx
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
-import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
+import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 
 /**
@@ -34,7 +34,7 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val nodeGen: GrammarGenerationScheme? = null // TODO JJTree generation scheme
 
-    override val javaccGen: JavaccGenOptions = JavaccGenOptions.FullJjtreeCompat
+    override val javaccGen: JavaccGenOptions = JavaccGenOptions()
 
 
     override val typeHierarchy: NodeVBean =

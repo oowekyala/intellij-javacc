@@ -106,6 +106,12 @@ definitions:
           a checked exception. This is what JJTree does by default, but you can disable
           it since it obfuscates the .jj file, and may be unnecessary.
 
+      supportFiles:
+        type: object
+        default: {}
+        additionalProperties:
+          "$ref": "#/definitions/fileGenTask"
+
 
   nodeGenerationTask:
     anyOf:

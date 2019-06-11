@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.preprocessor.toBean
 import com.github.oowekyala.jjtx.templates.SourceFormatter
 import com.github.oowekyala.jjtx.templates.toBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
@@ -25,6 +26,7 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
                     "nodePrefix" to nodePrefix.toDataNode(),
                     "nodePackage" to nodePackage.toDataNode(),
                     "commonGen" to common,
+                    "javaccGen" to javaccGen.toBean().toDataNode(),
                     "templateContext" to templateContext.toDataNode(),
                     "typeHierarchy" to th
                 )

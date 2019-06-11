@@ -21,13 +21,14 @@ import java.util.*
  */
 data class FileGenBean(
     val templateFile: String?,
-    val template: String?,
+    val template: String? = null,
     val formatter: String?,
     var genClassName: String?,
     val context: Map<String, Any?>?
 )
 
 
+// [this] is the inner model, higher precedence than the arg
 fun FileGenBean.completeWith(parent: FileGenBean): FileGenBean {
 
     val overridesTemplate = templateFile != null || template != null
@@ -40,6 +41,18 @@ fun FileGenBean.completeWith(parent: FileGenBean): FileGenBean {
         context = parent.context.orEmpty() + context.orEmpty()
     )
 }
+
+// [this] is the inner model, higher precedence than the arg
+fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenTask>) =
+    completeWith(parent.mapValues { (_, v) -> v.toBean() }, emptySet())
+
+
+// [this] is the inner model, higher precedence than the arg
+fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenBean>, excludes: Collection<String>) =
+    parent + this.orEmpty().mapValues { (id, bean) ->
+        parent[id]?.let { bean.completeWith(it) } ?: bean
+    } - excludes
+
 
 private fun FileGenBean.getTemplate(ctx: JjtxContext, positionInfo: Position?): StringSource? = when {
     template != null     -> StringSource.Str(template)
