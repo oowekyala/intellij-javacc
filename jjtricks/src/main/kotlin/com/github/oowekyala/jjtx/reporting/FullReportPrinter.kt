@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.baseIndent
+import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.PrintStream
 
 
@@ -38,7 +39,7 @@ class FullReportPrinter(
 
 
     override fun concludeReport() {
-        // do nothing
+        stream.flush()
     }
 
     fun printExceptionPosition(position: Position) {
@@ -64,13 +65,18 @@ class FullReportPrinter(
                 printExceptionPosition(it)
             }
 
-            if (printStackTrace || severity == Severity.FAIL) {
-                thrown?.printStackTrace(stream)
+            if (printStackTrace) {
+                thrown?.let {
+                    val st = ExceptionUtils.getStackTrace(it)
+                    it.message?.let { st.removePrefix(it) } ?: st
+                }
+                    ?.let {
+                        stream.println(it.replaceIndent(lcolIndent + baseIndent))
+                    }
             }
         }
 
         if (reportEntry.severity == Severity.FAIL) {
-            stream.flush()
             throw DoExitNowError()
         }
     }

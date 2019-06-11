@@ -1,0 +1,15 @@
+JJTricks v1.0
+(Run with -h parameter for a usage summary)
+Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
+
+[init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+
+[FATAL]    org.yaml.snakeyaml.scanner.ScannerException
+           mapping values are not allowed here
+           in @tmp@/DummyExpr.jjtopts.yaml:15:17:
+                nodePrefix: bar:
+                               ^
+
+JJTricks exited with a fatal error
+Rerun with --warn option for a stack trace
+If you think this is a bug, please report it to https://github.com/oowekyala/intellij-javacc/issues/new

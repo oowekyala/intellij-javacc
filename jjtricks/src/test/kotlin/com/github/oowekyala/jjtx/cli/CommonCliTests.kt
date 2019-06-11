@@ -1,7 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
-import com.github.oowekyala.jjtx.util.io.StringSource
 import com.github.oowekyala.jjtx.util.io.ExitCode
+import com.github.oowekyala.jjtx.util.io.StringSource
 import org.junit.Test
 
 /**
@@ -12,6 +12,11 @@ class CommonCliTests : JjtxCliTestBase() {
 
     @Test
     fun formatterException() = doTest("DummyExpr")
+
+    @Test
+    fun testUnparsableOpts() = doTest("DummyExpr") {
+        expectedExitCode = ExitCode.ERROR
+    }
 
 
     @Test

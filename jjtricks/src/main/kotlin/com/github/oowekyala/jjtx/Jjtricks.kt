@@ -201,12 +201,15 @@ class Jjtricks(
                 this.reportException(e, ctxStr, fatal = fatal) as T
             }
         } catch (e: DoExitNowError) {
+            this.concludeReport()
             io.exit(ExitCode.ERROR)
         }
 
 
     companion object {
 
+
+        const val GITHUB_URL = "https://github.com/oowekyala/intellij-javacc"
 
         const val VERSION = "1.0"
 

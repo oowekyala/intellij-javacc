@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.reporting
 
+import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.util.baseIndent
 import java.io.PrintStream
@@ -39,14 +40,19 @@ class AggregateReportPrinter private constructor(
         )
 
     override fun concludeReport() {
+        myErrorPrinter.concludeReport()
 
         val bySeverity = collected.groupBy { it.severity }.withDefault { emptyList() }
         val warnings = bySeverity.getValue(Severity.WARNING)
-        val errors = bySeverity.getValue(Severity.NON_FATAL) + bySeverity.getValue(
-            Severity.FAIL
-        )
+        val errors = bySeverity.getValue(Severity.NON_FATAL)
+        val fatal = bySeverity.getValue(Severity.FAIL)
 
-        if (warnings.isEmpty() && errors.isEmpty()) {
+        if (fatal.isNotEmpty()) {
+            stream.println()
+            stream.println("JJTricks exited with a fatal error")
+            stream.println("Rerun with --warn option for a stack trace")
+            stream.println("If you think this is a bug, please report it to ${Jjtricks.GITHUB_URL}/issues/new")
+        } else if (warnings.isEmpty() && errors.isEmpty()) {
             return
         } else {
 
@@ -63,7 +69,7 @@ class AggregateReportPrinter private constructor(
                 if (e != null && w != null) "$e, and $w" else e ?: w!!
 
             stream.println(str)
-            stream.println("Rerun with --warn option for more details")
+            stream.println("Rerun with --warn option for more details" + (if (es > 0) " (e.g. stack traces)" else ""))
         }
 
         stream.flush()
@@ -72,7 +78,7 @@ class AggregateReportPrinter private constructor(
     override fun reportEntry(reportEntry: ReportEntry) {
         // only let normal messages get through
         if (reportEntry.severity == Severity.NORMAL) {
-            iprintln(reportEntry.message ?: return)
+            iprintln(reportEntry.message?.trim() ?: return)
         } else {
             collected += reportEntry
         }
@@ -83,6 +89,7 @@ class AggregateReportPrinter private constructor(
             if (thrown != null && exceptionMerger.add(thrown, reportEntry.message) && reportEntry.positions.isNotEmpty()) {
                 myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
             } else {
+                stream.println()
                 // an error
                 myErrorPrinter.reportEntry(reportEntry)
             }

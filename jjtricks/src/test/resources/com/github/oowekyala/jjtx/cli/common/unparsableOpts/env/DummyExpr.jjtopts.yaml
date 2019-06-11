@@ -1,0 +1,15 @@
+jjtx:
+
+  nodeGen:
+    "r:.*":
+      - templateFile: "/jjtx/templates/VanillaJjtreeNode.java.vm" # Whitespace trouble
+        template: |
+          #if( !$package.empty )
+          package $package;
+          #end
+          public class extends ${node.class.qualifiedName} {
+
+          }
+        formatter: "java"
+
+  nodePrefix: bar:

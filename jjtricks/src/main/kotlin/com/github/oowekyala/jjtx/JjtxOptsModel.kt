@@ -2,6 +2,8 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
+import com.github.oowekyala.jjtx.reporting.JjtricksExceptionWrapper
+import com.github.oowekyala.jjtx.reporting.reportWrappedException
 import com.github.oowekyala.jjtx.reporting.subKey
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
@@ -12,6 +14,7 @@ import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.namedInputStream
 import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.toPath
 import java.nio.file.Path
 
 /**
@@ -93,7 +96,18 @@ interface JjtxOptsModel : IGrammarOptions {
                     try {
                         parse(ctx, path, model)
                     } catch (e: Exception) {
-                        throw RuntimeException("Exception parsing options file ${path.filename}", e)
+                        val wrapper = JjtricksExceptionWrapper.withKnownFileCtx(
+                            e,
+                            path.newInputStream().bufferedReader().readText(),
+                            path.filename.toPath()
+                        )
+
+                        ctx.messageCollector.reportWrappedException(
+                            wrapper,
+                            contextStr = "Parsing options file",
+                            fatal = true
+                        )
+                        throw AssertionError("Shouldn't happen")
                     }
                 }
 

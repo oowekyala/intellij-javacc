@@ -12,7 +12,6 @@ import com.intellij.openapi.util.Comparing
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import com.intellij.util.io.readText
 import junit.framework.Assert.assertEquals
-import junit.framework.ComparisonFailure
 import org.apache.commons.io.FileUtils.copyDirectory
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -75,7 +74,9 @@ abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
                 .resolve("env")
                 .let { mapEnv(it) }
                 .also {
-                    assert(it.isDirectory())
+                    assert(it.isDirectory()) {
+                        "$it should have been a directory"
+                    }
                 }
         val expectedOutput: Path? = resDir.resolve("expected").takeIf { it.isDirectory() }
 
@@ -93,10 +94,20 @@ abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
 
     private data class StopError(override val message: String, val code: Int) : Error()
 
+    // this weird pattern is to not use default arguments as they would
+    // make the stack frame counting unreliable
 
-    fun doTest(vararg args: String, conf: TestBuilder.() -> Unit = {}) {
+    fun doTest(vararg args: String) {
+        doTest(*args, conf = {}, stackNum = 4)
+    }
 
-        val callingMethod = getStackFrame(4).methodName.replace(Regex("(Cli)?[tT]ests?|\\d+"), "").decapitalize()
+    fun doTest(vararg args: String, conf: TestBuilder.() -> Unit) {
+        doTest(*args, conf = conf, stackNum = 4)
+    }
+
+    private fun doTest(vararg args: String, conf: TestBuilder.() -> Unit, stackNum: Int) {
+
+        val callingMethod = getStackFrame(stackNum).methodName.replace(Regex("(Cli)?[tT]ests?|\\d+"), "").decapitalize()
         val test = MyTestCase(TestBuilder(callingMethod).also(conf))
 
         val myStdout = ByteArrayOutputStream()

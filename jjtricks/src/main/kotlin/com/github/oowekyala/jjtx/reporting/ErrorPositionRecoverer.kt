@@ -4,6 +4,7 @@ import com.github.oowekyala.jjtx.util.LineAndCol
 import com.github.oowekyala.jjtx.util.Position
 import com.google.googlejavaformat.java.FormatterException
 import org.apache.velocity.exception.ParseErrorException
+import org.yaml.snakeyaml.scanner.ScannerException
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -74,5 +75,21 @@ object GJFormatExtractor : BasePositionParser<FormatterException>(FormatterExcep
         }
 
     private val lcRegex = Regex("(\\d+):(\\d+): error:(.*)")
+
+}
+
+object SnakeYamlLineColExtractor : BasePositionParser<ScannerException>(ScannerException::class.java) {
+
+    override fun parseMessage(errorMessage: String): PositionedMessage? =
+        lcRegex.matchEntire(errorMessage.trim())?.let {
+            val (message, line, col) = it.destructured
+            PositionedMessage(
+                message,
+                LineAndCol(line.toInt() - 1, col.toInt() - 1),
+                null
+            )
+        }
+
+    private val lcRegex = Regex("(.*)in 'reader', line (\\d+), column (\\d+):.*", RegexOption.DOT_MATCHES_ALL)
 
 }

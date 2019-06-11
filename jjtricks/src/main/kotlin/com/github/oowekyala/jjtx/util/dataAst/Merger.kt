@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.ijcc.util.init
+import com.github.oowekyala.jjtx.reporting.JjtricksExceptionWrapper
 import com.github.oowekyala.jjtx.reporting.MessageCollector
 import com.github.oowekyala.jjtx.reporting.reportFatal
 import com.github.oowekyala.jjtx.util.JsonPointer
@@ -8,6 +9,7 @@ import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.REFERENCE
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.ResourceResolver
+import com.github.oowekyala.jjtx.util.toPath
 import java.io.Closeable
 
 
