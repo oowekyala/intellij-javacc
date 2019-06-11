@@ -111,3 +111,6 @@ fun String.matches(regex: String): Boolean = matches(Regex(regex))
 val JccFile.path: Path
     get() = Paths.get(virtualFile.path).normalize()
 const val baseIndent = "    "
+operator fun VelocityContext.set(key: String, value: Any) {
+    put(key, value)
+}

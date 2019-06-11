@@ -5,7 +5,7 @@ import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean
 import com.github.oowekyala.jjtx.templates.vbeans.RunVBean
-import com.github.oowekyala.jjtx.templates.vbeans.set
+import com.github.oowekyala.jjtx.util.set
 import com.github.oowekyala.jjtx.util.io.DefaultResourceResolver
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
@@ -15,6 +15,7 @@ import com.github.oowekyala.jjtx.util.path
 import com.github.oowekyala.jjtx.util.plus
 import com.intellij.openapi.project.Project
 import org.apache.velocity.VelocityContext
+import org.apache.velocity.tools.generic.SortTool
 import java.nio.file.Path
 
 
@@ -162,6 +163,7 @@ private class JjtxRootContext(
             it["global"] = jjtxOptsModel.templateContext
             // allows escaping the "#" easily.
             it["H"] = "#"
+            it["sorter"] = SortTool()
         }
     }
 

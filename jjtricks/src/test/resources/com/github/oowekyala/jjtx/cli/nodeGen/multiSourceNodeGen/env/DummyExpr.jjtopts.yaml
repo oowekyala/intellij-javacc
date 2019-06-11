@@ -44,9 +44,12 @@ jjtx:
   nodePrefix: Ex
   nodePackage: "org.expr"
   typeHierarchy:
-    "%Root":
-      - "Expression":
+    name: "%Root"
+    subtypes:
+      - name: "Expression"
+        subtypes:
           - "r:.*Expression"
-          - Literal:
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

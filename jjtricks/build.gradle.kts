@@ -36,6 +36,7 @@ dependencies {
     api("com.google.guava:guava:27.0.1-jre")
     api("org.apache.velocity:velocity:1.7")
 
+    implementation("velocity-tools:velocity-tools-generic:1.4")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.everit-org.json-schema:org.everit.json.schema:1.11.1")

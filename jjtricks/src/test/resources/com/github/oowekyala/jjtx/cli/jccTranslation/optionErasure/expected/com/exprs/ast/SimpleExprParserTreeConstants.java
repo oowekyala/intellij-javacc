@@ -4,20 +4,20 @@
  */
 package com.exprs.ast;
 public interface SimpleExprParserTreeConstants {
-  public int JJTMYNODEPARENT = 0;
+  public int JJTBINARYEXPR = 0;
   public int JJTEXPRESSION = 1;
-  public int JJTLITERAL = 2;
-  public int JJTNULLLITERAL = 3;
-  public int JJTINTEGERLITERAL = 4;
-  public int JJTPARENTHESIZEDEXPR = 5;
-  public int JJTBINARYEXPR = 6;
+  public int JJTINTEGERLITERAL = 2;
+  public int JJTLITERAL = 3;
+  public int JJTMYNODEPARENT = 4;
+  public int JJTNULLLITERAL = 5;
+  public int JJTPARENTHESIZEDEXPR = 6;
   public String[] jjtNodeName = {
-    "MyNodeParent",
-    "Expression",
-    "Literal",
-    "NullLiteral",
-    "IntegerLiteral",
-    "ParenthesizedExpr",
     "BinaryExpr",
+    "Expression",
+    "IntegerLiteral",
+    "Literal",
+    "MyNodeParent",
+    "NullLiteral",
+    "ParenthesizedExpr",
   };
 }

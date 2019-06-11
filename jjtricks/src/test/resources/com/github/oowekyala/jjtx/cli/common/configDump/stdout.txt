@@ -92,10 +92,13 @@ jjtx:
   nodePrefix: Ex
   templateContext: {}
   typeHierarchy:
-    org.exprs.ast.MyNodeParent:
-    - org.exprs.ast.ExExpression:
+    name: org.exprs.ast.MyNodeParent
+    subtypes:
+    - name: org.exprs.ast.ExExpression
+      subtypes:
       - org.exprs.ast.ExBinaryExpression
-      - org.exprs.ast.ExLiteral:
+      - name: org.exprs.ast.ExLiteral
+        subtypes:
         - org.exprs.ast.ExNullLiteral
         - org.exprs.ast.ExIntegerLiteral
 

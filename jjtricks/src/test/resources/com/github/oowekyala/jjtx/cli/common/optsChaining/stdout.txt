@@ -6,7 +6,8 @@ jjtx:
   nodePrefix: Ex
   templateContext: {}
   typeHierarchy:
-    org.expr.ExExpression:
+    name: org.expr.ExExpression
+    subtypes:
     - org.expr.ExIntegerLiteral
     - org.expr.ExExpression
     - org.expr.ExNullLiteral

@@ -21,6 +21,14 @@ import com.github.oowekyala.treeutils.TreeLikeAdapter
  * The documentation of this class assumes the finished
  * form of the tree.
  *
+ *     thNode ::= singleNodeMatcher
+ *              | { name: singleNodeMatcher, subtypes: childNodeMatcher | array<thNode> }
+ *
+ *     singleNodeMatcher ::= <ident> | <qname> | "%" ident
+ *
+ *     childNodeMatcher ::= singleNodeMatcher | "r:" <regex>
+ *
+ *
  * @property nodeName The fully qualified name of the represented node
  * @property positionInfo The position in the jjtopts file where this node was defined, or null
  * @property children The children (subtypes) of this node
@@ -121,28 +129,29 @@ internal class TypeHierarchyTree internal constructor(
             }
         }
 
-        private fun AstScalar.fromJsonPrimitive(ctx: JjtxContext): TypeHierarchyTree? {
-            return if (type == ScalarType.STRING) {
+        private fun AstScalar.fromJsonPrimitive(ctx: JjtxContext): TypeHierarchyTree? =
+            if (type == ScalarType.STRING) {
                 TypeHierarchyTree(any, position, emptyList())
             } else {
                 ctx.messageCollector.report("expected string, got ${this}", WRONG_TYPE, position)
                 null
             }
-        }
 
         private fun AstMap.fromJsonObject(ctx: JjtxContext): TypeHierarchyTree? {
 
-            if (size > 1) {
-                ctx.messageCollector.report("$size", MULTIPLE_HIERARCHY_ROOTS, position)
-                return null
-            } else if (size == 0) {
-                ctx.messageCollector.report("", NO_HIERARCHY_ROOTS, position)
-                return null
+            val name = this["name"].let {
+                if (it == null) {
+                    ctx.messageCollector.report("Expected a \"name\" property, none given", WRONG_TYPE, position)
+                    return null
+                } else if (it !is AstScalar || it.type != ScalarType.STRING) {
+                    ctx.messageCollector.report("Expected \"name\" to be a string", WRONG_TYPE, it.position)
+                    return null
+                } else {
+                    it.any
+                }
             }
 
-            val name = keys.first()
-
-            return when (val children = this[name]) {
+            return when (val children = this["subtypes"]) {
                 is AstScalar -> TypeHierarchyTree(
                     nodeName = name,
                     children = listOfNotNull(children.fromJsonPrimitive(ctx)),
@@ -155,7 +164,7 @@ internal class TypeHierarchyTree internal constructor(
                 )
                 else                                                -> {
                     ctx.messageCollector.report(
-                        "expected array or string, got $children",
+                        "expected \"subtypes\" property (an array or a string), none given",
                         WRONG_TYPE,
                         position
                     )

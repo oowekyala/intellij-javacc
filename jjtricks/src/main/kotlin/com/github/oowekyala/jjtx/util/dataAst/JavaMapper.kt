@@ -40,8 +40,10 @@ internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
     else
         AstMap(
             mapOf(
-                nodeName to AstSeq(
-                    children.map { it.toDataNode() })
+                "name" to AstScalar(nodeName, STRING),
+                "subtypes" to AstSeq(
+                    children.map { it.toDataNode() }
+                )
             )
         )
 

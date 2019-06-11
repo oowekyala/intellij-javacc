@@ -7,9 +7,12 @@ jjtx:
   nodePrefix: AST
   nodePackage: "org.parent"
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
           - "r:.*Expression"
-          - Literal:
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

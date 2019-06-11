@@ -13,7 +13,6 @@ import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.splitAroundLast
 import com.github.oowekyala.treeutils.DoublyLinkedTreeLikeAdapter
 import com.github.oowekyala.treeutils.TreeLikeAdapter
-import org.apache.velocity.VelocityContext
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -239,6 +238,3 @@ data class GrammarVBean(
 }
 
 
-operator fun VelocityContext.set(key: String, value: Any) {
-    put(key, value)
-}
