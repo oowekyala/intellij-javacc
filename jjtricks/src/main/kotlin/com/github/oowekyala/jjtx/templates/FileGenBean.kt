@@ -27,6 +27,20 @@ data class FileGenBean(
     val context: Map<String, Any?>?
 )
 
+
+fun FileGenBean.completeWith(parent: FileGenBean): FileGenBean {
+
+    val overridesTemplate = templateFile != null || template != null
+
+    return FileGenBean(
+        templateFile = if (overridesTemplate) this.templateFile else parent.templateFile,
+        template = if (overridesTemplate) this.template else parent.template,
+        formatter = formatter ?: parent.formatter,
+        genClassName = genClassName ?: parent.genClassName,
+        context = parent.context.orEmpty() + context.orEmpty()
+    )
+}
+
 private fun FileGenBean.getTemplate(ctx: JjtxContext, positionInfo: Position?): StringSource? = when {
     template != null     -> StringSource.Str(template)
     templateFile != null -> StringSource.File(templateFile)
