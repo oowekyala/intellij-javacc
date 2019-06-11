@@ -17,6 +17,8 @@ repositories {
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
     compile("org.jsoup:jsoup:1.12.1")
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("org.yaml:snakeyaml:1.24")
 }
 
 

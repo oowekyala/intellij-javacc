@@ -1,4 +1,6 @@
 import com.github.oowekyala.*
+import groovy.xml.dom.DOMCategory.attributes
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 
 plugins {
@@ -83,6 +85,18 @@ tasks {
         )
     }
 
+    val schemaPrefix = "src/main/resources/com/github/oowekyala/jjtx/schema/jjtopts.schema"
+    val yamlSchema = "$schemaPrefix.yaml"
+    val jsonSchema = "$schemaPrefix.json"
+
+
+    val schemaToJson by creating {
+
+        doLast {
+            yamlToJson(file(yamlSchema), file(jsonSchema))
+        }
+    }
+
     val schemaDocs by creating(Exec::class.java) {
         
         group = "Documentation"
@@ -90,7 +104,6 @@ tasks {
         val docOut1 = "$buildDir/rawSchemaDoc"
         val docOut2 = "$buildDir/finalSchemaDoc"
 
-        val inSchema = "src/main/resources/com/github/oowekyala/jjtx/schema/jjtopts.schema.json"
 
 
         // npm install -g bootprint
@@ -99,7 +112,7 @@ tasks {
         commandLine = listOf(
             "bootprint",
             "json-schema",
-            inSchema,
+            jsonSchema,
             docOut1
         )
 
