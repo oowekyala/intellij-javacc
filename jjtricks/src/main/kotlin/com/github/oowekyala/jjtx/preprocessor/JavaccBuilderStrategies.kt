@@ -204,7 +204,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         genFqcn = grammarOptions.addNodePackage(parserStateSimpleName),
         formatter = FormatterRegistry.JAVA,
         context = emptyMap(),
-        template = StringSource.File("/jjtx/templates/VanillaJjtreeBuilder.java.vm")
+        template = StringSource.File("/jjtx/templates/TreeBuilder.java.vm")
     )
 
     private fun parserConstantsGen() = FileGenTask(

@@ -53,6 +53,11 @@ public class JJTSimpleExprParserState {
     return nodes.peek();
   }
 
+  /** Returns the nth node on the stack. {@code peekNode(0) === peekNode()}. */
+  public MyNodeParent peekNode(int n) {
+    return nodes.get(nodes.size() - n - 1);
+  }
+
   /** Returns the number of children on the stack in the current node scope. */
   public int nodeArity() {
     return nodes.size() - mk;
