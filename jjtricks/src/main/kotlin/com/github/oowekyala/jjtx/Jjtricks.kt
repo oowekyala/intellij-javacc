@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter
 import java.net.URL
 import java.nio.file.Path
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * The CLI of JJTricks.
@@ -68,13 +69,13 @@ class Jjtricks(
         io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen"))
         .addValidator {
-        if (value.isFile()) {
-            throw SystemExitException(
-                "-o $value is not a directory",
-                ExitCode.ERROR.toInt
-            )
+            if (value.isFile()) {
+                throw SystemExitException(
+                    "-o $value is not a directory",
+                    ExitCode.ERROR.toInt
+                )
+            }
         }
-    }
 
     private val sourceRoots by args.adding(
         "-s", "--source",
@@ -156,40 +157,34 @@ class Jjtricks(
             val init = err.withContext(InitCtx)
             produceContext(env.project, err, init).apply {
                 init.reportNormal("Config chain: $chainDump")
-                jjtxOptsModel // force evaluation
+
+                // force evaluation
+                jjtxOptsModel
+
+                // this needs to be registered before the type hierarchy is evaluated,
+                // since it the type hierarchy uses the options service to resolve Qnames
+                env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(this))
+
+                jjtxOptsModel.typeHierarchy
+                jjtxOptsModel.nodeGen
+                jjtxOptsModel.javaccGen
             }
         }
 
+        // now the context is entirely initialized (only initialisation is not thread-safe),
+        // so we can fork the tasks
 
-        env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
-
-        fun runTask(key: JjtxTaskKey) {
+        fun runTask(key: JjtxTaskKey): CompletableFuture<Void> =
             ctx.subContext(key).let {
                 it.messageCollector.catchException(null) {
                     key.execute(TaskCtx(it, outputRoot, sourceRoots.toList()))
                 }
             }
-        }
 
-        if (DUMP_CONFIG in tasks) {
-            runTask(DUMP_CONFIG)
-        }
 
-        if (GEN_COMMON in tasks) {
-            runTask(GEN_COMMON)
-        }
+        val allTasks = if (GEN_JAVACC in tasks) tasks + GEN_SUPPORT else tasks
 
-        if (GEN_NODES in tasks) {
-            runTask(GEN_NODES)
-        }
-
-        if (GEN_SUPPORT in tasks || GEN_JAVACC in tasks) {
-            runTask(GEN_SUPPORT)
-        }
-
-        if (GEN_JAVACC in tasks) {
-            runTask(GEN_JAVACC)
-        }
+        CompletableFuture.allOf(*allTasks.map(::runTask).toTypedArray()).join()
 
         ctx.messageCollector.concludeReport()
     }

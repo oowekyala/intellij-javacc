@@ -22,6 +22,7 @@ import org.apache.velocity.VelocityContext
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.file.Path
+import java.util.concurrent.CompletableFuture
 
 
 enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> JjtxTask) {
@@ -40,7 +41,13 @@ enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> Jj
     override fun toString(): String = ref
 
 
-    fun execute(taskCtx: TaskCtx) = taskBuilder(taskCtx).execute()
+    fun execute(taskCtx: TaskCtx): CompletableFuture<Void> {
+        val task = taskBuilder(taskCtx)
+        return when {
+            !Jjtricks.TEST_MODE -> CompletableFuture.runAsync(task::execute)
+            else                -> CompletableFuture.completedFuture(task.execute()).thenApply { null }
+        }
+    }
 
 
     companion object {
@@ -179,7 +186,7 @@ abstract class GenerationTaskBase(taskCtx: TaskCtx) : JjtxTask() {
             "Generated $num in $outputDir"
         }
         reportNum(aborted) { (num, verb) ->
-            "$num $verb not generated because found in other output roots"
+            "$num $verb not generated because found in other source roots"
         }
         reportNum(ex) { (num, verb) ->
             "$num $verb not generated because of an exception"

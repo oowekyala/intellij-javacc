@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc
 
+import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.openapi.Disposable
@@ -42,9 +43,7 @@ class JjtxCoreEnvironment private constructor(
 
         fun createTestEnvironment(): JjtxCoreEnvironment {
             val disposable = Disposer.newDisposable()
-            return createRootEnv(disposable).also {
-                // it.registerProjectComponent(GrammarOptionsService::class.java, JjtxOptionsService())
-            }
+            return createRootEnv(disposable)
         }
 
         fun withEnvironment(action: JjtxCoreEnvironment.() -> Unit) {
@@ -85,7 +84,6 @@ class JjtxCoreEnvironment private constructor(
             registerFileType(JavaccFileType, "jj")
             registerFileType(JjtreeFileType, "jjt")
             registerParserDefinition(JavaccParserDefinition)
-            // registerApplicationService(GrammarOptionsService::class.java, JjtxOptionsService())
         }
     }
 }

@@ -3,7 +3,7 @@ package com.github.oowekyala.jjtx.typeHierarchy
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.reporting.MessageCategory.*
+import com.github.oowekyala.jjtx.reporting.MessageCategory.WRONG_TYPE
 import com.github.oowekyala.jjtx.reporting.report
 import com.github.oowekyala.jjtx.util.JsonPointer
 import com.github.oowekyala.jjtx.util.Position
@@ -89,7 +89,14 @@ internal class TypeHierarchyTree internal constructor(
         val expanded = this.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
         val dedup = expanded.removeDuplicates(ctx)
         val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
-        adopted.descendantsOrSelf().forEach { it.processed = true }
+        var n = 0
+        adopted.descendantsOrSelf().forEach {
+            it.processed = true
+            n++
+        }
+        require(n >= jjtreeDeclsByRawName.size) {
+            "Missing nodes?"
+        }
         return adopted
     }
 
