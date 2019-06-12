@@ -39,7 +39,7 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
     override val isTrackTokens: Boolean by jjtx.withDefault { parentModel.isTrackTokens }
 
-    val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
+    private val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
         (parentModel as? OptsModelImpl)?.javaccBean?.let { p -> it?.completeWith(p) ?: it ?: p } ?: it ?: JjtreeCompatBean()
     }
 

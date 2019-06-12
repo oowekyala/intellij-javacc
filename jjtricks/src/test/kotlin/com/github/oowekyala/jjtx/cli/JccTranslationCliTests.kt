@@ -75,4 +75,15 @@ class JccTranslationCliTests : JjtxCliTestBase() {
         "gen:javacc"
     )
 
+    @Test
+    fun testDefaultVisibilityCompat() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+    @Test
+    fun testVisibilityOverride() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
 }
