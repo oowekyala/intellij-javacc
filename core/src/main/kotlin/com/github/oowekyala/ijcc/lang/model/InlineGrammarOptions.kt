@@ -37,6 +37,10 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
         getOptionValueOrDefault(JjtOption.NODE_SCOPE_HOOK)
     }
 
+    val isPublicSupportClasses : Boolean by lazy {
+        getOptionValueOrDefault(JccOption.SUPPORT_CLASS_VISIBILITY_PUBLIC)
+    }
+
 
     val rootNodeClass : String by lazy { getOptionValueOrDefault(JjtOption.NODE_CLASS) }
 

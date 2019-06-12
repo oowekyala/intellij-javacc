@@ -90,7 +90,15 @@ internal fun JjtreeCompatBean.toModel(ctx: JjtxContext): JavaccGenOptions = Java
     descriptiveVariableNames = descriptiveVariableNames ?: true,
     castExceptions = forceCheckedExceptionsDeclaration ?: true,
     supportFiles = supportFiles?.mapValuesNotNull { (id, fgb) ->
-        fgb.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
+        fgb.toFileGen(ctx, positionInfo = null, id = id)
+            ?.resolveStaticTemplates(ctx)
+            ?.let {
+                // handle visibility defaulting
+                val dftVisibility =
+                    if (ctx.jjtxOptsModel.inlineBindings.isPublicSupportClasses) "public" else null
+                if ("visibility" !in it.context) it.copy(context = it.context + ("visibility" to dftVisibility))
+                else it
+            }
     } ?: emptyMap()
 )
 

@@ -8,7 +8,7 @@ import $grammar.rootNode.klass.qualifiedName;
 import java.util.Stack;
 import $run.javaccGen.support.treeBuilder.class.qualifiedName;
 
-public final class ${thisClass.simpleName} {
+$!visibility $!modifiers class ${thisClass.simpleName} {
 
     public static final ${thisClass.simpleName} DEFAULT_INSTANCE = new ${thisClass.simpleName}();
 

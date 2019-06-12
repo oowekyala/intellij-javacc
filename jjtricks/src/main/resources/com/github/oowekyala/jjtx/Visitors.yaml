@@ -25,6 +25,7 @@ defaultJjtreeVisitor:
   formatter: "java"
   genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
   context:
+    visibility: public
     methodTemplate: |
       /** Visits {@linkplain $node.class.simpleName $node.name}. */
       Object visit($node.class.simpleName node, Object data);
@@ -40,6 +41,7 @@ java8:
     formatter: "java"
     genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
     context:
+      visibility: public
       visitorMethodComment: !from '#/shared/visitorMethodComment'
       methodTemplate: |
         #macro( methodAnchor $n)
@@ -65,6 +67,7 @@ java8:
     genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
     formatter: java
     context:
+      visibility: public
       visitorMethodComment: !from '#/shared/visitorMethodComment'
       methodTemplate: |
         #macro( methodAnchor $node)

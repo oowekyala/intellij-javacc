@@ -18,6 +18,8 @@ jjtx:
         genClassName: "${grammar.nodePackage}.NodeManipulator"
         formatter: java
         templateFile: "/jjtx/templates/DefaultManipulator.java.vm"
+        context:
+          modifiers: "final"
 
       treeBuilder:
         genClassName: "${grammar.nodePackage}.JJT${grammar.parser.class.simpleName}State"

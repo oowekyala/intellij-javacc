@@ -1,7 +1,7 @@
 #evaluate( $!fileHeader )
 #evaluate( $!packageDecl )
 
-public interface ${thisClass.simpleName} {
+$!visibility $!modifiers interface ${thisClass.simpleName} {
 
     #foreach($node in $grammar.typeHierarchy)
 

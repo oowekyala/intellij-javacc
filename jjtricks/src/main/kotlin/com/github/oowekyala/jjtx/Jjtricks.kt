@@ -184,7 +184,7 @@ class Jjtricks(
 
         val allTasks = if (GEN_JAVACC in tasks) tasks + GEN_SUPPORT else tasks
 
-        CompletableFuture.allOf(*allTasks.map(::runTask).toTypedArray()).join()
+        CompletableFuture.allOf(*allTasks.sorted().map(::runTask).toTypedArray()).join()
 
         ctx.messageCollector.concludeReport()
     }

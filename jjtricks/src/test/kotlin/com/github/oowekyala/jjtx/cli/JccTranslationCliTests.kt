@@ -1,11 +1,19 @@
 package com.github.oowekyala.jjtx.cli
 
+import com.github.oowekyala.jjtx.Jjtricks
+import org.junit.Before
 import org.junit.Test
 
 /**
  * @author Clément Fournier
  */
 class JccTranslationCliTests : JjtxCliTestBase() {
+
+    @Before
+    fun before() {
+        Jjtricks.TEST_MODE = true
+    }
+
     @Test
     fun testBetterNodeNames() = doTest(
         "SimpleExprs",

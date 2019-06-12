@@ -13,7 +13,7 @@ import $manipulatorClass.qualifiedName;
   * on a {@link $manipulatorClass.simpleName manipulator} instance allow interacting
   * with {@link $topNode} without forcing it to have a specific interface.
   */
-public class ${thisClass.simpleName} {
+$!visibility $!modifiers class ${thisClass.simpleName} {
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
     private final $manipulatorClass.simpleName manipulator = new ${manipulatorClass.simpleName}();

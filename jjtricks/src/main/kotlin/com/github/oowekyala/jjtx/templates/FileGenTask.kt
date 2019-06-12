@@ -36,7 +36,7 @@ import java.nio.file.Path
  *
  * @author Clément Fournier
  */
-open class FileGenTask internal constructor(
+data class FileGenTask(
     val template: StringSource,
     val formatter: SourceFormatter?,
     val genFqcn: String,

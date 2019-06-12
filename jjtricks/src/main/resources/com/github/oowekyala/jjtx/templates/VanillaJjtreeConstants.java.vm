@@ -1,7 +1,7 @@
 #evaluate( $!fileHeader )
 #evaluate( $!packageDecl )
 
-public interface ${thisClass.simpleName} {
+$!visibility $!modifiers interface ${thisClass.simpleName} {
 
     ## Sort to get a stable ordering, useful bc changes to type hierarchy shouldn't change
     ## the constants, which are inlined
