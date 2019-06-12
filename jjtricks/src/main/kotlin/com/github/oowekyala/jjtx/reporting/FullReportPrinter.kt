@@ -18,6 +18,7 @@ class FullReportPrinter(
 ) : MessageCollector {
 
     private var contextPrinted = contextStr == null
+    private val printLock = Object()
 
 
     private fun iprintln(string: String) {
@@ -52,35 +53,37 @@ class FullReportPrinter(
     override fun reportEntry(reportEntry: ReportEntry) {
         if (reportEntry.severity < minSeverity) return
 
-        if (!contextPrinted && contextStr != null) {
-            printContextHeader(contextStr)
-        }
-
-        with(reportEntry) {
-            val header = if (thrown != null) ExceptionNameInterpreter.getHeader(thrown) else message ?: return
-
-            iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
-            if (thrown != null && message != null) {
-                stream.println(message.trim().replaceIndent(lcolIndent))
+        synchronized(printLock) {
+            if (!contextPrinted && contextStr != null) {
+                printContextHeader(contextStr)
             }
 
-            positions.forEach {
-                printExceptionPosition(it)
-            }
+            with(reportEntry) {
+                val header = if (thrown != null) ExceptionNameInterpreter.getHeader(thrown) else message ?: return
 
-            if (printStackTrace) {
-                thrown?.let {
-                    val st = ExceptionUtils.getStackTrace(it)
-                    it.message?.let { st.removePrefix(it) } ?: st
+                iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
+                if (thrown != null && message != null) {
+                    stream.println(message.trim().replaceIndent(lcolIndent))
                 }
-                    ?.let {
-                        stream.println(it.replaceIndent(lcolIndent + baseIndent))
-                    }
-            }
-        }
 
-        if (reportEntry.severity == Severity.FAIL) {
-            throw DoExitNowError()
+                positions.forEach {
+                    printExceptionPosition(it)
+                }
+
+                if (printStackTrace) {
+                    thrown?.let {
+                        val st = ExceptionUtils.getStackTrace(it)
+                        it.message?.let { st.removePrefix(it) } ?: st
+                    }
+                        ?.let {
+                            stream.println(it.replaceIndent(lcolIndent + baseIndent))
+                        }
+                }
+            }
+
+            if (reportEntry.severity == Severity.FAIL) {
+                throw DoExitNowError()
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.tasks
 
 import com.github.oowekyala.ijcc.lang.model.parserPackage
+import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.OptsModelImpl
@@ -27,9 +28,10 @@ enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> Jj
     DUMP_CONFIG("help:dump-config", ::DumpConfigTask),
     GEN_COMMON("gen:common", ::CommonGenTask),
     GEN_NODES("gen:nodes", ::GenerateNodesTask),
+    GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask),
     GEN_JAVACC("gen:javacc", ::GenerateJavaccTask),
+    ;
 
-    GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask);
 
 
     val namespace = ref.substringBefore(':')
@@ -143,25 +145,28 @@ abstract class GenerationTaskBase(taskCtx: TaskCtx) : JjtxTask() {
 
         configString?.let { ctx.messageCollector.reportNormal("Executing tasks '$it'") }
 
-        for (gen in tasks) {
-
-            try {
-                val (st, _, _) = gen.execute(
-                    ctx,
-                    rootCtx,
-                    outputDir,
-                    otherSourceRoots
-                )
-
-                when (st) {
-                    Status.Aborted   -> aborted++
-                    Status.Generated -> generated++
-                }
-            } catch (e: Exception) {
-                ctx.messageCollector.reportException(e, exceptionCtx, fatal = false)
-                ex++
-            }
+        tasks.let {
+            // make it non-parallel to be reproducible for unit tests
+            if (Jjtricks.TEST_MODE) it.stream() else it.parallelStream()
         }
+            .forEach { gen ->
+                try {
+                    val (st, _, _) = gen.execute(
+                        ctx,
+                        rootCtx,
+                        outputDir,
+                        otherSourceRoots
+                    )
+
+                    when (st) {
+                        Status.Aborted   -> aborted++
+                        Status.Generated -> generated++
+                    }
+                } catch (e: Exception) {
+                    ctx.messageCollector.reportException(e, exceptionCtx, fatal = false)
+                    ex++
+                }
+            }
 
         fun reportNum(i: Int, message: (Pair<String, String>) -> String) {
             if (i > 0) {

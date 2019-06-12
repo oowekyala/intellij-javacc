@@ -20,6 +20,7 @@ class AggregateReportPrinter private constructor(
         : this(stream, mutableListOf(), ExceptionMerger(), contextStr)
 
     private val padding = JjtxTaskKey.values().map { it.ref.length }.plus("init".length).max()!! + 4
+    private val printLock = Object()
 
     private val myErrorPrinter =
         FullReportPrinter(
@@ -75,26 +76,32 @@ class AggregateReportPrinter private constructor(
         stream.flush()
     }
 
+
     override fun reportEntry(reportEntry: ReportEntry) {
-        // only let normal messages get through
-        if (reportEntry.severity == Severity.NORMAL) {
-            iprintln(reportEntry.message?.trim() ?: return)
-        } else {
-            collected += reportEntry
-        }
-
-        if (reportEntry.severity > Severity.NORMAL) {
-
-            val thrown = reportEntry.thrown
-            if (thrown != null && exceptionMerger.add(thrown, reportEntry.message) && reportEntry.positions.isNotEmpty()) {
-                myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
+        synchronized(printLock) {
+            // only let normal messages get through
+            if (reportEntry.severity == Severity.NORMAL) {
+                iprintln(reportEntry.message?.trim() ?: return)
             } else {
-                // an error
-                stream.println()
-                myErrorPrinter.reportEntry(reportEntry)
+                collected += reportEntry
+            }
+
+            if (reportEntry.severity > Severity.NORMAL) {
+
+                val thrown = reportEntry.thrown
+                if (
+                    thrown != null
+                    && exceptionMerger.add(thrown, reportEntry.message)
+                    && reportEntry.positions.isNotEmpty()
+                ) {
+                    myErrorPrinter.printExceptionPosition(reportEntry.positions.first())
+                } else {
+                    // an error
+                    stream.println()
+                    myErrorPrinter.reportEntry(reportEntry)
+                }
             }
         }
-
     }
 
 

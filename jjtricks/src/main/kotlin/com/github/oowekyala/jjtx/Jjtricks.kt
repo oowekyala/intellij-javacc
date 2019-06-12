@@ -28,6 +28,7 @@ import com.xenomachina.argparser.default
 import java.io.OutputStreamWriter
 import java.net.URL
 import java.nio.file.Path
+import java.util.*
 
 /**
  * The CLI of JJTricks.
@@ -57,7 +58,7 @@ class Jjtricks(
         listOf(JjtxTaskKey.parse("gen:*", argCheckIo))
     }
 
-    private val myTasks: Set<JjtxTaskKey> get() = tasksImpl.flatten().toSet()
+    private val myTasks: Set<JjtxTaskKey> get() = EnumSet.copyOf(tasksImpl.flatten())
 
 
     private val outputRoot: Path by args.storing(
@@ -247,6 +248,10 @@ class Jjtricks(
                 whole `--opts` chain) to standard output.
 
         """.trimIndent()
+
+        private val unitTestProperty = "jjtx.unitTestMode"
+        internal var TEST_MODE = System.getProperty(unitTestProperty).orEmpty().toBoolean()
+
 
         /**
          * CLI execution, with JVM [Io].

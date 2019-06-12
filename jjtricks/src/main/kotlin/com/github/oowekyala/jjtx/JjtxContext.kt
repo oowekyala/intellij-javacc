@@ -12,10 +12,8 @@ import com.github.oowekyala.jjtx.util.io.ResourceResolver
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.jjtx.util.path
 import com.github.oowekyala.jjtx.util.plus
-import com.github.oowekyala.jjtx.util.set
 import com.intellij.openapi.project.Project
 import kotlinx.collections.immutable.toImmutableHashMap
-import kotlinx.collections.immutable.toImmutableMap
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.tools.generic.SortTool
 import java.nio.file.Path
@@ -160,15 +158,16 @@ private class JjtxRootContext(
 
 
     override val initialVelocityContext: VelocityContext by lazy {
-        VelocityContext(jjtxOptsModel.templateContext.toMutableMap()).also {
-            it["grammar"] = GrammarVBean.create(this)
+        val map = jjtxOptsModel.templateContext + mapOf(
+            "grammar" to GrammarVBean.create(this),
             // we need to copy it, otherwise the map ends up containing itself
             // velocity contexts mutate the map they're created with...
-            it["global"] = jjtxOptsModel.templateContext.toImmutableHashMap() // alias global context
+            "global" to jjtxOptsModel.templateContext.toImmutableHashMap(), // alias global context
             // allows escaping the "#" easily.
-            it["H"] = "#"
-            it["sorter"] = SortTool()
-        }
+            "H" to "#",
+            "sorter" to SortTool()
+        )
+        VelocityContext(map.toImmutableHashMap()) // don't mutate the shared context, ever
     }
 
     override val globalVelocityContext: VelocityContext by lazy {

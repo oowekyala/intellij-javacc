@@ -1,7 +1,9 @@
 package com.github.oowekyala.jjtx.cli
 
+import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.StringSource
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -9,6 +11,10 @@ import org.junit.Test
  */
 class CommonCliTests : JjtxCliTestBase() {
 
+    @Before
+    fun before(){
+        Jjtricks.TEST_MODE = true
+    }
 
     @Test
     fun formatterException() = doTest("DummyExpr")

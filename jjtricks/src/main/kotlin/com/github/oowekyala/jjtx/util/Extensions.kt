@@ -65,7 +65,9 @@ fun Path.overwrite(contents: () -> String) = toFile().apply {
 fun String.toPath() = Paths.get(this)
 
 
-operator fun VelocityContext.plus(map: Map<String, Any?>) = VelocityContext(map.toMutableMap(), this)
+operator fun VelocityContext.plus(map: Map<String, Any?>) =
+    // this copies the map to make modifications local
+    VelocityContext(map.toMutableMap(), this)
 
 fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
     if (template.indexOfAny(charArrayOf('$', '#')) < 0)
