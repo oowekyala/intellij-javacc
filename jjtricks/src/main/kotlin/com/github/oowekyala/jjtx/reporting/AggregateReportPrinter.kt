@@ -20,7 +20,7 @@ class AggregateReportPrinter private constructor(
         : this(stream, mutableListOf(), ExceptionMerger(), contextStr)
 
     private val padding = JjtxTaskKey.values().map { it.ref.length }.plus("init".length).max()!! + 4
-    private val printLock = Object()
+    private val printLock: Any = stream
 
     private val myErrorPrinter =
         FullReportPrinter(

@@ -18,7 +18,7 @@ class FullReportPrinter(
 ) : MessageCollector {
 
     private var contextPrinted = contextStr == null
-    private val printLock = Object()
+    private val printLock: Any = stream
 
 
     private fun iprintln(string: String) {
