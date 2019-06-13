@@ -20,5 +20,11 @@ class JavaccExecCliTests : JjtxCliTestBase() {
         "gen:parser"
     )
 
+    @Test
+    fun testTokenRenaming() = doTest(
+        "SimpleExprs",
+        "gen:parser"
+    )
+
 
 }

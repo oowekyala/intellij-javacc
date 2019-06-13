@@ -1,0 +1,20 @@
+jjtx:
+
+  javaccGen:
+    supportFiles:
+      token:
+        genClassName: "org.exprs.ast.impl.MyToken"
+        template: "class Foo {}"
+
+  nodePrefix: Ex
+  nodePackage: "org.exprs.ast"
+  typeHierarchy:
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
+          - "r:.*Expr"
+          - name: Literal
+            subtypes:
+              - NullLiteral
+              - IntegerLiteral
