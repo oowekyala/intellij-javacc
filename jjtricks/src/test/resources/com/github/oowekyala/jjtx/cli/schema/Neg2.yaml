@@ -3,8 +3,7 @@ jjtx:
 
   nodeGen:
     "r:.*":
-      - templateFile: "/jjtx/templates/VanillaJjtreeNode.java.vm" # Whitespace trouble
-        template: |
+      - template: |
           #if( !package.empty )
           package $package;
           #end

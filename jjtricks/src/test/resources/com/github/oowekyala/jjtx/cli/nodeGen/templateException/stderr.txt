@@ -1,6 +1,6 @@
 JJTricks v1.0
 (Run with -h parameter for a usage summary)
-Running tasks [gen:common, gen:nodes, gen:javacc, gen:javacc-support]
+Running tasks [gen:common, gen:nodes, gen:javacc-support, gen:javacc]
 
 [init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 

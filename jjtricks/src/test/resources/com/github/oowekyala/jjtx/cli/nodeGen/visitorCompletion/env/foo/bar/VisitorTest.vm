@@ -7,6 +7,7 @@
 package $thisClass.package;
 #end
 
+#evaluate($versionSpecificDecls)
 
 public interface ${thisClass.simpleName} {
 

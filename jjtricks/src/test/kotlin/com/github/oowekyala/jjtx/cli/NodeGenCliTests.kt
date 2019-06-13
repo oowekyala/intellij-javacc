@@ -1,5 +1,7 @@
 package com.github.oowekyala.jjtx.cli
 
+import com.github.oowekyala.jjtx.Jjtricks
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -7,6 +9,10 @@ import org.junit.Test
  */
 class NodeGenCliTests : JjtxCliTestBase() {
 
+    @Before
+    fun before() {
+        Jjtricks.TEST_MODE = true
+    }
 
     @Test
     fun testMultiSourceNodeGen() = doTest("DummyExpr", "gen:nodes", "gen:common", "-s", "ignored")

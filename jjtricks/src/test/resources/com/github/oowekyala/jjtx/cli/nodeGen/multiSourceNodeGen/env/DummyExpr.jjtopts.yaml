@@ -1,9 +1,9 @@
 jjtx:
   commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Visitors.yaml#/java8/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
     parameterlessVisitor:
-      <<: !from '/jjtx/Visitors.yaml#/java8/parameterlessVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
 
 
   nodeGen:

@@ -1,5 +1,6 @@
 #evaluate( $!copyrightHeader )
 #evaluate( $!packageDecl )
+#evaluate( $!versionSpecificDecls )
 
 $!visibility $!modifiers interface ${thisClass.simpleName}#evaluate($!generics) {
 

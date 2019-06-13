@@ -1,6 +1,6 @@
 JJTricks v1.0
 (Run with -h parameter for a usage summary)
-Running tasks [gen:nodes, gen:common]
+Running tasks [gen:common, gen:nodes]
 
 [init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 [gen:common]          Executing tasks 'defaultJjtreeVisitor, parameterlessVisitor'
