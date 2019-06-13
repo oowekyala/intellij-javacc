@@ -25,10 +25,6 @@ interface JjtxBuilderStrategy {
 
     fun createNode(nodeVar: NodeVar): String
 
-    fun openNodeHook(nodeVar: NodeVar): String?
-
-    fun closeNodeHook(nodeVar: NodeVar): String?
-
     fun openNodeScope(nodeVar: NodeVar): String
 
     fun closeNodeScope(nodeVar: NodeVar): String
@@ -44,6 +40,13 @@ interface JjtxBuilderStrategy {
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
     fun validateSupportFiles(ctx: JjtxContext): Boolean
+
+    // those are shitty bindings that we honor when the inline binding is there but
+    // otherwise should be done through the manipulator
+
+    fun openNodeHook(nodeVar: NodeVar): String?
+
+    fun closeNodeHook(nodeVar: NodeVar): String?
 
 }
 
@@ -93,28 +96,14 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
      */
     private fun varNames(owner: JjtNodeClassOwner, enclosing: NodeVar?): Triple<String, String, String> {
         val scopeDepth = if (enclosing != null) enclosing.scopeDepth + 1 else 0
+        val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
 
-        return if (compat.descriptiveVariableNames) {
-            val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
-
-            Triple(
+        return Triple(
                 nodeVarName,
                 "${nodeVarName}NeedsClose",
                 "${nodeVarName}Exception"
             )
-        } else {
-            // Default jjtree naming scheme
 
-            val s = "000$scopeDepth"
-            val num = s.substring(s.length - 3, s.length)
-
-            fun withId(id: String) = "jjt$id$num"
-            Triple(
-                withId("n"),
-                withId("c"),
-                withId("e")
-            )
-        }
     }
 
 
@@ -170,16 +159,14 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
         return when {
-            d == null        -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(
-                nodeVar
+            d == null -> "jjtree.closeNodeScope($n, true);"
+            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${escapeJjtThis(
+                nodeVar,
+                d.expressionText
             )});"
-            else             -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
+            else -> "jjtree.closeNodeScope($n, ${escapeJjtThis(nodeVar, d.expressionText)});"
         }
     }
-
-    private fun String.filterIfCompat(nodeVar: NodeVar): String =
-        if (compat.fixJjtThisConditionScope) escapeJjtThis(nodeVar, this) else this
 
 
     override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
