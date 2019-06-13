@@ -6,7 +6,7 @@ public interface DummyExprVisitor {
 
   /** Visits {@linkplain Root Root}. This is the root of the delegation chain. */
   default void visit(Root node) {
-    node.childrenAccept(this, data);
+    node.childrenAccept(this);
   }
 
   /**

@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Clément Fournier
  */
-class NodeGenCliTests : JjtxCliTestBase() {
+class NodeGenCliTests : JjtxCliTestBase(replaceExpected = false) {
 
     @Before
     fun before() {
@@ -34,6 +34,15 @@ class NodeGenCliTests : JjtxCliTestBase() {
 
     @Test
     fun testVisitorCompletion() = doTest("DummyExpr", "gen:common")
+
+    @Test
+    fun testGenericVisitor() = doTest("DummyExpr", "gen:common", "gen:nodes")
+
+    @Test
+    fun testGenericRecursiveVisitor() = doTest("DummyExpr", "gen:common")
+
+    @Test
+    fun testGenericNonDefaultVisitor() = doTest("DummyExpr", "gen:common")
 
 
 }

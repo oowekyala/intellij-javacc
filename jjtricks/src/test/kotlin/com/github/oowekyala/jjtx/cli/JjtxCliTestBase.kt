@@ -164,6 +164,7 @@ abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
         // We assert the directory, and if it fails we also print stderr
         // to show as much as possible
         System.err.println(myStderr.toActualText())
+        System.err.println(myStdout.toActualText())
 
         if (test.expectedOutput != null) {
             try {
