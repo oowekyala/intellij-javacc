@@ -2,9 +2,13 @@
 
 package com.jjtx.exprs;
 
+import com.jjtx.exprs.Token;
+
 import com.jjtx.exprs.ASTNode;
-import java.util.Stack;
+import com.jjtx.exprs.JJTSimpleExprParserState;
 import com.jjtx.exprs.NodeManipulator;
+
+import java.util.Stack;
 
 /**
  * This class is responsible for building the tree as the parser operates. Nodes are kept on a stack
@@ -12,9 +16,38 @@ import com.jjtx.exprs.NodeManipulator;
  * allow interacting with {@link ASTNode} without forcing it to have a specific interface.
  */
 public class JJTSimpleExprParserState {
+
   private final Stack<ASTNode> nodes = new Stack<ASTNode>();
   private final Stack<Integer> marks = new Stack<Integer>();
-  private final NodeManipulator manipulator = new NodeManipulator();
+  private final NodeManipulator manipulator =
+      new NodeManipulator() {
+        @Override
+        public void setFirstToken(JJTSimpleExprParserState builder, ASTNode node, Token token) {
+          node.jjtSetFirstToken(token);
+        }
+
+        @Override
+        public void setLastToken(JJTSimpleExprParserState builder, ASTNode node, Token token) {
+          node.jjtSetLastToken(token);
+        }
+
+        @Override
+        public void onOpen(JJTSimpleExprParserState builder, ASTNode node) {
+          node.jjtOpen();
+        }
+
+        @Override
+        public void onPush(JJTSimpleExprParserState builder, ASTNode node) {
+          node.jjtClose();
+        }
+
+        @Override
+        public void addChild(
+            JJTSimpleExprParserState builder, ASTNode parent, ASTNode child, int index) {
+          child.jjtSetParent(child);
+          parent.jjtAddChild(child, index);
+        }
+      };
 
   /**
    * Index of the first child of this node. If equal to {@link #nodes.size()}, no children are
@@ -23,6 +56,14 @@ public class JJTSimpleExprParserState {
   private int mk = 0;
 
   private boolean nodeCreated;
+
+  /** Resets the state of this builder. */
+  public void reset() {
+    nodes.clear();
+    marks.clear();
+    mk = 0;
+    nodeCreated = false;
+  }
 
   /**
    * Returns true if the current node was closed and pushed (in case it was conditional). Reset as
@@ -37,6 +78,24 @@ public class JJTSimpleExprParserState {
    */
   public ASTNode rootNode() {
     return nodes.get(0);
+  }
+
+  /**
+   * Increase the number of children of this node by one.
+   *
+   * @see #bumpArity(int)
+   */
+  public void bumpArity() {
+    mk--;
+  }
+
+  /**
+   * Increase the number of children of this node by [n]. If the node is closed, [n] additional node
+   * from the stack will be popped and added to its children. This allows mimicking "left-recursive"
+   * nodes, while keeping the parsing iterative.
+   */
+  public void bumpArity(int n) {
+    mk -= n;
   }
 
   /** Pushes a new node on to the stack. */
@@ -99,10 +158,9 @@ public class JJTSimpleExprParserState {
   }
 
   /**
-   * A conditional node is constructed if its condition is true. All the nodes that have been pushed
-   * since the node was opened are made children of the conditional node, which is then pushed on to
-   * the stack. If the condition is false the node is not constructed and they are left on the
-   * stack.
+   * A conditional node is built if its guard condition is true. All the nodes that have been pushed
+   * since the node was opened are made children of the conditional node, which is then pushed onto
+   * the stack. If the condition is false the node is not built and they are left on the stack.
    */
   public void closeNodeScope(ASTNode n, boolean condition) {
     if (condition) {

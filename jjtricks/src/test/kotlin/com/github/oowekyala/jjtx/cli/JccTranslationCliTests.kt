@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Clément Fournier
  */
-class JccTranslationCliTests : JjtxCliTestBase() {
+class JccTranslationCliTests : JjtxCliTestBase(replaceExpected = true) {
 
     @Before
     fun before() {

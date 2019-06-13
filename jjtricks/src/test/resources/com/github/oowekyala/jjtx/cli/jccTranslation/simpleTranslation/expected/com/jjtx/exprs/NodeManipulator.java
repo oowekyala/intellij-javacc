@@ -2,38 +2,38 @@
 
 package com.jjtx.exprs;
 
+import com.jjtx.exprs.Token;
+
 import com.jjtx.exprs.ASTNode;
-import java.util.Stack;
 import com.jjtx.exprs.JJTSimpleExprParserState;
+import com.jjtx.exprs.NodeManipulator;
 
-public final class NodeManipulator {
+/**
+ * Instances of this interface bridge JJTricks internals with {@link ASTNode} instances. That way,
+ * they don't need to conform to a specific interface, like JJTree forces you to do.
+ */
+public interface NodeManipulator {
 
-  public static final NodeManipulator DEFAULT_INSTANCE = new NodeManipulator();
+  /** Called before calling {@link #onOpen}()} with the first token of a node. */
+  public void setFirstToken(JJTSimpleExprParserState builder, ASTNode node, Token token);
+
+  /** Called before calling {@link #onPush}()} with the last token of a node. */
+  public void setLastToken(JJTSimpleExprParserState builder, ASTNode node, Token token);
 
   /**
    * Called when a node is first open. In this state, the node has no children yet, and no parent.
-   * The default implementation calls {@code jjtOpen}.
    */
-  public void onOpen(JJTSimpleExprParserState builder, ASTNode node) {
-    node.jjtOpen();
-  }
+  public void onOpen(JJTSimpleExprParserState builder, ASTNode node);
 
   /**
    * Called when a node is done being built. In this state, the node already has all its children,
    * but no parent yet. It's not yet on the stack of the tree builder.
-   *
-   * <p>The default implementation calls {@code jjtClose}.
    */
-  public void onPush(JJTSimpleExprParserState builder, ASTNode node) {
-    node.jjtClose();
-  }
+  public void onPush(JJTSimpleExprParserState builder, ASTNode node);
 
   /**
    * Called when a node is done being built. In this state, the node already has all its children,
-   * but no parent yet. The default implementation calls {@code jjtClose}.
+   * but no parent yet.
    */
-  public void addChild(JJTSimpleExprParserState builder, ASTNode parent, ASTNode child, int index) {
-    child.jjtSetParent(child);
-    parent.jjtAddChild(child, index);
-  }
+  public void addChild(JJTSimpleExprParserState builder, ASTNode parent, ASTNode child, int index);
 }

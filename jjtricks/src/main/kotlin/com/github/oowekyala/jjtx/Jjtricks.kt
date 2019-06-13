@@ -244,7 +244,8 @@ class Jjtricks(
 
         """.trimIndent()
 
-        private val unitTestProperty = "jjtx.unitTestMode"
+        private const val unitTestProperty = "jjtx.unitTestMode"
+        /** If true, disables parallel processing of generation tasks, to get reproducible results. */
         internal var TEST_MODE = System.getProperty(unitTestProperty).orEmpty().toBoolean()
 
 
