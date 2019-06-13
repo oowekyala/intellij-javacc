@@ -1,23 +1,18 @@
 #evaluate( $!fileHeader )
-#evaluate( $!packageDecl )
 
-#set ( $topNode = $grammar.rootNode.klass.simpleName )
-#set ( $manipulatorClass = $run.javaccGen.support.manipulator.class )
-
-import $grammar.rootNode.class.qualifiedName;
 import java.util.Stack;
-import $manipulatorClass.qualifiedName;
+
 
 /** This class is responsible for building the tree as the parser operates.
   * Nodes are kept on a stack and linked together when closed. Hooks defined
-  * on a {@link $manipulatorClass.simpleName manipulator} instance allow interacting
+  * on a {@link $manipulator manipulator} instance allow interacting
   * with {@link $topNode} without forcing it to have a specific interface.
   */
 $!visibility $!modifiers class ${thisClass.simpleName} {
 
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
-    private final $manipulatorClass.simpleName manipulator = new ${manipulatorClass.simpleName}();
+    private final $manipulator manipulator = #evaluate( $manipulatorCreator );
 
     /** Index of the first child of this node. If equal to {@link #nodes.size()}, no children are pushed. */
     private int mk = 0;
@@ -125,11 +120,11 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
         nodeCreated = true;
     }
 
-    /** A conditional node is constructed if its condition is true.  All
+    /** A conditional node is built if its guard condition is true. All
       * the nodes that have been pushed since the node was opened are
       * made children of the conditional node, which is then pushed
-      * on to the stack.  If the condition is false the node is not
-      * constructed and they are left on the stack.
+      * onto the stack.  If the condition is false the node is not
+      * built and they are left on the stack.
       */
     public void closeNodeScope($topNode n, boolean condition) {
         if (condition) {

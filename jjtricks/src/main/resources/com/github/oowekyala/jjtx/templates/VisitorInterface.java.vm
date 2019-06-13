@@ -1,4 +1,4 @@
-#evaluate( $!fileHeader )
+#evaluate( $!copyrightHeader )
 #evaluate( $!packageDecl )
 
 $!visibility $!modifiers interface ${thisClass.simpleName} {

@@ -1,8 +1,9 @@
+# This is approximately how JJTree would generate nodes
 vanilla:
   "v: $node == $grammar.rootNode":
     - formatter: java
       template: |
-        #evaluate( $!fileHeader )
+        #evaluate( $!copyrightHeader )
         #evaluate( $!packageDecl )
         /** Root node for the ${grammar.name} AST. */
         public interface $thisClass.simpleName {
@@ -11,7 +12,7 @@ vanilla:
     - genClassName: "${grammar.nodePackage}.Abstract${node.name}"
       formatter: java
       template: |
-        #evaluate( $!fileHeader )
+        #evaluate( $!copyrightHeader )
         #evaluate( $!packageDecl )
 
         import ${run.javaccGen.support.constants.class.qualifiedName};
@@ -47,7 +48,7 @@ vanilla:
   "r:.*":
     - formatter: java
       template: |
-        #evaluate( $!fileHeader )
+        #evaluate( $!copyrightHeader )
         #evaluate( $!packageDecl )
 
         public class ${thisClass.simpleName} extends Abstract${node.superNode.class.simpleName} {

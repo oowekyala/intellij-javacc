@@ -1,6 +1,17 @@
 #* @implicitly included *#
-#* @vtlvariable name="packageDecl" type="java.lang.String" *#
+#* @vtlvariable name="manipulatorCreator" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/TreeBuilder.java.vm" *#
+#* @vtlvariable name="manipulator" type="java.lang.String" *#
+#* @vtlvariable name="token" type="java.lang.String" *#
+#* @vtlvariable name="topNode" type="java.lang.String" *#
+#* @vtlvariable name="treeBuilder" type="java.lang.String" *#
 #* @vtlvariable name="fileHeader" type="java.lang.String" *#
+#* @vtlvariable name="override" type="java.lang.String" *#
+#* @vtlvariable name="deprecated" type="java.lang.String" *#
+#* @vtlvariable name="versionSpecificDecls" type="java.lang.String" *#
+#* @vtlvariable name="javaVersion" type="java.lang.Integer" *#
+#* @vtlvariable name="importTokenClass" type="java.lang.String" *#
+#* @vtlvariable name="packageDecl" type="java.lang.String" *#
+#* @vtlvariable name="copyrightHeader" type="java.lang.String" *#
 #* @vtlvariable name="visibility" type="java.lang.String" *#
 #* @vtlvariable name="modifiers" type="java.lang.String" *#
 #* @vtlvariable name="preserveLineColumn" type="boolean" file="../resources/com/github/oowekyala/jjtx/templates/SimpleCharStream.java.vm" *#

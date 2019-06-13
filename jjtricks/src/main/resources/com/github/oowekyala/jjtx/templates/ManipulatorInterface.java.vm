@@ -1,0 +1,31 @@
+#evaluate( $!fileHeader )
+
+/** Instances of this interface bridge JJTricks internals with {@link $topNode}
+  * instances. That way, they don't need to conform to a specific interface, like
+  * JJTree forces you to do.
+  */
+$!visibility interface ${thisClass.simpleName} {
+
+    /** Called before calling {@link ${H}onOpen}()} with the first token of a node. */
+    public void setFirstToken($treeBuilder builder, $topNode node, $token token);
+
+    /** Called before calling {@link ${H}onPush}()} with the last token of a node. */
+    public void setLastToken($treeBuilder builder, $topNode node, $token token);
+
+    /** Called when a node is first open. In this state, the node has no children
+      * yet, and no parent.
+      */
+    public void onOpen($treeBuilder builder, $topNode node);
+
+    /** Called when a node is done being built. In this state, the node already has
+      * all its children, but no parent yet. It's not yet on the stack of the tree
+      * builder.
+      */
+    public void onPush($treeBuilder builder, $topNode node);
+
+    /** Called when a node is done being built. In this state, the node already has
+      * all its children, but no parent yet.
+      */
+    public void addChild($treeBuilder builder, $topNode parent, $topNode child, int index);
+
+}
