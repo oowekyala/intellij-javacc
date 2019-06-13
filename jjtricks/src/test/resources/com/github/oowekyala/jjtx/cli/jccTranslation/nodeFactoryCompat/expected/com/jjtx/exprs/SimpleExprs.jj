@@ -38,6 +38,7 @@ void Expression() : {}
 {
     ExNullLiteral nullLiteral = (ExNullLiteral) ExNullLiteral.jjtCreate(JJTNULLLITERAL);
     boolean nullLiteralNeedsClose = true;
+    jjtree.getManipulator().setFirstToken(jjtree, nullLiteral, getToken(1));
     jjtree.openNodeScope(nullLiteral);
 } try {
     /*@egen*/<NULL>
@@ -57,6 +58,7 @@ void Expression() : {}
     throw (Error) nullLiteralException;
 } finally {
     if (nullLiteralNeedsClose) {
+        jjtree.getManipulator().setLastToken(jjtree, nullLiteral, getToken(0));
         jjtree.closeNodeScope(nullLiteral, true);
     }
 }
@@ -68,6 +70,7 @@ void BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
     ExBinaryExpr binaryExpr = (ExBinaryExpr) ExBinaryExpr.jjtCreate(JJTBINARYEXPR);
     boolean binaryExprNeedsClose = true;
+    jjtree.getManipulator().setFirstToken(jjtree, binaryExpr, getToken(1));
     jjtree.openNodeScope(binaryExpr);
     /*@egen*/
     
@@ -92,6 +95,7 @@ void BinaryExpression(): {
         throw (Error) binaryExprException;
     } finally {
         if (binaryExprNeedsClose) {
+            jjtree.getManipulator().setLastToken(jjtree, binaryExpr, getToken(0));
             jjtree.closeNodeScope(binaryExpr, binaryExpr.foo());
         }
     }
@@ -105,6 +109,7 @@ void UnaryExpr() : {}
 {
     ExParenthesizedExpr parenthesizedExpr = (ExParenthesizedExpr) ExParenthesizedExpr.jjtCreate(JJTPARENTHESIZEDEXPR);
     boolean parenthesizedExprNeedsClose = true;
+    jjtree.getManipulator().setFirstToken(jjtree, parenthesizedExpr, getToken(1));
     jjtree.openNodeScope(parenthesizedExpr);
 } try {
     /*@egen*/("(" Expression() ")")
@@ -124,6 +129,7 @@ void UnaryExpr() : {}
     throw (Error) parenthesizedExprException;
 } finally {
     if (parenthesizedExprNeedsClose) {
+        jjtree.getManipulator().setLastToken(jjtree, parenthesizedExpr, getToken(0));
         jjtree.closeNodeScope(parenthesizedExpr, true);
     }
 }
@@ -135,6 +141,7 @@ void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
     ExIntegerLiteral integerLiteral = (ExIntegerLiteral) ExIntegerLiteral.jjtCreate(JJTINTEGERLITERAL);
     boolean integerLiteralNeedsClose = true;
+    jjtree.getManipulator().setFirstToken(jjtree, integerLiteral, getToken(1));
     jjtree.openNodeScope(integerLiteral);
     /*@egen*/
     
@@ -159,6 +166,7 @@ void Integer(): {
         throw (Error) integerLiteralException;
     } finally {
         if (integerLiteralNeedsClose) {
+            jjtree.getManipulator().setLastToken(jjtree, integerLiteral, getToken(0));
             jjtree.closeNodeScope(integerLiteral, true);
         }
     }

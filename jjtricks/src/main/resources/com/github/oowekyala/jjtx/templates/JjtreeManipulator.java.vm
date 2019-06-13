@@ -16,12 +16,16 @@ $!visibility $!modifiers class ${thisClass.simpleName} implements $manipulator {
 
     $!mods.override
     public void setFirstToken($treeBuilder builder, $topNode node, $token token){
+        #if ( $grammar.trackTokens )
         node.jjtSetFirstToken(token);
+        #end
     }
 
     $!mods.override
     public void setLastToken($treeBuilder builder, $topNode node, $token token){
+        #if ( $grammar.trackTokens )
         node.jjtSetLastToken(token);
+        #end
     }
 
     $!mods.override

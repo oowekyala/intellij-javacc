@@ -19,16 +19,21 @@ class JJTSimpleExprParserState {
 
   private final Stack<ASTNode> nodes = new Stack<ASTNode>();
   private final Stack<Integer> marks = new Stack<Integer>();
+  // Override the context variable `manipulatorCreator` to change the initializer
+  // expression. You can eg plug in a constructor call to one of your custom classes,
+  // use a singleton, whatever.
+  // The template /jjtx/templates/JjtreeManipulator.java.vm generates a class with
+  // those default JJTree hooks, which you can override if you want.
   private final NodeManipulator manipulator =
       new NodeManipulator() {
         @java.lang.Override
         public void setFirstToken(JJTSimpleExprParserState builder, ASTNode node, Token token) {
-          node.jjtSetFirstToken(token);
+          // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
         }
 
         @java.lang.Override
         public void setLastToken(JJTSimpleExprParserState builder, ASTNode node, Token token) {
-          node.jjtSetLastToken(token);
+          // use jjtx.trackTokens to insert a call to jjtSetLastToken
         }
 
         @java.lang.Override

@@ -2,8 +2,6 @@ jjtx:
 
   javaccGen:
     implementNodeConstants: false
-    fixJjtThisConditionScope: true
-    descriptiveVariableNames: true
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"

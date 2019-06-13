@@ -5,6 +5,7 @@ jjtx:
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"
+  trackTokens: true
   typeHierarchy:
     name: "%MyNodeParent"
     subtypes:

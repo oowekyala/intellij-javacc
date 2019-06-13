@@ -232,6 +232,8 @@ data class GrammarVBean(
     val name: String,
     val grammarFile: FileVBean,
     val nodePackage: String,
+    val nodePrefix: String,
+    val isTrackTokens: Boolean,
     val parser: ParserVBean,
     val rootNode: NodeVBean,
     val typeHierarchy: List<NodeVBean>
@@ -244,6 +246,8 @@ data class GrammarVBean(
                 name = ctx.grammarName,
                 grammarFile = FileVBean.create(ctx.grammarFile),
                 nodePackage = ctx.jjtxOptsModel.nodePackage,
+                nodePrefix = ctx.jjtxOptsModel.nodePrefix,
+                isTrackTokens = ctx.jjtxOptsModel.isTrackTokens,
                 parser = ParserVBean(
                     ClassVBean(
                         ctx.jjtxOptsModel.inlineBindings.parserQualifiedName

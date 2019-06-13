@@ -146,10 +146,10 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         else null
 
     override fun setFirstToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetFirstToken(getToken(1));" else null
+        if (grammarOptions.isTrackTokens) "jjtree.getManipulator().setFirstToken(jjtree, ${nodeVar.varName}, getToken(1));" else null
 
     override fun setLastToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetLastToken(getToken(0));" else null
+        if (grammarOptions.isTrackTokens) "jjtree.getManipulator().setLastToken(jjtree, ${nodeVar.varName}, getToken(0));" else null
 
     override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName});"
 
@@ -160,10 +160,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val n = nodeVar.varName
         return when {
             d == null -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${escapeJjtThis(
-                nodeVar,
-                d.expressionText
-            )});"
+            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${escapeJjtThis(nodeVar, d.expressionText)});"
             else -> "jjtree.closeNodeScope($n, ${escapeJjtThis(nodeVar, d.expressionText)});"
         }
     }

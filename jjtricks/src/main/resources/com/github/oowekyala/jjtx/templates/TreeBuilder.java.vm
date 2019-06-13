@@ -12,6 +12,11 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
 
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
+    // Override the context variable `manipulatorCreator` to change the initializer
+    // expression. You can eg plug in a constructor call to one of your custom classes,
+    // use a singleton, whatever.
+    // The template /jjtx/templates/JjtreeManipulator.java.vm generates a class with
+    // those default JJTree hooks, which you can override if you want.
     private final $manipulator manipulator = #evaluate( $manipulatorCreator );
 
     /** Index of the first child of this node. If equal to {@link #nodes.size()}, no children are pushed. */

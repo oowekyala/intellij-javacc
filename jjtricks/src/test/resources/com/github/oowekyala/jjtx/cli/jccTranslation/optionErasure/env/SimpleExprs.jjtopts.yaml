@@ -2,7 +2,6 @@ jjtx:
 
   javaccGen:
     implementNodeConstants: false
-    fixJjtThisConditionScope: true
 
   nodePrefix: Ex
   typeHierarchy:

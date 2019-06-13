@@ -6,10 +6,16 @@
   */
 $!visibility interface ${thisClass.simpleName} {
 
-    /** Called before calling {@link ${H}onOpen}()} with the first token of a node. */
+    /** Called before calling {@link ${H}onOpen}()} with the first token of a node.
+      * Calls are only inserted if the JJTricks key {@code trackTokens} is enabled,
+      * or the similar TRACK_TOKENS JJTree options.
+      */
     public void setFirstToken($treeBuilder builder, $topNode node, $token token);
 
-    /** Called before calling {@link ${H}onPush}()} with the last token of a node. */
+    /** Called before calling {@link ${H}onPush}()} with the last token of a node.
+      * Calls are only inserted if the JJTricks key {@code trackTokens} is enabled,
+      * or the similar TRACK_TOKENS JJTree options.
+      */
     public void setLastToken($treeBuilder builder, $topNode node, $token token);
 
     /** Called when a node is first open. In this state, the node has no children

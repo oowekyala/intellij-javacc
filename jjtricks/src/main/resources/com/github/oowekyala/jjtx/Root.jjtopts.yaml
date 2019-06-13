@@ -76,12 +76,20 @@ jjtx:
             new ${manipulator}() {
                 $!mods.override
                 public void setFirstToken($treeBuilder builder, $topNode node, $token token){
+                    #if ( $grammar.trackTokens )
                     node.jjtSetFirstToken(token);
+                    #else
+                    // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
+                    #end
                 }
 
                 $!mods.override
                 public void setLastToken($treeBuilder builder, $topNode node, $token token){
+                    #if ( $grammar.trackTokens )
                     node.jjtSetLastToken(token);
+                    #else
+                    // use jjtx.trackTokens to insert a call to jjtSetLastToken
+                    #end
                 }
 
                 $!mods.override

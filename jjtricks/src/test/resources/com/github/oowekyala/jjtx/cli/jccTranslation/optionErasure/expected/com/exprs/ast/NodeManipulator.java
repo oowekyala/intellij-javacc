@@ -14,10 +14,17 @@ import com.exprs.ast.NodeManipulator;
  */
 public interface NodeManipulator {
 
-  /** Called before calling {@link #onOpen}()} with the first token of a node. */
+  /**
+   * Called before calling {@link #onOpen}()} with the first token of a node. Calls are only
+   * inserted if the JJTricks key {@code trackTokens} is enabled, or the similar TRACK_TOKENS JJTree
+   * options.
+   */
   public void setFirstToken(JJTSimpleExprParserState builder, MyNodeParent node, Token token);
 
-  /** Called before calling {@link #onPush}()} with the last token of a node. */
+  /**
+   * Called before calling {@link #onPush}()} with the last token of a node. Calls are only inserted
+   * if the JJTricks key {@code trackTokens} is enabled, or the similar TRACK_TOKENS JJTree options.
+   */
   public void setLastToken(JJTSimpleExprParserState builder, MyNodeParent node, Token token);
 
   /**
