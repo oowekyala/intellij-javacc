@@ -212,7 +212,7 @@ class SimpleExprParserTokenManager implements SimpleExprParserConstants {
      */
     public static final String[] lexStateNames = new String[]{ "DEFAULT" };
 
-    protected SimpleCharStream input_stream;
+    protected CharStream input_stream;
 
     private final int[] jjrounds = new int[2];
 
@@ -223,17 +223,14 @@ class SimpleExprParserTokenManager implements SimpleExprParserConstants {
     /**
      * Constructor.
      */
-    public SimpleExprParserTokenManager(SimpleCharStream stream) {
-        if (SimpleCharStream.staticFlag)
-            throw new Error("ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
-
+    public SimpleExprParserTokenManager(CharStream stream) {
         input_stream = stream;
     }
 
     /**
      * Constructor.
      */
-    public SimpleExprParserTokenManager(SimpleCharStream stream, int lexState) {
+    public SimpleExprParserTokenManager(CharStream stream, int lexState) {
         this(stream);
         SwitchTo(lexState);
     }
@@ -241,7 +238,7 @@ class SimpleExprParserTokenManager implements SimpleExprParserConstants {
     /**
      * Reinitialise parser.
      */
-    public void ReInit(SimpleCharStream stream) {
+    public void ReInit(CharStream stream) {
         jjmatchedPos = jjnewStateCnt = 0;
         curLexState = defaultLexState;
         input_stream = stream;
@@ -259,7 +256,7 @@ class SimpleExprParserTokenManager implements SimpleExprParserConstants {
     /**
      * Reinitialise parser.
      */
-    public void ReInit(SimpleCharStream stream, int lexState) {
+    public void ReInit(CharStream stream, int lexState) {
         ReInit(stream);
         SwitchTo(lexState);
     }

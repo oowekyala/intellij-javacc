@@ -4,9 +4,6 @@
 package com.jjtx.exprs;
 
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.exprs.ast.*;
@@ -211,8 +208,6 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
      */
     public SimpleExprParserTokenManager token_source;
 
-    SimpleCharStream jj_input_stream;
-
     /**
      * Current token.
      */
@@ -240,22 +235,10 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
     }
 
     /**
-     * Constructor with InputStream.
+     * Constructor with user supplied CharStream.
      */
-    public SimpleExprParser(InputStream stream) {
-        this(stream, null);
-    }
-
-    /**
-     * Constructor with InputStream and supplied encoding
-     */
-    public SimpleExprParser(InputStream stream, String encoding) {
-        try {
-            jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        token_source = new SimpleExprParserTokenManager(jj_input_stream);
+    public SimpleExprParser(CharStream stream) {
+        token_source = new SimpleExprParserTokenManager(stream);
         token = new MyToken();
         jj_ntk = -1;
         jj_gen = 0;
@@ -267,48 +250,8 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
     /**
      * Reinitialise.
      */
-    public void ReInit(InputStream stream) {
-        ReInit(stream, null);
-    }
-
-    /**
-     * Reinitialise.
-     */
-    public void ReInit(InputStream stream, String encoding) {
-        try {
-            jj_input_stream.ReInit(stream, encoding, 1, 1);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        token_source.ReInit(jj_input_stream);
-        token = new MyToken();
-        jj_ntk = -1;
-        jj_gen = 0;
-        for (int i = 0; i < 4; i++)
-            jj_la1[i] = -1;
-
-    }
-
-    /**
-     * Constructor.
-     */
-    public SimpleExprParser(Reader stream) {
-        jj_input_stream = new SimpleCharStream(stream, 1, 1);
-        token_source = new SimpleExprParserTokenManager(jj_input_stream);
-        token = new MyToken();
-        jj_ntk = -1;
-        jj_gen = 0;
-        for (int i = 0; i < 4; i++)
-            jj_la1[i] = -1;
-
-    }
-
-    /**
-     * Reinitialise.
-     */
-    public void ReInit(Reader stream) {
-        jj_input_stream.ReInit(stream, 1, 1);
-        token_source.ReInit(jj_input_stream);
+    public void ReInit(CharStream stream) {
+        token_source.ReInit(stream);
         token = new MyToken();
         jj_ntk = -1;
         jj_gen = 0;

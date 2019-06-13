@@ -8,6 +8,7 @@ package com.jjtx.exprs;
 
 
 import java.io.Serializable;
+import org.exprs.ast.impl.MyToken;
 
 
 /**
@@ -61,7 +62,7 @@ class Token implements Serializable {
      * token.  Otherwise, see below for a description of the contents of
      * this field.
      */
-    public Token next;
+    public MyToken next;
 
     /**
      * This field is used to access special tokens that occur prior to this
@@ -75,7 +76,7 @@ class Token implements Serializable {
      * immediately follow it (without an intervening regular token).  If there
      * is no such token, this field is null.
      */
-    public Token specialToken;
+    public MyToken specialToken;
 
     /**
      * An optional attribute value of the Token.
@@ -99,7 +100,7 @@ class Token implements Serializable {
      * Constructs a new token for the specified Image.
      */
     public Token(int kind) {
-        this(kind, null);
+        super(kind, null);
     }
 
     /**
@@ -129,15 +130,15 @@ class Token implements Serializable {
      * to the following switch statement. Then you can cast matchedToken
      * variable to the appropriate type and use sit in your lexical actions.
      */
-    public static Token newToken(int ofKind, String image) {
+    public static MyToken newToken(int ofKind, String image) {
         switch (ofKind) {
             default :
-                return new Token(ofKind, image);
+                return new MyToken(ofKind, image);
         }
     }
 
-    public static Token newToken(int ofKind) {
-        return Token.newToken(ofKind, null);
+    public static MyToken newToken(int ofKind) {
+        return MyToken.newToken(ofKind, null);
     }
 }
 

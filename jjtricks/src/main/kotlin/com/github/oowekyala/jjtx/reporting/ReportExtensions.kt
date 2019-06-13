@@ -48,6 +48,13 @@ fun MessageCollector.reportNormal(message: String) {
 }
 
 /**
+ * Report a normal execution trace.
+ */
+fun MessageCollector.debug(message: String, position: Position? = null) {
+    report(message, MessageCategory.DEBUG, position)
+}
+
+/**
  * Report a non-fatal error, probably followed later by termination anyway.
  */
 fun MessageCollector.reportNonFatal(message: String, position: Position? = null) {

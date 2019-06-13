@@ -7,6 +7,9 @@
 package com.jjtx.exprs;
 
 
+import org.exprs.ast.impl.MyToken;
+
+
 /**
  * This exception is thrown when parse errors are encountered.
  * You can explicitly create objects of this exception type by
@@ -30,7 +33,7 @@ public class ParseException extends Exception {
      * a new object of this type with the fields "currentToken",
      * "expectedTokenSequences", and "tokenImage" set.
      */
-    public ParseException(Token currentTokenVal, int[][] expectedTokenSequencesVal, String[] tokenImageVal) {
+    public ParseException(MyToken currentTokenVal, int[][] expectedTokenSequencesVal, String[] tokenImageVal) {
         super(ParseException.initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal));
         currentToken = currentTokenVal;
         expectedTokenSequences = expectedTokenSequencesVal;
@@ -62,7 +65,7 @@ public class ParseException extends Exception {
      * this object has been created due to a parse error, the token
      * followng this token will (therefore) be the first error token.
      */
-    public Token currentToken;
+    public MyToken currentToken;
 
     /**
      * Each entry in this array is an array of integers.  Each array
@@ -85,7 +88,7 @@ public class ParseException extends Exception {
      * from the parser) the correct error message
      * gets displayed.
      */
-    private static String initialise(Token currentToken, int[][] expectedTokenSequences, String[] tokenImage) {
+    private static String initialise(MyToken currentToken, int[][] expectedTokenSequences, String[] tokenImage) {
         String eol = System.getProperty("line.separator", "\n");
         StringBuffer expected = new StringBuffer();
         int maxSize = 0;
@@ -102,7 +105,7 @@ public class ParseException extends Exception {
             expected.append(eol).append("    ");
         }
         String retval = "Encountered \"";
-        Token tok = currentToken.next;
+        MyToken tok = currentToken.next;
         for (int i = 0; i < maxSize; i++) {
             if (i != 0)
                 retval += " ";

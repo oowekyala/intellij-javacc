@@ -2,7 +2,28 @@ JJTricks v1.0
 (Run with -h parameter for a usage summary)
 Running tasks [gen:parser, gen:javacc-support]
 
-[init]                No jjtopts file found for grammar SimpleExprs
-[init]                Config chain: /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-[gen:javacc-support]  Generated 3 classes in @output@
-[gen:javacc]          Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+[init]
+    [INFO]     Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
+[:optsParsing:typeHierarchy]
+    [DEBUG]    The node org.exprs.ast.MyNodeParent is not in the grammar (can be generated anyway)
+               in @tmp@/SimpleExprs.jjtopts.yaml:12:4:
+                      name: "%MyNodeParent"
+                      ^
+    [DEBUG]    The node org.exprs.ast.ExExpression is not in the grammar (can be generated anyway)
+               in @tmp@/SimpleExprs.jjtopts.yaml:14:8:
+                        - name: "Expression"
+                          ^
+    [DEBUG]    The node org.exprs.ast.ExLiteral is not in the grammar (can be generated anyway)
+               in @tmp@/SimpleExprs.jjtopts.yaml:17:12:
+                            - name: Literal
+                              ^
+[gen:javacc-support]
+    [DEBUG]    Class org.exprs.ast.NodeManipulator was generated in @output@/org/exprs/ast/NodeManipulator.java
+    [DEBUG]    Class org.exprs.ast.JJTSimpleExprParserState was generated in @output@/org/exprs/ast/JJTSimpleExprParserState.java
+    [DEBUG]    Class org.exprs.ast.SimpleExprParserTreeConstants was generated in @output@/org/exprs/ast/SimpleExprParserTreeConstants.java
+    [DEBUG]    Class org.exprs.ast.impl.MyToken was generated in @output@/org/exprs/ast/impl/MyToken.java
+    [INFO]     Generated 4 classes in @output@
+[gen:javacc]
+    [INFO]     Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
+[gen:parser]
+    [DEBUG]    Ran JavaCC in /tmp/javacc-from-jjtricks6664528533578970866
