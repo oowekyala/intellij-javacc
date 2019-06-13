@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Clément Fournier
  */
-class JavaccExecCliTests : JjtxCliTestBase(replaceExpected = true) {
+class JavaccExecCliTests : JjtxCliTestBase() {
 
     @Before
     fun before() {
@@ -23,8 +23,7 @@ class JavaccExecCliTests : JjtxCliTestBase(replaceExpected = true) {
     @Test
     fun testTokenRenaming() = doTest(
         "SimpleExprs",
-        "gen:parser",
-        "-X"
+        "gen:parser"
     )
 
 

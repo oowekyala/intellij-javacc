@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Clément Fournier
  */
-class JccTranslationCliTests : JjtxCliTestBase() {
+class JccTranslationCliTests : JjtxCliTestBase(replaceExpected = ReplacementOpt.NONE) {
 
     @Before
     fun before() {
@@ -82,12 +82,6 @@ class JccTranslationCliTests : JjtxCliTestBase() {
     )
     @Test
     fun testVisibilityOverride() = doTest(
-        "SimpleExprs",
-        "gen:javacc"
-    )
-
-    @Test
-    fun testPostprocessing() = doTest(
         "SimpleExprs",
         "gen:javacc"
     )

@@ -38,8 +38,14 @@ import java.util.*
  *
  * @author Clément Fournier
  */
-abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
+abstract class JjtxCliTestBase(private val replaceExpected: ReplacementOpt = ReplacementOpt.NONE) {
 
+    enum class ReplacementOpt {
+        NONE,
+        FILES,
+        STREAMS,
+        ALL
+    }
 
     inner class TestBuilder(var subpath: String) {
         var expectedExitCode: ExitCode = ExitCode.OK
@@ -151,7 +157,11 @@ abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
 
 
                 if (expectedText != null && !Comparing.equal(expectedText.trim(), actualText.trim())) {
-                    throw FileComparisonFailure("Text mismatch", expectedText, actualText, fpath.toString())
+                    if (fpath != null && replaceExpected >= ReplacementOpt.STREAMS) {
+                        fpath.overwrite {
+                            actualText
+                        }
+                    } else throw FileComparisonFailure("Text mismatch", expectedText, actualText, fpath.toString())
                 }
             }
 
@@ -168,7 +178,7 @@ abstract class JjtxCliTestBase(private val replaceExpected: Boolean = false) {
 
         if (test.expectedOutput != null) {
             try {
-                assertDirEquals(test.expectedOutput, test.actualOutput, doReplaceExpected = replaceExpected)
+                assertDirEquals(test.expectedOutput, test.actualOutput, doReplaceExpected = replaceExpected >= ReplacementOpt.FILES)
             } catch (e: FileComparisonFailure) {
                 throw e
             }

@@ -26,12 +26,12 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             case SimpleExprParserConstants.NULL :
                 ASTNullLiteral nullLiteral = new ASTNullLiteral(JJTNULLLITERAL);
                 boolean nullLiteralNeedsClose = true;
-                jjtree.openNodeScope(nullLiteral);
+                jjtree.openNodeScope(nullLiteral, getToken(1));
                 try {
                     jj_consume_token(SimpleExprParserConstants.NULL);
                 } catch (Throwable nullLiteralException) {
                     if (nullLiteralNeedsClose) {
-                        jjtree.closeNodeScope(nullLiteral, true);
+                        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
                         nullLiteralNeedsClose = false;
                     } else {
                         jjtree.popNode();
@@ -50,7 +50,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
                     }
                 } finally {
                     if (nullLiteralNeedsClose) {
-                        jjtree.closeNodeScope(nullLiteral, true);
+                        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
                     }
                 }
                 break;
@@ -65,7 +65,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
         /* @bgen(jjtree) BinaryExpr */
         ASTBinaryExpr binaryExpr = new ASTBinaryExpr(JJTBINARYEXPR);
         boolean binaryExprNeedsClose = true;
-        jjtree.openNodeScope(binaryExpr);
+        jjtree.openNodeScope(binaryExpr, getToken(1));
         binaryExpr.setImage("Expr");
         try {
             UnaryExpr();
@@ -95,7 +95,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             }
         } catch (Throwable binaryExprException) {
             if (binaryExprNeedsClose) {
-                jjtree.closeNodeScope(binaryExpr, ((jjtree.nodeArity()) > 1));
+                jjtree.closeNodeScope(binaryExpr, getToken(0), ((jjtree.nodeArity()) > 1));
                 binaryExprNeedsClose = false;
             } else {
                 jjtree.popNode();
@@ -114,7 +114,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             }
         } finally {
             if (binaryExprNeedsClose) {
-                jjtree.closeNodeScope(binaryExpr, ((jjtree.nodeArity()) > 1));
+                jjtree.closeNodeScope(binaryExpr, getToken(0), ((jjtree.nodeArity()) > 1));
             }
         }
         throw new Error("Missing return statement in function");
@@ -125,7 +125,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             case 6 :
                 ASTParenthesizedExpr parenthesizedExpr = new ASTParenthesizedExpr(JJTPARENTHESIZEDEXPR);
                 boolean parenthesizedExprNeedsClose = true;
-                jjtree.openNodeScope(parenthesizedExpr);
+                jjtree.openNodeScope(parenthesizedExpr, getToken(1));
                 try {
                     jj_consume_token(6);
                     Expression();
@@ -134,7 +134,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
                     parenthesizedExpr.foo();
                 } catch (Throwable parenthesizedExprException) {
                     if (parenthesizedExprNeedsClose) {
-                        jjtree.closeNodeScope(parenthesizedExpr, true);
+                        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), true);
                         parenthesizedExprNeedsClose = false;
                     } else {
                         jjtree.popNode();
@@ -153,7 +153,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
                     }
                 } finally {
                     if (parenthesizedExprNeedsClose) {
-                        jjtree.closeNodeScope(parenthesizedExpr, true);
+                        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), true);
                     }
                 }
                 jjtThis.foo();
@@ -172,12 +172,12 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
         /* @bgen(jjtree) IntegerLiteral */
         ASTIntegerLiteral integerLiteral = new ASTIntegerLiteral(JJTINTEGERLITERAL);
         boolean integerLiteralNeedsClose = true;
-        jjtree.openNodeScope(integerLiteral);
+        jjtree.openNodeScope(integerLiteral, getToken(1));
         try {
             jj_consume_token(SimpleExprParserConstants.INTEGER);
         } catch (Throwable integerLiteralException) {
             if (integerLiteralNeedsClose) {
-                jjtree.closeNodeScope(integerLiteral, true);
+                jjtree.closeNodeScope(integerLiteral, getToken(0), true);
                 integerLiteralNeedsClose = false;
             } else {
                 jjtree.popNode();
@@ -196,7 +196,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             }
         } finally {
             if (integerLiteralNeedsClose) {
-                jjtree.closeNodeScope(integerLiteral, true);
+                jjtree.closeNodeScope(integerLiteral, getToken(0), true);
             }
         }
     }

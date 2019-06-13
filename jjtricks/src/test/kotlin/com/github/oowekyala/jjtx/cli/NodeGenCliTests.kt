@@ -7,7 +7,7 @@ import org.junit.Test
 /**
  * @author Clément Fournier
  */
-class NodeGenCliTests : JjtxCliTestBase(replaceExpected = false) {
+class NodeGenCliTests : JjtxCliTestBase(replaceExpected = ReplacementOpt.NONE) {
 
     @Before
     fun before() {

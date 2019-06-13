@@ -29,13 +29,13 @@ class JJTSimpleExprParserState {
         @java.lang.Override
         public void setFirstToken(
             JJTSimpleExprParserState builder, MyNodeParent node, MyToken token) {
-          // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
+          node.jjtSetFirstToken(token);
         }
 
         @java.lang.Override
         public void setLastToken(
             JJTSimpleExprParserState builder, MyNodeParent node, MyToken token) {
-          // use jjtx.trackTokens to insert a call to jjtSetLastToken
+          node.jjtSetLastToken(token);
         }
 
         @java.lang.Override
@@ -70,11 +70,6 @@ class JJTSimpleExprParserState {
     marks.clear();
     mk = 0;
     nodeCreated = false;
-  }
-
-  /** Returns this builder's node manipulator. */
-  public NodeManipulator getManipulator() {
-    return manipulator;
   }
 
   /**
@@ -147,23 +142,25 @@ class JJTSimpleExprParserState {
   }
 
   /** Start construction of the given node. */
-  public void openNodeScope(MyNodeParent n) {
+  public void openNodeScope(MyNodeParent n, MyToken firstToken) {
     marks.push(mk);
     mk = nodes.size();
+    manipulator.setFirstToken(firstToken);
     manipulator.onOpen(this, n);
   }
 
   /**
-   * A definite node is constructed from a specified number of children. That number of nodes are
+   * A definite node is constructed with a specific number of children. That number of nodes are
    * popped from the stack and made the children of the definite node. Then the definite node is
    * pushed on to the stack.
    */
-  public void closeNodeScope(MyNodeParent n, int num) {
+  public void closeNodeScope(MyNodeParent n, MyToken lastToken, int num) {
     mk = marks.pop();
     while (num-- > 0) {
       MyNodeParent c = popNode();
       manipulator.addChild(this, n, c, num);
     }
+    manipulator.setLastToken(lastToken);
     manipulator.onPush(this, n);
     pushNode(n);
     nodeCreated = true;
@@ -174,7 +171,7 @@ class JJTSimpleExprParserState {
    * since the node was opened are made children of the conditional node, which is then pushed onto
    * the stack. If the condition is false the node is not built and they are left on the stack.
    */
-  public void closeNodeScope(MyNodeParent n, boolean condition) {
+  public void closeNodeScope(MyNodeParent n, MyToken lastToken, boolean condition) {
     if (condition) {
       int a = nodeArity();
       mk = marks.pop();
@@ -182,6 +179,7 @@ class JJTSimpleExprParserState {
         MyNodeParent c = popNode();
         manipulator.addChild(this, n, c, a);
       }
+      manipulator.setLastToken(lastToken);
       manipulator.onPush(this, n);
       pushNode(n);
       nodeCreated = true;

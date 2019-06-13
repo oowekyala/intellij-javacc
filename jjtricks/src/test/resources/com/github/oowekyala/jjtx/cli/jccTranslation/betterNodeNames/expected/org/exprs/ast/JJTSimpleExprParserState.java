@@ -71,11 +71,6 @@ public class JJTSimpleExprParserState {
     nodeCreated = false;
   }
 
-  /** Returns this builder's node manipulator. */
-  public NodeManipulator getManipulator() {
-    return manipulator;
-  }
-
   /**
    * Returns true if the current node was closed and pushed (in case it was conditional). Reset as
    * soon as another node scope is opened.
@@ -146,23 +141,25 @@ public class JJTSimpleExprParserState {
   }
 
   /** Start construction of the given node. */
-  public void openNodeScope(MyNodeParent n) {
+  public void openNodeScope(MyNodeParent n, Token firstToken) {
     marks.push(mk);
     mk = nodes.size();
+    manipulator.setFirstToken(firstToken);
     manipulator.onOpen(this, n);
   }
 
   /**
-   * A definite node is constructed from a specified number of children. That number of nodes are
+   * A definite node is constructed with a specific number of children. That number of nodes are
    * popped from the stack and made the children of the definite node. Then the definite node is
    * pushed on to the stack.
    */
-  public void closeNodeScope(MyNodeParent n, int num) {
+  public void closeNodeScope(MyNodeParent n, Token lastToken, int num) {
     mk = marks.pop();
     while (num-- > 0) {
       MyNodeParent c = popNode();
       manipulator.addChild(this, n, c, num);
     }
+    manipulator.setLastToken(lastToken);
     manipulator.onPush(this, n);
     pushNode(n);
     nodeCreated = true;
@@ -173,7 +170,7 @@ public class JJTSimpleExprParserState {
    * since the node was opened are made children of the conditional node, which is then pushed onto
    * the stack. If the condition is false the node is not built and they are left on the stack.
    */
-  public void closeNodeScope(MyNodeParent n, boolean condition) {
+  public void closeNodeScope(MyNodeParent n, Token lastToken, boolean condition) {
     if (condition) {
       int a = nodeArity();
       mk = marks.pop();
@@ -181,6 +178,7 @@ public class JJTSimpleExprParserState {
         MyNodeParent c = popNode();
         manipulator.addChild(this, n, c, a);
       }
+      manipulator.setLastToken(lastToken);
       manipulator.onPush(this, n);
       pushNode(n);
       nodeCreated = true;

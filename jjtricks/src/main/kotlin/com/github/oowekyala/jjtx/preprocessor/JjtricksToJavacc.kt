@@ -303,10 +303,6 @@ private class JjtxCompilVisitor(val file: JccFile,
     private fun DslPrintStream.emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = this.apply {
         with(builder) {
 
-            setLastToken(nodeVar)?.let {
-                +it + Endl
-            }
-
             +closeNodeScope(nodeVar) + Endl
             if (!isFinal) {
                 +nodeVar.closedVar + " = false;" + Endl
@@ -324,10 +320,6 @@ private class JjtxCompilVisitor(val file: JccFile,
         with(builder) {
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl
-
-            setFirstToken(nodeVar)?.let {
-                +it + Endl
-            }
 
             openNodeHook(nodeVar)?.let {
                 +it + Endl

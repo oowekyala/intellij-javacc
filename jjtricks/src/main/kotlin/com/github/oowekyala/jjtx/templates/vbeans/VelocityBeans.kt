@@ -207,11 +207,6 @@ data class RunVBean(
                     FileGenVBean.fromGenTask(id, task)
                 }
 
-            val supportFiles =
-                ctx.jjtxOptsModel.javaccGen.supportFiles.mapValues { (id, task) ->
-                    FileGenVBean.fromGenTask(id, task)
-                }
-
             return RunVBean(
                 commonGen = visitors,
                 javaccGen = JjtricksGenVBean.create(ctx.jjtxOptsModel.javaccGen)

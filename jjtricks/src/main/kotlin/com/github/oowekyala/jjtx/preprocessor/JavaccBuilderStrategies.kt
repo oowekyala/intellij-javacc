@@ -31,10 +31,6 @@ interface JjtxBuilderStrategy {
 
     fun clearNodeScope(nodeVar: NodeVar): String
 
-    fun setFirstToken(nodeVar: NodeVar): String?
-
-    fun setLastToken(nodeVar: NodeVar): String?
-
     fun popNode(nodeVar: NodeVar): String
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
@@ -145,23 +141,19 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
             "if (jjtree.nodeCreated()) jjtCloseNodeScope(${nodeVar.varName});"
         else null
 
-    override fun setFirstToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "jjtree.getManipulator().setFirstToken(jjtree, ${nodeVar.varName}, getToken(1));" else null
 
-    override fun setLastToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "jjtree.getManipulator().setLastToken(jjtree, ${nodeVar.varName}, getToken(0));" else null
-
-    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName});"
+    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName}, getToken(1));"
 
     override fun clearNodeScope(nodeVar: NodeVar): String = "jjtree.clearNodeScope(${nodeVar.varName});"
 
     override fun closeNodeScope(nodeVar: NodeVar): String {
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
+        val prefix = "jjtree.closeNodeScope($n, getToken(0)"
         return when {
-            d == null -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${escapeJjtThis(nodeVar, d.expressionText)});"
-            else -> "jjtree.closeNodeScope($n, ${escapeJjtThis(nodeVar, d.expressionText)});"
+            d == null        -> "$prefix, true);"
+            d.isGtExpression -> "$prefix, jjtree.nodeArity() > ${escapeJjtThis(nodeVar, d.expressionText)});"
+            else             -> "$prefix, ${escapeJjtThis(nodeVar, d.expressionText)});"
         }
     }
 

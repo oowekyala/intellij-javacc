@@ -31,11 +31,6 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
         nodeCreated = false;
     }
 
-    /** Returns this builder's node manipulator. */
-    public $manipulator getManipulator() {
-        return manipulator;
-    }
-
     /** Returns true if the current node was closed and pushed (in case
       * it was conditional). Reset as soon as another node scope is opened.
       */
@@ -106,24 +101,26 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
 
 
     /** Start construction of the given node. */
-    public void openNodeScope($topNode n) {
+    public void openNodeScope($topNode n, $token firstToken) {
         marks.push(mk);
         mk = nodes.size();
+        manipulator.setFirstToken(firstToken);
         manipulator.onOpen(this, n);
     }
 
 
-    /** A definite node is constructed from a specified number of
+    /** A definite node is constructed with a specific number of
       * children.  That number of nodes are popped from the stack and
       * made the children of the definite node.  Then the definite node
       * is pushed on to the stack.
       */
-    public void closeNodeScope($topNode n, int num) {
+    public void closeNodeScope($topNode n, $token lastToken, int num) {
         mk = marks.pop();
         while (num-- > 0) {
             $topNode c = popNode();
             manipulator.addChild(this, n, c, num);
         }
+        manipulator.setLastToken(lastToken);
         manipulator.onPush(this, n);
         pushNode(n);
         nodeCreated = true;
@@ -135,7 +132,7 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
       * onto the stack.  If the condition is false the node is not
       * built and they are left on the stack.
       */
-    public void closeNodeScope($topNode n, boolean condition) {
+    public void closeNodeScope($topNode n, $token lastToken, boolean condition) {
         if (condition) {
             int a = nodeArity();
             mk = marks.pop();
@@ -143,6 +140,7 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
                 $topNode c = popNode();
                 manipulator.addChild(this, n, c, a);
             }
+            manipulator.setLastToken(lastToken);
             manipulator.onPush(this, n);
             pushNode(n);
             nodeCreated = true;

@@ -37,13 +37,13 @@ void Expression() : {}
 {
     ExNullLiteral nullLiteral = new ExNullLiteral(JJTNULLLITERAL);
     boolean nullLiteralNeedsClose = true;
-    jjtree.openNodeScope(nullLiteral);
+    jjtree.openNodeScope(nullLiteral, getToken(1));
 } try {
     /*@egen*/<NULL>
     /*@bgen(jjtree)*/
 } catch (Throwable nullLiteralException) {
     if (nullLiteralNeedsClose) {
-        jjtree.closeNodeScope(nullLiteral, true);
+        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
         nullLiteralNeedsClose = false;
     } else {
         jjtree.popNode();
@@ -51,7 +51,7 @@ void Expression() : {}
     throw nullLiteralException;
 } finally {
     if (nullLiteralNeedsClose) {
-        jjtree.closeNodeScope(nullLiteral, true);
+        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
     }
 }
 /*@egen*/
@@ -62,7 +62,7 @@ void BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
     ExBinaryExpr binaryExpr = new ExBinaryExpr(JJTBINARYEXPR);
     boolean binaryExprNeedsClose = true;
-    jjtree.openNodeScope(binaryExpr);
+    jjtree.openNodeScope(binaryExpr, getToken(1));
     /*@egen*/
     
 }
@@ -73,7 +73,7 @@ void BinaryExpression(): {
         /*@bgen(jjtree)*/
     } catch (Throwable binaryExprException) {
         if (binaryExprNeedsClose) {
-            jjtree.closeNodeScope(binaryExpr, binaryExpr.foo());
+            jjtree.closeNodeScope(binaryExpr, getToken(0), binaryExpr.foo());
             binaryExprNeedsClose = false;
         } else {
             jjtree.popNode();
@@ -81,7 +81,7 @@ void BinaryExpression(): {
         throw binaryExprException;
     } finally {
         if (binaryExprNeedsClose) {
-            jjtree.closeNodeScope(binaryExpr, binaryExpr.foo());
+            jjtree.closeNodeScope(binaryExpr, getToken(0), binaryExpr.foo());
         }
     }
     /*@egen*/
@@ -94,13 +94,13 @@ void UnaryExpr() : {}
 {
     ExParenthesizedExpr parenthesizedExpr = new ExParenthesizedExpr(JJTPARENTHESIZEDEXPR);
     boolean parenthesizedExprNeedsClose = true;
-    jjtree.openNodeScope(parenthesizedExpr);
+    jjtree.openNodeScope(parenthesizedExpr, getToken(1));
 } try {
     /*@egen*/("(" Expression() ")")
     /*@bgen(jjtree)*/
 } catch (Throwable parenthesizedExprException) {
     if (parenthesizedExprNeedsClose) {
-        jjtree.closeNodeScope(parenthesizedExpr, parenthesizedExpr.numChildren() > 1);
+        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), parenthesizedExpr.numChildren() > 1);
         parenthesizedExprNeedsClose = false;
     } else {
         jjtree.popNode();
@@ -108,7 +108,7 @@ void UnaryExpr() : {}
     throw parenthesizedExprException;
 } finally {
     if (parenthesizedExprNeedsClose) {
-        jjtree.closeNodeScope(parenthesizedExpr, parenthesizedExpr.numChildren() > 1);
+        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), parenthesizedExpr.numChildren() > 1);
     }
 }
 /*@egen*/
@@ -119,7 +119,7 @@ void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
     ExIntegerLiteral integerLiteral = new ExIntegerLiteral(JJTINTEGERLITERAL);
     boolean integerLiteralNeedsClose = true;
-    jjtree.openNodeScope(integerLiteral);
+    jjtree.openNodeScope(integerLiteral, getToken(1));
     /*@egen*/
     
 }
@@ -130,7 +130,7 @@ void Integer(): {
         /*@bgen(jjtree)*/
     } catch (Throwable integerLiteralException) {
         if (integerLiteralNeedsClose) {
-            jjtree.closeNodeScope(integerLiteral, true);
+            jjtree.closeNodeScope(integerLiteral, getToken(0), true);
             integerLiteralNeedsClose = false;
         } else {
             jjtree.popNode();
@@ -138,7 +138,7 @@ void Integer(): {
         throw integerLiteralException;
     } finally {
         if (integerLiteralNeedsClose) {
-            jjtree.closeNodeScope(integerLiteral, true);
+            jjtree.closeNodeScope(integerLiteral, getToken(0), true);
         }
     }
     /*@egen*/

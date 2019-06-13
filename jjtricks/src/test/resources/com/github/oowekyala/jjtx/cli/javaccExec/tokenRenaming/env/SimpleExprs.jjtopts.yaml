@@ -1,5 +1,7 @@
 jjtx:
 
+
+  trackTokens: true
   javaccGen:
     supportFiles:
       token:
