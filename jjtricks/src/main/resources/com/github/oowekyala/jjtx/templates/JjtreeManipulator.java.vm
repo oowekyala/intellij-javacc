@@ -14,27 +14,27 @@ $!visibility $!modifiers class ${thisClass.simpleName} implements $manipulator {
     /** Instance with the default behaviour. */
     public static final ${thisClass.simpleName} INSTANCE = new ${thisClass.simpleName}();
 
-    $!override
+    $!mods.override
     public void setFirstToken($treeBuilder builder, $topNode node, $token token){
         node.jjtSetFirstToken(token);
     }
 
-    $!override
+    $!mods.override
     public void setLastToken($treeBuilder builder, $topNode node, $token token){
         node.jjtSetLastToken(token);
     }
 
-    $!override
+    $!mods.override
     public void onOpen($treeBuilder builder, $topNode node) {
         node.jjtOpen();
     }
 
-    $!override
+    $!mods.override
     public void onPush($treeBuilder builder, $topNode node) {
         node.jjtClose();
     }
 
-    $!override
+    $!mods.override
     public void addChild($treeBuilder builder, $topNode parent, $topNode child, int index) {
         child.jjtSetParent(child);
         parent.jjtAddChild(child, index);

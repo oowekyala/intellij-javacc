@@ -21,28 +21,28 @@ class JJTSimpleExprParserState {
   private final Stack<Integer> marks = new Stack<Integer>();
   private final NodeManipulator manipulator =
       new NodeManipulator() {
-        @Override
+        @java.lang.Override
         public void setFirstToken(
             JJTSimpleExprParserState builder, MyNodeParent node, Token token) {
           node.jjtSetFirstToken(token);
         }
 
-        @Override
+        @java.lang.Override
         public void setLastToken(JJTSimpleExprParserState builder, MyNodeParent node, Token token) {
           node.jjtSetLastToken(token);
         }
 
-        @Override
+        @java.lang.Override
         public void onOpen(JJTSimpleExprParserState builder, MyNodeParent node) {
           node.jjtOpen();
         }
 
-        @Override
+        @java.lang.Override
         public void onPush(JJTSimpleExprParserState builder, MyNodeParent node) {
           node.jjtClose();
         }
 
-        @Override
+        @java.lang.Override
         public void addChild(
             JJTSimpleExprParserState builder, MyNodeParent parent, MyNodeParent child, int index) {
           child.jjtSetParent(child);
@@ -64,6 +64,11 @@ class JJTSimpleExprParserState {
     marks.clear();
     mk = 0;
     nodeCreated = false;
+  }
+
+  /** Returns this builder's node manipulator. */
+  public NodeManipulator getManipulator() {
+    return manipulator;
   }
 
   /**

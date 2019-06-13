@@ -22,69 +22,97 @@ shared:
 
 defaultJjtreeVisitor:
   templateFile: "/jjtx/templates/VisitorInterface.java.vm"
-  formatter: "java"
+  formatter: java
   genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
   context:
     visibility: public
+    visitorMethodComment: !from '#/shared/visitorMethodComment'
     methodTemplate: |
-      /** Visits {@linkplain $node.class.simpleName $node.name}. */
-      Object visit($node.class.simpleName node, Object data);
+      #macro( methodAnchor $n)
+      visit($n.class.simpleName,Object)
+      #end
+
+      #evaluate($visitorMethodComment)
+      $!mods.default Object visit($node.class.simpleName node, Object data)
+      #if ( $mods.default )
+      {
+          #if ($node.superNode)
+          return visit(($node.superNode.class.simpleName) node, data);
+          #else
+          return node.childrenAccept(this, data);
+          #end
+      }
+      #else
+      ;
+      #end
     acceptMethod: |
       @Override
       public Object jjtAccept($visitor.class.qualifiedName visitor, Object data) {
          return visitor.visit(this, data);
       }
 
-java8:
-  defaultJjtreeVisitor:
-    templateFile: "/jjtx/templates/VisitorInterface.java.vm"
-    formatter: "java"
-    genClassName: "${grammar.nodePackage}.${grammar.name}ParserVisitor"
-    context:
-      visibility: public
-      visitorMethodComment: !from '#/shared/visitorMethodComment'
-      methodTemplate: |
-        #macro( methodAnchor $n)
-        visit($n.class.simpleName,Object)
-        #end
+parameterlessVisitor:
+  templateFile: "/jjtx/templates/VisitorInterface.java.vm"
+  genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
+  formatter: java
+  context:
+    visibility: public
+    visitorMethodComment: !from '#/shared/visitorMethodComment'
+    methodTemplate: |
+      #macro( methodAnchor $node)
+      visit($node.class.simpleName)
+      #end
 
-        #evaluate($visitorMethodComment)
-        default Object visit($node.class.simpleName node, Object data) {
-            #if ($node.superNode)
-            return visit(($node.superNode.class.simpleName) node, data);
-            #else
-            return node.childrenAccept(this, data);
-            #end
-        }
-      acceptMethod: |
-        @Override
-        public Object jjtAccept($visitor.class.qualifiedName visitor, Object data) {
-           return visitor.visit(this, data);
-        }
+      #evaluate($visitorMethodComment)
+      $!mods.default void visit($node.class.simpleName node)
+      #if ( $mods.default )
+      {
+          #if ($node.superNode)
+          visit(($node.superNode.class.simpleName) node);
+          #else
+          node.childrenAccept(this, data);
+          #end
+      }
+      #else
+      ;
+      #end
+    acceptMethod: |
+      @Override
+      public void jjtAccept($visitor.class.qualifiedName visitor) {
+         visitor.visit(this);
+      }
 
-  parameterlessVisitor:
-    templateFile: "/jjtx/templates/VisitorInterface.java.vm"
-    genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
-    formatter: java
-    context:
-      visibility: public
-      visitorMethodComment: !from '#/shared/visitorMethodComment'
-      methodTemplate: |
-        #macro( methodAnchor $node)
-        visit($node.class.simpleName)
-        #end
 
-        #evaluate($visitorMethodComment)
-        default void visit($node.class.simpleName node) {
-            #if ($node.superNode)
-            visit(($node.superNode.class.simpleName) node);
-            #else
-            node.childrenAccept(this, data);
-            #end
-        }
-      acceptMethod: |
-        @Override
-        public void jjtAccept($visitor.class.qualifiedName visitor) {
-           visitor.visit(this);
-        }
+genericSideEffectVisitor:
+  templateFile: "/jjtx/templates/VisitorInterface.java.vm"
+  genClassName: "${grammar.nodePackage}.${grammar.name}Visitor"
+  formatter: java
+  context:
+    visibility: public
+    visitorMethodComment: !from '#/shared/visitorMethodComment'
+    typeParam: T
+    generics: "<$typeParam>"
+    methodTemplate: |
+      #macro( methodAnchor $node)
+      visit($node.class.simpleName)
+      #end
+
+      #evaluate($visitorMethodComment)
+      $!mods.default void visit($node.class.simpleName node, T)
+      #if ( $mods.default )
+      {
+          #if ($node.superNode)
+          visit(($node.superNode.class.simpleName) node);
+          #else
+          node.childrenAccept(this, data);
+          #end
+      }
+      #else
+      ;
+      #end
+    acceptMethod: |
+      @Override
+      public void jjtAccept($visitor.class.qualifiedName visitor) {
+         visitor.visit(this);
+      }
 

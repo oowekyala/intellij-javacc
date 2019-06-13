@@ -305,7 +305,7 @@ class Jjtricks(
                     }, path, identity = path)
                 }
 
-        private fun expandResourcePath(path: String): String {
+        fun expandResourcePath(path: String): String {
             return when {
                 path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
                 else                     -> path

@@ -1,4 +1,5 @@
 #* @implicitly included *#
+#* @vtlmacrolibrary path="../resources/com/github/oowekyala/jjtx/templates/macros.vtl" *#
 #* @vtlvariable name="manipulatorCreator" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/TreeBuilder.java.vm" *#
 #* @vtlvariable name="manipulator" type="java.lang.String" *#
 #* @vtlvariable name="token" type="java.lang.String" *#

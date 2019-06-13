@@ -26,6 +26,10 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
         nodeCreated = false;
     }
 
+    /** Returns this builder's node manipulator. */
+    public $manipulator getManipulator() {
+        return manipulator;
+    }
 
     /** Returns true if the current node was closed and pushed (in case
       * it was conditional). Reset as soon as another node scope is opened.
