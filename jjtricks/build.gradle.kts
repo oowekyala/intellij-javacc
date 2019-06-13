@@ -1,4 +1,6 @@
 import com.github.oowekyala.*
+import groovy.xml.dom.DOMCategory.attributes
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 
 plugins {
@@ -43,10 +45,11 @@ dependencies {
     implementation("com.github.oowekyala.treeutils:tree-printers:2.1.0")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
-    // for debugging only, this pulls in a huge IBM dependency
+    implementation("net.java.dev.javacc:javacc:5.0")
+    implementation("fr.inria.gforge.spoon:spoon-core:7.5.0-beta-21")
+    // for debugging only, this pulls in a huge IBM dependency to support emojis...
     // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
-    implementation("net.java.dev.javacc:javacc:7.0.4")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)
     testImplementation("commons-io:commons-io:2.6")

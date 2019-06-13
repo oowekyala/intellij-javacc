@@ -26,6 +26,7 @@ import com.xenomachina.argparser.DefaultHelpFormatter
 import com.xenomachina.argparser.SystemExitException
 import com.xenomachina.argparser.default
 import java.io.OutputStreamWriter
+import java.lang.AssertionError
 import java.net.URL
 import java.nio.file.Path
 import java.util.*
@@ -137,7 +138,7 @@ class Jjtricks(
 
         val err = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
-        val tasks = myTasks
+        val tasks = if (GEN_JAVACC in myTasks || GEN_PARSER in myTasks) myTasks + GEN_SUPPORT else myTasks
 
         // not quiet mode
         if (minReportSeverity < Severity.FAIL) {
@@ -153,7 +154,7 @@ class Jjtricks(
             io.stderr.println()
         }
 
-        val ctx = err.catchException("Exception while building run context", fatal = true) {
+        val ctx = err.catchException("Exception while building run context", fatal = true, default = { throw AssertionError() }) {
             val init = err.withContext(InitCtx)
             produceContext(env.project, err, init).apply {
                 init.reportNormal("Config chain: $chainDump")
@@ -174,31 +175,48 @@ class Jjtricks(
         // now the context is entirely initialized (only initialisation is not thread-safe),
         // so we can fork the tasks
 
-        fun runTask(key: JjtxTaskKey): CompletableFuture<Void> =
-            ctx.subContext(key).let {
-                it.messageCollector.catchException(null) {
-                    key.execute(TaskCtx(it, outputRoot, sourceRoots.toList()))
+        fun runTask(key: JjtxTaskKey): CompletableFuture<Void?> {
+            val deps = key.serialDependencies.sorted().map(::runTask).toTypedArray()
+            return CompletableFuture.allOf(*deps)
+                .thenCompose { _ ->
+                    ctx.subContext(key).let {
+                        it.messageCollector.catchException(null, default = {CompletableFuture.completedFuture<Void?>(null)}) {
+                            key.execute(TaskCtx(it, outputRoot, sourceRoots.toList()))
+                        }
+                    }
                 }
-            }
+        }
 
 
-        val allTasks = if (GEN_JAVACC in tasks) tasks + GEN_SUPPORT else tasks
 
-        CompletableFuture.allOf(*allTasks.sorted().map(::runTask).toTypedArray()).join()
+        val sorted = tasks.sorted().let {
+            it - it.flatMap { it.serialDependencies.toList() }
+        }
+
+
+        CompletableFuture.allOf(*sorted.map(::runTask).toTypedArray()).join()
 
         ctx.messageCollector.concludeReport()
     }
 
-    private fun <T> MessageCollector.catchException(ctxStr: String?, fatal: Boolean = false, block: () -> T): T =
+    private fun <T : Any> MessageCollector.catchException(
+        ctxStr: String?,
+        fatal: Boolean = false,
+        default: ()->T,
+        block: () -> T
+    ): T =
         try {
             block()
         } catch (e: Exception) {
-            catchException(null, fatal = true) {
-                this.reportException(e, ctxStr, fatal = fatal) as T
+            catchException(null, fatal = fatal, default = default) {
+                this.reportException(e, ctxStr, fatal = fatal)
+                default()
             }
         } catch (e: DoExitNowError) {
             this.concludeReport()
             io.exit(ExitCode.ERROR)
+        } finally {
+            io.stderr.flush()
         }
 
 

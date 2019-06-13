@@ -86,4 +86,10 @@ class JccTranslationCliTests : JjtxCliTestBase() {
         "gen:javacc"
     )
 
+    @Test
+    fun testPostprocessing() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
 }

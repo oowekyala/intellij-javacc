@@ -5,32 +5,34 @@ import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.postprocessor.mapJavaccOutput
 import com.github.oowekyala.jjtx.preprocessor.VanillaJjtreeBuilder
 import com.github.oowekyala.jjtx.preprocessor.toJavacc
-import com.github.oowekyala.jjtx.reporting.reportException
-import com.github.oowekyala.jjtx.reporting.reportNormal
-import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
+import com.github.oowekyala.jjtx.reporting.*
 import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.Status
-import com.github.oowekyala.jjtx.util.createFile
+import com.github.oowekyala.jjtx.util.*
 import com.github.oowekyala.jjtx.util.dataAst.toYaml
-import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.Io
-import com.github.oowekyala.jjtx.util.path
-import com.github.oowekyala.jjtx.util.splitAroundFirst
 import org.apache.velocity.VelocityContext
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
+import org.javacc.parser.Main as JavaccMain
 
 
-enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> JjtxTask) {
+enum class JjtxTaskKey(
+    val ref: String,
+    private val taskBuilder: (TaskCtx) -> JjtxTask,
+    vararg val serialDependencies: JjtxTaskKey) {
     DUMP_CONFIG("help:dump-config", ::DumpConfigTask),
     GEN_COMMON("gen:common", ::CommonGenTask),
     GEN_NODES("gen:nodes", ::GenerateNodesTask),
     GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask),
     GEN_JAVACC("gen:javacc", ::GenerateJavaccTask),
+    GEN_PARSER("gen:parser", ::JavaccExecTask, GEN_JAVACC)
     ;
 
 
@@ -41,7 +43,7 @@ enum class JjtxTaskKey(val ref: String, private val taskBuilder: (TaskCtx) -> Jj
     override fun toString(): String = ref
 
 
-    fun execute(taskCtx: TaskCtx): CompletableFuture<Void> {
+    fun execute(taskCtx: TaskCtx): CompletableFuture<Void?> {
         val task = taskBuilder(taskCtx)
         return when {
             !Jjtricks.TEST_MODE -> CompletableFuture.runAsync(task::execute)
@@ -240,6 +242,8 @@ class GenerateNodesTask(taskCtx: TaskCtx) : GenerationTaskBase(taskCtx) {
     override val exceptionCtx: String = "Generating node files"
 }
 
+private fun JjtxContext.genJjPath(outputDir: Path) =
+    outputDir.resolveQname(jjtxOptsModel.parserPackage).resolve("$grammarName.jj")
 
 /**
  * Compile the grammar to a JavaCC file.
@@ -257,8 +261,7 @@ class GenerateJavaccTask(private val taskCtx: TaskCtx) : JjtxTask() {
                 return
             }
 
-            val o =
-                outputDir.resolve(ctx.jjtxOptsModel.parserPackage.replace('.', '/')).resolve(ctx.grammarName + ".jj")
+            val o = ctx.genJjPath(outputDir)
 
             if (!o.exists()) {
                 o.createFile()
@@ -291,6 +294,65 @@ class GenerateJavaccSupportFilesTask(taskCtx: TaskCtx) : GenerationTaskBase(task
 
     override val generationTasks: Collection<FileGenTask> by lazy {
         ctx.jjtxOptsModel.javaccGen.supportFiles.values
+    }
+
+}
+
+
+class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
+
+
+    override fun execute() {
+
+        with(ctx) {
+            val jj = ctx.genJjPath(outputDir)
+
+            if (!jj.exists()) {
+                ctx.messageCollector.reportNonFatal("JavaCC grammar not found: $jj\nCan't execute JavaCC")
+                return
+            }
+
+            val tmpOutput = Files.createTempDirectory("javacc-from-jjtricks")
+
+            val jccExitCode = synchronized(mutex) {
+                try {
+                    // TODO redirect IO
+
+                    JavaccMain.mainProgram(
+                        arrayOf(
+                            "-OUTPUT_DIRECTORY=$tmpOutput",
+                            "-STATIC=false",
+                            jj.toString()
+                        )
+                    )
+
+
+                } catch (t: Throwable) {
+                    ctx.messageCollector.reportFatalException(t, "Executing JavaCC")
+                }
+            }
+
+
+            if (jccExitCode == JAVACC_ERROR) {
+                ctx.messageCollector.reportFatal("JavaCC exited with abnormal status code ($JAVACC_ERROR)")
+            }
+
+            ctx.messageCollector.report("Ran JavaCC in $tmpOutput", MessageCategory.DEBUG)
+
+            mapJavaccOutput(
+                ctx = ctx,
+                jccOutput = tmpOutput,
+                realOutput = outputDir,
+                otherSources = otherSourceRoots
+            )
+        }
+
+    }
+
+    companion object {
+        /** JavaCC is the least thread-safe program there is... */
+        private val mutex = Object()
+        private const val JAVACC_ERROR = 1
     }
 
 }
