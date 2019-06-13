@@ -1,4 +1,9 @@
 #* @implicitly included *#
+#* @vtlvariable name="packageDecl" type="java.lang.String" *#
+#* @vtlvariable name="fileHeader" type="java.lang.String" *#
+#* @vtlvariable name="visibility" type="java.lang.String" *#
+#* @vtlvariable name="modifiers" type="java.lang.String" *#
+#* @vtlvariable name="preserveLineColumn" type="boolean" file="../resources/com/github/oowekyala/jjtx/templates/SimpleCharStream.java.vm" *#
 #* @vtlvariable name="sorter" type="org.apache.velocity.tools.generic.SortTool" *#
 #* @vtlvariable name="jjtx" type="com.github.oowekyala.jjtx.templates.vbeans.JjtricksGenVBean" *#
 #* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.vbeans.ClassVBean" *#

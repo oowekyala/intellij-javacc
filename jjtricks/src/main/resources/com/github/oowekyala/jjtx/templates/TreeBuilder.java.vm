@@ -14,6 +14,7 @@ import $manipulatorClass.qualifiedName;
   * with {@link $topNode} without forcing it to have a specific interface.
   */
 $!visibility $!modifiers class ${thisClass.simpleName} {
+
     private final Stack<$topNode> nodes = new Stack<$topNode>();
     private final Stack<Integer> marks = new Stack<Integer>();
     private final $manipulatorClass.simpleName manipulator = new ${manipulatorClass.simpleName}();
@@ -21,6 +22,14 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
     /** Index of the first child of this node. If equal to {@link #nodes.size()}, no children are pushed. */
     private int mk = 0;
     private boolean nodeCreated;
+
+    /** Resets the state of this builder. */
+    public void reset() {
+        nodes.clear();
+        marks.clear();
+        mk = 0;
+        nodeCreated = false;
+    }
 
 
     /** Returns true if the current node was closed and pushed (in case
@@ -30,11 +39,29 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
         return nodeCreated;
     }
 
+
     /** Returns the root node of the AST. It only makes sense to call
       * this after a successful parse.
       */
     public $topNode rootNode() {
         return nodes.get(0);
+    }
+
+    /** Increase the number of children of this node by one.
+      *
+      * @see ${H}bumpArity(int)
+      */
+    public void bumpArity() {
+        mk--;
+    }
+
+    /** Increase the number of children of this node by [n].
+      * If the node is closed, [n] additional node from the stack will be popped
+      * and added to its children. This allows mimicking "left-recursive" nodes,
+      * while keeping the parsing iterative.
+      */
+    public void bumpArity(int n) {
+        mk -= n;
     }
 
     /** Pushes a new node on to the stack. */

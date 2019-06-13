@@ -4,13 +4,35 @@
 #set ( $topNode = $grammar.rootNode.klass.simpleName )
 #set ( $treeBuilder =  $run.javaccGen.support.treeBuilder.class.simpleName )
 
+#if ( $run.javaccGen.support.token.class )
+    #set ( $token = $run.javaccGen.support.token.class.simpleName )
+    import $run.javaccGen.support.token.class.qualifiedName;
+#else
+    #set ( $token = "Token")
+    import ${grammar.parser.class.addPackage("Token")};
+#end
+
 import $grammar.rootNode.klass.qualifiedName;
-import java.util.Stack;
 import $run.javaccGen.support.treeBuilder.class.qualifiedName;
 
 $!visibility $!modifiers class ${thisClass.simpleName} {
 
+    /** Instance with the default behaviour. */
     public static final ${thisClass.simpleName} DEFAULT_INSTANCE = new ${thisClass.simpleName}();
+
+    /** Called before calling {@link ${H}onOpen}()} with the first token of a node.
+      * The default implementation calls {@code jjtSetFirstToken}.
+      */
+    public void setFirstToken($treeBuilder builder, $topNode node, $token token){
+        node.jjtSetFirstToken(token);
+    }
+
+    /** Called before calling {@link ${H}onPush}()} with the last token of a node.
+      * The default implementation calls {@code jjtSetLastToken}.
+      */
+    public void setLastToken($treeBuilder builder, $topNode node, $token token){
+        node.jjtSetLastToken(token);
+    }
 
     /** Called when a node is first open. In this state, the node has no children
       * yet, and no parent. The default implementation calls {@code jjtOpen}.

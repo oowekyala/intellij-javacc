@@ -180,6 +180,10 @@ data class ClassVBean(
     val simpleName: String
     val `package`: String
 
+    fun addPackage(simpleName: String) =
+        if (`package`.isEmpty()) simpleName
+        else "$`package`.$simpleName"
+
     init {
         val (pack, n) = qualifiedName.splitAroundLast('.', firstBias = false)
 

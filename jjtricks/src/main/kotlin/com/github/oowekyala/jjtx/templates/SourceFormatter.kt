@@ -2,7 +2,7 @@ package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.reporting.ErrorPositionRecoverer
 import com.github.oowekyala.jjtx.reporting.GJFormatExtractor
-import com.google.googlejavaformat.java.Formatter
+import com.google.googlejavaformat.java.Formatter as JavaFormat
 
 // todo make service
 interface SourceFormatter {
@@ -29,7 +29,7 @@ interface SourceFormatter {
  */
 enum class FormatterRegistry(override val errorPositionParser: ErrorPositionRecoverer?) : SourceFormatter {
     JAVA(GJFormatExtractor) {
-        override fun format(source: String): String = Formatter().formatSource(source)
+        override fun format(source: String): String = JavaFormat().formatSource(source)
     };
 
     companion object {
