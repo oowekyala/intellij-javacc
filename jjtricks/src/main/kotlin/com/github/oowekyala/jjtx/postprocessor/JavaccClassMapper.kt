@@ -13,6 +13,7 @@ import spoon.reflect.visitor.filter.TypeFilter
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Path
 import java.util.*
+import kotlin.math.absoluteValue
 import spoon.Launcher as SpoonLauncher
 
 
@@ -90,25 +91,46 @@ object BlockUnwrapper : AbstractProcessor<CtBlock<*>>() {
     }
 }
 
-
+/**
+ * Transforms chained assignments like
+ *
+ *      a.k = b.x = c;
+ *
+ * into
+ *
+ *      a.k = set$B$X(b, c);
+ *
+ *      X set$B$X(B lhs, X rhs) { lhs.x = rhs; return rhs; }
+ *
+ * which will allow later to rewrite the field assignment lhs.x
+ * to a setter call, without changing program semantics.
+ *
+ * This implementation is a lazy way to do the more
+ * desirable transformation
+ *
+ *      a.k = b.x = c;
+ *
+ * to
+ *
+ *      b.x = c;
+ *      a.k = c;
+ *
+ * That is complicated in the general case because the assignment
+ * may be part of a bigger expression, in which case rewriting should
+ * preserve evaluation order.
+ *
+ * If the assignment is not to a local variable (eg field initializer
+ * expression), there is also no obvious place where to put the additional
+ * statements (eg constructor ? instance initializer ?).
+ *
+ * That version would not require types to be explicitly written though.
+ *
+ */
 object AssignmentSpreader : AbstractProcessor<CtAssignment<*, *>>() {
     override fun process(element: CtAssignment<*, *>) {
-        // TODO transform chained assignments like
-        //  a.k = b.x = c;
-        //  into
-        //  b.x = c; a.k = b.x;
-        //  super hard
-        //  but after that we can replace assignments with setters
-
-        // TODO as a workaround for the time being,
-        //  you could generate helper methods eg
-        //  X setXOnB(B b, X x) { b.setX(x); return x; }
-        //  and then transform into
-        //  setKOnA(a, setXOnB(b, c));
-        //  this requires specifying types explicitly though...
         val lhs = element.getAssigned()
         val rhs = element.getAssignment()
-        if (element.getParent() is CtAssignment<*, *> && lhs is CtFieldWrite<*>) {
+        if (element.getParent() is CtExpression<*> && lhs is CtFieldWrite<*>) {
 
             if (lhs.target.isImplicit) return
 
@@ -127,7 +149,7 @@ object AssignmentSpreader : AbstractProcessor<CtAssignment<*, *>>() {
                 enclosing,
                 EnumSet.of(ModifierKind.PRIVATE, ModifierKind.STATIC),
                 element.getType(),
-                "set${element.getType().simpleName}" + lhs.variable.simpleName.capitalize(),
+                mangleSetterName(lhs),
                 listOf<CtParameter<*>>(
                     receiver,
                     value
@@ -164,6 +186,12 @@ object AssignmentSpreader : AbstractProcessor<CtAssignment<*, *>>() {
 
         }
     }
+
+    private fun mangleSetterName(lhs: CtFieldWrite<*>) =
+        "set\$" + lhs.target.type.simpleName +
+            "\$" + lhs.variable.simpleName +
+            // this ensures we don't overwrite a method with an unrelated type whose simple name collides
+            "\$" + Integer.toHexString(lhs.variable.qualifiedName.hashCode().absoluteValue).substring(0, endIndex = 4)
 }
 
 object IfStmtConstantFolder : AbstractProcessor<CtIf>() {
