@@ -92,39 +92,21 @@ object BlockUnwrapper : AbstractProcessor<CtBlock<*>>() {
 }
 
 /**
- * Transforms chained assignments like
+ * Transforms assignments of a field that occur in an expression context
+ * into method calls. E.g. for an assignment chain:
  *
  *      a.k = b.x = c;
+ *      // becomes:
  *
- * into
+ *      a.k = set$B$X$090(b, c);
  *
- *      a.k = set$B$X(b, c);
+ *      X set$B$X$090(B lhs, X rhs) {
+ *          lhs.x = rhs;
+ *          return rhs;
+ *      }
  *
- *      X set$B$X(B lhs, X rhs) { lhs.x = rhs; return rhs; }
- *
- * which will allow later to rewrite the field assignment lhs.x
- * to a setter call, without changing program semantics.
- *
- * This implementation is a lazy way to do the more
- * desirable transformation
- *
- *      a.k = b.x = c;
- *
- * to
- *
- *      b.x = c;
- *      a.k = c;
- *
- * That is complicated in the general case because the assignment
- * may be part of a bigger expression, in which case rewriting should
- * preserve evaluation order.
- *
- * If the assignment is not to a local variable (eg field initializer
- * expression), there is also no obvious place where to put the additional
- * statements (eg constructor ? instance initializer ?).
- *
- * That version would not require types to be explicitly written though.
- *
+ * This allows rewriting the field assignment lhs.x to a setter call later on,
+ * without changing program semantics.
  */
 object AssignmentSpreader : AbstractProcessor<CtAssignment<*, *>>() {
     override fun process(element: CtAssignment<*, *>) {
