@@ -5,15 +5,14 @@ import com.github.oowekyala.jjtx.JjtxContext
 import spoon.OutputType
 import spoon.processing.AbstractProcessor
 import spoon.processing.Processor
-import spoon.reflect.code.CtBlock
-import spoon.reflect.code.CtIf
-import spoon.reflect.code.CtLiteral
-import spoon.reflect.code.CtStatement
-import spoon.reflect.declaration.CtElement
+import spoon.reflect.code.*
+import spoon.reflect.declaration.*
 import spoon.reflect.factory.TypeFactory
 import spoon.reflect.reference.CtTypeReference
 import spoon.reflect.visitor.filter.TypeFilter
+import java.lang.reflect.ParameterizedType
 import java.nio.file.Path
+import java.util.*
 import spoon.Launcher as SpoonLauncher
 
 
@@ -48,33 +47,38 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
     val renamer: Processor<CtTypeReference<*>> = TypeReferenceRenamer(jjToken, ctx.tokenClass.qualifiedName)
 
 
-    val processors = listOf(
+    val processors: List<Processor<in CtElement>> = listOf(
         // can't factorise that bc of the inline
-        renamer.treeProcessor(),
-        IfStmtConstantFolder.treeProcessor(),
-        BlockUnwrapper.treeProcessor()
-    )
+        AssignmentSpreader,
+        renamer,
+        IfStmtConstantFolder,
+        BlockUnwrapper
+    ).map { it.treeProcessor() }
 
 
-    spoonModel.allTypes.forEach {
-        processors.forEach { p -> p.process(it) }
+    spoonModel.allTypes.forEach<CtType<*>> {
+        processors.forEach { p -> p.process(it as CtElement) }
         spoon.createOutputWriter().createJavaFile(it)
     }
 
 
-
-
-
 }
 
-inline fun <reified T : CtElement> Processor<T>.treeProcessor(): Processor<in CtElement> =
-    object : AbstractProcessor<CtElement>() {
+fun <T : CtElement> Processor<T>.treeProcessor(): Processor<in CtElement> {
+
+    val target: Class<T> = this.javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0].let {
+        if (it is Class<*>) it
+        else (it as ParameterizedType).rawType
+    } as Class<T>
+
+    return object : AbstractProcessor<CtElement>() {
         override fun process(element: CtElement) {
-            element.getElements(TypeFilter(T::class.java)).forEach {
+            element.getElements(TypeFilter(target)).forEach<T> {
                 this@treeProcessor.process(it)
             }
         }
     }
+}
 
 object BlockUnwrapper : AbstractProcessor<CtBlock<*>>() {
     override fun process(element: CtBlock<*>) {
@@ -82,6 +86,82 @@ object BlockUnwrapper : AbstractProcessor<CtBlock<*>>() {
         if (element.statements.size == 1 && element.parent is CtBlock<*>) {
             // element.setImplicit<CtBlock<*>>(true)
             element.replace(element.statements.first().clone())
+        }
+    }
+}
+
+
+object AssignmentSpreader : AbstractProcessor<CtAssignment<*, *>>() {
+    override fun process(element: CtAssignment<*, *>) {
+        // TODO transform chained assignments like
+        //  a.k = b.x = c;
+        //  into
+        //  b.x = c; a.k = b.x;
+        //  super hard
+        //  but after that we can replace assignments with setters
+
+        // TODO as a workaround for the time being,
+        //  you could generate helper methods eg
+        //  X setXOnB(B b, X x) { b.setX(x); return x; }
+        //  and then transform into
+        //  setKOnA(a, setXOnB(b, c));
+        //  this requires specifying types explicitly though...
+        val lhs = element.getAssigned()
+        val rhs = element.getAssignment()
+        if (element.getParent() is CtAssignment<*, *> && lhs is CtFieldWrite<*>) {
+
+            if (lhs.target.isImplicit) return
+
+            // ok we have nested assignment
+            val enclosing: CtType<Any> = element.getParent(CtType::class.java as Class<CtType<Any>>)
+
+            val receiver: CtParameter<Any> = enclosing.factory.createParameter<Any>()
+            receiver.setType<CtParameter<Any>>(lhs.type as CtTypeReference<Any>)
+                .setSimpleName<CtParameter<Any>>("lhs")
+
+            val value: CtParameter<Any> = enclosing.factory.createParameter<Any>()
+            value.setType<CtParameter<Any>>(rhs.type as CtTypeReference<Any>)
+                .setSimpleName<CtParameter<Any>>("rhs")
+
+            val m: CtMethod<Any> = enclosing.factory.createMethod(
+                enclosing,
+                EnumSet.of(ModifierKind.PRIVATE, ModifierKind.STATIC),
+                element.getType(),
+                "set${element.getType().simpleName}" + lhs.variable.simpleName.capitalize(),
+                listOf<CtParameter<*>>(
+                    receiver,
+                    value
+                ),
+                emptySet()
+            )
+
+            val ass = m.factory.createAssignment<Any, Any>()
+
+            ass.setAssigned<CtAssignment<Any, Any>>(m.factory.createCodeSnippetExpression<Any>(receiver.simpleName + "." + lhs.variable.simpleName))
+            ass.setAssignment<CtAssignment<Any, Any>>(m.factory.createCodeSnippetExpression<Any>(value.simpleName))
+
+            val ret = m.factory.createReturn<Any>()
+            ret.setReturnedExpression<CtReturn<Any>>(m.factory.createCodeSnippetExpression<Any>(value.simpleName))
+
+            m.setBody<CtMethod<*>>(m.factory.createBlock<Any>())
+
+            m.body.addStatement<CtStatementList>(ass)
+            m.body.addStatement<CtStatementList>(ret)
+
+            enclosing.addMethod<Any, CtType<Any>>(m)
+
+
+            val invocation = m.factory.createInvocation(
+                m.factory.createTypeAccess(enclosing.reference),
+                m.reference,
+                lhs.target.clone(),
+                rhs.clone()
+            )
+
+            invocation.target.setImplicit<CtTypeAccess<*>>(true)
+
+            element.replace(invocation)
+
         }
     }
 }

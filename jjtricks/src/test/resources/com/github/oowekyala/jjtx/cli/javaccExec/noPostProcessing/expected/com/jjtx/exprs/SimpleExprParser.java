@@ -289,7 +289,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
         if (((oldToken = token).next) != null)
             token = token.next;
         else
-            token = token.next = token_source.getNextToken();
+            token = setTokenNext(token, token_source.getNextToken());
 
         jj_ntk = -1;
         if ((token.kind) == kind) {
@@ -308,7 +308,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
         if ((token.next) != null)
             token = token.next;
         else
-            token = token.next = token_source.getNextToken();
+            token = setTokenNext(token, token_source.getNextToken());
 
         jj_ntk = -1;
         (jj_gen)++;
@@ -324,7 +324,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
             if ((t.next) != null)
                 t = t.next;
             else
-                t = t.next = token_source.getNextToken();
+                t = setTokenNext(t, token_source.getNextToken());
 
         }
         return t;
@@ -387,5 +387,10 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
      * Disable tracing.
      */
     public final void disable_tracing() {
+    }
+
+    private static Token setTokenNext(Token lhs, Token rhs) {
+        lhs.next = rhs;
+        return rhs;
     }
 }
