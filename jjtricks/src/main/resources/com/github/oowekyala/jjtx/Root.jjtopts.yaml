@@ -25,6 +25,8 @@ jjtx:
       #set ( $topNode = $grammar.rootNode.klass.simpleName )
       #set ( $treeBuilder =  $run.javaccGen.support.treeBuilder.class.simpleName )
       #set ( $manipulator = $run.javaccGen.support.manipulator.class.simpleName )
+      #set ( $nodeFactory = $run.javaccGen.support.nodeFactory.class.simpleName )
+      #set ( $nodeIds = $run.javaccGen.support.nodeIds.class.simpleName )
 
       #if ( $run.javaccGen.support.token.class )
          #set ( $token = $run.javaccGen.support.token.class.simpleName )
@@ -39,7 +41,10 @@ jjtx:
       import $grammar.rootNode.klass.qualifiedName;
       import $run.javaccGen.support.treeBuilder.class.qualifiedName;
       import $run.javaccGen.support.manipulator.class.qualifiedName;
+      import $run.javaccGen.support.nodeIds.class.qualifiedName;
+      import $run.javaccGen.support.nodeFactory.class.qualifiedName;
 
+      #evaluate( $!moreHeader )
 
     versionSpecificDecls: |
       ## Modifier map
@@ -58,15 +63,34 @@ jjtx:
     supportFiles:
       manipulator:
         genClassName: "${grammar.nodePackage}.NodeManipulator"
-        formatter: java
         templateFile: "/jjtx/templates/ManipulatorInterface.java.vm"
+        formatter: java
+        context:
+          modifiers: "final"
+
+      nodeIds:
+        genClassName: "${grammar.nodePackage}.${grammar.parser.class.simpleName}TreeConstants"
+        templateFile: "/jjtx/templates/VanillaJjtreeConstants.java.vm"
+        formatter: java
+        context:
+          # Template for the constant name of a node ID
+          # Default is int, you can eg use an enum type if you change this template
+          nodeIdType: int
+          # Template for the constant name of a node ID
+          # Default is JJTree-like
+          nodeIdTemplate: "JJT${node.name.toUpperCase().replace('.', '_')}"
+
+      nodeFactory:
+        genClassName: "${grammar.nodePackage}.${grammar.name}NodeFactory"
+        templateFile: "/jjtx/templates/DefaultNodeFactory.java.vm"
+        formatter: java
         context:
           modifiers: "final"
 
       treeBuilder:
         genClassName: "${grammar.nodePackage}.JJT${grammar.parser.class.simpleName}State"
-        formatter: java
         templateFile: "/jjtx/templates/TreeBuilder.java.vm"
+        formatter: java
         context:
           # Default calls back to JJTree hooks, override this variable to change behaviour
           # You can eg use a singleton, a constructor, whatever
@@ -108,8 +132,3 @@ jjtx:
                     parent.jjtAddChild(child, index);
                 }
             }
-
-      treeConstants:
-        genClassName: "${grammar.nodePackage}.${grammar.parser.class.simpleName}TreeConstants"
-        formatter: java
-        templateFile: "/jjtx/templates/VanillaJjtreeConstants.java.vm"

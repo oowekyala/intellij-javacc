@@ -1,4 +1,7 @@
 #* @implicitly included *#
+#* @vtlvariable name="nodeIdTemplate" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/VanillaJjtreeConstants.java.vm" *#
+#* @vtlvariable name="nodeIds" type="java.lang.String" *#
+#* @vtlvariable name="nodeFactory" type="java.lang.String" *#
 #* @vtlvariable name="mods" type="java.util.Map" *#
 #* @vtlmacrolibrary path="../resources/com/github/oowekyala/jjtx/templates/macros.vtl" *#
 #* @vtlvariable name="manipulatorCreator" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/TreeBuilder.java.vm" *#

@@ -104,7 +104,7 @@ jjtx:
         formatter: java
         genClassName: org.expr.JJTDummyExprParserState
         templateFile: /jjtx/templates/TreeBuilder.java.vm
-      treeConstants:
+      nodeIds:
         context:
           visibility: public
         formatter: java

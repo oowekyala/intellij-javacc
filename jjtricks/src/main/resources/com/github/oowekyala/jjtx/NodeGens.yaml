@@ -15,7 +15,7 @@ vanilla:
         #evaluate( $!copyrightHeader )
         #evaluate( $!packageDecl )
 
-        import ${run.javaccGen.support.treeConstants.class.qualifiedName};
+        import ${run.javaccGen.support.nodeIds.class.qualifiedName};
         import ${grammar.parser.class.qualifiedName};
 
 
@@ -37,7 +37,7 @@ vanilla:
 
             @Override
             public String toString() {
-              return ${run.javaccGen.support.treeConstants.class.simpleName}.jjtNodeName[id];
+              return ${run.javaccGen.support.nodeIds.class.simpleName}.jjtNodeName[id];
             }
 
             #foreach($visitor in $run.commonGen.values())

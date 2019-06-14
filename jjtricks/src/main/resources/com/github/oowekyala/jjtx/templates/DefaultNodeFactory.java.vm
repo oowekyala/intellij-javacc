@@ -1,0 +1,24 @@
+#evaluate( $!fileHeader )
+
+/**
+ * This class is responsible for creating nodes from their ID.
+ */
+$!visibility $!modifiers class ${thisClass.simpleName} {
+
+private ${thisClass.simpleName}(){
+        // static class
+        }
+
+public static $topNode createNode($run.javaccGen.support.nodeIds.context.nodeIdType id){
+
+        switch(id){
+#foreach($node in $grammar.typeHierarchy)
+        case ${nodeIds}.#evaluate( ${run.javaccGen.support.nodeIds.context.nodeIdTemplate} ):
+        return new ${node.class.simpleName}(id);
+#end
+default:
+        throw new IllegalArgumentException("Unknown node id "+id);
+        }
+        }
+
+        }

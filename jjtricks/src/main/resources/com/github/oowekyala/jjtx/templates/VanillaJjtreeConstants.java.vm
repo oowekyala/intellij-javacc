@@ -8,7 +8,7 @@ $!visibility $!modifiers interface ${thisClass.simpleName} {
     #set ( $stable = $sorter.sort($grammar.typeHierarchy, "name") )
 
     #foreach($node in $stable)
-         public int JJT${node.name.toUpperCase()} = ${foreach.index};
+         public int #evaluate( $nodeIdTemplate ) = ${foreach.index};
     #end
 
     public String[] jjtNodeName = {
