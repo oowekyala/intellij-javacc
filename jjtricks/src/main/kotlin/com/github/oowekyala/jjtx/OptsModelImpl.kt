@@ -12,7 +12,6 @@ import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
 import com.github.oowekyala.jjtx.util.map
 import com.github.oowekyala.jjtx.util.mapValuesNotNull
-import kotlinx.collections.immutable.toImmutableMap
 import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -38,6 +37,7 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     override val nodePackage: String by jjtx.withDefault { parentModel.nodePackage }
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
     override val isTrackTokens: Boolean by jjtx.withDefault("trackTokens") { parentModel.isTrackTokens }
+    override val nodeTakesParserArg: Boolean by jjtx.withDefault { parentModel.nodeTakesParserArg }
 
     private val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
         (parentModel as? OptsModelImpl)?.javaccBean?.let { p -> it?.completeWith(p) ?: it ?: p } ?: it ?: JjtreeCompatBean()

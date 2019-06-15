@@ -12,6 +12,7 @@ interface IGrammarOptions {
     val isDefaultVoid: Boolean
     val nodePrefix: String
     val isTrackTokens: Boolean
+    val nodeTakesParserArg: Boolean
 
     val inlineBindings: InlineGrammarOptions
 }

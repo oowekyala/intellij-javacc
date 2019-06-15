@@ -30,7 +30,7 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
         getOptionValueOrDefault(JjtOption.NODE_CLASS)
     }
 
-    val jjtNodeConstructionUsesParser: Boolean by lazy {
+    override val nodeTakesParserArg: Boolean by lazy {
         getOptionValueOrDefault(JjtOption.NODE_USES_PARSER)
     }
     val jjtCustomNodeHooks: Boolean by lazy {

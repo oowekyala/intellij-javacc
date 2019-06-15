@@ -5,7 +5,7 @@
  */
 $!visibility $!modifiers class ${thisClass.simpleName} {
 
-private ${thisClass.simpleName}(){
+        private ${thisClass.simpleName}(){
         // static class
         }
 

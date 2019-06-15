@@ -24,6 +24,8 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val isDefaultVoid: Boolean = grammarOptions.isDefaultVoid
 
+    override val nodeTakesParserArg: Boolean = grammarOptions.nodeTakesParserArg
+
     override val parentModel: JjtxOptsModel? = null
 
     override val nodePackage: String = grammarOptions.nodePackage

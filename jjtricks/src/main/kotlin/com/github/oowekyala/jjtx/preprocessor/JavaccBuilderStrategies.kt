@@ -56,7 +56,6 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     private val bindings = grammarOptions.inlineBindings
 
     private val nodeFactory = bindings.jjtNodeFactory
-    private val usesParser = bindings.jjtNodeConstructionUsesParser
 
 
     private val myImports = mutableSetOf<String>().also {
@@ -106,7 +105,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     override fun createNode(nodeVar: NodeVar): String {
         val nc = nodeVar.nodeRefType
 
-        val args = "(${if (usesParser) "this, " else ""}${nodeVar.nodeId})"
+        val args = "(" + (if (grammarOptions.nodeTakesParserArg) "this, " else "") + nodeVar.nodeId + ")"
 
         return when {
             nodeFactory == "*"       -> "($nc) $nc.jjtCreate$args"

@@ -198,6 +198,10 @@
           "type": "boolean",
           "description": "If true, nodes will be provided with their first and last tokens using the node manipulator. Defaults to the JJTree key TRACK_TOKENS, or its default of false."
         },
+        "nodeTakesParserArg": {
+          "type": "boolean",
+          "description": "If true, calls to a node constructor will take the parser as first argument. Defaults to the JJTree key NODE_USES_PARSER, or its default of false."
+        },
         "templateContext": {
           "type": "object",
           "description": "Additional bindings for a Velocity context that will be shared by all template executions (gen:visitors, gen:nodes)"
