@@ -38,6 +38,8 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
 
     override val javaccGen: JavaccGenOptions = JavaccGenOptions()
 
+    override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
+
 
     // This is technically never used since there is the Root jjtopts model, and a type hierarchy
     // is never inherited

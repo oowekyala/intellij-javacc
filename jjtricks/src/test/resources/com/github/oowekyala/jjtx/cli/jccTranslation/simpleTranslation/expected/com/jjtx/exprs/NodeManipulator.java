@@ -7,6 +7,8 @@ import com.jjtx.exprs.Token;
 import com.jjtx.exprs.ASTNode;
 import com.jjtx.exprs.JJTSimpleExprParserState;
 import com.jjtx.exprs.NodeManipulator;
+import com.jjtx.exprs.SimpleExprParserTreeConstants;
+import com.jjtx.exprs.SimpleExprsNodeFactory;
 
 /**
  * Instances of this interface bridge JJTricks internals with {@link ASTNode} instances. That way,

@@ -2,6 +2,7 @@ package com.github.oowekyala.jjtx.templates.vbeans
 
 import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
 import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.modelOption
 import com.github.oowekyala.ijcc.util.removeLast
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
@@ -144,6 +145,7 @@ data class FileVBean(
     companion object {
         fun create(jccFile: JccFile): FileVBean =
             FileVBean(absolutePath = jccFile.virtualFile.path)
+
         operator fun invoke(absolutePath: Path): FileVBean =
             FileVBean(absolutePath = absolutePath.toString())
     }
@@ -183,9 +185,13 @@ data class ClassVBean(
     val simpleName: String
     val `package`: String
 
-    fun addPackage(simpleName: String) =
-        if (`package`.isEmpty()) simpleName
-        else "$`package`.$simpleName"
+    fun siblingClass(simpleName: String) =
+        ClassVBean(
+            if (`package`.isEmpty()) simpleName
+            else "$`package`.$simpleName"
+        )
+
+    override fun toString(): String = qualifiedName
 
     init {
         val (pack, n) = qualifiedName.splitAroundLast('.', firstBias = false)
@@ -232,11 +238,12 @@ data class GrammarVBean(
     val nodePackage: String,
     val nodePrefix: String,
     val isTrackTokens: Boolean,
-    val nodeTakesParserArg:Boolean,
+    val nodeTakesParserArg: Boolean,
     val parser: ParserVBean,
+    val optionsOfGrammarFile: Map<String, Any?>,
     val rootNode: NodeVBean,
     val typeHierarchy: List<NodeVBean>
-    ) {
+) {
 
     companion object {
         fun create(ctx: JjtxContext): GrammarVBean {
@@ -252,6 +259,10 @@ data class GrammarVBean(
                         ctx.jjtxOptsModel.inlineBindings.parserQualifiedName
                     )
                 ),
+                optionsOfGrammarFile = ctx.jjtxOptsModel.inlineBindings.allOptionsBindings.associate {
+                    // FIXME possible problems here, must first validate inline options
+                    Pair(it.name, it.modelOption!!.getValue(it, ctx.jjtxOptsModel.inlineBindings))
+                },
                 nodeTakesParserArg = ctx.jjtxOptsModel.nodeTakesParserArg,
                 rootNode = ctx.jjtxOptsModel.typeHierarchy,
                 typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()

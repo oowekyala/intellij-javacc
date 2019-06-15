@@ -3,5 +3,5 @@ JJTricks v1.0
 Running tasks [gen:javacc, gen:javacc-support]
 
 [init]                Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
-[gen:javacc-support]  Generated 3 classes in @output@
+[gen:javacc-support]  Generated 4 classes in @output@
 [gen:javacc]          Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj

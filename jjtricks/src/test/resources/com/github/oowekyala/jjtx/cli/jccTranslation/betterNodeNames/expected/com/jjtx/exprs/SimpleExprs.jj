@@ -6,7 +6,9 @@ PARSER_BEGIN(SimpleExprParser)
 
     package com.jjtx.exprs;
     import org.exprs.ast.*;
-    import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
+    import org.exprs.ast.SimpleExprParserTreeConstants;
+    import org.exprs.ast.SimpleExprsNodeFactory;
+    import static org.exprs.ast.SimpleExprParserTreeConstants.*;
 
 
     /**
@@ -35,7 +37,7 @@ void Expression() : {}
       BinaryExpression()
     | /*@bgen(jjtree) NullLiteral */
 {
-    ExNullLiteral nullLiteral = new ExNullLiteral(JJTNULLLITERAL);
+    ExNullLiteral nullLiteral = (ExNullLiteral) SimpleExprsNodeFactory.jjtCreate(JJTNULLLITERAL);
     boolean nullLiteralNeedsClose = true;
     jjtree.openNodeScope(nullLiteral, getToken(1));
 } try {
@@ -65,7 +67,7 @@ void Expression() : {}
 
 void BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
-    ExBinaryExpr binaryExpr = new ExBinaryExpr(JJTBINARYEXPR);
+    ExBinaryExpr binaryExpr = (ExBinaryExpr) SimpleExprsNodeFactory.jjtCreate(JJTBINARYEXPR);
     boolean binaryExprNeedsClose = true;
     jjtree.openNodeScope(binaryExpr, getToken(1));
     /*@egen*/
@@ -102,7 +104,7 @@ void UnaryExpr() : {}
 {
   /*@bgen(jjtree) ParenthesizedExpr */
 {
-    ExParenthesizedExpr parenthesizedExpr = new ExParenthesizedExpr(JJTPARENTHESIZEDEXPR);
+    ExParenthesizedExpr parenthesizedExpr = (ExParenthesizedExpr) SimpleExprsNodeFactory.jjtCreate(JJTPARENTHESIZEDEXPR);
     boolean parenthesizedExprNeedsClose = true;
     jjtree.openNodeScope(parenthesizedExpr, getToken(1));
 } try {
@@ -132,7 +134,7 @@ void UnaryExpr() : {}
 
 void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
-    ExIntegerLiteral integerLiteral = new ExIntegerLiteral(JJTINTEGERLITERAL);
+    ExIntegerLiteral integerLiteral = (ExIntegerLiteral) SimpleExprsNodeFactory.jjtCreate(JJTINTEGERLITERAL);
     boolean integerLiteralNeedsClose = true;
     jjtree.openNodeScope(integerLiteral, getToken(1));
     /*@egen*/

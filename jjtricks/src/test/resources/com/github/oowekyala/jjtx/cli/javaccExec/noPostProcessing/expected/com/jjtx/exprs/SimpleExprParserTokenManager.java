@@ -4,8 +4,12 @@
 package com.jjtx.exprs;
 
 
+import com.jjtx.exprs.SimpleExprParserTreeConstants;
+import com.jjtx.exprs.SimpleExprsNodeFactory;
 import java.io.IOException;
 import java.io.PrintStream;
+
+import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
 
 
 /**

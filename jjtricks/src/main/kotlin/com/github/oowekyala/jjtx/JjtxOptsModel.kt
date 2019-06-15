@@ -36,6 +36,8 @@ interface JjtxOptsModel : IGrammarOptions {
 
     override val isDefaultVoid: Boolean
 
+    override val grammarName: String
+
     /**
      * The fully resolved type hierarchy tree,
      * not inherited.

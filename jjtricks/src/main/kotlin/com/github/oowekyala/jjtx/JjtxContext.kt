@@ -145,7 +145,7 @@ private class JjtxRootContext(
 
     override val project: Project = grammarFile.project
 
-    override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
+    override val grammarName: String get() = jjtxOptsModel.grammarName
 
     override val grammarDir: Path = grammarFile.path.parent
 

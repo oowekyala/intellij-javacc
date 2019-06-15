@@ -4,8 +4,12 @@
 package com.jjtx.exprs;
 
 
+import com.jjtx.exprs.SimpleExprParserTreeConstants;
+import com.jjtx.exprs.SimpleExprsNodeFactory;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
 
 
 /**
@@ -24,7 +28,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
                 BinaryExpression();
                 break;
             case SimpleExprParserConstants.NULL :
-                ASTNullLiteral nullLiteral = new ASTNullLiteral(JJTNULLLITERAL);
+                ASTNullLiteral nullLiteral = ((ASTNullLiteral) (SimpleExprsNodeFactory.jjtCreate(JJTNULLLITERAL)));
                 boolean nullLiteralNeedsClose = true;
                 jjtree.openNodeScope(nullLiteral, getToken(1));
                 try {
@@ -63,7 +67,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
 
     public final ASTBinaryExpr BinaryExpression() throws ParseException {
         /* @bgen(jjtree) BinaryExpr */
-        ASTBinaryExpr binaryExpr = new ASTBinaryExpr(JJTBINARYEXPR);
+        ASTBinaryExpr binaryExpr = ((ASTBinaryExpr) (SimpleExprsNodeFactory.jjtCreate(JJTBINARYEXPR)));
         boolean binaryExprNeedsClose = true;
         jjtree.openNodeScope(binaryExpr, getToken(1));
         binaryExpr.setImage("Expr");
@@ -123,7 +127,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
     public final void UnaryExpr() throws ParseException {
         switch ((jj_ntk) == (-1) ? jj_ntk() : jj_ntk) {
             case 6 :
-                ASTParenthesizedExpr parenthesizedExpr = new ASTParenthesizedExpr(JJTPARENTHESIZEDEXPR);
+                ASTParenthesizedExpr parenthesizedExpr = ((ASTParenthesizedExpr) (SimpleExprsNodeFactory.jjtCreate(JJTPARENTHESIZEDEXPR)));
                 boolean parenthesizedExprNeedsClose = true;
                 jjtree.openNodeScope(parenthesizedExpr, getToken(1));
                 try {
@@ -170,7 +174,7 @@ public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprP
 
     public final void Integer() throws ParseException {
         /* @bgen(jjtree) IntegerLiteral */
-        ASTIntegerLiteral integerLiteral = new ASTIntegerLiteral(JJTINTEGERLITERAL);
+        ASTIntegerLiteral integerLiteral = ((ASTIntegerLiteral) (SimpleExprsNodeFactory.jjtCreate(JJTINTEGERLITERAL)));
         boolean integerLiteralNeedsClose = true;
         jjtree.openNodeScope(integerLiteral, getToken(1));
         try {

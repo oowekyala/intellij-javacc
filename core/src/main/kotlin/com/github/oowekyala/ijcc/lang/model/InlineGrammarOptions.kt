@@ -30,6 +30,8 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
         getOptionValueOrDefault(JjtOption.NODE_CLASS)
     }
 
+    override val grammarName: String? = null
+
     override val nodeTakesParserArg: Boolean by lazy {
         getOptionValueOrDefault(JjtOption.NODE_USES_PARSER)
     }

@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.postprocessor.SpecialTemplate
 import com.github.oowekyala.jjtx.reporting.MessageCategory
 import com.github.oowekyala.jjtx.reporting.report
 
@@ -35,6 +36,7 @@ interface JjtxBuilderStrategy {
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
+    // FIXME unused
     fun validateSupportFiles(ctx: JjtxContext): Boolean
 
     // those are shitty bindings that we honor when the inline binding is there but
@@ -55,16 +57,19 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     private val bindings = grammarOptions.inlineBindings
 
-    private val nodeFactory = bindings.jjtNodeFactory
-
-
+    private val nodeFactory = SpecialTemplate.NODE_FACTORY.actualLocation(grammarOptions)
+    private val nodeIds = SpecialTemplate.NODE_IDS.actualLocation(grammarOptions)
     private val myImports = mutableSetOf<String>().also {
         if (grammarOptions.nodePackage.isNotEmpty()) {
             it += grammarOptions.nodePackage + ".*"
         }
+        it += nodeFactory.qualifiedName
+        it += nodeIds.qualifiedName
+        it += "static ${nodeIds.qualifiedName}.*"
     }
 
     private val NodeVar.nodeId
+        // FIXME link to nodeIds special template
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
 
     override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar? =
@@ -94,10 +99,10 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
 
         return Triple(
-                nodeVarName,
-                "${nodeVarName}NeedsClose",
-                "${nodeVarName}Exception"
-            )
+            nodeVarName,
+            "${nodeVarName}NeedsClose",
+            "${nodeVarName}Exception"
+        )
 
     }
 
@@ -107,24 +112,15 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
         val args = "(" + (if (grammarOptions.nodeTakesParserArg) "this, " else "") + nodeVar.nodeId + ")"
 
-        return when {
-            nodeFactory == "*"       -> "($nc) $nc.jjtCreate$args"
-            nodeFactory.isNotEmpty() -> "($nc) $nodeFactory.jjtCreate$args"
-            else                     -> "new $nc$args"
-        }
+        return "($nc) ${nodeFactory.simpleName}.jjtCreate$args"
     }
 
     override fun parserImplements(): List<String> =
         if (compat.implementNodeConstants)
-            listOf("${grammarOptions.parserSimpleName}TreeConstants")
+            listOf(nodeIds.simpleName)
         else emptyList()
 
-    override fun parserImports(): List<String> =
-        myImports.also {
-            if (!compat.implementNodeConstants) {
-                it += "static ${grammarOptions.parserQualifiedName}TreeConstants.*"
-            }
-        }.sorted()
+    override fun parserImports(): List<String> = myImports.sorted()
 
 
     override fun parserDeclarations(): String = """

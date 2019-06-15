@@ -39,6 +39,10 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
     override val isTrackTokens: Boolean by jjtx.withDefault("trackTokens") { parentModel.isTrackTokens }
     override val nodeTakesParserArg: Boolean by jjtx.withDefault { parentModel.nodeTakesParserArg }
 
+    override val grammarName: String by jjtx.withDefault {
+        ctx.grammarFile.virtualFile.nameWithoutExtension
+    }
+
     private val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
         (parentModel as? OptsModelImpl)?.javaccBean?.let { p -> it?.completeWith(p) ?: it ?: p } ?: it ?: JjtreeCompatBean()
     }

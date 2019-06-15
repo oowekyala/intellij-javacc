@@ -11,6 +11,7 @@ import com.jjtx.exprs.SimpleExprParserTreeConstants;
 import com.jjtx.exprs.SimpleExprsNodeFactory;
 
 import com.jjtx.exprs.SimpleExprParser;
+import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
 
 /**
  * This class is responsible for creating new nodes from their ID. The construction method is called
@@ -22,17 +23,18 @@ final class SimpleExprsNodeFactory {
     // static class
   }
 
-  public static ASTNode createNode(int id) {
+  public static ASTNode jjtCreate(int id) {
+
     switch (id) {
-      case SimpleExprParserTreeConstants.JJTPARENTHESIZEDEXPR:
+      case JJTPARENTHESIZEDEXPR:
         return new ASTParenthesizedExpr(id);
-      case SimpleExprParserTreeConstants.JJTINTEGERLITERAL:
+      case JJTINTEGERLITERAL:
         return new ASTIntegerLiteral(id);
-      case SimpleExprParserTreeConstants.JJTBINARYEXPR:
+      case JJTBINARYEXPR:
         return new ASTBinaryExpr(id);
-      case SimpleExprParserTreeConstants.JJTNULLLITERAL:
+      case JJTNULLLITERAL:
         return new ASTNullLiteral(id);
-      case SimpleExprParserTreeConstants.JJTASTNODE:
+      case JJTASTNODE:
         // JJTricks doesn't know whether it's an interface or anything...
         // The parser will never attempt to create nodes with those IDs though.
         throw new IllegalArgumentException(

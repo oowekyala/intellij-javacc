@@ -7,7 +7,11 @@ package com.jjtx.exprs;
 import java.io.IOException;
 import java.io.PrintStream;
 import org.exprs.ast.*;
+import org.exprs.ast.SimpleExprParserTreeConstants;
+import org.exprs.ast.SimpleExprsNodeFactory;
 import org.exprs.ast.impl.MyToken;
+
+import static org.exprs.ast.SimpleExprParserTreeConstants.*;
 
 
 /**

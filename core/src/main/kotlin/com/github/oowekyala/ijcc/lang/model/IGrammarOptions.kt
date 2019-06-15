@@ -14,6 +14,14 @@ interface IGrammarOptions {
     val isTrackTokens: Boolean
     val nodeTakesParserArg: Boolean
 
+    /**
+     * If unknown, defaults to the empty string
+     */
+    val grammarName: String?
+
+    /**
+     * Fallback on the options specified in the grammar file.
+     */
     val inlineBindings: InlineGrammarOptions
 }
 

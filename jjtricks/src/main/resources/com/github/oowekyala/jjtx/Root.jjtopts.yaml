@@ -35,7 +35,7 @@ jjtx:
       #else
         ## Default JavaCC class
         #set ( $token = "Token")
-        import ${grammar.parser.class.addPackage("Token")};
+        import ${grammar.parser.class.siblingClass("Token")};
       #end
 
       import $grammar.rootNode.klass.qualifiedName;

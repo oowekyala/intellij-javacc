@@ -10,6 +10,6 @@ Running tasks [gen:javacc, gen:javacc-support]
                             - "r:.*Expression"
                               ^
 [gen:javacc-support]
-    [INFO]     Generated 3 classes in @output@
+    [INFO]     Generated 4 classes in @output@
 [gen:javacc]
     [INFO]     Generated JavaCC grammar @output@/com/jjtx/exprs/SimpleExprs.jj
