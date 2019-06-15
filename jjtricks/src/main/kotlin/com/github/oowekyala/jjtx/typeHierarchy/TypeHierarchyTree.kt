@@ -33,6 +33,8 @@ import com.github.oowekyala.treeutils.TreeLikeAdapter
  * @property positionInfo The position in the jjtopts file where this node was defined, or null
  * @property children The children (subtypes) of this node
  * @property parent The direct supertype of this node, or null if this is the root
+ * @property isExternal True if the node matches no production. This is populated during the expansion
+ *                      pass and is irrelevant before then.
  *
  * @author Clément Fournier
  */
@@ -40,7 +42,8 @@ internal class TypeHierarchyTree internal constructor(
     val nodeName: String,
     val positionInfo: Position?,
     children: List<TypeHierarchyTree>,
-    internal val specificity: Specificity = Specificity.UNKNOWN
+    internal val specificity: Specificity = Specificity.UNKNOWN,
+    val isExternal: Boolean = false
 ) : TreeOps<TypeHierarchyTree> {
 
 
@@ -66,21 +69,19 @@ internal class TypeHierarchyTree internal constructor(
         children.forEach { it.parent = this }
     }
 
-    fun deepCopy(): TypeHierarchyTree {
-        return TypeHierarchyTree(
-            nodeName,
-            positionInfo,
-            children.map { it.deepCopy() },
-            specificity
-        )
-    }
+    fun deepCopy(): TypeHierarchyTree = copy(children = children.map { it.deepCopy() })
 
     internal fun copy(nodeName: String = this.nodeName,
                       positionInfo: Position? = this.positionInfo,
                       children: List<TypeHierarchyTree> = this.children,
+                      isExternal: Boolean = this.isExternal,
                       specificity: Specificity = this.specificity): TypeHierarchyTree =
         TypeHierarchyTree(
-            nodeName, positionInfo, children, specificity
+            nodeName = nodeName,
+            positionInfo = positionInfo,
+            children = children,
+            specificity = specificity,
+            isExternal = isExternal
         )
 
     fun process(ctx: JjtxContext): TypeHierarchyTree {

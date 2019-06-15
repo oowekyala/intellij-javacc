@@ -61,7 +61,9 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
             Triple(nodeName, nodeName, Specificity.QNAME)
     }
 
-    if (prodName !in grammarNodeNames) {
+
+    val isExternal = prodName !in grammarNodeNames
+    if (isExternal) {
         ctx.messageCollector.report(
             "The node $qname is not in the grammar (can be generated anyway)",
             MessageCategory.EXACT_NODE_NOT_IN_GRAMMAR,
@@ -69,14 +71,13 @@ private fun TypeHierarchyTree.resolveAgainst(grammarNodeNames: Set<String>,
         )
     }
 
-    val rootSpec = if (parent == null) Specificity.ROOT else spec
-
     return listOf(
         TypeHierarchyTree(
-            qname,
-            positionInfo,
-            children.flatMap { it.resolveAgainst(grammarNodeNames, ctx) },
-            rootSpec
+            nodeName = qname,
+            positionInfo = positionInfo,
+            children = children.flatMap { it.resolveAgainst(grammarNodeNames, ctx) },
+            isExternal = isExternal,
+            specificity = if (parent == null) Specificity.ROOT else spec
         )
     )
 }
@@ -114,10 +115,11 @@ private fun TypeHierarchyTree.resolveRegex(grammarNodeNames: Set<String>,
     }
     return matching.map {
         TypeHierarchyTree(
-            ctx.jjtxOptsModel.addNodePackage(ctx.jjtxOptsModel.nodePrefix + it),
-            positionInfo,
-            emptyList(),
-            Specificity.REGEX
+            nodeName = ctx.jjtxOptsModel.addNodePackage(ctx.jjtxOptsModel.nodePrefix + it),
+            positionInfo = positionInfo,
+            children = emptyList(),
+            specificity = Specificity.REGEX,
+            isExternal = false
         )
     }
 

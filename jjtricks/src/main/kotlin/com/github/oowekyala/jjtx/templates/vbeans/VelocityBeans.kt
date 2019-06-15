@@ -30,12 +30,14 @@ import java.nio.file.Paths
  * @property class VBean for the class
  * @property superNode Node bean describing the node which this node extends directly, as defined by [JjtxOptsModel.typeHierarchy]
  * @property subNodes List of node beans for which [superNode] is this
+ * @property external True if the node matches no production of the grammar. In which case the default node factory has no constructor for it
  */
 data class NodeVBean(
     val name: String,
     val `class`: ClassVBean,
     val superNode: NodeVBean?,
-    val subNodes: List<NodeVBean>
+    val subNodes: List<NodeVBean>,
+    val external: Boolean
 ) : TreeOps<NodeVBean> {
 
     override val adapter: TreeLikeAdapter<NodeVBean> =
@@ -102,7 +104,8 @@ data class NodeVBean(
                 name = name,
                 `class` = ClassVBean(nodeName),
                 superNode = stack.lastOrNull(),
-                subNodes = mutableListOf()
+                subNodes = mutableListOf(),
+                external = isExternal
             )
 
             stack += bean
@@ -229,6 +232,7 @@ data class GrammarVBean(
     val nodePackage: String,
     val nodePrefix: String,
     val isTrackTokens: Boolean,
+    val nodeTakesParserArg:Boolean,
     val parser: ParserVBean,
     val rootNode: NodeVBean,
     val typeHierarchy: List<NodeVBean>
@@ -248,6 +252,7 @@ data class GrammarVBean(
                         ctx.jjtxOptsModel.inlineBindings.parserQualifiedName
                     )
                 ),
+                nodeTakesParserArg = ctx.jjtxOptsModel.nodeTakesParserArg,
                 rootNode = ctx.jjtxOptsModel.typeHierarchy,
                 typeHierarchy = ctx.jjtxOptsModel.typeHierarchy.descendantsOrSelf().toList()
             )

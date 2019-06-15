@@ -39,12 +39,15 @@ internal class OldJavaccOptionsModel(grammarFile: JccFile) : JjtxOptsModel {
     override val javaccGen: JavaccGenOptions = JavaccGenOptions()
 
 
+    // This is technically never used since there is the Root jjtopts model, and a type hierarchy
+    // is never inherited
     override val typeHierarchy: NodeVBean =
         NodeVBean(
             name = grammarOptions.rootNodeClass.substringAfterLast('.'),
             `class` = ClassVBean(grammarOptions.rootNodeClass),
             superNode = null,
-            subNodes = emptyList()
+            subNodes = emptyList(),
+            external = true
         )
 
     override val templateContext: Map<String, Any> = emptyMap()

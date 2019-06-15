@@ -1,7 +1,11 @@
 #evaluate( $!fileHeader )
 
+import $grammar.parser.class.qualifiedName;
+
 /**
- * This class is responsible for creating nodes from their ID.
+ * This class is responsible for creating new nodes from their ID.
+ * The construction method is called by the parser each time a node
+ * scope is opened.
  */
 $!visibility $!modifiers class ${thisClass.simpleName} {
 
@@ -9,16 +13,35 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
         // static class
         }
 
-public static $topNode createNode($run.javaccGen.support.nodeIds.context.nodeIdType id){
+    #if ( $grammar.nodeTakesParserArg )
+    public static $topNode createNode($grammar.parser.class.simpleName parser, $run.javaccGen.support.nodeIds.context.nodeIdType id){
+    #else
+    public static $topNode createNode($run.javaccGen.support.nodeIds.context.nodeIdType id){
+    #end
+            switch(id){
+    #foreach($node in $grammar.typeHierarchy)
+            #if ( !$node.external )
+                case ${nodeIds}.#evaluate( ${run.javaccGen.support.nodeIds.context.nodeIdTemplate} ):
+                #if ( $grammar.nodeTakesParserArg )
+                    return new ${node.class.simpleName}(parser, id);
+                #else
+                    return new ${node.class.simpleName}(id);
+                #end
+            #end
+    #end
+    #foreach($node in $grammar.typeHierarchy)
+        #if ( $node.external )
+            case ${nodeIds}.#evaluate( ${run.javaccGen.support.nodeIds.context.nodeIdTemplate} ):
+        #end
+        #if ($foreach.last)
+                // JJTricks doesn't know whether it's an interface or anything...
+                // The parser will never attempt to create nodes with those IDs though.
+                throw new IllegalArgumentException("Node " + id + " doesn't correspond to a production and can't be built by this default factory");
+        #end
+    #end
+            default:
+                throw new IllegalArgumentException("Unknown node id " + id);
+            }
+    }
 
-        switch(id){
-#foreach($node in $grammar.typeHierarchy)
-        case ${nodeIds}.#evaluate( ${run.javaccGen.support.nodeIds.context.nodeIdTemplate} ):
-        return new ${node.class.simpleName}(id);
-#end
-default:
-        throw new IllegalArgumentException("Unknown node id "+id);
-        }
-        }
-
-        }
+}

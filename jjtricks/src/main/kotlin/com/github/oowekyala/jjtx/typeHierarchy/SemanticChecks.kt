@@ -32,10 +32,16 @@ internal fun TypeHierarchyTree.adoptOrphansOnRoot(names: Iterable<JjtNodeClassOw
         )
 
         val newChildren = children + remaining.entries.map { (qname, owners) ->
-            TypeHierarchyTree(qname!!, owners[0].position(), emptyList(), Specificity.RESOLVED)
+            TypeHierarchyTree(
+                nodeName = qname!!,
+                positionInfo = owners[0].position(),
+                children = emptyList(),
+                specificity = Specificity.RESOLVED,
+                isExternal = false
+            )
         }
 
-        return TypeHierarchyTree(nodeName, positionInfo, newChildren, specificity)
+        return copy(children =  newChildren)
     }
 
 
