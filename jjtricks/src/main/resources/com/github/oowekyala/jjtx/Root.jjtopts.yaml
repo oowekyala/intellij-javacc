@@ -22,6 +22,11 @@ jjtx:
       #evaluate ( $!packageDecl )
       #evaluate ( $!versionSpecificDecls )
 
+      #if ( !$visibility  )
+        ## default the visibility
+        #set ($visibility = "#if(${grammar.optionsOfGrammarFile.SUPPORT_CLASS_VISIBILITY_PUBLIC})public#else#end")
+      #end
+
       #set ( $topNode = $grammar.rootNode.klass.simpleName )
       #set ( $treeBuilder =  $run.javaccGen.support.treeBuilder.class.simpleName )
       #set ( $manipulator = $run.javaccGen.support.manipulator.class.simpleName )
@@ -60,75 +65,84 @@ jjtx:
       #end
 
   javaccGen:
-    supportFiles:
-      manipulator:
-        genClassName: "${grammar.nodePackage}.NodeManipulator"
-        templateFile: "/jjtx/templates/ManipulatorInterface.java.vm"
-        formatter: java
-        context:
-          modifiers: "final"
+    jjFile:
+      # This is just used to set the output location
+      genClassName: "${grammar.parser.class}"
+      template: "assert(false)"
+      formatter: none
+      context:
+        implements:
+          - "${run.javaccGen.support.nodeIds.class}"
+        forceCheckedExceptionsDeclaration: true
 
-      nodeIds:
-        genClassName: "${grammar.nodePackage}.${grammar.parser.class.simpleName}TreeConstants"
-        templateFile: "/jjtx/templates/VanillaJjtreeConstants.java.vm"
-        formatter: java
-        context:
-          # Template for the constant name of a node ID
-          # Default is int, you can eg use an enum type if you change this template
-          nodeIdType: int
-          # Template for the constant name of a node ID
-          # Default is JJTree-like
-          nodeIdTemplate: "JJT${node.name.toUpperCase().replace('.', '_')}"
+    manipulator:
+      genClassName: "${grammar.nodePackage}.NodeManipulator"
+      templateFile: "/jjtx/templates/ManipulatorInterface.java.vm"
+      formatter: java
+      context:
+        modifiers: "final"
 
-      nodeFactory:
-        genClassName: "${grammar.nodePackage}.${grammar.name}NodeFactory"
-        templateFile: "/jjtx/templates/DefaultNodeFactory.java.vm"
-        formatter: java
-        context:
-          modifiers: "final"
+    nodeIds:
+      genClassName: "${grammar.nodePackage}.${grammar.parser.class.simpleName}TreeConstants"
+      templateFile: "/jjtx/templates/VanillaJjtreeConstants.java.vm"
+      formatter: java
+      context:
+        # Template for the constant name of a node ID
+        # Default is int, you can eg use an enum type if you change this template
+        nodeIdType: int
+        # Template for the constant name of a node ID
+        # Default is JJTree-like
+        nodeIdTemplate: "JJT${node.name.toUpperCase().replace('.', '_')}"
 
-      treeBuilder:
-        genClassName: "${grammar.nodePackage}.JJT${grammar.parser.class.simpleName}State"
-        templateFile: "/jjtx/templates/TreeBuilder.java.vm"
-        formatter: java
-        context:
-          # Default calls back to JJTree hooks, override this variable to change behaviour
-          # You can eg use a singleton, a constructor, whatever
-          # You can also add a JjtreeManipulator.java.vm class to generate a separate class
-          # and then override individual methods
-          manipulatorCreator: |
-            new ${manipulator}() {
-                $!mods.override
-                public void setFirstToken($treeBuilder builder, $topNode node, $token token){
-                    #if ( $grammar.trackTokens )
-                    node.jjtSetFirstToken(token);
-                    #else
-                    // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
-                    #end
-                }
+    nodeFactory:
+      genClassName: "${grammar.nodePackage}.${grammar.name}NodeFactory"
+      templateFile: "/jjtx/templates/DefaultNodeFactory.java.vm"
+      formatter: java
+      context:
+        modifiers: "final"
 
-                $!mods.override
-                public void setLastToken($treeBuilder builder, $topNode node, $token token){
-                    #if ( $grammar.trackTokens )
-                    node.jjtSetLastToken(token);
-                    #else
-                    // use jjtx.trackTokens to insert a call to jjtSetLastToken
-                    #end
-                }
+    treeBuilder:
+      genClassName: "${grammar.nodePackage}.JJT${grammar.parser.class.simpleName}State"
+      templateFile: "/jjtx/templates/TreeBuilder.java.vm"
+      formatter: java
+      context:
+        # Default calls back to JJTree hooks, override this variable to change behaviour
+        # You can eg use a singleton, a constructor, whatever
+        # You can also add a JjtreeManipulator.java.vm class to generate a separate class
+        # and then override individual methods
+        manipulatorCreator: |
+          new ${manipulator}() {
+              $!mods.override
+              public void setFirstToken($treeBuilder builder, $topNode node, $token token){
+                  #if ( $grammar.trackTokens )
+                  node.jjtSetFirstToken(token);
+                  #else
+                  // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
+                  #end
+              }
 
-                $!mods.override
-                public void onOpen($treeBuilder builder, $topNode node) {
-                    node.jjtOpen();
-                }
+              $!mods.override
+              public void setLastToken($treeBuilder builder, $topNode node, $token token){
+                  #if ( $grammar.trackTokens )
+                  node.jjtSetLastToken(token);
+                  #else
+                  // use jjtx.trackTokens to insert a call to jjtSetLastToken
+                  #end
+              }
 
-                $!mods.override
-                public void onPush($treeBuilder builder, $topNode node) {
-                    node.jjtClose();
-                }
+              $!mods.override
+              public void onOpen($treeBuilder builder, $topNode node) {
+                  node.jjtOpen();
+              }
 
-                $!mods.override
-                public void addChild($treeBuilder builder, $topNode parent, $topNode child, int index) {
-                    child.jjtSetParent(child);
-                    parent.jjtAddChild(child, index);
-                }
-            }
+              $!mods.override
+              public void onPush($treeBuilder builder, $topNode node) {
+                  node.jjtClose();
+              }
+
+              $!mods.override
+              public void addChild($treeBuilder builder, $topNode parent, $topNode child, int index) {
+                  child.jjtSetParent(child);
+                  parent.jjtAddChild(child, index);
+              }
+          }

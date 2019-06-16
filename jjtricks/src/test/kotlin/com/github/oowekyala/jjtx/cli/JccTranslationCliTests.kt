@@ -23,7 +23,8 @@ class JccTranslationCliTests : JjtxCliTestBase(replaceExpected = ReplacementOpt.
     @Test
     fun testImportInsteadOfImplements() = doTest(
         "SimpleExprs",
-        "gen:javacc"
+        "gen:javacc",
+        "--warn"
     )
 
     @Test

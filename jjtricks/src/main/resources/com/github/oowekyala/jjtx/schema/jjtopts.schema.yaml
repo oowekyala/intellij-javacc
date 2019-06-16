@@ -64,37 +64,34 @@ definitions:
         description: "A string ID to select a generation profile, used to filter applicable options."
 
   vanillaJjtreeOpts:
-    type: "object"
+    type: object
+    additionalProperties:
+      "$ref": "#/definitions/fileGenTask"
+
     description: >-
-      Configuration of the compatibility JJTree builder. Output of this profile
-      closely resembles JJTree output, but can be tweaked with the bindings of
-      this object. Default values match most closely JJTree's behaviour.
-    additionalProperties: false
-    properties:
-      implementNodeConstants:
-        type: "boolean"
-        default: true
-        description: >-
-          If true, the constants representing node ids are generated
-          in an interface which the parser implements. This is a code smell, but
-          it's what JJTree does. When disabled, constants are generated in a
-          final class and an import statement is added to the parser file instead.
-      forceCheckedExceptionsDeclaration:
-        type: "boolean"
-        default: true
-        description: >-
-          If true, the generated parser will assert that any checked exceptions caught
-          in parser methods are declared in `throws` clauses of productions. This makes
-          the parser fail at runtime with a ClassCastException if you haven't declared
-          a checked exception. This is what JJTree does by default, but you can disable
-          it since it obfuscates the .jj file, and may be unnecessary.
-
-      supportFiles:
-        type: object
-        default: {}
-        additionalProperties:
-          "$ref": "#/definitions/fileGenTask"
-
+      List of file generations corresponding to the gen:javacc task.
+#      Configuration of the compatibility JJTree builder. Output of this profile
+#      closely resembles JJTree output, but can be tweaked with the bindings of
+#      this object. Default values match most closely JJTree's behaviour.
+#
+#    properties:
+#      implementNodeConstants:
+#        type: "boolean"
+#        default: true
+#        description: >-
+#          If true, the constants representing node ids are generated
+#          in an interface which the parser implements. This is a code smell, but
+#          it's what JJTree does. When disabled, constants are generated in a
+#          final class and an import statement is added to the parser file instead.
+#      forceCheckedExceptionsDeclaration:
+#        type: "boolean"
+#        default: true
+#        description: >-
+#          If true, the generated parser will assert that any checked exceptions caught
+#          in parser methods are declared in `throws` clauses of productions. This makes
+#          the parser fail at runtime with a ClassCastException if you haven't declared
+#          a checked exception. This is what JJTree does by default, but you can disable
+#          it since it obfuscates the .jj file, and may be unnecessary.
 
   nodeGenerationTask:
     anyOf:

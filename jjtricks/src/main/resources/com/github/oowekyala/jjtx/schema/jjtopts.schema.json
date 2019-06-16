@@ -55,27 +55,10 @@
     },
     "vanillaJjtreeOpts": {
       "type": "object",
-      "description": "Configuration of the compatibility JJTree builder. Output of this profile closely resembles JJTree output, but can be tweaked with the bindings of this object. Default values match most closely JJTree\u0027s behaviour.",
-      "additionalProperties": false,
-      "properties": {
-        "implementNodeConstants": {
-          "type": "boolean",
-          "default": true,
-          "description": "If true, the constants representing node ids are generated in an interface which the parser implements. This is a code smell, but it\u0027s what JJTree does. When disabled, constants are generated in a final class and an import statement is added to the parser file instead."
-        },
-        "forceCheckedExceptionsDeclaration": {
-          "type": "boolean",
-          "default": true,
-          "description": "If true, the generated parser will assert that any checked exceptions caught in parser methods are declared in `throws` clauses of productions. This makes the parser fail at runtime with a ClassCastException if you haven\u0027t declared a checked exception. This is what JJTree does by default, but you can disable it since it obfuscates the .jj file, and may be unnecessary."
-        },
-        "supportFiles": {
-          "type": "object",
-          "default": {},
-          "additionalProperties": {
-            "$ref": "#/definitions/fileGenTask"
-          }
-        }
-      }
+      "additionalProperties": {
+        "$ref": "#/definitions/fileGenTask"
+      },
+      "description": "List of file generations corresponding to the gen:javacc task."
     },
     "nodeGenerationTask": {
       "anyOf": [
@@ -197,10 +180,6 @@
         "trackTokens": {
           "type": "boolean",
           "description": "If true, nodes will be provided with their first and last tokens using the node manipulator. Defaults to the JJTree key TRACK_TOKENS, or its default of false."
-        },
-        "nodeTakesParserArg": {
-          "type": "boolean",
-          "description": "If true, calls to a node constructor will take the parser as first argument. Defaults to the JJTree key NODE_USES_PARSER, or its default of false."
         },
         "templateContext": {
           "type": "object",

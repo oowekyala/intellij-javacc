@@ -1,8 +1,5 @@
 jjtx:
 
-  javaccGen:
-    implementNodeConstants: false
-
   nodePrefix: Ex
   typeHierarchy:
     name: "%MyNodeParent"

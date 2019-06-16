@@ -17,7 +17,7 @@ import java.util.Stack;
  * and linked together when closed. Hooks defined on a {@link NodeManipulator manipulator} instance
  * allow interacting with {@link ASTNode} without forcing it to have a specific interface.
  */
-public class JJTSimpleExprParserState {
+class JJTSimpleExprParserState {
 
   private final Stack<ASTNode> nodes = new Stack<ASTNode>();
   private final Stack<Integer> marks = new Stack<Integer>();

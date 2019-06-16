@@ -4,11 +4,14 @@ package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.util.io.DslPrintStream
 import com.github.oowekyala.jjtx.util.io.DslPrintStream.Endl
+import com.github.oowekyala.jjtx.util.template
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import java.io.ByteArrayOutputStream
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
 import java.io.OutputStream
 import java.util.*
 
@@ -16,20 +19,11 @@ import java.util.*
 fun toJavacc(input: JccFile,
              out: OutputStream,
              options: JavaccGenOptions,
-             builder: JjtxBuilderStrategy) {
+             builder: JjtxBuilderStrategy,
+             vcontext: VelocityContext) {
 
-    val visitor = JjtxCompilVisitor(input, out, options, builder)
+    val visitor = JjtxCompilVisitor(input, out, options, vcontext, builder)
     input.grammarFileRoot!!.accept(visitor)
-}
-
-fun toJavaccString(
-    input: JccFile,
-    options: JavaccGenOptions = JavaccGenOptions(),
-    builder: JjtxBuilderStrategy
-): String {
-    val bos = ByteArrayOutputStream()
-    toJavacc(input, bos, options, builder)
-    return bos.toString(Charsets.UTF_8.name())
 }
 
 
@@ -82,6 +76,7 @@ private fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let 
 private class JjtxCompilVisitor(val file: JccFile,
                                 outputStream: OutputStream,
                                 val compat: JavaccGenOptions,
+                                val vcontext: VelocityContext,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
     private val out = DslPrintStream.forJavaccOutput(outputStream)
@@ -116,7 +111,12 @@ private class JjtxCompilVisitor(val file: JccFile,
 
         val sb = StringBuilder(o.addImports(builder.parserImports()))
 
-        if (builder.parserImplements().isNotEmpty()) {
+        val impls = builder.parserImplements().map { qname ->
+            VelocityEngine().template(template = qname, ctx = vcontext)
+                .let { FileGenTask.recogniseQname(it) ?: it }
+        }
+
+        if (impls.isNotEmpty()) {
 
             val implPoint = implementsRegex.find(sb)!!
 
@@ -124,13 +124,13 @@ private class JjtxCompilVisitor(val file: JccFile,
                 implPoint.value == "implements" -> {
                     sb.insert(
                         implPoint.range.endInclusive + 1,
-                        bgen() + builder.parserImplements().joinToString(postfix = ", ") + egen()
+                        bgen() + impls.joinToString(postfix = ", ") + egen()
                     )
                 }
                 else                            -> {
                     sb.insert(
                         implPoint.range.start - 1,
-                        bgen() + builder.parserImplements().joinToString(prefix = "implements ") + egen()
+                        bgen() + impls.joinToString(prefix = "implements ") + egen()
                     )
                 }
             }

@@ -54,7 +54,7 @@ $!visibility $!modifiers class ${thisClass.simpleName} {
             #if ($foreach.last)
                     // JJTricks doesn't know whether it's an interface or anything...
                     // The parser will never attempt to create nodes with those IDs though.
-                    throw new IllegalArgumentException("Node " + id + " doesn't correspond to a production and can't be built by this default factory");
+                    throw new IllegalArgumentException("Node " + id + " doesn't correspond to a production and cannot be built by this default factory");
             #end
         #end
                 default:

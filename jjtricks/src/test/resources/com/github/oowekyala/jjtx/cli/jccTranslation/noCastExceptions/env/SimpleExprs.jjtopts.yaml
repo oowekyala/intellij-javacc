@@ -1,8 +1,10 @@
 jjtx:
 
   javaccGen:
-    implementNodeConstants: false
-    forceCheckedExceptionsDeclaration: false
+    jjFile:
+      context:
+        implements: []
+        forceCheckedExceptionDeclaration: false
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"

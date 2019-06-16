@@ -73,20 +73,22 @@ operator fun VelocityContext.plus(map: Map<String, Any?>) =
     // this copies the map to make modifications local
     VelocityContext(map.toMutableMap(), this)
 
-fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
-    if (template.indexOfAny(charArrayOf('$', '#')) < 0)
-    // shortcut when the string is a constant template (has no meta characters)
+fun VelocityEngine.template(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
+    if (template.indexOfAny(charArrayOf('$', '#')) < 0) {
+        // shortcut when the string is a constant template (has no meta characters)
         template
-    else StringWriter().also {
-        this.evaluate(ctx, it, logId, template)
-    }.toString()
+    } else {
+        StringWriter().also {
+            this.evaluate(ctx, it, logId, template)
+        }.toString()
+    }
 
-inline fun VelocityEngine.evaluate(ctx: VelocityContext,
+inline fun VelocityEngine.template(ctx: VelocityContext,
                                    template: String,
                                    logId: String = "jjtx-velocity",
                                    onException: (Throwable) -> Nothing): String =
         try {
-            this.evaluate(ctx = ctx, logId = logId, template = template)
+            this.template(ctx = ctx, logId = logId, template = template)
         } catch (e: Throwable) {
             onException(e)
         }

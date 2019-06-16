@@ -2,8 +2,6 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
-import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
-import com.github.oowekyala.jjtx.preprocessor.completeWith
 import com.github.oowekyala.jjtx.preprocessor.toModel
 import com.github.oowekyala.jjtx.templates.*
 import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
@@ -43,13 +41,6 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
         ctx.grammarFile.virtualFile.nameWithoutExtension
     }
 
-    private val javaccBean: JjtreeCompatBean by jjtx.processing("javaccGen") {
-        (parentModel as? OptsModelImpl)?.javaccBean?.let { p -> it?.completeWith(p) ?: it ?: p } ?: it ?: JjtreeCompatBean()
-    }
-
-    override val javaccGen: JavaccGenOptions by lazy {
-        javaccBean.toModel(ctx.subContext("javaccGen.supportFiles"))
-    }
 
     override val templateContext: Map<String, Any> by
     jjtx.withDefault { emptyMap<String, Any>() }
@@ -71,6 +62,13 @@ internal class OptsModelImpl(rootCtx: JjtxContext,
         }
     }
 
+    private val javaccBeans: Map<String, FileGenBean> by jjtx.processing("javaccGen") {
+        it.completeWith(parent = (parentModel as? OptsModelImpl)?.javaccBeans.orEmpty())
+    }
+
+    override val javaccGen: JavaccGenOptions by lazy {
+        javaccBeans.toModel(ctx.subContext("javaccGen"))
+    }
 
     override val typeHierarchy: NodeVBean by jjtx.parsing("typeHierarchy") {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context

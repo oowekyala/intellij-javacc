@@ -8,7 +8,7 @@ import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.util.set
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.dataAst.*
-import com.github.oowekyala.jjtx.util.evaluate
+import com.github.oowekyala.jjtx.util.template
 import com.github.oowekyala.jjtx.util.io.StringSource
 import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
@@ -188,7 +188,7 @@ private fun findByTemplate(ctx: JjtxContext, positionInfo: Position?, templateSt
             #end
         """.trimIndent()
 
-        return engine.evaluate(vctx, fullTemplate).trim().isNotEmpty()
+        return engine.template(vctx, fullTemplate).trim().isNotEmpty()
     }
 
 

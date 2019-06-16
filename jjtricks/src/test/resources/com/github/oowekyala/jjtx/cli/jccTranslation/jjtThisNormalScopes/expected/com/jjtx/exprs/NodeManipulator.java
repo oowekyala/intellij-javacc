@@ -14,7 +14,7 @@ import com.jjtx.exprs.SimpleExprsNodeFactory;
  * Instances of this interface bridge JJTricks internals with {@link ASTNode} instances. That way,
  * they don't need to conform to a specific interface, like JJTree forces you to do.
  */
-public interface NodeManipulator {
+interface NodeManipulator {
 
   /**
    * Called before calling {@link #onOpen}()} with the first token of a node. Calls are only

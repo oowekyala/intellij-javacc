@@ -2,7 +2,7 @@
 
 package org.exprs.ast;
 
-public interface SimpleExprParserTreeConstants {
+interface SimpleExprParserTreeConstants {
 
   public int JJTBINARYEXPR = 0;
   public int JJTEXPRESSION = 1;

@@ -48,7 +48,7 @@ fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenTask>) =
 
 
 // [this] is the inner model, higher precedence than the arg
-fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenBean>, excludes: Collection<String>) =
+fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenBean>, excludes: Collection<String> = emptyList()) =
     parent + this.orEmpty().mapValues { (id, bean) ->
         parent[id]?.let { bean.completeWith(it) } ?: bean
     } - excludes

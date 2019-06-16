@@ -6,7 +6,7 @@ Running tasks [gen:javacc, gen:javacc-support]
     [INFO]     Config chain: SimpleExprs.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> SimpleExprs.jjt
 [:optsParsing:typeHierarchy]
     [WARNING]  Regex pattern matches no nodes
-               in @tmp@/SimpleExprs.jjtopts.yaml:14:12:
+               in @tmp@/SimpleExprs.jjtopts.yaml:16:12:
                             - "r:.*Expression"
                               ^
 [gen:javacc-support]

@@ -57,7 +57,7 @@ data class FileGenTask(
         return FileGenTask(
             context = context,
             formatter = formatter,
-            genFqcn = engine.evaluate(staticCtx, genFqcn).let(::recogniseQname),
+            genFqcn = engine.template(staticCtx, genFqcn).let { recogniseQname(it) ?: it },
             template = template // TODO template the file?
         )
     }
@@ -73,9 +73,8 @@ data class FileGenTask(
                               outputDir: Path): Pair<String, Path> {
 
         val fqcn = recogniseQname(genFqcn)
-        if (!fqcn.matches(StrictFqcnRegex)) {
-            throw RuntimeException("'genClassName' should be a fully qualified class name, but was $genFqcn")
-        }
+            ?: throw RuntimeException("'genClassName' should be a fully qualified class name, but was $genFqcn")
+
 
         val o: Path = outputDir.resolve(fqcn.replace('.', '/') + ".java").toAbsolutePath()
 
@@ -143,7 +142,7 @@ data class FileGenTask(
         val template = resolveTemplate(ctx, template)
 
 
-        val rendered = VelocityEngine().evaluate(fullCtx, logId = o.toString(), template = template) {
+        val rendered = VelocityEngine().template(fullCtx, logId = o.toString(), template = template) {
             throw JjtricksExceptionWrapper.withKnownFileCtx(it, template, o)
         }
 
@@ -176,9 +175,9 @@ data class FileGenTask(
     companion object {
         private val StrictFqcnRegex = Regex("([A-Za-z_][\\w\$]*)(\\.[A-Za-z_][\\w\$]*)*")
 
-        // somewhat lenient to catch stupid empty package errors
-        private fun recogniseQname(fqcn: String): String =
+        fun recogniseQname(fqcn: String): String? =
             fqcn.deleteWhitespace().removePrefix(".").replace(Regex("\\.+"), ".")
+                .takeIf { it.matches(StrictFqcnRegex) }
 
     }
 }

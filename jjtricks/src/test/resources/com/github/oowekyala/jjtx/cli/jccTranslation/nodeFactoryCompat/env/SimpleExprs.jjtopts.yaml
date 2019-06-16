@@ -1,7 +1,9 @@
 jjtx:
 
   javaccGen:
-    implementNodeConstants: false
+    jjFile:
+      context:
+        implements: []
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"

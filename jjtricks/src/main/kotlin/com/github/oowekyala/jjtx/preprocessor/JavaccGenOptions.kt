@@ -1,7 +1,12 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.templates.*
+import com.github.oowekyala.jjtx.postprocessor.SpecialTemplate
+import com.github.oowekyala.jjtx.reporting.reportNonFatal
+import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.FileGenTask
+import com.github.oowekyala.jjtx.templates.toBean
+import com.github.oowekyala.jjtx.templates.toFileGen
 import com.github.oowekyala.jjtx.util.mapValuesNotNull
 
 /**
@@ -29,52 +34,37 @@ data class JavaccGenOptions(
      * the constants. This is a code smell and is kept only for compatibility
      * with Jjtree.
      */
-    val implementNodeConstants: Boolean = true,
+    val implementsList: List<String> = emptyList(),
 
     /**
      * Cast the exceptions at run-time to force declaration of checked exceptions.
-     * If you trust your own code, set it to false exceptions to throw exceptions
-     * immediately.
+     * This kind-of obfuscates the parser and the jj file. If you trust your own
+     * code, set it to false to throw exceptions immediately.
      */
     val castExceptions: Boolean = true,
 
     val supportFiles: Map<String, FileGenTask> = emptyMap()
 )
 
-/**
- * Defaults correspond to full jjtree compatibility.
- */
-data class JjtreeCompatBean(
-    var implementNodeConstants: Boolean? = null,
-    //    var dontCloseBeforeLastParserAction: Boolean = false,
-    var forceCheckedExceptionsDeclaration: Boolean? = null,
-    val supportFiles: Map<String, FileGenBean>? = null
-)
+internal fun Map<String, FileGenBean>?.toModel(ctx: JjtxContext): JavaccGenOptions =
+    if (this == null) JavaccGenOptions()
+    else JavaccGenOptions(
+        castExceptions = this[SpecialTemplate.JJ_FILE.id]?.context?.get("forceCheckedExceptionDeclaration")?.let { cast ->
+            if (cast !is Boolean) {
+                ctx.messageCollector.reportNonFatal("Expected 'forceCheckedExceptionDeclaration' to be a boolean")
+                true
+            } else cast
+        } ?: true,
+        implementsList = this[SpecialTemplate.JJ_FILE.id]?.context?.get("implements")?.let { impl ->
+            if (impl !is Collection<*> || impl.any { it !is String }) {
+                ctx.messageCollector.reportNonFatal("Expected 'implements' to be a collection of strings")
+                emptyList()
+            } else impl.map { it.toString() }
+        } ?: emptyList(),
+        supportFiles = this.mapValuesNotNull { (id, fgb) ->
+            fgb.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
+        }
+    )
 
-fun JjtreeCompatBean.completeWith(parent: JjtreeCompatBean) = JjtreeCompatBean(
-    implementNodeConstants = implementNodeConstants ?: parent.implementNodeConstants,
-    forceCheckedExceptionsDeclaration = forceCheckedExceptionsDeclaration ?: parent.forceCheckedExceptionsDeclaration,
-    supportFiles = supportFiles.completeWith(parent.supportFiles.orEmpty(), emptySet())
-)
+fun JavaccGenOptions.toBean() = supportFiles.mapValues { (_, v) -> v.toBean() }
 
-internal fun JjtreeCompatBean.toModel(ctx: JjtxContext): JavaccGenOptions = JavaccGenOptions(
-    implementNodeConstants = implementNodeConstants ?: true,
-    castExceptions = forceCheckedExceptionsDeclaration ?: true,
-    supportFiles = supportFiles?.mapValuesNotNull { (id, fgb) ->
-        fgb.toFileGen(ctx, positionInfo = null, id = id)
-            ?.resolveStaticTemplates(ctx)
-            ?.let {
-                // handle visibility defaulting
-                val dftVisibility =
-                    if (ctx.jjtxOptsModel.inlineBindings.isPublicSupportClasses) "public" else null
-                if ("visibility" !in it.context) it.copy(context = it.context + ("visibility" to dftVisibility))
-                else it
-            }
-    } ?: emptyMap()
-)
-
-fun JavaccGenOptions.toBean() = JjtreeCompatBean(
-    implementNodeConstants = implementNodeConstants,
-    forceCheckedExceptionsDeclaration = castExceptions,
-    supportFiles = supportFiles.mapValues { (_, v) -> v.toBean() }
-)

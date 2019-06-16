@@ -1,10 +1,9 @@
 jjtx:
 
   javaccGen:
-    supportFiles:
-      treeBuilder:
-        context:
-          visibility: ""
+    treeBuilder:
+      context:
+        visibility: ""
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"

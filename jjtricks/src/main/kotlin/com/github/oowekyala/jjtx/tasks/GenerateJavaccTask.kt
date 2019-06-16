@@ -41,7 +41,7 @@ class GenerateJavaccTask(private val taskCtx: TaskCtx) : JjtxTask() {
 
                 FileOutputStream(o.toFile()).buffered()
                     .use {
-                        toJavacc(ctx.grammarFile, it, opts, builder)
+                        toJavacc(input = ctx.grammarFile, out = it, options = opts, builder = builder, vcontext = ctx.globalVelocityContext)
                     }
 
                 ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")

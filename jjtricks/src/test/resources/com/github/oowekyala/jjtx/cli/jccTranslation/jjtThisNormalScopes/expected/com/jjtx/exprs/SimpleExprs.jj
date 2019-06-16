@@ -14,7 +14,7 @@ PARSER_BEGIN(SimpleExprParser)
     /**
      *  This is my parser declaration
      */
-    public class SimpleExprParser/*@bgen(jjtree)*/implements SimpleExprParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
+    public class SimpleExprParser/*@bgen(jjtree)*/implements com.jjtx.exprs.SimpleExprParserTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
     protected final com.jjtx.exprs.JJTSimpleExprParserState jjtree = new com.jjtx.exprs.JJTSimpleExprParserState();/*@egen*/
 
     }

@@ -2,7 +2,7 @@
 
 package com.jjtx.exprs;
 
-public interface SimpleExprParserTreeConstants {
+interface SimpleExprParserTreeConstants {
 
   public int JJTASTNODE = 0;
   public int JJTBINARYEXPR = 1;

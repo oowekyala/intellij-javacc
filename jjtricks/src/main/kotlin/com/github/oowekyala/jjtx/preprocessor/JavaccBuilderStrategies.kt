@@ -1,8 +1,6 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
-import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
 import com.github.oowekyala.jjtx.JjtxContext
@@ -116,9 +114,8 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     }
 
     override fun parserImplements(): List<String> =
-        if (compat.implementNodeConstants)
-            listOf(nodeIds.simpleName)
-        else emptyList()
+        compat.implementsList
+
 
     override fun parserImports(): List<String> = myImports.sorted()
 
