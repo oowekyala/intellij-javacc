@@ -25,7 +25,7 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, outputF
     // we know that the desired token class is [ctx.tokenClass]
 
 
-    val (spoon, spoonModel) = SpoonLauncher().run {
+    val (spoonLauncher, spoonModel) = SpoonLauncher().run {
         addInputResource(jccOutput.toString())
         // addInputResource(realOutput.toString())
         environment.isAutoImports = true
@@ -81,7 +81,7 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, outputF
         processors.forEach { p -> p.process(it as CtElement) }
 
         if (outputFilter(it.qualifiedName)) {
-            spoon.createOutputWriter().createJavaFile(it)
+            spoonLauncher.createOutputWriter().createJavaFile(it)
         }
     }
 
