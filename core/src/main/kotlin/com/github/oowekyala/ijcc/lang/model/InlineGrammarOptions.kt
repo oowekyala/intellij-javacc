@@ -35,12 +35,17 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
     override val nodeTakesParserArg: Boolean by lazy {
         getOptionValueOrDefault(JjtOption.NODE_USES_PARSER)
     }
+
     val jjtCustomNodeHooks: Boolean by lazy {
         getOptionValueOrDefault(JjtOption.NODE_SCOPE_HOOK)
     }
 
     val isPublicSupportClasses : Boolean by lazy {
         getOptionValueOrDefault(JccOption.SUPPORT_CLASS_VISIBILITY_PUBLIC)
+    }
+
+    val isLegacyGen: Boolean by lazy {
+        getOptionValueOrDefault(JccOption.JAVA_TEMPLATE_TYPE).equals("classic", ignoreCase = true)
     }
 
 

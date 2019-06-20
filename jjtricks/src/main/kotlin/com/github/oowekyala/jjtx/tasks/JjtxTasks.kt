@@ -25,6 +25,10 @@ enum class JjtxTaskKey(
     GEN_NODES("gen:nodes", ::GenerateNodesTask),
     GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask),
     GEN_JAVACC("gen:javacc", ::GenerateJavaccTask),
+    /**
+     * Execute JavaCC on the generated JJ file and filter the output to match
+     * special templates.
+     */
     GEN_PARSER("gen:parser", ::JavaccExecTask, GEN_JAVACC)
     ;
 

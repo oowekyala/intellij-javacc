@@ -65,7 +65,7 @@ class Jjtricks(
 
     private val outputRoot: Path by args.storing(
         "-o", "--output",
-        help = "Output directory. Files are generated in a package tree rooted in this directory."
+        help = "Output directory. Files are generated in a package tree rooted in this directory. Existing files in this root are overwritten."
     ) {
         io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen"))
@@ -80,7 +80,7 @@ class Jjtricks(
 
     private val sourceRoots by args.adding(
         "-s", "--source",
-        help = "Other source roots. Node files that are already in those roots are not generated."
+        help = "Other source roots. Files that are already in those roots are not generated."
     ) {
         io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen")).addValidator {

@@ -55,6 +55,8 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, outputF
     val specials = listOf(
         SpecialTemplate.TOKEN,
         SpecialTemplate.TOKEN_MANAGER,
+        SpecialTemplate.PARSE_EXCEPTION,
+        SpecialTemplate.LEX_EXCEPTION,
         SpecialTemplate.CHAR_STREAM
     )
     val specialMapping = specials.associateBy { it.defaultLocation(ctx.jjtxOptsModel).qualifiedName }

@@ -36,7 +36,17 @@ enum class SpecialTemplate(val id: String, private val defaultClassSimpleName: S
     TOKEN_FACTORY("tokenFactory"),
 
 
-    LEX_EXCEPTION("lexException"),
+    LEX_EXCEPTION("lexException") {
+        override fun defaultLocation(opts: IGrammarOptions): ClassVBean {
+            val suffix = when (opts.inlineBindings.isLegacyGen) {
+                true  -> "Error"
+                false -> "Exception"
+            }
+
+            return ClassVBean(opts.addParserPackage("TokenMgr$suffix"))
+        }
+
+    },
     PARSE_EXCEPTION("parseException"),
 
     // special templates relevant to tree building
