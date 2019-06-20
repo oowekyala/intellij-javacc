@@ -1,6 +1,5 @@
 package com.github.oowekyala.jjtx.postprocessor
 
-import com.github.oowekyala.ijcc.lang.model.addParserPackage
 import com.github.oowekyala.jjtx.JjtxContext
 import spoon.OutputType
 import spoon.processing.AbstractProcessor
@@ -43,15 +42,20 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
         Pair(this, model)
     }
 
+    fun SpecialTemplate.templateRenamer(): Processor<CtTypeReference<*>> =
+        ctx.jjtxOptsModel.let { opts ->
+            TypeReferenceRenamer(
+                sourceQname = defaultLocation(opts).qualifiedName,
+                targetQname = actualLocation(opts).qualifiedName
+            )
+        }
 
-    val jjToken = ctx.jjtxOptsModel.addParserPackage("Token")
-    val renamer: Processor<CtTypeReference<*>> = TypeReferenceRenamer(jjToken, ctx.tokenClass.qualifiedName)
 
 
     val processors: List<Processor<in CtElement>> = listOf(
-        // can't factorise that bc of the inline
         AssignmentSpreader,
-        renamer,
+        // TODO generalise to all special templates
+        SpecialTemplate.TOKEN.templateRenamer(),
         IfStmtConstantFolder,
         BlockUnwrapper
     ).map { it.treeProcessor() }
@@ -65,20 +69,30 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
 
 }
 
-fun <T : CtElement> Processor<T>.treeProcessor(): Processor<in CtElement> {
+/**
+ * Turns a processor of anything into a processor of [CtElement], that
+ * targets only the original type of target. This requires [this] processor
+ * to extend [AbstractProcessor] *directly*.
+ */
+fun Processor<*>.treeProcessor(): Processor<in CtElement> {
 
-    val target: Class<T> = this.javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0].let {
-        if (it is Class<*>) it
-        else (it as ParameterizedType).rawType
-    } as Class<T>
+    fun <T : CtElement> Processor<T>.treeProcessorCapture(): Processor<in CtElement> {
+        val target: Class<T> =
+            this.javaClass.genericSuperclass.let { it as ParameterizedType }.actualTypeArguments[0].let {
+                if (it is Class<*>) it
+                else (it as ParameterizedType).rawType
+            } as Class<T>
 
-    return object : AbstractProcessor<CtElement>() {
-        override fun process(element: CtElement) {
-            element.getElements(TypeFilter(target)).forEach<T> {
-                this@treeProcessor.process(it)
+        return object : AbstractProcessor<CtElement>() {
+            override fun process(element: CtElement) {
+                element.getElements(TypeFilter(target)).forEach<T> {
+                    this@treeProcessor.process(it)
+                }
             }
         }
     }
+
+    return treeProcessorCapture()
 }
 
 object BlockUnwrapper : AbstractProcessor<CtBlock<*>>() {
@@ -188,20 +202,39 @@ object IfStmtConstantFolder : AbstractProcessor<CtIf>() {
     }
 }
 
-class TypeReferenceRenamer(private val sourceQname: String,
-                           targetQname: String)
-    : AbstractProcessor<CtTypeReference<*>>() {
+/**
+ * Renames references to a type.
+ *
+ * @param targetQname The target of the renaming
+ */
+class TypeReferenceRenamer private constructor(
+    private val mySourceQname: String,
+    targetQname: String
+) : AbstractProcessor<CtTypeReference<*>>() {
 
     private val targetRef = TypeFactory().createReference<Any>(targetQname)!!
 
 
     override fun process(element: CtTypeReference<*>) {
-        if (element.qualifiedName == sourceQname) {
+        if (element.qualifiedName == mySourceQname) {
             element.replace(targetRef.clone())
         }
     }
+
+    companion object {
+        operator fun invoke(sourceQname: String, targetQname: String): Processor<CtTypeReference<*>> =
+            if (sourceQname == targetQname) noopProcessor()
+            else TypeReferenceRenamer(mySourceQname = sourceQname, targetQname = targetQname)
+    }
 }
 
+fun <T : CtElement> noopProcessor(): Processor<T> = NoopProcessor as Processor<T>
+
+private object NoopProcessor : AbstractProcessor<CtElement>() {
+    override fun process(element: CtElement) {
+        // do nothing
+    }
+}
 
 
 

@@ -10,10 +10,7 @@ import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 
 
 val JjtxContext.tokenClass: ClassVBean
-    get() = ClassVBean(
-        jjtxOptsModel.javaccGen.supportFiles["token"]?.genFqcn
-            ?: jjtxOptsModel.addParserPackage("Token")
-    )
+    get() = SpecialTemplate.TOKEN.actualLocation(this.jjtxOptsModel)
 
 /**
  * Special templates are the support files necessary for the parser to function.
