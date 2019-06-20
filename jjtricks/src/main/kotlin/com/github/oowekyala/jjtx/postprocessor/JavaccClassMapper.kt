@@ -6,6 +6,7 @@ import spoon.processing.AbstractProcessor
 import spoon.processing.Processor
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
+import spoon.reflect.factory.PackageFactory
 import spoon.reflect.factory.TypeFactory
 import spoon.reflect.reference.CtTypeReference
 import spoon.reflect.visitor.filter.TypeFilter
@@ -50,6 +51,9 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
             )
         }
 
+    val specials = listOf(SpecialTemplate.TOKEN)
+    val specialOriginals = specials.associateBy { it.defaultLocation(ctx.jjtxOptsModel).qualifiedName }
+
 
 
     val processors: List<Processor<in CtElement>> = listOf(
@@ -62,6 +66,25 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
 
 
     spoonModel.allTypes.forEach<CtType<*>> {
+
+        if (it.qualifiedName in specialOriginals) {
+
+            val actualLocation = specialOriginals.getValue(it.qualifiedName).actualLocation(ctx.jjtxOptsModel)
+
+            it.`package`.removeType(it)
+
+            val actualPack = PackageFactory(it.factory).getOrCreate(actualLocation.`package`)
+
+            it.position.compilationUnit.packageDeclaration =
+                PackageFactory(it.factory).createPackageDeclaration(actualPack.reference)
+
+            if (it.simpleName != actualLocation.simpleName) {
+                it.setSimpleName<CtType<*>>(actualLocation.simpleName)
+            }
+
+            actualPack.addType<CtPackage>(it)
+        }
+
         processors.forEach { p -> p.process(it as CtElement) }
         spoon.createOutputWriter().createJavaFile(it)
     }
@@ -86,7 +109,7 @@ fun Processor<*>.treeProcessor(): Processor<in CtElement> {
         return object : AbstractProcessor<CtElement>() {
             override fun process(element: CtElement) {
                 element.getElements(TypeFilter(target)).forEach<T> {
-                    this@treeProcessor.process(it)
+                    this@treeProcessorCapture.process(it)
                 }
             }
         }

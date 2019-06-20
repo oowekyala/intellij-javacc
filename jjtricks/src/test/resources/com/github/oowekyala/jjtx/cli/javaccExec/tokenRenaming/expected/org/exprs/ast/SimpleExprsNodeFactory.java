@@ -2,7 +2,7 @@
 
 package org.exprs.ast;
 
-import org.exprs.ast.impl.MyToken;
+import org.exprs.ast.token.MyToken;
 
 import org.exprs.ast.MyNodeParent;
 import org.exprs.ast.JJTSimpleExprParserState;
@@ -42,7 +42,7 @@ final class SimpleExprsNodeFactory {
         throw new IllegalArgumentException(
             "Node "
                 + id
-                + " doesn't correspond to a production and can't be built by this default factory");
+                + " doesn't correspond to a production and cannot be built by this default factory");
       default:
         throw new IllegalArgumentException("Unknown node id " + id);
     }

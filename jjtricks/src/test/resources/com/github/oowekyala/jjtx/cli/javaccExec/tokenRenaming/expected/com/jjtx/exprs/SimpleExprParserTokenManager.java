@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import org.exprs.ast.*;
 import org.exprs.ast.SimpleExprParserTreeConstants;
 import org.exprs.ast.SimpleExprsNodeFactory;
-import org.exprs.ast.impl.MyToken;
+import org.exprs.ast.token.MyToken;
 
 import static org.exprs.ast.SimpleExprParserTreeConstants.*;
 

@@ -2,7 +2,7 @@
 
 package org.exprs.ast;
 
-import org.exprs.ast.impl.MyToken;
+import org.exprs.ast.token.MyToken;
 
 import org.exprs.ast.MyNodeParent;
 import org.exprs.ast.JJTSimpleExprParserState;

@@ -16,7 +16,7 @@ import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
  * This is my parser declaration
  */
 /* @bgen(jjtree) */
-public class SimpleExprParser implements SimpleExprParserConstants , SimpleExprParserTreeConstants {
+public class SimpleExprParser implements SimpleExprParserConstants , com.jjtx.exprs.SimpleExprParserTreeConstants {
     /* @bgen(jjtree) */
     protected final JJTSimpleExprParserState jjtree = new com.jjtx.exprs.JJTSimpleExprParserState();
 

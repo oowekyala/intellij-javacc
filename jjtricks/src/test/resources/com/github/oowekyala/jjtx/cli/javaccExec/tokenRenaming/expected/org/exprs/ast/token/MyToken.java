@@ -4,17 +4,16 @@
 /**
  * JavaCCOptions:TOKEN_EXTENDS=,KEEP_LINE_COL=null,SUPPORT_CLASS_VISIBILITY_PUBLIC=false
  */
-package com.jjtx.exprs;
+package org.exprs.ast.token;
 
 
 import java.io.Serializable;
-import org.exprs.ast.impl.MyToken;
 
 
 /**
  * Describes the input token stream.
  */
-class Token implements Serializable {
+class MyToken implements Serializable {
     /**
      * The version identifier for this Serializable class.
      * Increment only if the <i>serialized</i> form of the
@@ -93,20 +92,20 @@ class Token implements Serializable {
     /**
      * No-argument constructor
      */
-    public Token() {
+    public MyToken() {
     }
 
     /**
      * Constructs a new token for the specified Image.
      */
-    public Token(int kind) {
-        super(kind, null);
+    public MyToken(int kind) {
+        this(kind, null);
     }
 
     /**
      * Constructs a new token for the specified Image and Kind.
      */
-    public Token(int kind, String image) {
+    public MyToken(int kind, String image) {
         this.kind = kind;
         this.image = image;
     }

@@ -7,7 +7,7 @@
 package com.jjtx.exprs;
 
 
-import org.exprs.ast.impl.MyToken;
+import org.exprs.ast.token.MyToken;
 
 
 /**

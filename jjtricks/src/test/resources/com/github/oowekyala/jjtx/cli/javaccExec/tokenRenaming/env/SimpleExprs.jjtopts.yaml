@@ -3,9 +3,8 @@ jjtx:
 
   trackTokens: true
   javaccGen:
-    supportFiles:
       token:
-        genClassName: "org.exprs.ast.impl.MyToken"
+        genClassName: "org.exprs.ast.token.MyToken"
         template: "class Foo {}"
 
   nodePrefix: Ex
