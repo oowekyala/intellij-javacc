@@ -1,10 +1,13 @@
 package com.github.oowekyala.jjtx.tasks
 
+import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.postprocessor.mapJavaccOutput
 import com.github.oowekyala.jjtx.reporting.*
+import com.github.oowekyala.jjtx.util.asQnamePath
 import com.github.oowekyala.jjtx.util.exists
 import org.javacc.parser.Main
 import java.nio.file.Files
+import java.nio.file.Path
 
 class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
 
@@ -53,7 +56,7 @@ class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
                 ctx = ctx,
                 jccOutput = tmpOutput,
                 realOutput = outputDir,
-                otherSources = otherSourceRoots
+                outputFilter = outputFilter(ctx, tmpOutput, otherSourceRoots, overwriteReal = false)
             )
         }
 
@@ -66,3 +69,45 @@ class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
     }
 
 }
+
+/**
+ * Selects qualified names whose files should be written out.
+ *
+ * TODO also look into a user-provided classpath
+ */
+fun outputFilter(
+    ctx: JjtxContext,
+    realOutput: Path,
+    otherSourceRoots: List<Path>,
+    overwriteReal: Boolean = true
+): (String) -> Boolean =
+    fun(qname: String): Boolean {
+
+        fun noGenMessage(qname: String, realOutput: Path) =
+            "Class $qname was not generated because present in $realOutput"
+
+
+        val rel = qname.asQnamePath()
+
+        for (root in otherSourceRoots) {
+            if (root.resolve(rel).exists()) {
+                ctx.messageCollector.report(
+                    noGenMessage(qname, root),
+                    MessageCategory.CLASS_NOT_GENERATED
+                )
+                return false
+            }
+        }
+
+        if (realOutput.resolve(rel).exists()) {
+            val message =
+                if (overwriteReal) "Class $qname will be overwritten in $realOutput"
+                else noGenMessage(qname, realOutput)
+
+            ctx.messageCollector.debug(message)
+            return overwriteReal
+        }
+
+        return true
+    }
+

@@ -111,20 +111,12 @@ data class FileGenTask(
     open fun execute(ctx: JjtxContext,
                      sharedCtx: VelocityContext,
                      outputDir: Path,
-                     otherSourceRoots: List<Path>): Triple<Status, String, Path> {
+                     outputFilter: (String) -> Boolean): Triple<Status, String, Path> {
 
         val (fqcn, o) = resolveOutput(genFqcn, outputDir)
 
-        val rel = outputDir.relativize(o)
-
-        for (root in otherSourceRoots) {
-            if (root.resolve(rel).exists()) {
-                ctx.messageCollector.report(
-                    "Class $fqcn was not generated because present in $root",
-                    MessageCategory.CLASS_NOT_GENERATED
-                )
-                return Triple(Status.Aborted, fqcn, o)
-            }
+        if (!outputFilter(fqcn)) {
+            return Triple(Status.Aborted, fqcn, o)
         }
 
 

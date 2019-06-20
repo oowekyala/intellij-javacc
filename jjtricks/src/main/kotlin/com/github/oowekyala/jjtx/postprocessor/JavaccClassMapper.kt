@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.postprocessor
 
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import spoon.OutputType
 import spoon.processing.AbstractProcessor
 import spoon.processing.Processor
@@ -17,7 +18,7 @@ import kotlin.math.absoluteValue
 import spoon.Launcher as SpoonLauncher
 
 
-fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSources: List<Path>) {
+fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, outputFilter: (String) -> Boolean) {
 
     // javacc was generated into [jccOutput]
     // existing classes are in [realOutput] and [otherSources]
@@ -51,45 +52,55 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, otherSo
             )
         }
 
-    val specials = listOf(SpecialTemplate.TOKEN)
-    val specialOriginals = specials.associateBy { it.defaultLocation(ctx.jjtxOptsModel).qualifiedName }
+    val specials = listOf(
+        SpecialTemplate.TOKEN,
+        SpecialTemplate.TOKEN_MANAGER,
+        SpecialTemplate.CHAR_STREAM
+    )
+    val specialMapping = specials.associateBy { it.defaultLocation(ctx.jjtxOptsModel).qualifiedName }
 
 
-
-    val processors: List<Processor<in CtElement>> = listOf(
-        AssignmentSpreader,
-        // TODO generalise to all special templates
-        SpecialTemplate.TOKEN.templateRenamer(),
-        IfStmtConstantFolder,
-        BlockUnwrapper
-    ).map { it.treeProcessor() }
+    val processors: List<Processor<in CtElement>> =
+        listOf(AssignmentSpreader)
+            .plus(specials.map { it.templateRenamer() })
+            .plus(
+                listOf(IfStmtConstantFolder, BlockUnwrapper)
+            ).map { it.treeProcessor() }
 
 
     spoonModel.allTypes.forEach<CtType<*>> {
 
-        if (it.qualifiedName in specialOriginals) {
+        if (it.qualifiedName in specialMapping) {
 
-            val actualLocation = specialOriginals.getValue(it.qualifiedName).actualLocation(ctx.jjtxOptsModel)
-
-            it.`package`.removeType(it)
-
-            val actualPack = PackageFactory(it.factory).getOrCreate(actualLocation.`package`)
-
-            it.position.compilationUnit.packageDeclaration =
-                PackageFactory(it.factory).createPackageDeclaration(actualPack.reference)
-
-            if (it.simpleName != actualLocation.simpleName) {
-                it.setSimpleName<CtType<*>>(actualLocation.simpleName)
-            }
-
-            actualPack.addType<CtPackage>(it)
+            val actualLocation = specialMapping.getValue(it.qualifiedName).actualLocation(ctx.jjtxOptsModel)
+            it.relocate(actualLocation)
         }
 
         processors.forEach { p -> p.process(it as CtElement) }
-        spoon.createOutputWriter().createJavaFile(it)
+
+        if (outputFilter(it.qualifiedName)) {
+            spoon.createOutputWriter().createJavaFile(it)
+        }
     }
 
 
+}
+
+
+fun CtType<*>.relocate(actualLocation: ClassVBean) {
+
+    `package`.removeType(this)
+
+    val actualPack = PackageFactory(factory).getOrCreate(actualLocation.`package`)
+
+    position.compilationUnit.packageDeclaration =
+        PackageFactory(factory).createPackageDeclaration(actualPack.reference)
+
+    if (simpleName != actualLocation.simpleName) {
+        setSimpleName<CtType<*>>(actualLocation.simpleName)
+    }
+
+    actualPack.addType<CtPackage>(this)
 }
 
 /**

@@ -2,7 +2,6 @@ package com.github.oowekyala.jjtx.tasks
 
 import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
-import com.github.oowekyala.jjtx.reporting.debug
 import com.github.oowekyala.jjtx.reporting.reportException
 import com.github.oowekyala.jjtx.reporting.reportNormal
 import com.github.oowekyala.jjtx.templates.FileGenTask
@@ -40,7 +39,7 @@ abstract class GenerationTaskBase(taskCtx: TaskCtx) : JjtxTask() {
                         ctx,
                         rootCtx,
                         outputDir,
-                        otherSourceRoots
+                        outputFilter = outputFilter(ctx, outputDir, otherSourceRoots, overwriteReal = true)
                     )
 
                     when (st) {
