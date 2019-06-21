@@ -1,6 +1,7 @@
 package com.github.oowekyala.jjtx.templates
 
 import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.postprocessor.SpecialTemplate
 import com.github.oowekyala.jjtx.reporting.reportNonFatal
 import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.util.Position
@@ -48,20 +49,24 @@ fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenTask>) =
 
 
 // [this] is the inner model, higher precedence than the arg
-fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenBean>, excludes: Collection<String> = emptyList()) =
+fun Map<String, FileGenBean>?.completeWith(parent: Map<String, FileGenBean>,
+                                           excludes: Collection<String> = emptyList()) =
     parent + this.orEmpty().mapValues { (id, bean) ->
         parent[id]?.let { bean.completeWith(it) } ?: bean
     } - excludes
 
 
-private fun FileGenBean.getTemplate(ctx: JjtxContext, positionInfo: Position?): StringSource? = when {
+private fun FileGenBean.getTemplate(ctx: JjtxContext,
+                                    positionInfo: Position?,
+                                    reportMissing: Boolean = true): StringSource? = when {
     template != null     -> StringSource.Str(template)
     templateFile != null -> StringSource.File(templateFile)
     else                 -> {
-        ctx.messageCollector.reportNonFatal(
-            "File generation task must mention either 'templateFile' or 'template'",
-            positionInfo
-        )
+        if (reportMissing)
+            ctx.messageCollector.reportNonFatal(
+                "File generation task must mention either 'templateFile' or 'template'",
+                positionInfo
+            )
         null
     }
 }
@@ -93,7 +98,11 @@ fun FileGenBean.toNodeGenScheme(ctx: JjtxContext,
  */
 fun FileGenBean.toFileGen(ctx: JjtxContext, positionInfo: Position?, id: String): FileGenTask? {
 
-    val t = getTemplate(ctx, positionInfo) ?: return null
+    val needsTemplate = id !in SpecialTemplate.externalGen.map { it.id }
+
+    val t = getTemplate(ctx, positionInfo, reportMissing = needsTemplate)
+
+    if (t == null && needsTemplate) return null
 
     if (genClassName == null) {
         ctx.messageCollector.reportNonFatal("File generation task '$id' must mention 'genClassName', the template for the fully qualified class name of the generated class")

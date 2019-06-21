@@ -37,7 +37,7 @@ import java.nio.file.Path
  * @author Clément Fournier
  */
 data class FileGenTask(
-    val template: StringSource,
+    val template: StringSource?,
     val formatter: SourceFormatter?,
     val genFqcn: String,
     /**
@@ -113,12 +113,12 @@ data class FileGenTask(
                      outputDir: Path,
                      outputFilter: (String) -> Boolean): Triple<Status, String, Path> {
 
+
         val (fqcn, o) = resolveOutput(genFqcn, outputDir)
 
-        if (!outputFilter(fqcn)) {
+        if (!outputFilter(fqcn) || template == null) {
             return Triple(Status.Aborted, fqcn, o)
         }
-
 
         if (!o.exists()) {
             o.createFile()

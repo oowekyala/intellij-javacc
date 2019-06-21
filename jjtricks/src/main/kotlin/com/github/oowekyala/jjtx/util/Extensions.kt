@@ -15,8 +15,11 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
+import java.util.stream.IntStream
+import java.util.stream.Stream
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
 
 fun String.splitAroundFirst(delimiter: Char): Pair<String, String> =
     Pair(substringBefore(delimiter, missingDelimiterValue = ""), substringAfter(delimiter))
@@ -45,6 +48,24 @@ fun List<CompletableFuture<*>>.joinTasks() {
     CompletableFuture.allOf(*toTypedArray()).join()
 }
 
+fun <T> List<T>.batches(length: Int): Stream<List<T>> {
+    if (length <= 0)
+        throw IllegalArgumentException("length = $length")
+    val size = size
+    if (size <= 0)
+        return Stream.empty()
+
+    val fullChunks = (size - 1) / length
+
+    return IntStream.range(0, fullChunks + 1)
+        .mapToObj { n ->
+            subList(
+                n * length,
+                if (n == fullChunks) size else (n + 1) * length
+            )
+        }
+}
+
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 fun Path.inputStream(): InputStream = FileInputStream(toFile())
 fun Path.isDirectory(): Boolean = Files.isDirectory(this)
@@ -57,6 +78,7 @@ fun Path.createFile() {
 
 fun Path.resolveQname(qname: String): Path = resolve(qname.asQnamePath())
 fun String.asQnamePath(): Path = replace('.', '/').toPath()
+fun String.asQnameFile(): Path = replace('.', '/').let { "$it.java" }.toPath()
 
 
 fun <K, V, R> Map<K, V>.mapValuesNotNull(f: (Map.Entry<K, V>) -> R?): Map<K, R> =

@@ -3,6 +3,7 @@ package com.github.oowekyala.jjtx.tasks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.postprocessor.mapJavaccOutput
 import com.github.oowekyala.jjtx.reporting.*
+import com.github.oowekyala.jjtx.util.asQnameFile
 import com.github.oowekyala.jjtx.util.asQnamePath
 import com.github.oowekyala.jjtx.util.exists
 import org.javacc.parser.Main
@@ -56,6 +57,7 @@ class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
                 ctx = ctx,
                 jccOutput = tmpOutput,
                 realOutput = outputDir,
+                otherSources = otherSourceRoots,
                 // FIXME overwrite only if it's not been templated?
                 outputFilter = outputFilter(ctx, tmpOutput, otherSourceRoots, overwriteReal = true)
             )
@@ -88,7 +90,7 @@ fun outputFilter(
             "Class $qname was not generated because present in $realOutput"
 
 
-        val rel = qname.asQnamePath()
+        val rel = qname.asQnameFile()
 
         for (root in otherSourceRoots) {
             if (root.resolve(rel).exists()) {

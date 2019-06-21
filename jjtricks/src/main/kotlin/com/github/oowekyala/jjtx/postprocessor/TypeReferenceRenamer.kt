@@ -16,12 +16,14 @@ class TypeReferenceRenamer(
 
 
     private val matchList: List<Pair<ClassVBean, CtTypeReference<Any>>> =
-        qnameMap.map { (from, to) ->
-            Pair(
-                from,
-                TypeFactory().createReference<Any>(to.qualifiedName)!!
-            )
-        }
+        qnameMap
+            .filterNot { (a, b) -> a == b }
+            .map { (from, to) ->
+                Pair(
+                    from,
+                    TypeFactory().createReference<Any>(to.qualifiedName)!!
+                )
+            }
 
     override fun process(element: CtTypeReference<*>) {
 

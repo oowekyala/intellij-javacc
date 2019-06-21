@@ -57,6 +57,8 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     private val nodeFactory = SpecialTemplate.NODE_FACTORY.actualLocation(grammarOptions)
     private val nodeIds = SpecialTemplate.NODE_IDS.actualLocation(grammarOptions)
+    private val tokenIds = SpecialTemplate.TOKEN_IDS.actualLocation(grammarOptions)
+
     private val myImports = mutableSetOf<String>().also {
         if (grammarOptions.nodePackage.isNotEmpty()) {
             it += grammarOptions.nodePackage + ".*"
@@ -64,6 +66,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         it += nodeFactory.qualifiedName
         it += nodeIds.qualifiedName
         it += "static ${nodeIds.qualifiedName}.*"
+//        it += "static ${tokenIds.qualifiedName}.*"
     }
 
     private val NodeVar.nodeId
