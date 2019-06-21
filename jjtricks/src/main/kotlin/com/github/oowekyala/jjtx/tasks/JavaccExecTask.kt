@@ -56,7 +56,8 @@ class JavaccExecTask(private val ctx: TaskCtx) : JjtxTask() {
                 ctx = ctx,
                 jccOutput = tmpOutput,
                 realOutput = outputDir,
-                outputFilter = outputFilter(ctx, tmpOutput, otherSourceRoots, overwriteReal = false)
+                // FIXME overwrite only if it's not been templated?
+                outputFilter = outputFilter(ctx, tmpOutput, otherSourceRoots, overwriteReal = true)
             )
         }
 
@@ -110,4 +111,3 @@ fun outputFilter(
 
         return true
     }
-

@@ -4,16 +4,18 @@ import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.templates.vbeans.ClassVBean
 import com.github.oowekyala.jjtx.util.joinTasks
 import spoon.OutputType
+import spoon.compiler.Environment
 import spoon.processing.AbstractProcessor
 import spoon.processing.Processor
-import spoon.reflect.code.CtBlock
-import spoon.reflect.code.CtIf
-import spoon.reflect.code.CtLiteral
-import spoon.reflect.code.CtStatement
+import spoon.reflect.code.*
 import spoon.reflect.declaration.CtElement
 import spoon.reflect.declaration.CtPackage
 import spoon.reflect.declaration.CtType
 import spoon.reflect.factory.PackageFactory
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter
+import spoon.reflect.visitor.DefaultTokenWriter
+import spoon.reflect.visitor.PrinterHelper
+import spoon.support.sniper.SniperJavaPrettyPrinter
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
@@ -40,6 +42,10 @@ fun mapJavaccOutput(ctx: JjtxContext, jccOutput: Path, realOutput: Path, outputF
         //           environment.setPrettyPrinterCreator {
         //               SniperJavaPrettyPrinter(environment)
         //           }
+
+        environment.setPrettyPrinterCreator {
+            MyJPrettyPrinter(environment)
+        }
 
         environment.sourceOutputDirectory = realOutput.toFile()
 
@@ -144,6 +150,7 @@ object IfStmtConstantFolder : AbstractProcessor<CtIf>() {
     }
 }
 
+// TODO this is probably better than composeProcessors
 class CompositeProcessor(processors: List<Processor<*>>) : AbstractProcessor<CtElement>() {
 
 
@@ -192,5 +199,4 @@ private object NoopProcessor : AbstractProcessor<CtElement>() {
 }
 
 
-
-
+class MyJPrettyPrinter(env: Environment) : DefaultJavaPrettyPrinter(env)
