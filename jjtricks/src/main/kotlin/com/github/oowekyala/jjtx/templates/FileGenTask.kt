@@ -108,7 +108,7 @@ data class FileGenTask(
      * @param [sharedCtx] Global velocity context, the local properties will be chained
      * @param [outputDir] Root directory where the visitors should be generated
      */
-    open fun execute(ctx: JjtxContext,
+    fun execute(ctx: JjtxContext,
                      sharedCtx: VelocityContext,
                      outputDir: Path,
                      outputFilter: (String) -> Boolean): Triple<Status, String, Path> {

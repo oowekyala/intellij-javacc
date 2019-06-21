@@ -16,6 +16,7 @@ import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.joinTasks
 import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
@@ -194,7 +195,7 @@ class Jjtricks(
         }
 
 
-        CompletableFuture.allOf(*sorted.map(::runTask).toTypedArray()).join()
+        sorted.map(::runTask).joinTasks()
 
         ctx.messageCollector.concludeReport()
     }

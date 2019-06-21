@@ -14,6 +14,7 @@ import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.CompletableFuture
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -39,6 +40,10 @@ val Path.extension: String?
 
 val Path.baseName: String
     get() = fileName.toString().substringBefore('.')
+
+fun List<CompletableFuture<*>>.joinTasks() {
+    CompletableFuture.allOf(*toTypedArray()).join()
+}
 
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 fun Path.inputStream(): InputStream = FileInputStream(toFile())
