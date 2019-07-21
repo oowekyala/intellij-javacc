@@ -145,7 +145,7 @@ class JJTSimpleExprParserState {
   public void openNodeScope(ASTNode n, Token firstToken) {
     marks.push(mk);
     mk = nodes.size();
-    manipulator.setFirstToken(firstToken);
+    manipulator.setFirstToken(this, n, firstToken);
     manipulator.onOpen(this, n);
   }
 
@@ -160,7 +160,7 @@ class JJTSimpleExprParserState {
       ASTNode c = popNode();
       manipulator.addChild(this, n, c, num);
     }
-    manipulator.setLastToken(lastToken);
+    manipulator.setLastToken(this, n, lastToken);
     manipulator.onPush(this, n);
     pushNode(n);
     nodeCreated = true;
@@ -179,7 +179,7 @@ class JJTSimpleExprParserState {
         ASTNode c = popNode();
         manipulator.addChild(this, n, c, a);
       }
-      manipulator.setLastToken(lastToken);
+      manipulator.setLastToken(this, n, lastToken);
       manipulator.onPush(this, n);
       pushNode(n);
       nodeCreated = true;

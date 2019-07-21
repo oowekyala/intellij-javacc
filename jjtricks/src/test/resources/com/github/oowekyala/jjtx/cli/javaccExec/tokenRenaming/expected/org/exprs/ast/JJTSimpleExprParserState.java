@@ -147,7 +147,7 @@ class JJTSimpleExprParserState {
   public void openNodeScope(MyNodeParent n, MyToken firstToken) {
     marks.push(mk);
     mk = nodes.size();
-    manipulator.setFirstToken(firstToken);
+    manipulator.setFirstToken(this, n, firstToken);
     manipulator.onOpen(this, n);
   }
 
@@ -162,7 +162,7 @@ class JJTSimpleExprParserState {
       MyNodeParent c = popNode();
       manipulator.addChild(this, n, c, num);
     }
-    manipulator.setLastToken(lastToken);
+    manipulator.setLastToken(this, n, lastToken);
     manipulator.onPush(this, n);
     pushNode(n);
     nodeCreated = true;
@@ -181,7 +181,7 @@ class JJTSimpleExprParserState {
         MyNodeParent c = popNode();
         manipulator.addChild(this, n, c, a);
       }
-      manipulator.setLastToken(lastToken);
+      manipulator.setLastToken(this, n, lastToken);
       manipulator.onPush(this, n);
       pushNode(n);
       nodeCreated = true;
