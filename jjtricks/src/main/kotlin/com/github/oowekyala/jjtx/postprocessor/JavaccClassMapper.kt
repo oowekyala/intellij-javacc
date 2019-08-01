@@ -80,11 +80,13 @@ fun mapJavaccOutput(ctx: JjtxContext,
 
 
     val processors: List<Processor<out CtElement>> =
-        listOf(AssignmentSpreader)
-            .plus(TypeReferenceRenamer(specialMapping))
-            .plus(
-                listOf(IfStmtConstantFolder, BlockUnwrapper)
-            )
+        listOf(
+            AssignmentSpreader,
+            TypeReferenceRenamer(specialMapping),
+            IfStmtConstantFolder,
+            BlockUnwrapper
+        )
+
 
     val composite = composeProcessors(processors)
 
