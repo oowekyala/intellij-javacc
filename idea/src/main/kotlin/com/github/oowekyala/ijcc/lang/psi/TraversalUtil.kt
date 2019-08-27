@@ -23,7 +23,7 @@ fun grammarTraverserNoJava(root: PsiElement): SyntaxTraverser<PsiElement> =
         .forceIgnore {
             when (it) {
                 is JccJavaCompilationUnit, is JccJavaBlock, is JccJavaExpression -> true
-                else                                                             -> false
+                else                                                                                                                                                                      -> false
             }
         }
 
@@ -31,3 +31,4 @@ fun grammarTraverserOnlyBnf(root: PsiElement): SyntaxTraverser<PsiElement> =
     grammarTraverserNoJava(root)
         .forceIgnore(Conditions.instanceOf(JccOptionSection::class.java))
         .forceIgnore(Conditions.instanceOf(JccRegexProduction::class.java))
+

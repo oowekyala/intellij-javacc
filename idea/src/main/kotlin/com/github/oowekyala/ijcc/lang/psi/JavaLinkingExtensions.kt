@@ -66,3 +66,10 @@ val PsiClass.grammarForParserClass: JccFile?
         // filter out the injected compilation unit in PARSER_BEGIN
         ?.takeUnless { it == InjectedLanguageManager.getInstance(project).getTopLevelFile(this) }
 
+
+// careful here, uses platform-impl
+val PsiElement.isInInjection: Boolean
+    get() = when (this) {
+        is PsiFile -> InjectedLanguageManager.getInstance(project).isInjectedFragment(this)
+        else       -> containingFile.isInInjection
+    }
