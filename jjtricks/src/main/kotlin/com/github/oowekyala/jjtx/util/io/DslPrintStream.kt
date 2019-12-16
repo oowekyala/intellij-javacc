@@ -52,10 +52,10 @@ internal class DslPrintStream private constructor(
     }
 
 
-    inline operator fun plus(e: DslPrintStream.() -> Unit): DslPrintStream {
+    inline operator fun plus(thunk: DslPrintStream.() -> Unit): DslPrintStream {
         println("{")
         indentString += baseIndentString
-        e()
+        thunk()
         indentString = indentString.removeSuffix(baseIndentString)
         print(indentString)
         print("}")

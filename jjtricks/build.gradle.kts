@@ -46,7 +46,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
     implementation("net.java.dev.javacc:javacc:5.0")
-    implementation("fr.inria.gforge.spoon:spoon-core:7.5.0-beta-21")
+    implementation("fr.inria.gforge.spoon:spoon-core:8.0.0")
     // for debugging only, this pulls in a huge IBM dependency to support emojis...
     // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
@@ -99,7 +99,7 @@ tasks {
     }
 
     val schemaDocs by creating(Exec::class.java) {
-        
+
         group = "Documentation"
 
         val docOut1 = "$buildDir/rawSchemaDoc"

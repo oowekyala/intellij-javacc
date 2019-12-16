@@ -40,10 +40,7 @@ enum class SpecialTemplate(val id: String,
 
     LEX_EXCEPTION("lexException", true) {
         override fun defaultLocation(opts: IGrammarOptions): ClassVBean {
-            val suffix = when (opts.inlineBindings.isLegacyGen) {
-                true  -> "Error"
-                false -> "Exception"
-            }
+            val suffix = if (opts.inlineBindings.isLegacyGen) "Error" else "Exception"
 
             return ClassVBean(opts.addParserPackage("TokenMgr$suffix"))
         }

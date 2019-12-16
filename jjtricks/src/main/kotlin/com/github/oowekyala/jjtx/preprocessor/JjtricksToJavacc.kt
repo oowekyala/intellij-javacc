@@ -82,6 +82,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     private val out = DslPrintStream.forJavaccOutput(outputStream)
 
     private val stack = Stack<NodeVar>()
+    private var varId = 0
 
 
     override fun visitElement(o: PsiElement) {
@@ -123,13 +124,13 @@ private class JjtxCompilVisitor(val file: JccFile,
             when {
                 implPoint.value == "implements" -> {
                     sb.insert(
-                        implPoint.range.endInclusive + 1,
+                        implPoint.range.last + 1,
                         bgen() + impls.joinToString(postfix = ", ") + egen()
                     )
                 }
                 else                            -> {
                     sb.insert(
-                        implPoint.range.start - 1,
+                        implPoint.range.first - 1,
                         bgen() + impls.joinToString(prefix = "implements ") + egen()
                     )
                 }
@@ -141,7 +142,7 @@ private class JjtxCompilVisitor(val file: JccFile,
         val indent = o.guessIndent()
 
         sb.insert(
-            bracePoint.range.endInclusive + 1,
+            bracePoint.range.last + 1,
             bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen()
         )
 
@@ -151,7 +152,8 @@ private class JjtxCompilVisitor(val file: JccFile,
     private fun <T> Stack<T>.top(): T? = if (isEmpty()) null else peek()
 
     override fun visitBnfProduction(o: JccBnfProduction) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitBnfProduction(o)
+        varId = 0
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId) ?: return super.visitBnfProduction(o)
 
         with(out) {
 
@@ -169,18 +171,19 @@ private class JjtxCompilVisitor(val file: JccFile,
             } + Endl
             stack.pop()
         }
-
+        varId = 0
     }
 
     override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitJavacodeProduction(o)
+        varId = 0
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId) ?: return super.visitJavacodeProduction(o)
 
         with(out) {
             emitTryCatch(nodeVar, o.thrownExceptions) {
                 -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
             }
         }
-
+        varId = 0
     }
 
     private fun JccJavaBlock.reindentJava(indent: String): String =
@@ -190,7 +193,7 @@ private class JjtxCompilVisitor(val file: JccFile,
 
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitScopedExpansionUnit(o)
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId++) ?: return super.visitScopedExpansionUnit(o)
 
         with(out) {
 

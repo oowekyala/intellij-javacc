@@ -14,7 +14,9 @@ import com.github.oowekyala.jjtx.reporting.report
  */
 interface JjtxBuilderStrategy {
 
-    fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar?
+    fun makeNodeVar(owner: JjtNodeClassOwner,
+                    enclosing: NodeVar?,
+                    num: Int): NodeVar?
 
     fun parserImplements(): List<String>
 
@@ -73,11 +75,13 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
         // FIXME link to nodeIds special template
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
 
-    override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar? =
+    override fun makeNodeVar(owner: JjtNodeClassOwner,
+                             enclosing: NodeVar?,
+                             num: Int): NodeVar? =
         if (owner.isVoid) null
         else {
 
-            val (nVar, cVar, exVar) = varNames(owner, enclosing)
+            val (nVar, cVar, exVar) = varNames(owner, enclosing, num)
 
             NodeVar(
                 owner = owner,
@@ -95,9 +99,10 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     /**
      * Builds the variable names for the node var, closed var, exception var.
      */
-    private fun varNames(owner: JjtNodeClassOwner, enclosing: NodeVar?): Triple<String, String, String> {
-        val scopeDepth = if (enclosing != null) enclosing.scopeDepth + 1 else 0
-        val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
+    private fun varNames(owner: JjtNodeClassOwner,
+                         enclosing: NodeVar?,
+                         num: Int): Triple<String, String, String> {
+        val nodeVarName = "${owner.nodeRawName!!}$num".decapitalize().removeSuffix("0")
 
         return Triple(
             nodeVarName,
@@ -111,7 +116,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     override fun createNode(nodeVar: NodeVar): String {
         val nc = nodeVar.nodeRefType
 
-        val args = "(" + (if (grammarOptions.nodeTakesParserArg) "this, " else "") + nodeVar.nodeId + ")"
+        val args = "(" + (if (grammarOptions.nodeTakesParserArg) "this, " else "") + nodeIds.simpleName + "." + nodeVar.nodeId + ")"
 
         return "($nc) ${nodeFactory.simpleName}.jjtCreate$args"
     }
@@ -124,7 +129,7 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
 
     override fun parserDeclarations(): String = """
-        protected final $parserStateSimpleName jjtree = new $parserStateSimpleName();
+        protected final $treeBuilderSimpleName jjtree = new $treeBuilderSimpleName();
 
     """.trimIndent()
 
@@ -158,14 +163,14 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
 
-    private val parserStateSimpleName: String get() = compat.supportFiles.getValue("treeBuilder").genFqcn
+    private val treeBuilderSimpleName: String get() = compat.supportFiles.getValue(SpecialTemplate.TREE_BUILDER.id).genFqcn
 
     override fun validateSupportFiles(ctx: JjtxContext): Boolean {
         val support = ctx.jjtxOptsModel.javaccGen.supportFiles
 
-        if ("treeBuilder" !in support) {
+        if (SpecialTemplate.TREE_BUILDER.id !in support) {
             ctx.messageCollector.report(
-                "Javacc grammar generation needs a 'treeBuilder' file generation task!",
+                "Javacc grammar generation needs a '${SpecialTemplate.TREE_BUILDER.id}' file generation task!",
                 MessageCategory.NON_FATAL
             )
             return false

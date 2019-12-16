@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtType
 import spoon.reflect.factory.PackageFactory
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter
 import spoon.reflect.visitor.filter.TypeFilter
+import spoon.support.sniper.SniperJavaPrettyPrinter
 import java.lang.reflect.ParameterizedType
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
@@ -37,16 +38,15 @@ fun mapJavaccOutput(ctx: JjtxContext,
     // existing classes are in [realOutput] and [otherSources]
     // we know that the desired token class is [ctx.tokenClass]
 
-
     val (spoonLauncher, spoonModel) = SpoonLauncher().run {
         otherSources.forEach {
             addInputResource(it.resolve(ctx.jjtxOptsModel.parserPackage.asQnamePath()).toString())
         }
-        // addInputResource(realOutput.toString())
-        addInputResource(jccOutput.toString())
-        // addInputResource(realOutput.toString())
-        environment.isAutoImports = true
 
+        addInputResource(SpecialTemplate.NODE_IDS.actualLocation(ctx.jjtxOptsModel).qualifiedName.asQnamePath().toString())
+        addInputResource(jccOutput.toString())
+
+        environment.isAutoImports = true
         environment.outputType = OutputType.COMPILATION_UNITS
 
         // FIXME bug in sniper with loop
@@ -56,9 +56,10 @@ fun mapJavaccOutput(ctx: JjtxContext,
         //           }
 
         environment.setPrettyPrinterCreator {
-            MyJPrettyPrinter(environment)
+            environment.createPrettyPrinterAutoImport()
         }
 
+        environment.isAutoImports = true
         environment.sourceOutputDirectory = realOutput.toFile()
 
         buildModel()
@@ -94,6 +95,7 @@ fun mapJavaccOutput(ctx: JjtxContext,
     val toWrite = mutableListOf<CtType<*>>()
 
     for (type in spoonModel.allTypes) {
+         ctx.messageCollector.debug("Spoon knows about ${type.qualifiedName}")
         if (type.position.file.toPath().parent != jccOutput) {
             // ctx.messageCollector.debug("Skipping ${type.qualifiedName} because ${type.position.file} not in $jccOutput")
             continue
