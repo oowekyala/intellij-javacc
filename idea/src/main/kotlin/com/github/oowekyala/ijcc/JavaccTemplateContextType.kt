@@ -17,7 +17,6 @@ abstract class JccTemplateContextBase(id: String,
     : TemplateContextType("JAVACC_$id", displayName, baseContextType) {
 
     override fun isInContext(file: PsiFile, offset: Int): Boolean {
-
         return file is JccFile && isInContext(file, offset)
 
     }

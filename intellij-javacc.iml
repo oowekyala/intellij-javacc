@@ -3,7 +3,7 @@
   <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="com.github.oowekyala" externalSystemModuleVersion="1.4" linkedProjectId="intellij-javacc" linkedProjectPath="$MODULE_DIR$" rootProjectPath="$MODULE_DIR$" />
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.6" useProjectSettings="false">
+      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false">
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/build/classes/kotlin/main" />

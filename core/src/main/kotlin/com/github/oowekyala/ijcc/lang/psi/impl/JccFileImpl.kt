@@ -60,7 +60,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
     }
         set(value) {
             field = value
-            invalidateCachedStructures()
+            clearCaches()
         }
 
 
@@ -85,17 +85,12 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
      * heuristic for that is the highlight passes (it's done in the init
      * routine of [JccHighlightVisitor]).
      */
-    // should be internal but whatever
-    fun invalidateCachedStructures() {
+    override fun clearCaches() {
+        super<PsiFileBase>.clearCaches()
         myLexGrammarImpl = null
         myGrammarOptionsImpl = null
         mySyntaxGrammarImpl = null
     }
-
-    /* TODO
-        find a better fucking way to cache that
-        * I tried PsiFileGist but got 100% cache miss so there's that
-     */
 
     private var myLexGrammarImpl: LexicalGrammar? = null
 
