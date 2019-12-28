@@ -167,3 +167,4 @@ velocity.log.*
 jjtricks/build
 src/test/testGen/gen/
 jjtricks/src/test/testGen/gen/
+prepare-deps/build
