@@ -1,8 +1,22 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import java.net.URI
+import com.github.oowekyala.localDepsRepo
+import com.github.oowekyala.includeJars
+import com.github.oowekyala.intellijCoreDep
+import com.github.oowekyala.includeIjCoreDeps
+import com.github.oowekyala.intellijDep
+
+/*
+
+Setup:
+
+ ./gradlew :prepare-deps:installLocalDeps
+
+
+
+ */
 
 plugins {
     kotlin("jvm") version "1.3.11" // sync with extra property below
@@ -15,19 +29,20 @@ version = "1.4"
 extra["customDepsOrg"] = "ijcc.build"
 
 extra["versions.kotlin"] = "1.3.11" // sync with above plugin version
-extra["versions.intellijSdk"] = "2018.2.4"
+extra["versions.intellijSdk"] = "2019.3.1"
 
-//extra["versions.jar.asm-all"] = "7.0.1"
-extra["versions.jar.guava"] = "23.6-jre"
+extra["versions.jar.asm-all"] = "7.0.1"
+extra["versions.jar.guava"] = "27.1-jre"
 extra["versions.jar.picocontainer"] = "1.2"
 extra["versions.jar.automaton"] = "1.12-1"
-extra["versions.jar.streamex"] = "0.6.5"
+extra["versions.jar.streamex"] = "0.6.8"
 
 extra["verifyDependencyOutput"] = false
-extra["intellijReleaseType"] = if (extra["versions.intellijSdk"]?.toString()?.endsWith("SNAPSHOT") == true)
-    "snapshots"
-else
-    "releases"
+extra["intellijReleaseType"] =
+    if (extra["versions.intellijSdk"]?.toString()?.endsWith("SNAPSHOT") == true)
+        "snapshots"
+    else
+        "releases"
 
 extra["IntellijCoreDependencies"] =
     listOf(
@@ -47,7 +62,6 @@ val KotlinVersion = extra["versions.kotlin"]
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 val lightPsiJarPath = "${project.buildDir}/libs/idea-skinny.jar"
-
 
 
 repositories {

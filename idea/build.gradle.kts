@@ -67,7 +67,7 @@ tasks {
 
 
     intellij {
-        version = "2018.2.4"
+        version = "2019.3.1"
         updateSinceUntilBuild = false
     }
 

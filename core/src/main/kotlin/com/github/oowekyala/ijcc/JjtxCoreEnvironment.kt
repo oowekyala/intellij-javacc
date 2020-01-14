@@ -74,7 +74,7 @@ class JjtxCoreEnvironment private constructor(
         }
 
         private fun createApplicationEnvironment(disposable: Disposable): CoreApplicationEnvironment {
-            Extensions.cleanRootArea(disposable)
+            // Extensions.cleanRootArea(disposable)
             val appEnv = CoreApplicationEnvironment(disposable)
             appEnv.registerApplicationServices()
             return appEnv

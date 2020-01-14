@@ -45,7 +45,9 @@ enum class JccIcons(icon: Icon) : Icon by icon {
     constructor(fname: String) : this(IconLoader.getIcon(fname))
 
     companion object {
-
+init {
+    com.intellij.openapi.application.runWriteAction
+}
         fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg")
     }
 }

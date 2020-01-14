@@ -17,7 +17,7 @@ import com.intellij.psi.PsiPolyVariantReferenceBase
 class JjtNodePolyReference(psiElement: JjtNodeClassOwner)
     : PsiPolyVariantReferenceBase<JjtNodeClassOwner>(psiElement) {
 
-    override fun isReferenceTo(otherElt: PsiElement?): Boolean =
+    override fun isReferenceTo(otherElt: PsiElement): Boolean =
         otherElt is JjtNodeClassOwner
             && otherElt.containingFile === element.containingFile
             && otherElt.isNotVoid

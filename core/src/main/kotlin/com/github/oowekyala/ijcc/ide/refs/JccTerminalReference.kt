@@ -50,7 +50,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
 
     override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 
-    override fun handleElementRename(newElementName: String?): PsiElement = newElementName.toString().let {
+    override fun handleElementRename(newElementName: String): PsiElement = newElementName.let {
         val id = element.nameIdentifier
         JccIdentifierManipulator().handleContentChange(id, newElementName)!!
     }

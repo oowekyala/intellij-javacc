@@ -3,17 +3,9 @@
   <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="com.github.oowekyala" externalSystemModuleVersion="1.0" linkedProjectId=":jjtricks" linkedProjectPath="$MODULE_DIR$/../../../jjtricks" rootProjectPath="$MODULE_DIR$/../../.." />
   <component name="FacetManager">
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
-        <compilerSettings>
-          <option name="additionalArguments" value="-Xjvm-default=enable -Xuse-experimental=kotlin.Experimental" />
-        </compilerSettings>
+      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false">
+        <compilerSettings />
         <compilerArguments>
-          <option name="destination" value="$MODULE_DIR$/../../../jjtricks/build/classes/kotlin/main" />
-          <option name="classpath" value="$MODULE_DIR$/../../../core/build/libs/core.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.googlejavaformat/google-java-format/1.7/97cb6afc835d65682edc248e19170a8e4ecfe4c4/google-java-format-1.7.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/27.0.1-jre/bd41a290787b5301e63929676d792c507bbc00ae/guava-27.0.1-jre.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.velocity/velocity/1.7/2ceb567b8f3f21118ecdec129fe1271dbc09aa7a/velocity-1.7.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.3.11/dd9bff00d6cfca58b6c1fe89be8e0678e35cf35f/kotlin-stdlib-jdk8-1.3.11.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/fr.inria.gforge.spoon/spoon-core/8.0.0/eedfbf52f62c5525b872a16bc787b63c69830703/spoon-core-8.0.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-model/3.5.0/9a190a111f2751941a22a3efeea954d09931ad4e/maven-model-3.5.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.9/122c7cee69b53ed4a7681c03d4ee4c0e2765da5/commons-lang3-3.9.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/intellij-core/2018.2.4/artifacts/intellij-core.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/trove4j.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/streamex-0.6.5.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/asm-all.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/guava-23.6-jre.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/platform-api.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/platform-impl.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/picocontainer-1.2.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/jdom.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/jna.jar:/home/clifrr/Documents/Git/intellij-javacc/dependencies/repo/ijcc.build/ideaIC/2018.2.4/artifacts/lib/log4j.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/velocity-tools/velocity-tools-generic/1.4/5a281a885f7cc827e3e57b5d29beeb8c308d8452/velocity-tools-generic-1.4.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-collections-immutable/0.1/46c8113e29139d3ec4316ced50c7917e22e05e02/kotlinx-collections-immutable-0.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.5/f645ed69d595b24d4cf8b3fbb64cc505bede8829/gson-2.8.5.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.github.everit-org.json-schema/org.everit.json.schema/1.11.1/1177750c65365b49254b272f362808c68f87922a/org.everit.json.schema-1.11.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.github.oowekyala.treeutils/tree-printers/2.1.0/e43fe0d38666173058b12220b88ce291fbe2e479/tree-printers-2.1.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.yaml/snakeyaml/1.24/13a9c0d6776483c3876e3ff9384f9bb55b17001b/snakeyaml-1.24.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/net.java.dev.javacc/javacc/5.0/f19b7d4278b837fe92504946e6860b0bcc180956/javacc-5.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.xenomachina/kotlin-argparser/2.0.7/421316b02a8a882dc2af32b7d57caa3c5ce30267/kotlin-argparser-2.0.7.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/2.5.2/cea74543d5904a30861a61b4643a5f2bb372efc4/checker-qual-2.5.2.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.2.0/88e3c593e9b3586e1c6177f89267da6fc6986f0c/error_prone_annotations-2.2.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/ed28ded51a8b1c6b112568def5f4b455e6809019/j2objc-annotations-1.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.17/f97ce6decaea32b36101e37979f8b647f00681fb/animal-sniffer-annotations-1.17.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-validator/commons-validator/1.6/e989d1e87cdd60575df0765ed5bac65c905d7908/commons-validator-1.6.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-beanutils/commons-beanutils/1.9.3/c845703de334ddc6b4b3cd26835458cb1cba1f3d/commons-beanutils-1.9.3.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-collections/commons-collections/3.2.2/8ad72fe39fa8c91eaaf12aadb21e0c3661fe26d5/commons-collections-3.2.2.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.4/16313e02a793435009f1e458fa4af5d879f6fb11/commons-lang-2.4.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.3.11/4839661cf6ce3c14b65ed7dcf5b9249b44ecca16/kotlin-stdlib-jdk7-1.3.11.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.xenomachina/xenocom/0.0.7/45b60f19517d3085c9763b83c00f6778b2a8cec/xenocom-0.0.7.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.3.11/4cbc5922a54376018307a731162ccaf3ef851a39/kotlin-stdlib-1.3.11.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.json/json/20180130/26ba2ec0e791a32ea5dfbedfcebf36447ee5b12c/json-20180130.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.damnhandy/handy-uri-templates/2.1.6/d37507104724342eff9cf47cc3dd70e866f3eb79/handy-uri-templates-2.1.6.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.re2j/re2j/1.1/d716952ab58aa4369ea15126505a36544d50a333/re2j-1.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.google.errorprone/javac-shaded/9+181-r4173-1/a399ee380b6d6b6ea53af1cfbcb086b108d1efb7/javac-shaded-9+181-r4173-1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.jdt/org.eclipse.jdt.core/3.16.0/c0767741a4699ef4d2b657b820f8e5def839a53f/org.eclipse.jdt.core-3.16.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.martiansoftware/jsap/2.1/d17c260c8f5eb6e7d6bd75449a57edfeb53d2305/jsap-2.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/log4j/log4j/1.2.17/5af35056b4d257e4b64b9e8069c0746e8b08629f/log4j-1.2.17.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.maven.shared/maven-invoker/3.0.1/d98b7d7aeb575a0d677a3c164232e86c6cd42f11/maven-invoker-3.0.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.maven.shared/maven-shared-utils/3.2.1/8dd4dfb1d2d8b6969f6462790f82670bcd35ce2/maven-shared-utils-3.2.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.6/815893df5f31da2ece4040fe0a12fd44b577afaf/commons-io-2.6.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.tukaani/xz/1.8/c4f7d054303948eb6a4066194253886c8af07128/xz-1.8.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.10/e201bb70b7469ba18dd58ed8268aa44e702fa2f0/jackson-databind-2.9.10.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.19/7e65777fb451ddab6a9c054beb879e521b7eab78/commons-compress-1.19.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.3.11/d8b8e746e279f1c4f5e08bc14a96b82e6bb1de02/kotlin-stdlib-common-1.3.11.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-digester/commons-digester/1.8.1/3dec9b9c7ea9342d4dbe8c38560080d85b44a015/commons-digester-1.8.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.9.4/1c295b462f16702ebe720bbb08f62e1ba80da41b/joda-time-2.9.4.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.resources/3.13.500/429d1cc3a9c1d0461e4ea0b911c3d91b51ca894e/org.eclipse.core.resources-3.13.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.text/3.9.0/53ed9d6397aab4c732960b72c199db37ceccc4fe/org.eclipse.text-3.9.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.expressions/3.6.500/504374bf95b4766a1d78cf315d2e4794aa243305/org.eclipse.core.expressions-3.6.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.runtime/3.16.0/ac7b5c8ffb89c0b58cd1f9b3379b762fddc5bcf5/org.eclipse.core.runtime-3.16.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.filesystem/1.7.500/8b8bcbebc92f8ed9dda653bd67fd1d9d81df9b71/org.eclipse.core.filesystem-1.7.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.0.24/b4ac9780b37cb1b736eae9fbcef27609b7c911ef/plexus-utils-3.0.24.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.10/53ab2f0f92e87ea4874c8c6997335c211d81e636/jackson-annotations-2.9.10.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.10/66b715dec9dd8b0f39f3296e67e05913bf422d0c/jackson-core-2.9.10.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-component-annotations/1.7.1/862abca6deff0fff241a835a33d22559e9132069/plexus-component-annotations-1.7.1.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.osgi/3.15.0/3be4886abb215510ff7b31a5cfda128c835a42fc/org.eclipse.osgi-3.15.0.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.jobs/3.10.500/27adeba7b09617cc0b21d8ecb639f97e8b9702f1/org.eclipse.core.jobs-3.10.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.contenttype/3.7.400/585561c21f8d50acf9ac8894d1c45849e43b9900/org.eclipse.core.contenttype-3.7.400.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.equinox.app/1.4.300/9658c87c43e751163b31d17ec41653ddc41b66b1/org.eclipse.equinox.app-1.4.300.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.equinox.registry/3.8.500/2dfd9159c3b202c2f8e0d1ea9a78850a12a12270/org.eclipse.equinox.registry-3.8.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.equinox.preferences/3.7.500/10955d54353b1e6d2edecc11766d5e9174e4603a/org.eclipse.equinox.preferences-3.7.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.core.commands/3.9.500/12efee6e6c4ffc4eeb8584b21b6892b4071ffe3/org.eclipse.core.commands-3.9.500.jar:/home/clifrr/.gradle/caches/modules-2/files-2.1/org.eclipse.platform/org.eclipse.equinox.common/3.10.500/c29f48cbb65a50cda524ecd41e182b83c4b31c1d/org.eclipse.equinox.common-3.10.500.jar" />
-          <option name="noStdlib" value="true" />
-          <option name="noReflect" value="true" />
-          <option name="moduleName" value="jjtricks" />
-          <option name="jvmTarget" value="1.8" />
           <option name="languageVersion" value="1.3" />
           <option name="apiVersion" value="1.3" />
           <option name="pluginOptions">
@@ -22,161 +14,18 @@
           <option name="pluginClasspaths">
             <array />
           </option>
-          <option name="errors">
-            <ArgumentParseErrors />
-          </option>
         </compilerArguments>
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager">
-    <output url="file://$MODULE_DIR$/../../../jjtricks/out/production/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../jjtricks/out/test/classes" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../jjtricks">
-      <sourceFolder url="file://$MODULE_DIR$/../../../jjtricks/src/main/kotlin" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../jjtricks/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../jjtricks/src/test/kotlin" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../jjtricks/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../../jjtricks/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../jjtricks/build" />
       <excludeFolder url="file://$MODULE_DIR$/../../../jjtricks/out" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="intellij-javacc.core" />
-    <orderEntry type="library" name="Gradle: com.google.googlejavaformat:google-java-format:1.7" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:guava:27.0.1-jre" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.velocity:velocity:1.7" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: fr.inria.gforge.spoon:spoon-core:8.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.maven:maven-model:3.5.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.9" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:intellij-core:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:trove4j:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:streamex-0.6.5:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:asm-all:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:guava-23.6-jre:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:platform-api:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:platform-impl:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:picocontainer-1.2:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:jdom:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:jna:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: ijcc.build:log4j:2018.2.4" level="project" />
-    <orderEntry type="library" name="Gradle: velocity-tools:velocity-tools-generic:1.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.5" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.everit-org.json-schema:org.everit.json.schema:1.11.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.oowekyala.treeutils:tree-printers:2.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.yaml:snakeyaml:1.24" level="project" />
-    <orderEntry type="library" name="Gradle: net.java.dev.javacc:javacc:5.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.xenomachina:kotlin-argparser:2.0.7" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:failureaccess:1.0.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.checkerframework:checker-qual:2.5.2" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.j2objc:j2objc-annotations:1.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.mojo:animal-sniffer-annotations:1.17" level="project" />
-    <orderEntry type="library" name="Gradle: commons-validator:commons-validator:1.6" level="project" />
-    <orderEntry type="library" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: commons-collections:commons-collections:3.2.2" level="project" />
-    <orderEntry type="library" name="Gradle: commons-lang:commons-lang:2.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: com.xenomachina:xenocom:0.0.7" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.json:json:20180130" level="project" />
-    <orderEntry type="library" name="Gradle: com.damnhandy:handy-uri-templates:2.1.6" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.re2j:re2j:1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.errorprone:javac-shaded:9+181-r4173-1" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.jdt:org.eclipse.jdt.core:3.16.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.martiansoftware:jsap:2.1" level="project" />
-    <orderEntry type="library" name="Gradle: log4j:log4j:1.2.17" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-invoker:3.0.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-shared-utils:3.2.1" level="project" />
-    <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
-    <orderEntry type="library" name="Gradle: org.tukaani:xz:1.8" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.commons:commons-compress:1.19" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Gradle: commons-digester:commons-digester:1.8.1" level="project" />
-    <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.resources:3.13.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.text:3.9.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.expressions:3.6.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.runtime:3.16.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.filesystem:1.7.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-utils:3.0.24" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.10" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-component-annotations:1.7.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.osgi:3.15.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.jobs:3.10.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.contenttype:3.7.400" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.app:1.4.300" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.registry:3.8.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.preferences:3.7.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.commands:3.9.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.common:3.10.500" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-runner-junit5:3.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.github.oowekyala.treeutils:tree-matchers:2.0.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.3.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-test:1.3.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:bootstrap:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:annotations:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:util:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:openapi:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:extensions:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:idea_rt:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:idea:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: ijcc.build:automaton-1.12-1:2018.2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-launcher:1.2.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-engine:1.2.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-suite-api:1.2.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.3.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: com.univocity:univocity-parsers:2.6.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-commons:1.2.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.apiguardian:apiguardian-api:1.0.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.opentest4j:opentest4j:1.1.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.javassist:javassist:3.21.0-GA" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: io.kindedj:kindedj:1.1.0" level="project" />
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../core/build/classes/java/test" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../core/build/classes/kotlin/test" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../core/build/resources/test" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>

@@ -7,7 +7,7 @@ import org.jetbrains.grammarkit.tasks.GenerateParser
 plugins {
     kotlin("jvm")
     id("java")
-    id("org.jetbrains.grammarkit") version "2018.2.2"
+    id("org.jetbrains.grammarkit") version "2019.3"
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
@@ -22,7 +22,14 @@ dependencies {
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
         includeIjCoreDeps(rootProject)
-        includeJars("platform-api", "platform-impl", rootProject = rootProject)
+        includeJars(
+            "platform-api",
+            "platform-impl",
+            "platform-util-ui",
+            "platform-util-ex",
+            "idea",
+            rootProject = rootProject
+        )
     }
 
     grammarKit(intellijDep()) {

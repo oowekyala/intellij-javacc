@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
 
@@ -21,7 +22,7 @@ import org.intellij.lang.annotations.Language
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class JccTestBase : LightCodeInsightFixtureTestCase(), ParseUtilsMixin {
+abstract class JccTestBase : BasePlatformTestCase(), ParseUtilsMixin {
 
     protected val fileName: String
         get() = "$testName.jjt"
