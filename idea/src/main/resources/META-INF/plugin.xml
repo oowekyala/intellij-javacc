@@ -33,7 +33,7 @@
     </description>
 
     <vendor email="clement.fournier76@gmail.com" url="https://github.com/oowekyala">Clément Fournier</vendor>
-    <idea-version since-build="182"/>
+    <idea-version since-build="193.3519.25"/>
 
     <application-components>
         <!-- Add your application components here -->

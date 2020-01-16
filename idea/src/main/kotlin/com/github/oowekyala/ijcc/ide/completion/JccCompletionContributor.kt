@@ -11,7 +11,8 @@ import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.completion.simple.BracesTailType
+//import com.intellij.codeInsight.lookup.BracesTailType
+import com.intellij.codeInsight.lookup.EqTailType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.ElementPattern
@@ -54,7 +55,7 @@ class JccCompletionContributor : CompletionContributor() {
                         .withTypeText("(${opt.expectedType})", true)
                         .withInsertHandler { ctx, _ ->
                             val editor = ctx.editor
-                            TailType.EQ.processTail(editor, editor.caretModel.offset)
+                            EqTailType.INSTANCE.processTail(editor, editor.caretModel.offset)
                             ctx.setAddCompletionChar(false)
 
                             TailType.SEMICOLON.processTail(editor, editor.caretModel.offset)
@@ -107,7 +108,7 @@ class JccCompletionContributor : CompletionContributor() {
 
         super.extend(completionType, this, object : CompletionProvider<CompletionParameters>() {
             override fun addCompletions(parameters: CompletionParameters,
-                                        context: ProcessingContext?,
+                                        context: ProcessingContext,
                                         result: CompletionResultSet) {
                 ExtendCtx(parameters, context, result).provideCompletion()
             }
@@ -127,7 +128,7 @@ class JccCompletionContributor : CompletionContributor() {
                     .withPresentableText(it.name)
                     .withTailText(" : { ... }", true)
                     .withBoldness(true)
-                    .withTail(BracesTailType())
+                    .withTail(MultiCharTailType("{}")) // FIXME make real tail type
             }
 
         val BoolOptionValueVariants =

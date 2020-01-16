@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.ijccResource
+import com.github.oowekyala.*
 
 
 plugins {
@@ -69,6 +69,8 @@ tasks {
     intellij {
         version = "2019.3.1"
         updateSinceUntilBuild = false
+        ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
+        setPlugins("java")
     }
 
     runIde {
