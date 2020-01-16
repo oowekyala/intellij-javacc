@@ -15,7 +15,6 @@ import com.github.oowekyala.ijcc.lang.model.JjtOption
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
@@ -321,17 +320,20 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
             when {
-                reffed == null                             ->
+                reffed == null                                           ->
                     wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
-                reffed.isPrivate && !o.canReferencePrivate -> wrongReferenceInfo(
+                reffed.isPrivate && !o.canReferencePrivate               -> wrongReferenceInfo(
                     o.nameIdentifier,
                     "Token name \"${o.name}\" refers to a private (with a #) regular expression"
                 )
-                reffed.regexKind != RegexKind.TOKEN        -> wrongReferenceInfo(
+                reffed.regexKind != RegexKind.TOKEN && !reffed.isPrivate -> wrongReferenceInfo(
                     o.nameIdentifier,
-                    "Token name ${o.name} refers to a non-token (SKIP, MORE, IGNORE_IN_BNF) regular expression"
+                    "Token name ${o.name} refers to a non-token (${reffed.regexKind}) regular expression"
                 )
-                else                                       -> highlightInfo(o, TOKEN_REFERENCE.highlightType)
+                else                                                     -> highlightInfo(
+                    o,
+                    TOKEN_REFERENCE.highlightType
+                )
             }
 
 
