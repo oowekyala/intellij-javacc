@@ -10,7 +10,7 @@ import kotlin.reflect.KMutableProperty
  * @author Clément Fournier
  */
 class JccFoldingOptionsProvider :
-    BeanConfigurable<JccGlobalSettingsState>(globalPluginSettings), CodeFoldingOptionsProvider {
+    BeanConfigurable<JccGlobalSettingsState>(globalPluginSettings, "JavaCC"), CodeFoldingOptionsProvider {
 
     init {
         val settings = globalPluginSettings
