@@ -30,6 +30,8 @@ object JccTerminalDocMaker {
         token.regularExpression?.accept(RegexDocVisitor(it))
     }
 
+    fun htmlNameOfToken(name: String?) =
+        name?.let { bold(angles(it)) } ?: "(unnamed)"
 
     @TestOnly
     fun makeDocImpl(name: String?,
@@ -39,8 +41,7 @@ object JccTerminalDocMaker {
                     states: List<String>,
                     expansion: (StringBuilder) -> Unit) = buildQuickDoc {
         definition {
-            val nameOrNot = name?.let { bold(angles(it)) } ?: "(unnamed)"
-
+            val nameOrNot = htmlNameOfToken(name)
             val label = if (isExplicit) nameOrNot else "$nameOrNot " + bold("(implicit)")
 
             "$kind\t$label"

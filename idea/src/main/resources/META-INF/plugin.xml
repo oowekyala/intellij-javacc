@@ -194,6 +194,11 @@
         <intentionAction>
             <className>com.github.oowekyala.ijcc.ide.intentions.ReplaceLiteralWithReferenceIntention</className>
         </intentionAction>
+
+        <intentionAction>
+            <className>com.github.oowekyala.ijcc.ide.intentions.CheckRegExpIntentionAction</className>
+        </intentionAction>
+
         <intentionAction>
             <className>com.github.oowekyala.ijcc.ide.intentions.GrammarToParserJumpIntention</className>
         </intentionAction>
