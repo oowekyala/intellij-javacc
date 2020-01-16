@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.ide.completion
 
+import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.icons.icon
+import com.github.oowekyala.ijcc.ide.completion.JccPatterns.jjtreeHashPattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionNamePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.optionValuePattern
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.placePattern
@@ -9,8 +11,10 @@ import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.completion.simple.BracesTailType
 //import com.intellij.codeInsight.lookup.BracesTailType
 import com.intellij.codeInsight.lookup.EqTailType
 import com.intellij.codeInsight.lookup.LookupElement
@@ -77,6 +81,29 @@ class JccCompletionContributor : CompletionContributor() {
             }
         }
 
+        jjtreeHashPattern.completeWith {
+            val file = parameters.originalPosition?.containingFile as? JccFile ?: return@completeWith
+
+            file.allJjtreeDecls
+                .forEach { (nodeName, declarators) ->
+                    LookupElementBuilder.create(nodeName)
+                        .withPresentableText("#$nodeName")
+                        .withPsiElement(declarators.firstOrNull())
+                        .withIcon(JccIcons.JJTREE_NODE)
+                        .withPriority(declarators.size.toDouble())
+                        .runIt {
+                            if (declarators.singleOrNull() != parameters.originalPosition) {
+                                // don't self complete
+                                result.addElement(it)
+                            }
+                        }
+                }
+
+            if (parameters.originalPosition?.parent is JccNonTerminalProduction) {
+                result.addElement(VoidJjtreeAnnotVariant)
+            }
+        }
+
         // Regex production completion
         placePattern.completeWith {
             val position = parameters.position
@@ -128,12 +155,16 @@ class JccCompletionContributor : CompletionContributor() {
                     .withPresentableText(it.name)
                     .withTailText(" : { ... }", true)
                     .withBoldness(true)
-                    .withTail(MultiCharTailType("{}")) // FIXME make real tail type
+                    .withTail(BracesTailType())
             }
 
         val BoolOptionValueVariants =
             listOf("true", "false")
                 .map { LookupElementBuilder.create(it).withBoldness(true) }
+
+        val VoidJjtreeAnnotVariant: LookupElement =
+            LookupElementBuilder.create("void").withPresentableText("#void").withBoldness(true)
+
 
     }
 

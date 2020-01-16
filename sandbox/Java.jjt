@@ -1697,7 +1697,7 @@ int Modifiers() #void:
   | "static" { modifiers |= AccessNode.STATIC; }
   | "protected" { modifiers |= AccessNode.PROTECTED; }
   | "private" { modifiers |= AccessNode.PRIVATE; }
-  | "final" { modifiers |= AccessNode.FINAL; }
+  | "final" { modifiers |= AccessNode.FINAL; } #
   | "abstract" { modifiers |= AccessNode.ABSTRACT; }
   | "synchronized" { modifiers |= AccessNode.SYNCHRONIZED; }
   | "native" { modifiers |= AccessNode.NATIVE; }

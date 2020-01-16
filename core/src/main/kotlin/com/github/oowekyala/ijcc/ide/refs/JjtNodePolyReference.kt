@@ -2,7 +2,6 @@ package com.github.oowekyala.ijcc.ide.refs
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator
-import com.github.oowekyala.ijcc.lang.psi.getJjtreeDeclsForRawName
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReferenceBase
@@ -43,28 +42,8 @@ class JjtNodePolyReference(psiElement: JjtNodeClassOwner)
     override fun handleElementRename(newElementName: String): PsiElement =
         JccIdentifierManipulator().handleContentChange(element.nodeIdentifier!!, newElementName)!!
 
-    // reference completion is not used for those
-    override fun getVariants(): Array<Any> = emptyArray()
+    override fun getVariants(): Array<Any> =
+        JccRefVariantService.getInstance().jjtreeNodeVariants(this)
 
-
-    companion object {
-//
-//        fun variantsForFile(jccFile: JccFile) =
-//            jccFile.syntaxGrammar
-//                .jjtreeNodes
-//                .asMap()
-//                .asSequence()
-//                .sortedBy { it.value.size }
-//                .mapNotNull { it.value.mapNotNull { it.declarator }.firstOrNull() }
-//                .mapNotNull { spec ->
-//                    val nodeName = spec.nodeRawName ?: return@mapNotNull null
-//                    LookupElementBuilder.create(nodeName)
-//                        .withPresentableText("#$nodeName")
-//                        .withPsiElement(spec)
-//                        .withIcon(JccIcons.JJTREE_NODE)
-//                }
-//                .toList()
-//                .toTypedArray()
-    }
 }
 

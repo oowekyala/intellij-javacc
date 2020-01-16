@@ -12,6 +12,7 @@ open class JccRefVariantService {
     open fun terminalVariants(ref: JccTerminalReference): Array<Any> = emptyArray()
     open fun lexicalStateVariants(ref: JccLexicalStateReference): Array<Any> = emptyArray()
     open fun stringLiteralVariants(ref: JccBnfStringLiteralReference): Array<Any> = emptyArray()
+    open fun jjtreeNodeVariants(ref: JjtNodePolyReference): Array<Any> = emptyArray()
 
 
     companion object {

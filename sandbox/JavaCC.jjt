@@ -1688,7 +1688,7 @@ void PrimitiveType() :
 }
 
 
-void ResultType() :
+void ResultType():
 {}
 {
   "void"
@@ -1696,7 +1696,7 @@ void ResultType() :
   Type()
 }
 
-void Name() :
+void Name():
 /*
  * A lookahead of 2 is required below since "Name" can be followed
  * by a ".*" when used in the context of an "ImportDeclaration".

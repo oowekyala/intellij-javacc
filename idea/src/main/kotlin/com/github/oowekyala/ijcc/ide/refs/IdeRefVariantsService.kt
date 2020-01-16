@@ -6,6 +6,7 @@ import com.github.oowekyala.ijcc.ide.structureview.presentableText
 import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
+import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.ijcc.lang.psi.canReferencePrivate
 import com.intellij.codeInsight.completion.simple.ParenthesesTailType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
@@ -97,6 +98,20 @@ object IdeRefVariantsService : JccRefVariantService() {
                     }, true)
                     .withTail("\" ")
             }.toList().toTypedArray()
+
+    override fun jjtreeNodeVariants(ref: JjtNodePolyReference): Array<Any> =
+        ref.element.containingFile.allJjtreeDecls
+            .asSequence()
+            .sortedBy { it.value.size }
+            .mapNotNull { (nodeName, declarators) ->
+                LookupElementBuilder.create(nodeName)
+                    .withPresentableText("#$nodeName")
+                    .withPsiElement(declarators.firstOrNull())
+                    .withIcon(JccIcons.JJTREE_NODE)
+            }
+            .toList()
+            .toTypedArray()
+
 
     // TODO move to completion contributor with a proper pattern
     private val LookaheadLookupItem =
