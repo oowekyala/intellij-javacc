@@ -21,14 +21,6 @@
         </ul>
 
         Visit the <a href="https://github.com/oowekyala/intellij-javacc">GitHub</a> README for more details.
-
-        <h4>Usage notes</h4>
-
-        <ul>
-            <li>I recommend to define an easy shortcut to fold/unfold region from the start if you don't have any</li>
-            <li>Code insight in Java fragments works best when the token manager and other supporting files have already been generated.</li>
-            <li>Please <a href="https://github.com/oowekyala/intellij-javacc/issues">report issues</a> if you encounter any. The Java injection support in particular is still quite fragile. Contributions are most welcome as well!</li>
-        </ul>
         ]]>
     </description>
 
