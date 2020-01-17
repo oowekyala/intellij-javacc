@@ -1667,7 +1667,6 @@ ASTCompilationUnit CompilationUnit() :
  return jjtThis;
 }
 }
-
 void PackageDeclaration() :
 {}
 {
@@ -1731,24 +1730,7 @@ void TypeDeclaration():
   )
 }
 
-void ClassOrInterfaceDeclaration(int modifiers):
-{
-    Token t = null;
-    jjtThis.setModifiers(modifiers);
-    boolean inInterfaceOld = inInterface;
-    inInterface = false;
-}
-{
-  ( /* See note about this optional final modifier in BlockStatement */
-    ["final"|"abstract"] "class" | "interface" { jjtThis.setInterface(); inInterface = true; } )
-  t=<IDENTIFIER> { checkForBadTypeIdentifierUsage(t.image); jjtThis.setImage(t.image); }
-  [ TypeParameters() ]
-  [ ExtendsList() ]
-  [ ImplementsList() ]
-  ClassOrInterfaceBody()
-  { inInterface = inInterfaceOld; } // always restore the flag after leaving the node
-}
-
+void ClassOrInterfaceDeclaration
 void ExtendsList():
 {
    boolean extendsMoreThanOne = false;
@@ -1771,6 +1753,7 @@ void EnumDeclaration(int modifiers):
 Token t;
 jjtThis.setModifiers(modifiers);
 }
+
 {
   t = <IDENTIFIER> {
     if (!"enum".equals(t.image)) {

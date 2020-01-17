@@ -90,6 +90,8 @@
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccLiteralRegexManipulator"/>
         <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccIdentifier"
                                  implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccIdentifierManipulator"/>
+        <lang.elementManipulator forClass="com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit"
+                                 implementationClass="com.github.oowekyala.ijcc.lang.psi.manipulators.JccJavaCompilationUnitManipulator"/>
         <lang.braceMatcher language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccPairedBraceMatcher"/>
 
 

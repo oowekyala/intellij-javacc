@@ -13,6 +13,6 @@ val JccGrammarFileRoot.linearInjectedStructure: LinearInjectedStructure
     get() = getUserData(LinearStructureKey)
         ?: getLinearStructureFor(this)
             .also {
-                putUserData(LinearStructureKey, it)
+//                putUserData(LinearStructureKey, it)
             }
 

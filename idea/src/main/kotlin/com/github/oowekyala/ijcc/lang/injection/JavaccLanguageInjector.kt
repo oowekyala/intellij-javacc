@@ -28,24 +28,24 @@ object JavaccLanguageInjector : MultiHostInjector {
         try {
             when (context) {
                 // FIXME inject both into the same injection file
-                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
+//                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
                 is JccGrammarFileRoot     -> registrar.injectIntoGrammar(context)
             }
         } catch (e: Exception) {
             // TODO log?
         }
     }
-
-    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
-        startInjecting(JavaLanguage.INSTANCE)
-
-        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(
-            jcu.containingFile
-        ) + "}"
-
-        addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
-        doneInjecting()
-    }
+//
+//    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
+//        startInjecting(JavaLanguage.INSTANCE)
+//
+//        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(
+//            jcu.containingFile
+//        ) + "}"
+//
+//        addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
+//        doneInjecting()
+//    }
 
     private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
         context.linearInjectedStructure.register(this)

@@ -6,8 +6,10 @@ import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.impl.source.tree.injected.changesHandler.contentRange
 import java.util.*
 
 /**
@@ -20,7 +22,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     // If visiting a node entails visiting other subtrees, these must be merged into a single node
     // If the node may not contain injection hosts, EmptyLeaf must be pushed
 
-    private val nodeStackImpl: Deque<InjectionStructureTree> = LinkedList()
+    private val nodeStackImpl: Deque<InjectionStructureTree> = ArrayDeque()
     val nodeStack: List<InjectionStructureTree>
         get() = nodeStackImpl.toList()
 
@@ -32,7 +34,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     override fun visitGrammarFileRoot(o: JccGrammarFileRoot) {
 
         // FIXME the compilation unit is not injected in the same injection file as the productions
-        // o.parserDeclaration.javaCompilationUnit?.accept(this)
+//        o.parserDeclaration.javaCompilationUnit?.accept(this)
 
         o.containingFile.nonTerminalProductions.forEach { it.accept(this) }
 
@@ -56,7 +58,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         it.innerRange(1, 1) // remove the braces
     }
 
-    override fun visitJavaCompilationUnit(o: JccJavaCompilationUnit) = visitInjectionHost(o)
+//    override fun visitJavaCompilationUnit(o: JccJavaCompilationUnit) = visitInjectionHost(o)
 
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
@@ -269,7 +271,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
             """.trimIndent()
             else ""
 
-            return  jjtreeDecls + """
+            return jjtreeDecls + """
 
                         /** Get the next Token. */
                         final public Token getNextToken() {}
@@ -357,17 +359,35 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
             val file = element.containingFile
             val jcu = file.parserDeclaration?.javaCompilationUnit
 
-            // TODO stop ignoring contents of the ACU, in order to modify its structure!
-            // TODO add declarations inserted by JJTree (and implements clauses)
 
+            val leaf =
 
-            val commonPrefix = jcu?.text?.trim()?.takeIf { it.endsWith("}") }?.removeSuffix("}") ?: "class MyParser {"
+                if (jcu != null)
+                    SurroundNode(
+                        MultiChildNode(
+                            children = listOf(
+                                HostLeaf(jcu) { ElementManipulators.getManipulator(it).getRangeInElement(it) },
+                                node
+                            )
+                        ) { "" },
+                        prefix = "",
+                        suffix = "}"
+                    )
+                else {
+                    SurroundNode(node, prefix = "class SomeParser {" + javaccInsertedDecls(file), suffix = "}")
+                }
+
 
             return SurroundNode(
-                node,
-                prefix = commonPrefix + javaccInsertedDecls(file),
-                suffix = "}"
+                leaf,
+                prefix = "",
+                suffix = javaccInsertedDecls(file) + "}"
             )
         }
+
+
+        // TODO stop ignoring contents of the ACU, in order to modify its structure!
+        // TODO add declarations inserted by JJTree (and implements clauses)
+
     }
 }

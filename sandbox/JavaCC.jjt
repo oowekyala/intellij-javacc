@@ -1309,25 +1309,6 @@ void node_descriptor() :
 }
 
 
-JAVACODE
-void node_descriptor_expression()
-{
-  IElementType kind;
-  int nesting = 1;
-  while (true) {
-    kind = getType();
-    if (kind == JavaCCConstants._EOF)
-      builder.error("Unexpected <EOF>");
-    if (kind == JavaCCConstants.LPAREN) nesting++;
-    if (kind == JavaCCConstants.RPAREN) {
-      nesting--;
-      if (nesting == 0) break;
-    }
-    builder.advanceLexer();
-  }
-}
-
-
 /**********************************************
  * THE JAVA GRAMMAR SPECIFICATION STARTS HERE *
  **********************************************/
