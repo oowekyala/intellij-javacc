@@ -42,16 +42,16 @@ class UnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
 
 
         // specs used in other specs or regular expressions
-        val inExpr: THashSet<Token> = ContainerUtil.newTroveSet()
+        val inExpr: THashSet<Token> = THashSet()
         // specs used in other
-        val reachable: THashSet<Token> = ContainerUtil.newTroveSet()
-        val inSuppressed: THashSet<Token> = ContainerUtil.newTroveSet()
+        val reachable: THashSet<Token> = THashSet()
+        val inSuppressed: THashSet<Token> = THashSet()
 
         grammarTraverser(file)
             .filterTypes { it == JccTypes.JCC_TOKEN_REFERENCE_REGEX_UNIT }
             .traverse()
             .map { resolveToken(it) }
-            .filter(Condition.NOT_NULL)
+            .filter(Conditions.notNull())
             .addAllTo(inExpr)
 
 

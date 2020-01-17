@@ -8,6 +8,7 @@ import com.github.oowekyala.ijcc.util.addIfNotNull
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInspection.*
 import com.intellij.openapi.util.Condition
+import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.ContainerUtil
@@ -44,15 +45,15 @@ class UnusedProductionInspection : JccInspectionBase(DisplayName) {
         //noinspection LimitedScopeInnerClass,EmptyClass
         abstract class Cond<T> : JBIterable.Stateful<Cond<*>>(), Condition<T>
 
-        val inExpr: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
-        val inParsing: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
-        val inSuppressed: THashSet<JccNonTerminalProduction> = ContainerUtil.newTroveSet<JccNonTerminalProduction>()
+        val inExpr: THashSet<JccNonTerminalProduction> = THashSet()
+        val inParsing: THashSet<JccNonTerminalProduction> = THashSet()
+        val inSuppressed: THashSet<JccNonTerminalProduction> = THashSet()
 
         grammarTraverserOnlyBnf(file)
             .filterTypes { it == JccTypes.JCC_NON_TERMINAL_EXPANSION_UNIT }
             .traverse()
             .map { resolveProd(it) }
-            .filter(Condition.NOT_NULL)
+            .filter(Conditions.notNull())
             .addAllTo(inExpr)
 
         prods.filter { r -> SuppressionUtil.inspectionResultSuppressed(r, this) }
