@@ -26,8 +26,7 @@ dependencies {
 
 ext {
     // creates secret properties
-    set("intellijPublishUsername", "")
-    set("intellijPublishPassword", "")
+    set("intellijPublishToken", "")
     apply(from = "../secrets.properties")
 }
 
@@ -87,8 +86,7 @@ tasks {
     }
 
     publishPlugin {
-        username(project.property("intellijPublishUsername"))
-        password(project.property("intellijPublishPassword"))
+        token(project.property("intellijPublishToken"))
     }
 
     patchPluginXml {
