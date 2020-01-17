@@ -15,7 +15,7 @@ function incr_ver_num() {
     echo "$ret"
 }
 
-published_version=$(gradle properties -q  --console=plain | grep "version:" | awk '{print $2}') 
+published_version=$(./gradlew properties -q  --console=plain | grep "version:" | awk '{print $2}')
 
 cur_version=$(incr_ver_num "$published_version")
 
@@ -25,7 +25,7 @@ git show-branch "v$cur_version" >> /dev/null
 
 if [[ $? -eq 0 ]]; then
     echo "Preparing release for version $cur_version, from branch $branch..."
-else 
+else
     branch=""
 
     echo "Current branches"
@@ -47,8 +47,8 @@ fi
 
 echo "Merging branch $branch into master..."
 
-git merge "$branch" --no-ff -q
-git br -d "$branch"
+git merge "$branch" --no-ff
+#git br -d "$branch"
 
 
 read -p "Enter the name of the release tag (default v$cur_version): " tagname
@@ -74,7 +74,7 @@ git push --tags
 default_nr=$(incr_ver_num "$cur_version")
 
 read -p "What's the version number of the next release? (default $default_nr)" next_release
- 
+
 if [[ -z "$next_release" ]]; then
     next_release="$default_nr"
 fi
