@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.injection
 
-import com.github.oowekyala.ijcc.util.indent
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
@@ -122,10 +121,10 @@ sealed class InjectionStructureTree(open val children: List<InjectionStructureTr
 
     companion object {
 
-        // The indent(5) level is to account for the indent of this source file,
+        // The prependIndent level is to account for the indent of this source file,
         // which is removed by trimIndent in raw strings!
         // the first line still needs to be adjusted otherwise it's over indented
-        private fun String.myIndent(): String = indent(5).lineSequence().mapIndexed { i, s ->
+        private fun String.myIndent(): String = prependIndent("     ").lineSequence().mapIndexed { i, s ->
             when (i) {
                 0    -> s.replaceIndent("    ")
                 else -> s
