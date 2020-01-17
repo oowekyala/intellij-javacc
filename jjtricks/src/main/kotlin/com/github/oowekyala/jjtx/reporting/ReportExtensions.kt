@@ -48,6 +48,13 @@ fun MessageCollector.reportNormal(message: String) {
 }
 
 /**
+ * Report a normal execution trace.
+ */
+fun MessageCollector.debug(message: String, position: Position? = null) {
+    report(message, MessageCategory.DEBUG, position)
+}
+
+/**
  * Report a non-fatal error, probably followed later by termination anyway.
  */
 fun MessageCollector.reportNonFatal(message: String, position: Position? = null) {
@@ -60,7 +67,16 @@ fun MessageCollector.reportNonFatal(message: String, position: Position? = null)
 fun MessageCollector.reportFatal(message: String, vararg position: Position?): Nothing {
     report(message, MessageCategory.FATAL_ERROR, *position)
     // shouldn't occur!
-    throw AssertionError("The message reported should have thrown an error itself")
+    throw AssertionError("The message reporter should have thrown an error itself")
+}
+
+/**
+ * Report a normal execution trace.
+ */
+fun MessageCollector.reportFatalException(throwable: Throwable, contextStr: String? = null, position: Position? = null): Nothing {
+    reportException(throwable, contextStr, fatal = true, position = position)
+    // shouldn't occur!
+    throw AssertionError("The message reporter should have thrown an error itself")
 }
 
 fun MessageCollector.report(message: String,

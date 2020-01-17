@@ -1,14 +1,20 @@
 jjtx:
 
   javaccGen:
-    implementNodeConstants: false
+    jjFile:
+      context:
+        implements: []
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"
+  trackTokens: true
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
-          - "r:.*Expression"
-          - Literal:
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
+          - "r:.*Expr"
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

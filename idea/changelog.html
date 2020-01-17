@@ -1,43 +1,14 @@
 <p>What's new:
 
 <ul>
-    <li>FIRST sets of productions are now available in the quickdoc, to
-        help you optimise your lookaheads. There are two new sections in the
-        doc:
-        <ul>
-            <li><b>Condensed FIRST set:</b> This is a set of tokens and productions
-                that is equivalent to the full FIRST set below. If some productions
-                in the FIRST set may yield at most one token, then they are not expanded.
-                So if you have a production <code>A := "b" | "c"</code> in the FIRST set, instead of
-                having <code>"b"</code> and <code>"c"</code> in the resulting set, you have <code>A</code>. This can
-                dramatically
-                shorten this section for big grammars.
-            </li>
-            <li>
-                <b>FIRST set:</b> This is the fully expanded set of tokens. Note that
-                JAVACODE productions are included there since we can't break them down.
-            </li>
-        </ul>
-    </li>
-</ul>
-
-<p>What's changed:
-<ul>
-    <li>TODO</li>
+    <li>Add code completion for JJTree annotations</li>
+    <li>Add intention to check a token regular expression against a sample text</li>
+    <li>Updated to API version 2019.3.1</li>
 </ul>
 
 <p>What's fixed:
 <ul>
-    <li>Tokens like <code>"<"</code> being invisible in the quick documentation
-        because no HTML escaping was performed.
-    </li>
-    <li>Parentheses between two scoped expansion units are not unnecessary, eg
-        <code> ( "foo" #Foo ) #Bar</code></li>
-    <li>Some empty parser actions blocks are not unnecessary, specifically when
-        they occur as the last expansion of a JJTree node scope and are preceded
-        by another parser actions unit. This is because JJTree inserts the code
-        for closing the node <i>before</i> the last parser action, so eg the node
-        condition can't be affected anymore in the last unit.
-    </li>
-    <li>Similarly, some consecutive parser actions blocks can't be merged.</li>
+    <li>Add title to configuration options</li>
+    <li>Better resilience to mistyped Jjtree annotations</li>
+    <li>Fix private regexes defined in eg SPECIAL_TOKEN being reported as inaccessible</li>
 </ul>

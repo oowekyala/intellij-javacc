@@ -1,4 +1,6 @@
 import com.github.oowekyala.*
+import groovy.xml.dom.DOMCategory.attributes
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 
 plugins {
@@ -34,18 +36,20 @@ dependencies {
     runtimeOnly(ijdeps)
 
     api("com.google.guava:guava:27.0.1-jre")
-    api("org.apache.velocity:velocity:1.6.2")
+    api("org.apache.velocity:velocity:1.7")
 
+    implementation("velocity-tools:velocity-tools-generic:1.4")
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.everit-org.json-schema:org.everit.json.schema:1.11.1")
     implementation("com.github.oowekyala.treeutils:tree-printers:2.1.0")
     implementation("org.yaml:snakeyaml:1.24")
     implementation("com.google.googlejavaformat:google-java-format:1.7")
-    // for debugging only, this pulls in a huge IBM dependency
+    implementation("net.java.dev.javacc:javacc:5.0")
+    implementation("fr.inria.gforge.spoon:spoon-core:8.0.0")
+    // for debugging only, this pulls in a huge IBM dependency to support emojis...
     // implementation("com.tylerthrailkill.helpers:pretty-print:2.0.2")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
-    implementation("net.java.dev.javacc:javacc:7.0.4")
 
     testImplementation(project(":core").dependencyProject.sourceSets["test"].output)
     testImplementation("commons-io:commons-io:2.6")
@@ -82,14 +86,25 @@ tasks {
         )
     }
 
+    val schemaPrefix = "src/main/resources/com/github/oowekyala/jjtx/schema/jjtopts.schema"
+    val yamlSchema = "$schemaPrefix.yaml"
+    val jsonSchema = "$schemaPrefix.json"
+
+
+    val schemaToJson by creating {
+
+        doLast {
+            yamlToJson(file(yamlSchema), file(jsonSchema))
+        }
+    }
+
     val schemaDocs by creating(Exec::class.java) {
-        
+
         group = "Documentation"
 
         val docOut1 = "$buildDir/rawSchemaDoc"
         val docOut2 = "$buildDir/finalSchemaDoc"
 
-        val inSchema = "src/main/resources/com/github/oowekyala/jjtx/schema/jjtopts.schema.json"
 
 
         // npm install -g bootprint
@@ -98,7 +113,7 @@ tasks {
         commandLine = listOf(
             "bootprint",
             "json-schema",
-            inSchema,
+            jsonSchema,
             docOut1
         )
 
@@ -121,6 +136,7 @@ tasks {
 
         minimize {
             exclude(dependency("org.apache.velocity:velocity:.*"))
+            exclude(dependency("commons-logging:commons-logging:.*"))
             exclude(dependency("org.jetbrains.kotlin:.*:.*"))
             exclude(dependency("com.google.googlejavaformat:.*:.*"))
             exclude(dependency("com.google.guava:.*:.*"))

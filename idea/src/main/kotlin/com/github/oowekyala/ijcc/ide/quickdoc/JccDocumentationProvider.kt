@@ -55,9 +55,9 @@ object JccDocumentationProvider : AbstractDocumentationProvider() {
         }
     }
 
-    override fun getDocumentationElementForLink(psiManager: PsiManager?,
-                                                link: String?,
-                                                context: PsiElement?): PsiElement? =
+    override fun getDocumentationElementForLink(psiManager: PsiManager,
+                                                link: String,
+                                                context: PsiElement): PsiElement? =
         JccDocUtil.findLinkTarget(psiManager, link, context)
 
 

@@ -1,14 +1,13 @@
 jjtx:
 
-  javaccGen:
-    implementNodeConstants: false
-    fixJjtThisConditionScope: true
-
   nodePrefix: Ex
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
-          - "r:.*Expression"
-          - Literal:
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
+          - "r:.*Expr"
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

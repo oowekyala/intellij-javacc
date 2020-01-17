@@ -29,7 +29,7 @@ object JccPatterns {
     val optionValuePattern: ElementPattern<PsiElement> =
         psiElement()
             .withAncestor(2, psiElement(JccOptionBinding::class.java))
-            .afterLeafSkipping(PlatformPatterns.psiElement(TokenType.ERROR_ELEMENT), psiElement(JccTypes.JCC_EQ))
+            .afterLeafSkipping(psiElement(TokenType.ERROR_ELEMENT), psiElement(JccTypes.JCC_EQ))
 
     val optionNamePattern: ElementPattern<PsiElement> =
         psiElement()
@@ -39,5 +39,8 @@ object JccPatterns {
 
     val bnfColonPattern =
         psiElement(JccTypes.JCC_COLON).withParent(JccBnfProduction::class.java)
+
+    val jjtreeHashPattern =
+        psiElement().afterLeaf(psiElement(JccTypes.JCC_POUND))
 
 }

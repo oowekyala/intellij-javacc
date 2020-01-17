@@ -4,25 +4,26 @@ package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.util.io.DslPrintStream
 import com.github.oowekyala.jjtx.util.io.DslPrintStream.Endl
+import com.github.oowekyala.jjtx.util.template
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import java.io.ByteArrayOutputStream
+import org.apache.velocity.VelocityContext
+import org.apache.velocity.app.VelocityEngine
 import java.io.OutputStream
 import java.util.*
 
 
-fun toJavacc(input: JccFile, out: OutputStream, options: JavaccGenOptions) {
+fun toJavacc(input: JccFile,
+             out: OutputStream,
+             options: JavaccGenOptions,
+             builder: JjtxBuilderStrategy,
+             vcontext: VelocityContext) {
 
-    val visitor = JjtxCompilVisitor(input, out, options, VanillaJjtreeBuilder(input.grammarOptions, options))
+    val visitor = JjtxCompilVisitor(input, out, options, vcontext, builder)
     input.grammarFileRoot!!.accept(visitor)
-}
-
-fun toJavaccString(input: JccFile, options: JavaccGenOptions = JavaccGenOptions()): String {
-    val bos = ByteArrayOutputStream()
-    toJavacc(input, bos, options)
-    return bos.toString(Charsets.UTF_8.name())
 }
 
 
@@ -31,9 +32,9 @@ private fun bgen(arg: String = ""): String {
     return "/*@bgen(jjtree)$a*/" // FIXME "jjtree" is hardcoded in JavaCC's codebase
 }
 
-private fun egen() = "/*@egen*/ "
+private fun egen() = "/*@egen*/"
 
-private fun JccJavaCompilationUnit.guessIndent():String {
+private fun JccJavaCompilationUnit.guessIndent(): String {
 
     // The indent preceding the first non-whitespace of the JCU
     // is in the previous sibling
@@ -49,7 +50,7 @@ private fun JccJavaCompilationUnit.guessIndent():String {
 }
 
 private fun JccJavaCompilationUnit.addImports(qnames: List<String>): String {
-    val unit= this.text!!
+    val unit = this.text!!
     val indent = guessIndent()
 
 
@@ -75,11 +76,13 @@ private fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let 
 private class JjtxCompilVisitor(val file: JccFile,
                                 outputStream: OutputStream,
                                 val compat: JavaccGenOptions,
+                                val vcontext: VelocityContext,
                                 val builder: JjtxBuilderStrategy) : JccVisitor() {
 
     private val out = DslPrintStream.forJavaccOutput(outputStream)
 
     private val stack = Stack<NodeVar>()
+    private var varId = 0
 
 
     override fun visitElement(o: PsiElement) {
@@ -109,21 +112,26 @@ private class JjtxCompilVisitor(val file: JccFile,
 
         val sb = StringBuilder(o.addImports(builder.parserImports()))
 
-        if (builder.parserImplements().isNotEmpty()) {
+        val impls = builder.parserImplements().map { qname ->
+            VelocityEngine().template(template = qname, ctx = vcontext)
+                .let { FileGenTask.recogniseQname(it) ?: it }
+        }
+
+        if (impls.isNotEmpty()) {
 
             val implPoint = implementsRegex.find(sb)!!
 
             when {
                 implPoint.value == "implements" -> {
                     sb.insert(
-                        implPoint.range.endInclusive + 1,
-                        bgen() + builder.parserImplements().joinToString(postfix = ", ") + egen()
+                        implPoint.range.last + 1,
+                        bgen() + impls.joinToString(postfix = ", ") + egen()
                     )
                 }
                 else                            -> {
                     sb.insert(
-                        implPoint.range.start - 1,
-                        bgen() + builder.parserImplements().joinToString(prefix = "implements ") + egen()
+                        implPoint.range.first - 1,
+                        bgen() + impls.joinToString(prefix = "implements ") + egen()
                     )
                 }
             }
@@ -133,7 +141,10 @@ private class JjtxCompilVisitor(val file: JccFile,
 
         val indent = o.guessIndent()
 
-        sb.insert(bracePoint.range.endInclusive + 1, bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen())
+        sb.insert(
+            bracePoint.range.last + 1,
+            bgen() + "\n" + builder.parserDeclarations().replaceIndent(indent) + egen()
+        )
 
         out.printSource(sb.toString())
     }
@@ -141,7 +152,8 @@ private class JjtxCompilVisitor(val file: JccFile,
     private fun <T> Stack<T>.top(): T? = if (isEmpty()) null else peek()
 
     override fun visitBnfProduction(o: JccBnfProduction) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitBnfProduction(o)
+        varId = 0
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId) ?: return super.visitBnfProduction(o)
 
         with(out) {
 
@@ -149,7 +161,7 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +bgen(nodeVar.nodeName) + Endl
                 emitOpenNodeCode(nodeVar)
                 +egen() + Endl
-                -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
+                +o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar) + Endl
             } + Endl
 
             stack.push(nodeVar)
@@ -159,28 +171,29 @@ private class JjtxCompilVisitor(val file: JccFile,
             } + Endl
             stack.pop()
         }
-
+        varId = 0
     }
 
     override fun visitJavacodeProduction(o: JccJavacodeProduction) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitJavacodeProduction(o)
+        varId = 0
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId) ?: return super.visitJavacodeProduction(o)
 
         with(out) {
             emitTryCatch(nodeVar, o.thrownExceptions) {
                 -o.javaBlock!!.reindentJava(indentString).escapeJjtThis(nodeVar)
             }
         }
-
+        varId = 0
     }
 
     private fun JccJavaBlock.reindentJava(indent: String): String =
-        text.removeSurrounding("{", "}").replaceIndent(indent).trim()
+        text.removeSurrounding("{", "}").trim().replaceIndent(indent)
 
     private fun String.escapeJjtThis(nodeVar: NodeVar): String = builder.escapeJjtThis(nodeVar, this)
 
 
     override fun visitScopedExpansionUnit(o: JccScopedExpansionUnit) {
-        val nodeVar = builder.makeNodeVar(o, stack.top()) ?: return super.visitScopedExpansionUnit(o)
+        val nodeVar = builder.makeNodeVar(o, stack.top(), varId++) ?: return super.visitScopedExpansionUnit(o)
 
         with(out) {
 
@@ -195,22 +208,30 @@ private class JjtxCompilVisitor(val file: JccFile,
 
     }
 
+    override fun visitJavaExpression(o: JccJavaExpression) {
+        stack.top()?.let {
+            with(out) {
+                -o.text.escapeJjtThis(it)
+            }
+        } ?: super.visitJavaExpression(o)
+    }
+
     override fun visitJjtreeNodeDescriptor(o: JccJjtreeNodeDescriptor) {
         out.printWhiteOut(o.text)
     }
 
     override fun visitParserActionsUnit(o: JccParserActionsUnit) {
 
-        val enclosing = stack.lastOrNull() ?: return super.visitParserActionsUnit(o)
+        val enclosing = stack.top() ?: return super.visitParserActionsUnit(o)
 
         val endOfSequence =
             o.ancestors(includeSelf = false)
                 .takeWhile { it != enclosing.owner }
                 .all {
                     when {
-                        it.parent is JccExpansionSequence   -> it.parent.lastChild == it
+                        it.parent is JccExpansionSequence -> it.parent.lastChild == it
                         it is JccParenthesizedExpansionUnit -> it.occurrenceIndicator == null
-                        else                                -> it !is JccOptionalExpansionUnit
+                        else -> it !is JccOptionalExpansionUnit
                     }
                 }
 
@@ -224,7 +245,10 @@ private class JjtxCompilVisitor(val file: JccFile,
             }
         }
 
-        super.visitParserActionsUnit(o)
+        with(out) {
+            -o.text.escapeJjtThis(enclosing)
+        }
+
     }
 
     private fun DslPrintStream.emitTryCatchUnit(expansion: JccExpansion, nodeVar: NodeVar) = this.apply {
@@ -235,7 +259,9 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
 
-    private fun DslPrintStream.emitTryCatch(nodeVar: NodeVar, thrownExceptions: Set<String>, insides: DslPrintStream.() -> Unit) =
+    private fun DslPrintStream.emitTryCatch(nodeVar: NodeVar,
+                                            thrownExceptions: Set<String>,
+                                            insides: DslPrintStream.() -> Unit) =
         this.apply {
             +" try " + {
                 +egen()
@@ -280,14 +306,6 @@ private class JjtxCompilVisitor(val file: JccFile,
     private fun DslPrintStream.emitCloseNodeCode(nodeVar: NodeVar, isFinal: Boolean) = this.apply {
         with(builder) {
 
-            fun doSetLastToken() =
-                setLastToken(nodeVar)?.let {
-                    +it + Endl
-                }
-
-
-            if (compat.setTokensBeforeHooks) doSetLastToken()
-
             +closeNodeScope(nodeVar) + Endl
             if (!isFinal) {
                 +nodeVar.closedVar + " = false;" + Endl
@@ -297,7 +315,6 @@ private class JjtxCompilVisitor(val file: JccFile,
                 +it + Endl
             }
 
-            if (!compat.setTokensBeforeHooks) doSetLastToken()
         }
     }
 
@@ -307,19 +324,11 @@ private class JjtxCompilVisitor(val file: JccFile,
             +nodeVar.nodeRefType + " " + nodeVar.varName + " = " + builder.createNode(nodeVar) + ";" + Endl
             +"boolean " + nodeVar.closedVar + " = true;" + Endl
 
-            fun doSetFirstToken() =
-                setFirstToken(nodeVar)?.let {
-                    +it + Endl
-                }
-
-            if (compat.setTokensBeforeHooks) doSetFirstToken()
-
             openNodeHook(nodeVar)?.let {
                 +it + Endl
             }
             +openNodeScope(nodeVar) + Endl
 
-            if (!compat.setTokensBeforeHooks) doSetFirstToken()
         }
     }
 
@@ -332,8 +341,7 @@ private fun JccExpansion.findThrown(): Set<String> =
         .mapNotNull { it.typedReference.resolveProduction() }
         .flatMap { it.thrownExceptions.asSequence() }
         .toSet()
-        .plus("ParseException")
-        .plus("RuntimeException")
+        .plus(listOf("ParseException", "RuntimeException"))
 
 
 val JccNonTerminalProduction.thrownExceptions: Set<String>

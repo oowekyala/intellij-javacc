@@ -2,9 +2,13 @@ package com.github.oowekyala.jjtx.reporting
 
 import com.github.oowekyala.jjtx.util.Position
 import com.github.oowekyala.jjtx.util.baseIndent
+import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.PrintStream
 
-
+/**
+ * Prints every message without aggregation, also used as an exception
+ * printer by [AggregateReportPrinter].
+ */
 class FullReportPrinter(
     private val stream: PrintStream,
     private val minSeverity: Severity,
@@ -14,6 +18,7 @@ class FullReportPrinter(
 ) : MessageCollector {
 
     private var contextPrinted = contextStr == null
+    private val printLock: Any = stream
 
 
     private fun iprintln(string: String) {
@@ -33,12 +38,12 @@ class FullReportPrinter(
             minSeverity = minSeverity,
             contextStr = contextStr,
             printStackTrace = printStackTrace,
-            indent = indent + baseIndent
+            indent = baseIndent
         )
 
 
     override fun concludeReport() {
-        // do nothing
+        stream.flush()
     }
 
     fun printExceptionPosition(position: Position) {
@@ -48,30 +53,37 @@ class FullReportPrinter(
     override fun reportEntry(reportEntry: ReportEntry) {
         if (reportEntry.severity < minSeverity) return
 
-        if (!contextPrinted && contextStr != null) {
-            printContextHeader(contextStr)
-        }
-
-        with(reportEntry) {
-            val header = if (thrown != null) thrown.javaClass.name else message ?: return
-
-            iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
-            if (thrown != null && message != null) {
-                stream.println(message.trim().replaceIndent(lcolIndent))
+        synchronized(printLock) {
+            if (!contextPrinted && contextStr != null) {
+                printContextHeader(contextStr)
             }
 
-            positions.forEach {
-                printExceptionPosition(it)
+            with(reportEntry) {
+                val header = if (thrown != null) ExceptionNameInterpreter.getHeader(thrown) else message ?: return
+
+                iprintln("[${severity.displayName}]".padEnd(lcolWidth) + header)
+                if (thrown != null && message != null) {
+                    stream.println(message.trim().replaceIndent(lcolIndent))
+                }
+
+                positions.forEach {
+                    printExceptionPosition(it)
+                }
+
+                if (printStackTrace) {
+                    thrown?.let {
+                        val st = ExceptionUtils.getStackTrace(it)
+                        it.message?.let { st.removePrefix(it) } ?: st
+                    }
+                        ?.let {
+                            stream.println(it.replaceIndent(lcolIndent + baseIndent))
+                        }
+                }
             }
 
-            if (printStackTrace) {
-                thrown?.printStackTrace(stream)
+            if (reportEntry.severity == Severity.FAIL) {
+                throw DoExitNowError()
             }
-        }
-
-        if (reportEntry.severity == Severity.FAIL) {
-            stream.flush()
-            throw DoExitNowError()
         }
     }
 

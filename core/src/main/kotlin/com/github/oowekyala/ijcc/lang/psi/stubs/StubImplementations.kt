@@ -18,6 +18,10 @@ import readNullable
 import writeEnum
 import writeNullable
 
+/*
+    DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
+ */
+private const val StubVersion = 6
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
 
@@ -36,10 +40,7 @@ class JccFileStub(val file: JccFile?,
 
     object Type : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
 
-        /*
-            DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
-         */
-        override fun getStubVersion(): Int = 5
+        override fun getStubVersion(): Int = StubVersion
 
         override fun getBuilder(): StubBuilder = object : DefaultStubBuilder() {
             override fun createStubForFile(file: PsiFile): StubElement<*> =

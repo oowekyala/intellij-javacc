@@ -4,26 +4,28 @@ import com.github.oowekyala.ijcc.settings.JccGlobalSettingsState
 import com.github.oowekyala.ijcc.settings.globalPluginSettings
 import com.intellij.application.options.editor.CodeFoldingOptionsProvider
 import com.intellij.openapi.options.BeanConfigurable
-import com.intellij.openapi.util.Getter
-import com.intellij.openapi.util.Setter
 import kotlin.reflect.KMutableProperty
 
 /**
  * @author Clément Fournier
  */
 class JccFoldingOptionsProvider :
-    BeanConfigurable<JccGlobalSettingsState>(globalPluginSettings), CodeFoldingOptionsProvider {
+    BeanConfigurable<JccGlobalSettingsState>(globalPluginSettings, "JavaCC"), CodeFoldingOptionsProvider {
 
     init {
+        val settings = globalPluginSettings
 
-        checkBox("foldJavaFragments", "Java fragments in JavaCC code")
-        checkBox("foldLookaheads", "JavaCC local lookahead declarations")
-        checkBox("foldTokenRefs", "JavaCC token references that can be replaced by a string literal")
-        checkBox("foldOptions", "JavaCC options section")
-        checkBox("foldParserDecl", "JavaCC parser declaration section")
-        checkBox("foldTokenMgrDecl", "JavaCC token manager declaration section")
-        checkBox("foldTokenProds", "JavaCC regular expression productions (token declarations)")
-        checkBox("foldBgenSections", "Generated sections in .jj files (@bgen ... @egen)")
+        fun checkBox(title: String, prop: KMutableProperty<Boolean>) =
+            checkBox(title, { prop.getter.call() }, { prop.setter.call(it) })
+
+        checkBox("Java fragments in JavaCC code", settings::isFoldJavaFragments)
+        checkBox("JavaCC local lookahead declarations", settings::isFoldLookaheads)
+        checkBox("JavaCC token references that can be replaced by a string literal", settings::isFoldTokenRefs)
+        checkBox("JavaCC options section", settings::isFoldOptions)
+        checkBox("JavaCC parser declaration section", settings::isFoldParserDecl)
+        checkBox("JavaCC token manager declaration section", settings::isFoldTokenMgrDecl)
+        checkBox("JavaCC regular expression productions (token declarations)", settings::isFoldTokenProds)
+        checkBox("Generated sections in .jj files (@bgen ... @egen)", settings::isFoldBgenSections)
 
     }
 

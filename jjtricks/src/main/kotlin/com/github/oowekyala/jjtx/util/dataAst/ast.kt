@@ -62,6 +62,8 @@ enum class ScalarType {
     NULL;
 
     override fun toString(): String = name
+
+    val displayName get() = name.toLowerCase()
 }
 
 data class AstSeq(

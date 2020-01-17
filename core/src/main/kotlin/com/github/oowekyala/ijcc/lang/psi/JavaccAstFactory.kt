@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.lang.JccTypes
 import com.intellij.lang.ASTFactory
 import com.intellij.lang.DefaultASTFactory
 import com.intellij.openapi.components.ServiceManager

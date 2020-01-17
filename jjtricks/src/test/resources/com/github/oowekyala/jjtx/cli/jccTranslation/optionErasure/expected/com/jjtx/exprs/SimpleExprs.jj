@@ -7,14 +7,16 @@ PARSER_BEGIN(SimpleExprParser)
 
     package com.jjtx.exprs;
     import com.exprs.ast.*;
-    import static com.jjtx.exprs.SimpleExprParserTreeConstants.*;
+    import com.exprs.ast.SimpleExprParserTreeConstants;
+    import com.exprs.ast.SimpleExprsNodeFactory;
+    import static com.exprs.ast.SimpleExprParserTreeConstants.*;
 
 
     /**
      *  This is my parser declaration
      */
-    public class SimpleExprParser extends Foo<B> implements A {/*@bgen(jjtree)*/
-    protected JJTSimpleExprParserState jjtree = new JJTSimpleExprParserState();/*@egen*/
+    public class SimpleExprParser extends Foo<B> implements/*@bgen(jjtree)*/com.exprs.ast.SimpleExprParserTreeConstants, /*@egen*/ A {/*@bgen(jjtree)*/
+    protected final com.exprs.ast.JJTSimpleExprParserState jjtree = new com.exprs.ast.JJTSimpleExprParserState();/*@egen*/
 
     }
 
@@ -36,28 +38,28 @@ void Expression() : {}
       BinaryExpression()
     | /*@bgen(jjtree) NullLiteral */
 {
-    ExNullLiteral jjtn000 = new ExNullLiteral(JJTNULLLITERAL);
-    boolean jjtc000 = true;
-    jjtree.openNodeScope(jjtn000);
+    ExNullLiteral nullLiteral = (ExNullLiteral) SimpleExprsNodeFactory.jjtCreate(JJTNULLLITERAL);
+    boolean nullLiteralNeedsClose = true;
+    jjtree.openNodeScope(nullLiteral, getToken(1));
 } try {
-    /*@egen*/ <NULL>
+    /*@egen*/<NULL>
     /*@bgen(jjtree)*/
-} catch (Throwable jjte000) {
-    if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-        jjtc000 = false;
+} catch (Throwable nullLiteralException) {
+    if (nullLiteralNeedsClose) {
+        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
+        nullLiteralNeedsClose = false;
     } else {
         jjtree.popNode();
     }
     // This chain of casts is meant to force you to declare
     // checked exceptions explicitly on the productions, else it fails
     // with a ClassCastException on the Error branch
-    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
-    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
-    throw (Error) jjte000;
+    if (nullLiteralException instanceof ParseException) throw (ParseException) nullLiteralException;
+    if (nullLiteralException instanceof RuntimeException) throw (RuntimeException) nullLiteralException;
+    throw (Error) nullLiteralException;
 } finally {
-    if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
+    if (nullLiteralNeedsClose) {
+        jjtree.closeNodeScope(nullLiteral, getToken(0), true);
     }
 }
 /*@egen*/
@@ -66,32 +68,33 @@ void Expression() : {}
 
 void BinaryExpression(): {
     /*@bgen(jjtree) BinaryExpr */
-    ExBinaryExpr jjtn000 = new ExBinaryExpr(JJTBINARYEXPR);
-    boolean jjtc000 = true;
-    jjtree.openNodeScope(jjtn000);
+    ExBinaryExpr binaryExpr = (ExBinaryExpr) SimpleExprsNodeFactory.jjtCreate(JJTBINARYEXPR);
+    boolean binaryExprNeedsClose = true;
+    jjtree.openNodeScope(binaryExpr, getToken(1));
     /*@egen*/
+    
 }
 {
     /*@bgen(jjtree) BinaryExpr */
      try {
-        /*@egen*/ UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
+        /*@egen*/UnaryExpr() [ ( "+" | "-" ) UnaryExpr() ]
         /*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-        if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, jjtn000.foo());
-            jjtc000 = false;
+    } catch (Throwable binaryExprException) {
+        if (binaryExprNeedsClose) {
+            jjtree.closeNodeScope(binaryExpr, getToken(0), binaryExpr.foo());
+            binaryExprNeedsClose = false;
         } else {
             jjtree.popNode();
         }
         // This chain of casts is meant to force you to declare
         // checked exceptions explicitly on the productions, else it fails
         // with a ClassCastException on the Error branch
-        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
-        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
-        throw (Error) jjte000;
+        if (binaryExprException instanceof ParseException) throw (ParseException) binaryExprException;
+        if (binaryExprException instanceof RuntimeException) throw (RuntimeException) binaryExprException;
+        throw (Error) binaryExprException;
     } finally {
-        if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, jjtn000.foo());
+        if (binaryExprNeedsClose) {
+            jjtree.closeNodeScope(binaryExpr, getToken(0), binaryExpr.foo());
         }
     }
     /*@egen*/
@@ -102,28 +105,28 @@ void UnaryExpr() : {}
 {
   /*@bgen(jjtree) ParenthesizedExpr */
 {
-    ExParenthesizedExpr jjtn000 = new ExParenthesizedExpr(JJTPARENTHESIZEDEXPR);
-    boolean jjtc000 = true;
-    jjtree.openNodeScope(jjtn000);
+    ExParenthesizedExpr parenthesizedExpr = (ExParenthesizedExpr) SimpleExprsNodeFactory.jjtCreate(JJTPARENTHESIZEDEXPR);
+    boolean parenthesizedExprNeedsClose = true;
+    jjtree.openNodeScope(parenthesizedExpr, getToken(1));
 } try {
-    /*@egen*/ ("(" Expression() ")")
+    /*@egen*/("(" Expression() ")")
     /*@bgen(jjtree)*/
-} catch (Throwable jjte000) {
-    if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, jjtn000.numChildren() > 1);
-        jjtc000 = false;
+} catch (Throwable parenthesizedExprException) {
+    if (parenthesizedExprNeedsClose) {
+        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), parenthesizedExpr.numChildren() > 1);
+        parenthesizedExprNeedsClose = false;
     } else {
         jjtree.popNode();
     }
     // This chain of casts is meant to force you to declare
     // checked exceptions explicitly on the productions, else it fails
     // with a ClassCastException on the Error branch
-    if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
-    if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
-    throw (Error) jjte000;
+    if (parenthesizedExprException instanceof ParseException) throw (ParseException) parenthesizedExprException;
+    if (parenthesizedExprException instanceof RuntimeException) throw (RuntimeException) parenthesizedExprException;
+    throw (Error) parenthesizedExprException;
 } finally {
-    if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, jjtn000.numChildren() > 1);
+    if (parenthesizedExprNeedsClose) {
+        jjtree.closeNodeScope(parenthesizedExpr, getToken(0), parenthesizedExpr.numChildren() > 1);
     }
 }
 /*@egen*/
@@ -132,32 +135,33 @@ void UnaryExpr() : {}
 
 void Integer(): {
     /*@bgen(jjtree) IntegerLiteral */
-    ExIntegerLiteral jjtn000 = new ExIntegerLiteral(JJTINTEGERLITERAL);
-    boolean jjtc000 = true;
-    jjtree.openNodeScope(jjtn000);
+    ExIntegerLiteral integerLiteral = (ExIntegerLiteral) SimpleExprsNodeFactory.jjtCreate(JJTINTEGERLITERAL);
+    boolean integerLiteralNeedsClose = true;
+    jjtree.openNodeScope(integerLiteral, getToken(1));
     /*@egen*/
+    
 }
 {
     /*@bgen(jjtree) IntegerLiteral */
      try {
-        /*@egen*/ <INTEGER>
+        /*@egen*/<INTEGER>
         /*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-        if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-            jjtc000 = false;
+    } catch (Throwable integerLiteralException) {
+        if (integerLiteralNeedsClose) {
+            jjtree.closeNodeScope(integerLiteral, getToken(0), true);
+            integerLiteralNeedsClose = false;
         } else {
             jjtree.popNode();
         }
         // This chain of casts is meant to force you to declare
         // checked exceptions explicitly on the productions, else it fails
         // with a ClassCastException on the Error branch
-        if (jjte000 instanceof ParseException) throw (ParseException) jjte000;
-        if (jjte000 instanceof RuntimeException) throw (RuntimeException) jjte000;
-        throw (Error) jjte000;
+        if (integerLiteralException instanceof ParseException) throw (ParseException) integerLiteralException;
+        if (integerLiteralException instanceof RuntimeException) throw (RuntimeException) integerLiteralException;
+        throw (Error) integerLiteralException;
     } finally {
-        if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
+        if (integerLiteralNeedsClose) {
+            jjtree.closeNodeScope(integerLiteral, getToken(0), true);
         }
     }
     /*@egen*/

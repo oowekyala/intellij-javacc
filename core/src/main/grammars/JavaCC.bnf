@@ -131,7 +131,7 @@
   implements("regular_expression|regex_element")=regex_like
 
   extends("regex_expansion_unit|non_terminal_expansion_unit")=assignable_expansion_unit
-  extends(".*_expansion_unit|parser_actions_unit|local_lookahead_unit")=expansion_unit
+  extends(".*_expansion_unit|parser_actions_unit|local_lookahead_unit|error_jjtree_annot")=expansion_unit
   extends("expansion_(sequence|unit)")=expansion_sequence_or_unit
   extends("expansion_(alternative|sequence_or_unit)")=expansion
 
@@ -233,12 +233,12 @@ private production_impl             ::=
 
 javacode_production                 ::=
         "JAVACODE"
-        java_non_terminal_production_header [ jjtree_node_descriptor ]
+        java_non_terminal_production_header [ jjtree_node_descriptor | error_jjtree_annot_in_header ]
         java_block
         {pin=2}
 
 bnf_production 	                    ::=
-        java_non_terminal_production_header [ jjtree_node_descriptor ] ":"
+        java_non_terminal_production_header [ jjtree_node_descriptor | error_jjtree_annot_in_header ] ":"
         java_block
         curly_then_expansion_choices
         "}"
@@ -319,6 +319,16 @@ jjtree_node_descriptor      ::=
     "#" ( identifier | "void" )
     [ jjtree_node_descriptor_expr ]
     {pin=2}
+
+
+error_jjtree_annot ::=
+    "#" ( identifier | "void" )
+    {pin=1}
+
+error_jjtree_annot_in_header ::=
+    "#" ( identifier | "void" )
+    {pin=1}
+
 
 // The expr is integer valued for definite nodes, is boolean valued for conditional nodes
 jjtree_node_descriptor_expr ::=
@@ -407,7 +417,7 @@ expansion_sequence 	            ::=
 
 
 expansion_unit 	                ::=
-    priv_expansion_unit scoped_expansion_unit?
+    priv_expansion_unit scoped_expansion_unit? error_jjtree_annot?
     {recoverWhile="#auto"}
 
 left scoped_expansion_unit      ::=

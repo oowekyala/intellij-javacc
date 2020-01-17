@@ -1,17 +1,7 @@
 # Fully resolved JJTricks configuration
 # Config file chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
 jjtx:
-  nodePackage: org.exprs.ast
-  nodePrefix: Ex
-  templateContext: {}
-  typeHierarchy:
-    org.exprs.ast.MyNodeParent:
-    - org.exprs.ast.ExExpression:
-      - org.exprs.ast.ExBinaryExpression
-      - org.exprs.ast.ExLiteral:
-        - org.exprs.ast.ExNullLiteral
-        - org.exprs.ast.ExIntegerLiteral
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
       context:
         acceptMethod: |
@@ -25,13 +15,19 @@ jjtx:
           #end
 
           #evaluate($visitorMethodComment)
-          default Object visit($node.class.simpleName node, Object data) {
+          $!mods.default Object visit($node.class.simpleName node, Object data)
+          #if ( $mods.default )
+          {
               #if ($node.superNode)
               return visit(($node.superNode.class.simpleName) node, data);
               #else
               return node.childrenAccept(this, data);
               #end
           }
+          #else
+          ;
+          #end
+        visibility: public
         visitorMethodComment: |
           /**
            * Visits {@linkplain $node.class.simpleName $node.name}.
@@ -53,7 +49,7 @@ jjtx:
            *
            */
       formatter: java
-      genClassName: ${grammar.nodePackage}.${grammar.name}ParserVisitor
+      genClassName: org.exprs.ast.DummyExprParserVisitor
       templateFile: foo/bar/VisitorTest.vm
     parameterlessVisitor:
       context:
@@ -68,13 +64,19 @@ jjtx:
           #end
 
           #evaluate($visitorMethodComment)
-          default void visit($node.class.simpleName node) {
+          $!mods.default void visit($node.class.simpleName node)
+          #if ( $mods.default )
+          {
               #if ($node.superNode)
               visit(($node.superNode.class.simpleName) node);
               #else
-              node.childrenAccept(this, data);
+              node.childrenAccept(this);
               #end
           }
+          #else
+          ;
+          #end
+        visibility: public
         visitorMethodComment: |
           /**
            * Visits {@linkplain $node.class.simpleName $node.name}.
@@ -96,6 +98,143 @@ jjtx:
            *
            */
       formatter: java
-      genClassName: ${grammar.name}VisitorX
+      genClassName: DummyExprVisitorX
       templateFile: foo/bar/VisitorTest.vm
+  javaccGen:
+    jjFile:
+      context:
+        forceCheckedExceptionsDeclaration: 'true'
+        implements:
+        - ${run.javaccGen.support.nodeIds.class}
+      formatter: java
+      genClassName: org.javacc.jjtree.DummyExprParser
+      template: assert(false)
+    manipulator:
+      context:
+        modifiers: final
+      formatter: java
+      genClassName: org.exprs.ast.NodeManipulator
+      templateFile: /jjtx/templates/ManipulatorInterface.java.vm
+    nodeFactory:
+      context:
+        modifiers: final
+      formatter: java
+      genClassName: org.exprs.ast.DummyExprNodeFactory
+      templateFile: /jjtx/templates/DefaultNodeFactory.java.vm
+    nodeIds:
+      context:
+        nodeIdTemplate: JJT${node.name.toUpperCase().replace('.', '_')}
+        nodeIdType: int
+      formatter: java
+      genClassName: org.exprs.ast.DummyExprParserTreeConstants
+      templateFile: /jjtx/templates/VanillaJjtreeConstants.java.vm
+    treeBuilder:
+      context:
+        manipulatorCreator: |
+          new ${manipulator}() {
+              $!mods.override
+              public void setFirstToken($treeBuilder builder, $topNode node, $token token){
+                  #if ( $grammar.trackTokens )
+                  node.jjtSetFirstToken(token);
+                  #else
+                  // use jjtx.trackTokens to insert a call to jjtSetFirstToken here
+                  #end
+              }
+
+              $!mods.override
+              public void setLastToken($treeBuilder builder, $topNode node, $token token){
+                  #if ( $grammar.trackTokens )
+                  node.jjtSetLastToken(token);
+                  #else
+                  // use jjtx.trackTokens to insert a call to jjtSetLastToken
+                  #end
+              }
+
+              $!mods.override
+              public void onOpen($treeBuilder builder, $topNode node) {
+                  node.jjtOpen();
+              }
+
+              $!mods.override
+              public void onPush($treeBuilder builder, $topNode node) {
+                  node.jjtClose();
+              }
+
+              $!mods.override
+              public void addChild($treeBuilder builder, $topNode parent, $topNode child, int index) {
+                  child.jjtSetParent(child);
+                  parent.jjtAddChild(child, index);
+              }
+          }
+      formatter: java
+      genClassName: org.exprs.ast.JJTDummyExprParserState
+      templateFile: /jjtx/templates/TreeBuilder.java.vm
+  nodePackage: org.exprs.ast
+  nodePrefix: Ex
+  templateContext:
+    copyrightHeader: |+
+      /* Generated by JJTricks on $timestamp -- Not intended for manual editing. */
+
+
+    fileHeader: |+
+      #evaluate ( $!copyrightHeader )
+      #evaluate ( $!packageDecl )
+      #evaluate ( $!versionSpecificDecls )
+
+      #if ( !$visibility  )
+        ## default the visibility
+        #set ($visibility = "#if(${grammar.optionsOfGrammarFile.SUPPORT_CLASS_VISIBILITY_PUBLIC})public#else#end")
+      #end
+
+      #set ( $topNode = $grammar.rootNode.klass.simpleName )
+      #set ( $treeBuilder =  $run.javaccGen.support.treeBuilder.class.simpleName )
+      #set ( $manipulator = $run.javaccGen.support.manipulator.class.simpleName )
+      #set ( $nodeFactory = $run.javaccGen.support.nodeFactory.class.simpleName )
+      #set ( $nodeIds = $run.javaccGen.support.nodeIds.class.simpleName )
+
+      #if ( $run.javaccGen.support.token.class )
+         #set ( $token = $run.javaccGen.support.token.class.simpleName )
+         import $run.javaccGen.support.token.class.qualifiedName;
+
+      #else
+        ## Default JavaCC class
+        #set ( $token = "Token")
+        import ${grammar.parser.class.siblingClass("Token")};
+      #end
+
+      import $grammar.rootNode.klass.qualifiedName;
+      import $run.javaccGen.support.treeBuilder.class.qualifiedName;
+      import $run.javaccGen.support.manipulator.class.qualifiedName;
+      import $run.javaccGen.support.nodeIds.class.qualifiedName;
+      import $run.javaccGen.support.nodeFactory.class.qualifiedName;
+
+      #evaluate( $!moreHeader )
+
+    javaVersion: '8.0'
+    packageDecl: |
+      #if( "$!thisClass.package" != "" )
+      package $thisClass.package;
+      #end
+    versionSpecificDecls: |
+      ## Modifier map
+      #set ( $mods = {} )
+
+      #if ( $javaVersion >= 5 )
+          #set ( $mods.override = "@java.lang.Override" )
+          #set ( $mods.deprecated = "@java.lang.Deprecated" )
+      #end
+
+      #if ( $javaVersion >= 8 )
+          #set ( $mods.default = "default" )
+      #end
+  typeHierarchy:
+    name: org.exprs.ast.MyNodeParent
+    subtypes:
+    - name: org.exprs.ast.ExExpression
+      subtypes:
+      - org.exprs.ast.ExBinaryExpression
+      - name: org.exprs.ast.ExLiteral
+        subtypes:
+        - org.exprs.ast.ExNullLiteral
+        - org.exprs.ast.ExIntegerLiteral
 

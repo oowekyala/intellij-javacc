@@ -2,15 +2,15 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.InlineGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
-import com.github.oowekyala.jjtx.preprocessor.JjtreeCompatBean
-import com.github.oowekyala.jjtx.templates.FileGenBean
-import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeVBean
-import com.github.oowekyala.jjtx.templates.toNodeGenerationSchemes
+import com.github.oowekyala.jjtx.preprocessor.toModel
+import com.github.oowekyala.jjtx.templates.*
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.jjtx.util.lazily
 import com.github.oowekyala.jjtx.util.map
+import com.github.oowekyala.jjtx.util.mapValuesNotNull
+import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -19,10 +19,11 @@ import kotlin.reflect.KProperty
  *
  * @author Clément Fournier
  */
-internal class OptsModelImpl(val ctx: JjtxContext,
+internal class OptsModelImpl(rootCtx: JjtxContext,
                              override val parentModel: JjtxOptsModel,
                              data: AstMap) : JjtxOptsModel {
 
+    private val ctx = rootCtx.subContext("optsParsing")
 
     private val jjtx: Namespacer = data namespace "jjtx"
 
@@ -33,12 +34,11 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     override val nodePrefix: String by jjtx.withDefault { parentModel.nodePrefix }
     override val nodePackage: String by jjtx.withDefault { parentModel.nodePackage }
     override val isDefaultVoid: Boolean by jjtx.withDefault { parentModel.isDefaultVoid }
-    override val isTrackTokens: Boolean by jjtx.withDefault { parentModel.isTrackTokens }
+    override val isTrackTokens: Boolean by jjtx.withDefault("trackTokens") { parentModel.isTrackTokens }
+    override val nodeTakesParserArg: Boolean by jjtx.withDefault { parentModel.nodeTakesParserArg }
 
-    private val javaccGenImpl by jjtx.withDefault<JjtreeCompatBean?>("javaccGen") { null }
-
-    override val javaccGen: JavaccGenOptions by lazy {
-        javaccGenImpl?.toModel() ?: parentModel.javaccGen
+    override val grammarName: String by jjtx.withDefault {
+        ctx.grammarFile.virtualFile.nameWithoutExtension
     }
 
 
@@ -46,45 +46,40 @@ internal class OptsModelImpl(val ctx: JjtxContext,
     jjtx.withDefault { emptyMap<String, Any>() }
         .map { deepest ->
             // keep all parent keys, but override them
-            parentModel.templateContext + deepest
+            Collections.unmodifiableMap(parentModel.templateContext + deepest)
         }.lazily()
 
-    override val visitors: Map<String, FileGenBean> by jjtx.withDefault("visitors") {
-        emptyMap<String, FileGenBean>()
+    private val commonGenExcludes by jjtx.withDefault { emptyList<String>() }
+
+
+    private val commonGenBeans: Map<String, FileGenBean> by jjtx.processing("commonGen") {
+        it.completeWith((parentModel as? OptsModelImpl)?.commonGenBeans.orEmpty(), commonGenExcludes)
     }
 
-    private val th: TypeHierarchyTree by JsonProperty(jjtx, "typeHierarchy").map {
-        TypeHierarchyTree.fromData(it, ctx)
+    override val commonGen: Map<String, FileGenTask> by lazy {
+        commonGenBeans.mapValuesNotNull { (id, v) ->
+            v.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
+        }
     }
 
-    /**
-     * Type hierarchy after resolution against the grammar, before
-     * transformation to [NodeVBean] (which is just a mapping process).
-     * This is what's printed by help:dump-config
-     */
-    internal val resolvedTypeHierarchy: TypeHierarchyTree by lazy {
-        th.process(ctx)
+    private val javaccBeans: Map<String, FileGenBean> by jjtx.processing("javaccGen") {
+        it.completeWith(parent = (parentModel as? OptsModelImpl)?.javaccBeans.orEmpty())
     }
 
-    override val typeHierarchy: NodeVBean by lazy {
+    override val javaccGen: JavaccGenOptions by lazy {
+        javaccBeans.toModel(ctx.subContext("javaccGen"))
+    }
+
+    override val typeHierarchy: NodeVBean by jjtx.parsing("typeHierarchy") {
         // laziness is important, the method calls back to the nodePrefix & nodePackage through the context
-        NodeVBean.toBean(resolvedTypeHierarchy, ctx)
+        val subCtx = ctx.subContext("typeHierarchy")
+        val th = TypeHierarchyTree.fromData(it, subCtx).process(subCtx)
+        NodeVBean.toBean(th, ctx)
     }
 
-
-    private val ngs: DataAstNode? by JsonProperty(jjtx, "nodeGenerationSchemes")
-
-    private val myGenSchemes: Map<String, GrammarGenerationScheme> by lazy {
-        ngs?.toNodeGenerationSchemes(ctx) ?: emptyMap()
-    }
-
-    override val grammarGenerationSchemes: Map<String, GrammarGenerationScheme> by lazy {
+    override val nodeGen: GrammarGenerationScheme? by jjtx.parsing {
         // keep all parent keys, but override them
-        parentModel.grammarGenerationSchemes + myGenSchemes
-    }
-
-    override val activeNodeGenerationScheme: String? by jjtx.withDefault<String?>("activeGenScheme") {
-        null
+        it?.toNodeGenerationScheme(ctx.subContext("nodeGen")) ?: parentModel.nodeGen
     }
 
 }
@@ -95,6 +90,17 @@ private inline fun <reified T> Namespacer.withDefault(propName: String? = null,
         .map {
             it?.load<T>() ?: default()
         }.lazily()
+
+private inline fun <reified T> Namespacer.processing(propName: String? = null,
+                                                     crossinline mapper: (T?) -> T): ReadOnlyProperty<Any, T> =
+    JsonProperty(this, propName)
+        .map {
+            mapper(it?.load<T>())
+        }.lazily()
+
+private inline fun <reified T> Namespacer.parsing(propName: String? = null,
+                                                  crossinline mapper: (DataAstNode?) -> T): ReadOnlyProperty<Any, T> =
+    JsonProperty(this, propName).map { mapper(it) }.lazily()
 
 
 private class JsonProperty(private val namespacer: Namespacer, val name: String? = null) :

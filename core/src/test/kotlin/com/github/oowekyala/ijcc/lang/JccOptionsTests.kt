@@ -7,6 +7,7 @@ import com.github.oowekyala.ijcc.lang.model.parserPackage
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 import com.github.oowekyala.ijcc.lang.psi.matchesType
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.shouldBe
 
@@ -14,7 +15,7 @@ import io.kotlintest.shouldBe
  * @author Clément Fournier
  * @since 1.0
  */
-class JccOptionsTests : LightCodeInsightFixtureTestCase() {
+class JccOptionsTests : BasePlatformTestCase() {
 
 
     override fun getTestDataPath(): String = TestResourcesPath

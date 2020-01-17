@@ -1,10 +1,11 @@
 JJTricks v1.0
 (Run with -h parameter for a usage summary)
-Running tasks [gen:visitors, gen:nodes, gen:javacc]
+Running tasks [gen:common, gen:nodes, gen:javacc-support, gen:javacc]
 
-[init]              Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[gen:nodes]         Executing profiles 'myGen'
-    [ERROR]    org.apache.velocity.exception.ParseErrorException
+[init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+
+[gen:nodes]
+    [ERROR]    Velocity parse error
                Encountered "package"
                Was expecting one of:
                    "[" ...
@@ -18,7 +19,7 @@ Running tasks [gen:visitors, gen:nodes, gen:javacc]
                    <FLOATING_POINT_LITERAL> ...
                    <IDENTIFIER> ...
                    "{" ...
-                   <LOGICAL_NOT> ...
+                   <WHITESPACE> ...
                in @output@/org/expr/Root.java:2:8:
                   package $package;
                           ^
@@ -37,8 +38,9 @@ Running tasks [gen:visitors, gen:nodes, gen:javacc]
                in @output@/org/expr/ExIntegerLiteral.java:2:8:
                   package $package;
                           ^
-[gen:nodes]         6 classes were not generated because of an exception
-[gen:javacc]        Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
+[gen:nodes]           6 classes were not generated because of an exception
+[gen:javacc-support]  Generated 3 classes in @output@
+[gen:javacc]          Generated JavaCC grammar @output@/org/javacc/jjtree/DummyExpr.jj
 
 JJTricks exited with 6 errors
-Rerun with --warn option for more details
+Rerun with --warn option for more details (e.g. stack traces)

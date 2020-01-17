@@ -1,42 +1,53 @@
 package com.github.oowekyala.jjtx.tasks
 
 import com.github.oowekyala.ijcc.lang.model.parserPackage
+import com.github.oowekyala.jjtx.Jjtricks
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.OptsModelImpl
-import com.github.oowekyala.jjtx.preprocessor.toJavacc
-import com.github.oowekyala.jjtx.reporting.reportException
-import com.github.oowekyala.jjtx.reporting.reportNonFatal
-import com.github.oowekyala.jjtx.reporting.reportNormal
-import com.github.oowekyala.jjtx.reporting.reportSyntaxErrors
-import com.github.oowekyala.jjtx.templates.FileGenTask
-import com.github.oowekyala.jjtx.templates.RunVBean
-import com.github.oowekyala.jjtx.templates.Status
-import com.github.oowekyala.jjtx.templates.VisitorGenerationTask
-import com.github.oowekyala.jjtx.util.createFile
-import com.github.oowekyala.jjtx.util.dataAst.toYaml
-import com.github.oowekyala.jjtx.util.exists
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.path
+import com.github.oowekyala.jjtx.util.resolveQname
 import com.github.oowekyala.jjtx.util.splitAroundFirst
-import org.apache.velocity.VelocityContext
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.PrintStream
 import java.nio.file.Path
+import java.util.concurrent.CompletableFuture
+import kotlin.collections.set
+import org.javacc.parser.Main as JavaccMain
 
 
-enum class JjtxTaskKey(val ref: String) {
-    DUMP_CONFIG("help:dump-config"),
-    GEN_VISITORS("gen:visitors"),
-    GEN_NODES("gen:nodes"),
-    GEN_JAVACC("gen:javacc");
+enum class JjtxTaskKey(
+    val ref: String,
+    private val taskBuilder: (TaskCtx) -> JjtxTask,
+    /** Tasks that must be entirely completed before this task may be run. */
+    vararg val serialDependencies: JjtxTaskKey
+) {
+    DUMP_CONFIG("help:dump-config", ::DumpConfigTask),
+    GEN_COMMON("gen:common", ::CommonGenTask),
+    GEN_NODES("gen:nodes", ::GenerateNodesTask),
+    GEN_SUPPORT("gen:javacc-support", ::GenerateJavaccSupportFilesTask),
+    GEN_JAVACC("gen:javacc", ::GenerateJavaccTask),
+    /**
+     * Execute JavaCC on the generated JJ file and filter the output to match
+     * special templates.
+     */
+    GEN_PARSER("gen:parser", ::JavaccExecTask, GEN_JAVACC)
+    ;
+
 
 
     val namespace = ref.substringBefore(':')
     val localName = ref.substringAfter(':')
 
     override fun toString(): String = ref
+
+
+    fun execute(taskCtx: TaskCtx): CompletableFuture<Void?> {
+        val task = taskBuilder(taskCtx)
+        return when {
+            !Jjtricks.TEST_MODE -> CompletableFuture.runAsync(task::execute)
+            else                -> CompletableFuture.completedFuture(task.execute()).thenApply { null }
+        }
+    }
+
 
     companion object {
         private val nss = mutableMapOf<String, MutableList<String>>()
@@ -77,7 +88,7 @@ enum class JjtxTaskKey(val ref: String) {
 }
 
 
-sealed class JjtxTask {
+abstract class JjtxTask {
 
     abstract fun execute()
 
@@ -95,176 +106,7 @@ val JjtxContext.chainDump
             .joinToString(separator = " -> ")
 
 
-/**
- * Dumps the flattened configuration as a YAML file to stdout.
- */
-class DumpConfigTask(private val ctx: JjtxContext,
-                     private val out: PrintStream) : JjtxTask() {
-
-    override fun execute() {
-
-        val opts = ctx.jjtxOptsModel as? OptsModelImpl ?: return
+internal fun JjtxContext.genJjPath(outputDir: Path) =
+    outputDir.resolveQname(jjtxOptsModel.parserPackage).resolve("$grammarName.jj")
 
 
-        out.println("# Fully resolved JJTricks configuration")
-        out.println("# Config file chain: ${ctx.chainDump}")
-        out.println(opts.toYaml())
-        out.flush()
-    }
-}
-
-abstract class GenerationTaskBase(
-    val ctx: JjtxContext,
-    val outputDir: Path,
-    val otherSourceRoots: List<Path>
-) : JjtxTask() {
-
-    final override fun execute() {
-
-        val tasks = generationTasks
-
-        if (tasks.isEmpty()) return
-
-        var generated = 0
-        var aborted = 0
-        var ex = 0
-
-        val rootCtx = rootCtx()
-
-        ctx.messageCollector.reportNormal("Executing profiles '$configString'")
-
-        for (gen in tasks) {
-
-            try {
-                val (st, _, _) = gen.execute(
-                    ctx,
-                    rootCtx,
-                    outputDir,
-                    otherSourceRoots
-                )
-
-                when (st) {
-                    Status.Aborted   -> aborted++
-                    Status.Generated -> generated++
-                }
-            } catch (e: Exception) {
-                ctx.messageCollector.reportException(e, exceptionCtx, fatal = false)
-                ex++
-            }
-        }
-
-        if (generated > 0)
-            ctx.messageCollector.reportNormal("Generated $generated classes in $outputDir")
-        if (aborted > 0)
-            ctx.messageCollector.reportNormal("$aborted classes were not generated because found in other output roots")
-        if (ex > 0)
-            ctx.messageCollector.reportNormal("$ex classes were not generated because of an exception")
-
-    }
-
-    protected abstract val generationTasks: Collection<FileGenTask>
-    protected abstract val configString: String
-    protected abstract val exceptionCtx: String
-
-    protected open fun rootCtx(): VelocityContext = ctx.globalVelocityContext
-}
-
-/**
- * Generate the visitors marked for execution in the opts file.
- */
-class GenerateVisitorsTask(ctx: JjtxContext, outputDir: Path, sourceRoots: List<Path>)
-    : GenerationTaskBase(ctx, outputDir, sourceRoots) {
-
-
-    override val exceptionCtx: String = "Generating visitor"
-
-    override val generationTasks: Collection<VisitorGenerationTask> by lazy {
-        ctx.jjtxOptsModel.visitors.mapNotNull { (k, v) ->
-            v.toFileGen(ctx, null, k)
-        }
-    }
-
-
-    override val configString: String by lazy {
-        generationTasks.joinToString { it.id }
-    }
-
-
-}
-
-/**
- * Generate the visitors marked for execution in the opts file.
- */
-class GenerateNodesTask(ctx: JjtxContext,
-                        outputDir: Path,
-                        otherSourceRoots: List<Path>) : GenerationTaskBase(ctx, outputDir, otherSourceRoots) {
-
-    override val generationTasks: List<FileGenTask> by lazy {
-        val activeId = ctx.jjtxOptsModel.activeNodeGenerationScheme
-        val schemes = ctx.jjtxOptsModel.grammarGenerationSchemes
-
-        if (activeId == null) {
-            ctx.messageCollector.reportNormal("No node generation schemes configured (set jjtx.activeGenScheme)")
-            return@lazy emptyList<FileGenTask>()
-        }
-
-        val scheme = schemes[activeId] ?: run {
-            ctx.messageCollector.reportNonFatal(
-                "Node generation scheme '$activeId' not found, available ones are ${schemes.keys}",
-                null
-            )
-            return@lazy emptyList<FileGenTask>()
-        }
-
-        scheme.templates.flatMap { it.toFileGenTasks() }
-    }
-
-    override fun rootCtx(): VelocityContext =
-        VelocityContext(mapOf("run" to RunVBean.create(ctx)), super.rootCtx())
-
-
-    override val configString: String
-        get() = ctx.jjtxOptsModel.activeNodeGenerationScheme ?: "(none)"
-
-    override val exceptionCtx: String = "Generating nodes"
-}
-
-
-/**
- * Generate the visitors marked for execution in the opts file.
- */
-class GenerateJavaccTask(val ctx: JjtxContext,
-                         private val outputDir: Path) : JjtxTask() {
-
-
-    override fun execute() {
-
-
-        val invalidSyntax = ctx.grammarFile.reportSyntaxErrors(ctx)
-
-        if (invalidSyntax) {
-            return
-        }
-
-        val o = outputDir.resolve(ctx.jjtxOptsModel.parserPackage.replace('.', '/')).resolve(ctx.grammarName + ".jj")
-
-        if (!o.exists()) {
-            o.createFile()
-        }
-
-        val opts = ctx.jjtxOptsModel.javaccGen
-
-        try {
-
-            FileOutputStream(o.toFile()).buffered()
-                .use {
-                    toJavacc(ctx.grammarFile, it, opts)
-                }
-
-            ctx.messageCollector.reportNormal("Generated JavaCC grammar $o")
-
-        } catch (ioe: IOException) {
-            ctx.messageCollector.reportException(ioe, contextStr = "Generating JavaCC file", fatal = false)
-        }
-    }
-}

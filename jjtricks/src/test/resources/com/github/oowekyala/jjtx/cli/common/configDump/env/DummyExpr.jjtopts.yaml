@@ -1,19 +1,22 @@
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
       templateFile: foo/bar/VisitorTest.vm
     parameterlessVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/parameterlessVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
       templateFile: foo/bar/VisitorTest.vm
       genClassName: "${grammar.name}VisitorX"
 
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
           - "r:.*Expression"
-          - Literal:
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

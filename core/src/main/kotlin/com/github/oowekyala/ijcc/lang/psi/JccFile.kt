@@ -1,15 +1,10 @@
 package com.github.oowekyala.ijcc.lang.psi
 
-import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
-import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiClassOwner
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.tree.IFileElementType
 
 /**
  * Root of all Javacc files.
@@ -67,11 +62,6 @@ interface JccFile : PsiFile, JccPsiElement
 
     fun setPackageName(var1: String?)
 
-
-    companion object {
-        /** Element type. */
-        val TYPE = IFileElementType("JCC_FILE", JavaccLanguage)
-    }
 }
 
 
@@ -87,13 +77,6 @@ fun JccFile.getProductionByName(name: String): JccNonTerminalProduction? =
 
 fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProduction> =
     (this as JccFileImpl).syntaxGrammar.getProductionByNameMulti(name)
-
-// careful here, uses platform-impl
-val PsiElement.isInInjection: Boolean
-    get() = when (this) {
-        is PsiFile -> InjectedLanguageManager.getInstance(project).isInjectedFragment(this)
-        else       -> containingFile.isInInjection
-    }
 
 fun JccFile.allProductions(): Sequence<JccProduction> =
     grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()

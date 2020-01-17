@@ -1,5 +1,5 @@
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
       templateFile: foo/bar/VisitorTest.vm
       execute: true
@@ -11,12 +11,8 @@ jjtx:
   nodePrefix: Ex
   nodePackage: "org.exprs.ast"
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
-          - "r:.*Expression"
-          - Literal:
-              - NullLiteral
-              - IntegerLiteral: foo
-
-    "foo":
-      -"Expr": "bar"
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
+          - "r:.*Expr|.*Literal"

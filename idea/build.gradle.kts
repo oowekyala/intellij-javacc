@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import com.github.oowekyala.ijccResource
+import com.github.oowekyala.*
 
 
 plugins {
@@ -11,7 +11,7 @@ plugins {
 
 val PackageRoot = "/com/github/oowekyala/ijcc"
 
-version = "1.4"
+version = "1.5"
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
@@ -67,8 +67,10 @@ tasks {
 
 
     intellij {
-        version = "2018.2.4"
+        version = "2019.3.1"
         updateSinceUntilBuild = false
+        ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
+        setPlugins("java")
     }
 
     runIde {

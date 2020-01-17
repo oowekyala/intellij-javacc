@@ -1,55 +1,55 @@
-
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
     parameterlessVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/parameterlessVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/parameterlessVisitor'
 
 
-  activeGenScheme: myGen
-  nodeGenerationSchemes:
-    myGen:
-      # Match predicates in order
-      # v:X template X with node generation context
-      "v: $node == $grammar.rootNode":
-        - template: |
-            #if( !$node.class.package.empty )
-            package $node.class.package;
-            #end
-            public interface ${node.class.simpleName} {
+  nodeGen:
+    # Match predicates in order
+    # v:X template X with node generation context
+    "v: $node == $grammar.rootNode":
+      - template: |
+          #if( !$node.class.package.empty )
+          package $node.class.package;
+          #end
+          public interface ${node.class.simpleName} {
 
-            }
+          }
 
-          formatter: "java"
-      "v: !$node.subNodes.isEmpty()":
-        - template: |
-            #if( !$package.empty )
-            package $package;
-            #end
-            public abstract class $simpleName {
+        formatter: "java"
+    "v: !$node.subNodes.isEmpty()":
+      - template: |
+          #if( !$thisClass.package.empty )
+          package $thisClass.package;
+          #end
+          public abstract class $thisClass.simpleName {
 
-            }
-          formatter: "java"
-        - template: |
-            #if( !$package.empty )
-            package $package;
-            #end
-            public class $simpleName extends ${node.class.qualifiedName} {
+          }
+        formatter: "java"
+      - template: |
+          #if( !$thisClass.package.empty )
+          package $thisClass.package;
+          #end
+          public class $thisClass.simpleName extends ${node.class.qualifiedName} {
 
-            }
-          genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
-          formatter: "java"
-      "r:.*":
-        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
-          formatter: "java"
+          }
+        genClassName: "${node.class.package}.impl.${node.class.simpleName}Impl"
+        formatter: "java"
+    "r:.*":
+      - templateFile: "/jjtx/templates/VanillaJjtreeNode.java.vm" # Whitespace trouble
+        formatter: "java"
 
   nodePrefix: Ex
   nodePackage: "org.expr"
   typeHierarchy:
-    "%Root":
-      - "Expression":
+    name: "%Root"
+    subtypes:
+      - name: "Expression"
+        subtypes:
           - "r:.*Expression"
-          - Literal:
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

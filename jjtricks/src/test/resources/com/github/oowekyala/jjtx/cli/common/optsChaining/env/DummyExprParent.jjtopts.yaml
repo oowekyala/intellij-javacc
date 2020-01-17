@@ -1,15 +1,18 @@
 
 jjtx:
-  visitors:
+  commonGen:
     defaultJjtreeVisitor:
-      <<: !from '/jjtx/Defaults.jjtopts.yaml#/jjtx/visitors/defaultJjtreeVisitor'
+      <<: !from '/jjtx/Visitors.yaml#/defaultJjtreeVisitor'
 
   nodePrefix: AST
   nodePackage: "org.parent"
   typeHierarchy:
-    "%MyNodeParent":
-      - "Expression":
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
           - "r:.*Expression"
-          - Literal:
+          - name: Literal
+            subtypes:
               - NullLiteral
               - IntegerLiteral

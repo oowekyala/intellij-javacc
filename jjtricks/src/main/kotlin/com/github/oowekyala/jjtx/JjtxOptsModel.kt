@@ -2,16 +2,19 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
 import com.github.oowekyala.jjtx.preprocessor.JavaccGenOptions
+import com.github.oowekyala.jjtx.reporting.JjtricksExceptionWrapper
+import com.github.oowekyala.jjtx.reporting.reportWrappedException
 import com.github.oowekyala.jjtx.reporting.subKey
-import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.FileGenTask
 import com.github.oowekyala.jjtx.templates.GrammarGenerationScheme
-import com.github.oowekyala.jjtx.templates.NodeVBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.util.dataAst.AstMap
 import com.github.oowekyala.jjtx.util.dataAst.parseAndResolveIncludes
 import com.github.oowekyala.jjtx.util.dataAst.validateJjtopts
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.namedInputStream
 import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.toPath
 import java.nio.file.Path
 
 /**
@@ -33,6 +36,8 @@ interface JjtxOptsModel : IGrammarOptions {
 
     override val isDefaultVoid: Boolean
 
+    override val grammarName: String
+
     /**
      * The fully resolved type hierarchy tree,
      * not inherited.
@@ -47,15 +52,13 @@ interface JjtxOptsModel : IGrammarOptions {
     /**
      * Map of ids to runnable visitor generation tasks.
      */
-    val visitors: Map<String, FileGenBean>
+    val commonGen: Map<String, FileGenTask>
 
     /**
      * The node generation scheme, not merged if provided.
      */
-    val grammarGenerationSchemes: Map<String, GrammarGenerationScheme>
+    val nodeGen: GrammarGenerationScheme?
 
-
-    val activeNodeGenerationScheme: String?
 
     /**
      * Generation options for the JavaCC file.
@@ -95,7 +98,18 @@ interface JjtxOptsModel : IGrammarOptions {
                     try {
                         parse(ctx, path, model)
                     } catch (e: Exception) {
-                        throw RuntimeException("Exception parsing options file ${path.filename}", e)
+                        val wrapper = JjtricksExceptionWrapper.withKnownFileCtx(
+                            e,
+                            path.newInputStream().bufferedReader().readText(),
+                            path.filename.toPath()
+                        )
+
+                        ctx.messageCollector.reportWrappedException(
+                            wrapper,
+                            contextStr = "Parsing options file",
+                            fatal = true
+                        )
+                        throw AssertionError("Shouldn't happen")
                     }
                 }
 

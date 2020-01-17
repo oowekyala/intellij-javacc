@@ -1,0 +1,14 @@
+jjtx:
+
+  nodeGen:
+    "r:.*":
+      - template: |
+          #if( !$package.empty )
+          package $package;
+          #end
+          public class extends ${node.class.qualifiedName} {
+
+          }
+        formatter: "java"
+
+  nodePrefix: bar:

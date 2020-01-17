@@ -218,14 +218,13 @@ options {
   VISITOR = true;
   NODE_USES_PARSER = true;
   TRACK_TOKENS = true;
-  NODE_PACKAGE="net.sourceforge.pmd.lang.java.ast";
 
   //DEBUG_PARSER = true;
   //DEBUG_LOOKAHEAD = true;
 }
 
 PARSER_BEGIN(JavaParser)
-package net.sourceforge.pmd.lang.java.ast;
+package test.javast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -1698,7 +1697,7 @@ int Modifiers() #void:
   | "static" { modifiers |= AccessNode.STATIC; }
   | "protected" { modifiers |= AccessNode.PROTECTED; }
   | "private" { modifiers |= AccessNode.PRIVATE; }
-  | "final" { modifiers |= AccessNode.FINAL; }
+  | "final" { modifiers |= AccessNode.FINAL; } #
   | "abstract" { modifiers |= AccessNode.ABSTRACT; }
   | "synchronized" { modifiers |= AccessNode.SYNCHRONIZED; }
   | "native" { modifiers |= AccessNode.NATIVE; }

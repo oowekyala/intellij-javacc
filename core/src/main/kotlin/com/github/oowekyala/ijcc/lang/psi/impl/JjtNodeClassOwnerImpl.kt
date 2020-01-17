@@ -25,9 +25,8 @@ abstract class JjtNodeClassOwnerImpl<TStub : JjtNodeClassOwnerStub<*>>
         }
 
     override val nodeSimpleName: String?
-        get() = stub?.jjtNodeQualifiedName?.let {
-            it.takeLastWhile { it != '.' }
-        } ?: nodeRawName?.let { grammarOptions.nodePrefix + it }
+        get() = stub?.jjtNodeQualifiedName?.substringAfterLast('.')
+            ?: nodeRawName?.let { grammarOptions.nodePrefix + it }
 
     override val nodeRawName: String?
         get() = stub?.jjtNodeRawName ?: nodeIdentifier?.name?.takeIf {

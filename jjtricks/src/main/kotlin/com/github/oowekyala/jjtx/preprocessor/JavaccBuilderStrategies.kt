@@ -1,14 +1,22 @@
 package com.github.oowekyala.jjtx.preprocessor
 
 import com.github.oowekyala.ijcc.lang.model.IGrammarOptions
-import com.github.oowekyala.ijcc.lang.model.parserQualifiedName
-import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.expressionText
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.postprocessor.SpecialTemplate
+import com.github.oowekyala.jjtx.reporting.MessageCategory
+import com.github.oowekyala.jjtx.reporting.report
 
+/**
+ * Strategy responsible for the rendering of hooks and API-dependent stuff.
+ * Also responsible for generating the relevant support files
+ */
 interface JjtxBuilderStrategy {
 
-    fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar?
+    fun makeNodeVar(owner: JjtNodeClassOwner,
+                    enclosing: NodeVar?,
+                    num: Int): NodeVar?
 
     fun parserImplements(): List<String>
 
@@ -18,24 +26,25 @@ interface JjtxBuilderStrategy {
 
     fun createNode(nodeVar: NodeVar): String
 
-    fun openNodeHook(nodeVar: NodeVar): String?
-
-    fun closeNodeHook(nodeVar: NodeVar): String?
-
     fun openNodeScope(nodeVar: NodeVar): String
 
     fun closeNodeScope(nodeVar: NodeVar): String
 
     fun clearNodeScope(nodeVar: NodeVar): String
 
-    fun setFirstToken(nodeVar: NodeVar): String?
-
-    fun setLastToken(nodeVar: NodeVar): String?
-
     fun popNode(nodeVar: NodeVar): String
 
     fun escapeJjtThis(nodeVar: NodeVar, expression: String): String
 
+    // FIXME unused
+    fun validateSupportFiles(ctx: JjtxContext): Boolean
+
+    // those are shitty bindings that we honor when the inline binding is there but
+    // otherwise should be done through the manipulator
+
+    fun openNodeHook(nodeVar: NodeVar): String?
+
+    fun closeNodeHook(nodeVar: NodeVar): String?
 
 }
 
@@ -48,24 +57,31 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
 
     private val bindings = grammarOptions.inlineBindings
 
-    private val nodeFactory = bindings.jjtNodeFactory
-    private val usesParser = bindings.jjtNodeConstructionUsesParser
-
+    private val nodeFactory = SpecialTemplate.NODE_FACTORY.actualLocation(grammarOptions)
+    private val nodeIds = SpecialTemplate.NODE_IDS.actualLocation(grammarOptions)
+    private val tokenIds = SpecialTemplate.TOKEN_IDS.actualLocation(grammarOptions)
 
     private val myImports = mutableSetOf<String>().also {
         if (grammarOptions.nodePackage.isNotEmpty()) {
             it += grammarOptions.nodePackage + ".*"
         }
+        it += nodeFactory.qualifiedName
+        it += nodeIds.qualifiedName
+        it += "static ${nodeIds.qualifiedName}.*"
+//        it += "static ${tokenIds.qualifiedName}.*"
     }
 
     private val NodeVar.nodeId
+        // FIXME link to nodeIds special template
         get() = "JJT" + nodeName.toUpperCase().replace('.', '_')
 
-    override fun makeNodeVar(owner: JjtNodeClassOwner, enclosing: NodeVar?): NodeVar? =
+    override fun makeNodeVar(owner: JjtNodeClassOwner,
+                             enclosing: NodeVar?,
+                             num: Int): NodeVar? =
         if (owner.isVoid) null
         else {
 
-            val (nVar, cVar, exVar) = varNames(owner, enclosing)
+            val (nVar, cVar, exVar) = varNames(owner, enclosing, num)
 
             NodeVar(
                 owner = owner,
@@ -83,62 +99,37 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
     /**
      * Builds the variable names for the node var, closed var, exception var.
      */
-    private fun varNames(owner: JjtNodeClassOwner, enclosing: NodeVar?): Triple<String, String, String> {
-        val scopeDepth = if (enclosing != null) enclosing.scopeDepth + 1 else 0
+    private fun varNames(owner: JjtNodeClassOwner,
+                         enclosing: NodeVar?,
+                         num: Int): Triple<String, String, String> {
+        val nodeVarName = "${owner.nodeRawName!!}$num".decapitalize().removeSuffix("0")
 
-        return if (compat.descriptiveVariableNames) {
-            val nodeVarName = "${owner.nodeRawName!!}$scopeDepth".decapitalize().removeSuffix("0")
+        return Triple(
+            nodeVarName,
+            "${nodeVarName}NeedsClose",
+            "${nodeVarName}Exception"
+        )
 
-            Triple(
-                nodeVarName,
-                "${nodeVarName}NeedsClose",
-                "${nodeVarName}Exception"
-            )
-        } else {
-            // Default jjtree naming scheme
-
-            val s = "000$scopeDepth"
-            val num = s.substring(s.length - 3, s.length)
-
-            fun withId(id: String) = "jjt$id$num"
-            Triple(
-                withId("n"),
-                withId("c"),
-                withId("e")
-            )
-        }
     }
 
 
     override fun createNode(nodeVar: NodeVar): String {
         val nc = nodeVar.nodeRefType
 
-        val args = "(${if (usesParser) "this, " else ""}${nodeVar.nodeId})"
+        val args = "(" + (if (grammarOptions.nodeTakesParserArg) "this, " else "") + nodeIds.simpleName + "." + nodeVar.nodeId + ")"
 
-        return when {
-            nodeFactory == "*"       -> "($nc) $nc.jjtCreate$args"
-            nodeFactory.isNotEmpty() -> "($nc) $nodeFactory.jjtCreate$args"
-            else                     -> "new $nc$args"
-        }
+        return "($nc) ${nodeFactory.simpleName}.jjtCreate$args"
     }
 
     override fun parserImplements(): List<String> =
-        if (compat.implementNodeConstants)
-            listOf("${grammarOptions.parserSimpleName}TreeConstants")
-        else emptyList()
-
-    override fun parserImports(): List<String> =
-        myImports.also {
-            if (!compat.implementNodeConstants) {
-                it += "static ${grammarOptions.parserQualifiedName}TreeConstants.*"
-            }
-        }.sorted()
+        compat.implementsList
 
 
-    private val parserStateSimpleName = "JJT${grammarOptions.parserSimpleName}State"
+    override fun parserImports(): List<String> = myImports.sorted()
+
 
     override fun parserDeclarations(): String = """
-        protected $parserStateSimpleName jjtree = new $parserStateSimpleName();
+        protected final $treeBuilderSimpleName jjtree = new $treeBuilderSimpleName();
 
     """.trimIndent()
 
@@ -150,35 +141,44 @@ class VanillaJjtreeBuilder(private val grammarOptions: IGrammarOptions,
             "if (jjtree.nodeCreated()) jjtCloseNodeScope(${nodeVar.varName});"
         else null
 
-    override fun setFirstToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetFirstToken(getToken(1));" else null
 
-    override fun setLastToken(nodeVar: NodeVar): String? =
-        if (grammarOptions.isTrackTokens) "${nodeVar.varName}.jjtSetLastToken(getToken(0));" else null
-
-    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName});"
+    override fun openNodeScope(nodeVar: NodeVar): String = "jjtree.openNodeScope(${nodeVar.varName}, getToken(1));"
 
     override fun clearNodeScope(nodeVar: NodeVar): String = "jjtree.clearNodeScope(${nodeVar.varName});"
 
     override fun closeNodeScope(nodeVar: NodeVar): String {
         val d = nodeVar.owner.jjtreeNodeDescriptor?.descriptorExpr
         val n = nodeVar.varName
+        val prefix = "jjtree.closeNodeScope($n, getToken(0)"
         return when {
-            d == null -> "jjtree.closeNodeScope($n, true);"
-            d.isGtExpression -> "jjtree.closeNodeScope($n, jjtree.nodeArity() > ${d.expressionText.filterIfCompat(
-                nodeVar
-            )});"
-            else -> "jjtree.closeNodeScope($n, ${d.expressionText.filterIfCompat(nodeVar)});"
+            d == null        -> "$prefix, true);"
+            d.isGtExpression -> "$prefix, jjtree.nodeArity() > ${escapeJjtThis(nodeVar, d.expressionText)});"
+            else             -> "$prefix, ${escapeJjtThis(nodeVar, d.expressionText)});"
         }
     }
 
-    private fun String.filterIfCompat(nodeVar: NodeVar): String =
-        if (compat.fixJjtThisConditionScope) escapeJjtThis(nodeVar, this) else this
-
 
     override fun escapeJjtThis(nodeVar: NodeVar, expression: String): String =
-        expression.replace("jjtThis", nodeVar.varName)
-
+        jjtThisRegex.replace(expression, nodeVar.varName)
 
     override fun popNode(nodeVar: NodeVar): String = "jjtree.popNode();"
+
+    private val treeBuilderSimpleName: String get() = compat.supportFiles.getValue(SpecialTemplate.TREE_BUILDER.id).genFqcn
+
+    override fun validateSupportFiles(ctx: JjtxContext): Boolean {
+        val support = ctx.jjtxOptsModel.javaccGen.supportFiles
+
+        if (SpecialTemplate.TREE_BUILDER.id !in support) {
+            ctx.messageCollector.report(
+                "Javacc grammar generation needs a '${SpecialTemplate.TREE_BUILDER.id}' file generation task!",
+                MessageCategory.NON_FATAL
+            )
+            return false
+        }
+
+        return true
+    }
+
 }
+
+private val jjtThisRegex = Regex("\\bjjtThis\\b")

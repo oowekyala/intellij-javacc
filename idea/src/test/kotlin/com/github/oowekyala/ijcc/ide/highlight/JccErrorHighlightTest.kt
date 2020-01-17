@@ -60,6 +60,20 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
     )
 
 
+    fun `test private special-token regex reference NEG`() = checkByText(
+        """
+            SPECIAL_TOKEN: {
+                < #PRIV: "oha" >
+            }
+
+            TOKEN: {
+               <FOO: <#PRIV>>
+             | <BAR: <#PRIV> | "h" >
+            }
+        """.inGrammarCtx()
+    )
+
+
     fun `test duplicate lexical name NEG`() = checkByText(
         """
             <FLIP, FLOP> TOKEN: {

@@ -1,8 +1,29 @@
 #* @implicitly included *#
-#* @vtlvariable name="grammar" type="com.github.oowekyala.jjtx.templates.GrammarVBean" *#
-#* @vtlvariable name="run" type="com.github.oowekyala.jjtx.templates.RunVBean" *#
+#* @vtlvariable name="nodeIdTemplate" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/VanillaJjtreeConstants.java.vm" *#
+#* @vtlvariable name="nodeIds" type="java.lang.String" *#
+#* @vtlvariable name="nodeFactory" type="java.lang.String" *#
+#* @vtlvariable name="mods" type="java.util.Map" *#
+#* @vtlmacrolibrary path="../resources/com/github/oowekyala/jjtx/templates/macros.vtl" *#
+#* @vtlvariable name="manipulatorCreator" type="java.lang.String" file="../resources/com/github/oowekyala/jjtx/templates/TreeBuilder.java.vm" *#
+#* @vtlvariable name="manipulator" type="java.lang.String" *#
+#* @vtlvariable name="token" type="java.lang.String" *#
+#* @vtlvariable name="topNode" type="java.lang.String" *#
+#* @vtlvariable name="treeBuilder" type="java.lang.String" *#
+#* @vtlvariable name="fileHeader" type="java.lang.String" *#
+#* @vtlvariable name="versionSpecificDecls" type="java.lang.String" *#
+#* @vtlvariable name="javaVersion" type="java.lang.Integer" *#
+#* @vtlvariable name="importTokenClass" type="java.lang.String" *#
+#* @vtlvariable name="packageDecl" type="java.lang.String" *#
+#* @vtlvariable name="copyrightHeader" type="java.lang.String" *#
+#* @vtlvariable name="visibility" type="java.lang.String" *#
+#* @vtlvariable name="modifiers" type="java.lang.String" *#
+#* @vtlvariable name="preserveLineColumn" type="boolean" file="../resources/com/github/oowekyala/jjtx/templates/SimpleCharStream.java.vm" *#
+#* @vtlvariable name="sorter" type="org.apache.velocity.tools.generic.SortTool" *#
+#* @vtlvariable name="jjtx" type="com.github.oowekyala.jjtx.templates.vbeans.JjtricksGenVBean" *#
+#* @vtlvariable name="thisClass" type="com.github.oowekyala.jjtx.templates.vbeans.ClassVBean" *#
+#* @vtlvariable name="thisFile" type="com.github.oowekyala.jjtx.templates.vbeans.FileVBean" *#
+#* @vtlvariable name="grammar" type="com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean" *#
+#* @vtlvariable name="run" type="com.github.oowekyala.jjtx.templates.vbeans.RunVBean" *#
 #* @vtlvariable name="timestamp" type="java.util.Date" *#
-#* @vtlvariable name="package" type="java.lang.String" *#
-#* @vtlvariable name="simpleName" type="java.lang.String" *#
-#* @vtlvariable name="node" type="com.github.oowekyala.jjtx.templates.NodeVBean" *#
+#* @vtlvariable name="node" type="com.github.oowekyala.jjtx.templates.vbeans.NodeVBean" *#
 #* @vtlvariable name="global" type="kotlin.collections.Map" *#

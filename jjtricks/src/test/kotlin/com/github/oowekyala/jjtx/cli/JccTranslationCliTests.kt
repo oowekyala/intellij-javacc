@@ -1,11 +1,19 @@
 package com.github.oowekyala.jjtx.cli
 
+import com.github.oowekyala.jjtx.Jjtricks
+import org.junit.Before
 import org.junit.Test
 
 /**
  * @author Clément Fournier
  */
-class JccTranslationCliTests : JjtxCliTestBase() {
+class JccTranslationCliTests : JjtxCliTestBase(replaceExpected = ReplacementOpt.NONE) {
+
+    @Before
+    fun before() {
+        Jjtricks.TEST_MODE = true
+    }
+
     @Test
     fun testBetterNodeNames() = doTest(
         "SimpleExprs",
@@ -15,13 +23,15 @@ class JccTranslationCliTests : JjtxCliTestBase() {
     @Test
     fun testImportInsteadOfImplements() = doTest(
         "SimpleExprs",
-        "gen:javacc"
+        "gen:javacc",
+        "--warn"
     )
 
     @Test
     fun testNoCastExceptions() = doTest(
         "SimpleExprs",
-        "gen:javacc"
+        "gen:javacc",
+        "--warn"
     )
 
     @Test
@@ -50,6 +60,29 @@ class JccTranslationCliTests : JjtxCliTestBase() {
 
     @Test
     fun testJjtThisScope() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
+    @Test
+    fun testJjtThisNormalScopes() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
+    @Test
+    fun testCommentBug() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+
+    @Test
+    fun testDefaultVisibilityCompat() = doTest(
+        "SimpleExprs",
+        "gen:javacc"
+    )
+    @Test
+    fun testVisibilityOverride() = doTest(
         "SimpleExprs",
         "gen:javacc"
     )

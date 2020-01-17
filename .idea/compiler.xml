@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="8" />
+    <bytecodeTargetLevel target="8">
+      <module name="intellij-javacc.buildSrc.main" target="1.8" />
+      <module name="intellij-javacc.buildSrc.test" target="1.8" />
+      <module name="intellij-javacc.core.main" target="1.8" />
+      <module name="intellij-javacc.core.test" target="1.8" />
+      <module name="intellij-javacc.idea.main" target="1.8" />
+      <module name="intellij-javacc.idea.test" target="1.8" />
+      <module name="intellij-javacc.jjtricks.main" target="1.8" />
+      <module name="intellij-javacc.jjtricks.test" target="1.8" />
+      <module name="intellij-javacc.main" target="1.8" />
+      <module name="intellij-javacc.prepare-deps.main" target="1.8" />
+      <module name="intellij-javacc.prepare-deps.test" target="1.8" />
+      <module name="intellij-javacc.test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

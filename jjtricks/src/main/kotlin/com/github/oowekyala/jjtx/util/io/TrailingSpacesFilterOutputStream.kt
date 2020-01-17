@@ -28,5 +28,6 @@ internal class TrailingSpacesFilterOutputStream(out: OutputStream) : FilterOutpu
             super.out.write(curLine.toString().toByteArray())
             curLine.clear()
         }
+        super.flush()
     }
 }

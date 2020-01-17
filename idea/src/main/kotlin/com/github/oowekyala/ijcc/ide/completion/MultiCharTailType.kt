@@ -17,8 +17,8 @@ data class MultiCharTailType(private val tail: String) : TailType() {
         for (char in tail) {
 
             finalOffset = when (char) {
-                document.charsSequence[tailOffset] -> TailType.moveCaret(editor, finalOffset, 1)
-                else                               -> TailType.insertChar(editor, finalOffset, char)
+                document.charsSequence[tailOffset] -> moveCaret(editor, finalOffset, 1)
+                else                               -> insertChar(editor, finalOffset, char)
             }
         }
 

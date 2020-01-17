@@ -1,29 +1,25 @@
 jjtx:
-  visitors:
+  commonGen:
 
-  activeGenScheme: myGen
-  nodeGenerationSchemes:
-    myGen:
-      "r:.*":
-        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
-          template: |
-            #if( !package.empty )
-            package $package;
-            #end
-            public class $simpleName extends ${node.class.qualifiedName} {
+  nodeGen:
+    "r:.*":
+      - template: |
+          #if( !package.empty )
+          package $package;
+          #end
+          public class $simpleName extends ${node.class.qualifiedName} {
 
-            }
-          formatter: "none"
-      "hello":
-        - templateFile: "/jjtx/templates/Node.java.vm" # Whitespace trouble
-          template: |
-            #if( !package.empty )
-            package $package;
-            #end
-            public class $simpleName extends ${node.class.qualifiedName} {
+          }
+        formatter: "none"
+    "hello":
+      - template: |
+          #if( !package.empty )
+          package $package;
+          #end
+          public class $simpleName extends ${node.class.qualifiedName} {
 
-            }
-          formatter: "none"
+          }
+        formatter: "none"
 
   nodePrefix: Ex
   nodePackage: "org.expr"

@@ -1,0 +1,20 @@
+#evaluate($copyrightHeader)
+#evaluate($packageDecl)
+
+
+public class ${thisClass.simpleName} extends ${node.superNode.class.simpleName} {
+
+
+    public ${thisClass.simpleName}(int id) {
+        super(id);
+    }
+
+    public ${thisClass.simpleName}(${grammar.parser.class.simpleName} parser, int id) {
+        super(parser, id);
+    }
+
+    #foreach($visitor in $run.commonGen.values())
+    #evaluate($visitor.context.acceptMethod)
+    #end
+
+}

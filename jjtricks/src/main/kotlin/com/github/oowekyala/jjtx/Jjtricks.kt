@@ -1,19 +1,22 @@
 package com.github.oowekyala.jjtx
 
+import com.github.oowekyala.ijcc.JjtxCoreEnvironment
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.jjtx.ide.JjtxFullOptionsService
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.tasks.*
+import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey.*
-import com.github.oowekyala.ijcc.JjtxCoreEnvironment
+import com.github.oowekyala.jjtx.tasks.TaskCtx
+import com.github.oowekyala.jjtx.tasks.chainDump
 import com.github.oowekyala.jjtx.util.extension
 import com.github.oowekyala.jjtx.util.io.ExitCode
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.isFile
+import com.github.oowekyala.jjtx.util.joinTasks
 import com.github.oowekyala.jjtx.util.toPath
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.StandardFileSystems
@@ -24,8 +27,11 @@ import com.xenomachina.argparser.DefaultHelpFormatter
 import com.xenomachina.argparser.SystemExitException
 import com.xenomachina.argparser.default
 import java.io.OutputStreamWriter
+import java.lang.AssertionError
 import java.net.URL
 import java.nio.file.Path
+import java.util.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * The CLI of JJTricks.
@@ -55,27 +61,27 @@ class Jjtricks(
         listOf(JjtxTaskKey.parse("gen:*", argCheckIo))
     }
 
-    private val myTasks: Set<JjtxTaskKey> get() = tasksImpl.flatten().toSet()
+    private val myTasks: Set<JjtxTaskKey> get() = EnumSet.copyOf(tasksImpl.flatten())
 
 
     private val outputRoot: Path by args.storing(
         "-o", "--output",
-        help = "Output directory. Files are generated in a package tree rooted in this directory."
+        help = "Output directory. Files are generated in a package tree rooted in this directory. Existing files in this root are overwritten."
     ) {
         io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen"))
         .addValidator {
-        if (value.isFile()) {
-            throw SystemExitException(
-                "-o $value is not a directory",
-                ExitCode.ERROR.toInt
-            )
+            if (value.isFile()) {
+                throw SystemExitException(
+                    "-o $value is not a directory",
+                    ExitCode.ERROR.toInt
+                )
+            }
         }
-    }
 
     private val sourceRoots by args.adding(
         "-s", "--source",
-        help = "Other source roots. Node files that are already in those roots are not generated."
+        help = "Other source roots. Files that are already in those roots are not generated."
     ) {
         io.wd.resolve(this).normalize().toAbsolutePath()
     }.default(io.wd.resolve("gen")).addValidator {
@@ -133,7 +139,7 @@ class Jjtricks(
 
         val err = MessageCollector.create(io, minReportSeverity == Severity.NORMAL, minReportSeverity)
 
-        val tasks = myTasks
+        val tasks = if (GEN_JAVACC in myTasks || GEN_PARSER in myTasks) myTasks + GEN_SUPPORT else myTasks
 
         // not quiet mode
         if (minReportSeverity < Severity.FAIL) {
@@ -149,68 +155,76 @@ class Jjtricks(
             io.stderr.println()
         }
 
-        val ctx = err.catchException("Exception while building run context", fatal = true) {
+        val ctx = err.catchException("Exception while building run context", fatal = true, default = { throw AssertionError() }) {
             val init = err.withContext(InitCtx)
             produceContext(env.project, err, init).apply {
                 init.reportNormal("Config chain: $chainDump")
-                jjtxOptsModel // force evaluation
+
+                // force evaluation
+                jjtxOptsModel
+
+                // this needs to be registered before the type hierarchy is evaluated,
+                // since it the type hierarchy uses the options service to resolve Qnames
+                env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(this))
+
+                jjtxOptsModel.typeHierarchy
+                jjtxOptsModel.nodeGen
+                jjtxOptsModel.javaccGen
             }
         }
 
+        // now the context is entirely initialized (only initialisation is not thread-safe),
+        // so we can fork the tasks
 
-        env.registerProjectComponent(GrammarOptionsService::class.java, JjtxFullOptionsService(ctx))
-
-
-        if (DUMP_CONFIG in tasks) {
-            ctx.subContext(DUMP_CONFIG).let {
-                it.messageCollector.catchException(null) {
-                    DumpConfigTask(it, io.stdout).execute()
+        fun runTask(key: JjtxTaskKey): CompletableFuture<Void?> {
+            val deps = key.serialDependencies.sorted().map(::runTask).toTypedArray()
+            return CompletableFuture.allOf(*deps)
+                .thenCompose { _ ->
+                    ctx.subContext(key).let {
+                        it.messageCollector.catchException(null, default = {CompletableFuture.completedFuture<Void?>(null)}) {
+                            key.execute(TaskCtx(it, outputRoot, sourceRoots.toList()))
+                        }
+                    }
                 }
-            }
         }
 
-        // node generation depends on the visitors
-        if (GEN_VISITORS in tasks || GEN_NODES in tasks) {
-            ctx.subContext(GEN_VISITORS).let {
-                it.messageCollector.catchException(null) {
-                    GenerateVisitorsTask(it, outputRoot, sourceRoots.toList()).execute()
-                }
-            }
+
+
+        val sorted = tasks.sorted().let {
+            it - it.flatMap { it.serialDependencies.toList() }
         }
 
-        if (GEN_NODES in tasks) {
-            ctx.subContext(GEN_NODES).let {
-                it.messageCollector.catchException(null) {
-                    GenerateNodesTask(it, outputRoot, sourceRoots.toList()).execute()
-                }
-            }
-        }
 
-        if (GEN_JAVACC in tasks) {
-            ctx.subContext(GEN_JAVACC).let {
-                it.messageCollector.catchException(null) {
-                    GenerateJavaccTask(it, outputRoot).execute()
-                }
-            }
-        }
+        sorted.map(::runTask).joinTasks()
 
         ctx.messageCollector.concludeReport()
     }
 
-    private fun <T> MessageCollector.catchException(ctxStr: String?, fatal: Boolean = false, block: () -> T): T =
+    private fun <T : Any> MessageCollector.catchException(
+        ctxStr: String?,
+        fatal: Boolean = false,
+        default: ()->T,
+        block: () -> T
+    ): T =
         try {
             block()
         } catch (e: Exception) {
-            catchException(null, fatal = true) {
-                this.reportException(e, ctxStr, fatal = fatal) as T
+            catchException(null, fatal = fatal, default = default) {
+                this.reportException(e, ctxStr, fatal = fatal)
+                default()
             }
         } catch (e: DoExitNowError) {
+            this.concludeReport()
             io.exit(ExitCode.ERROR)
+        } finally {
+            io.stderr.flush()
         }
 
 
     companion object {
 
+
+        const val GITHUB_URL = "https://github.com/oowekyala/intellij-javacc"
 
         const val VERSION = "1.0"
 
@@ -248,6 +262,11 @@ class Jjtricks(
                 whole `--opts` chain) to standard output.
 
         """.trimIndent()
+
+        private const val unitTestProperty = "jjtx.unitTestMode"
+        /** If true, disables parallel processing of generation tasks, to get reproducible results. */
+        internal var TEST_MODE = System.getProperty(unitTestProperty).orEmpty().toBoolean()
+
 
         /**
          * CLI execution, with JVM [Io].
@@ -305,7 +324,7 @@ class Jjtricks(
                     }, path, identity = path)
                 }
 
-        private fun expandResourcePath(path: String): String {
+        fun expandResourcePath(path: String): String {
             return when {
                 path.startsWith("/jjtx") -> path.replaceFirst("/jjtx", "/com/github/oowekyala/jjtx")
                 else                     -> path

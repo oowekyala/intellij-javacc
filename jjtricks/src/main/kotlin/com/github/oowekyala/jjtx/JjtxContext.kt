@@ -2,20 +2,20 @@ package com.github.oowekyala.jjtx
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.jjtx.reporting.*
-import com.github.oowekyala.jjtx.tasks.GenerateNodesTask
-import com.github.oowekyala.jjtx.tasks.GenerateVisitorsTask
 import com.github.oowekyala.jjtx.tasks.JjtxTaskKey
-import com.github.oowekyala.jjtx.templates.GrammarVBean
-import com.github.oowekyala.jjtx.templates.RunVBean
-import com.github.oowekyala.jjtx.templates.set
+import com.github.oowekyala.jjtx.templates.vbeans.GrammarVBean
+import com.github.oowekyala.jjtx.templates.vbeans.RunVBean
 import com.github.oowekyala.jjtx.util.io.DefaultResourceResolver
 import com.github.oowekyala.jjtx.util.io.Io
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.ResourceResolver
 import com.github.oowekyala.jjtx.util.isFile
 import com.github.oowekyala.jjtx.util.path
+import com.github.oowekyala.jjtx.util.plus
 import com.intellij.openapi.project.Project
+import kotlinx.collections.immutable.toImmutableHashMap
 import org.apache.velocity.VelocityContext
+import org.apache.velocity.tools.generic.SortTool
 import java.nio.file.Path
 
 
@@ -76,12 +76,17 @@ interface JjtxContext {
     /**
      * Velocity context shared by every file generation task.
      * This doesn't contain the visitors, because that would
-     * introduce a cyclic dependency. After the [GenerateVisitorsTask]
-     * is done, the [GenerateNodesTask] uses the completed
-     * visitor beans under the key "run", a [RunVBean].
+     * introduce a cyclic dependency. This is used to evaluate
+     * the static templates of the options file itself.
+     */
+    val initialVelocityContext: VelocityContext
+
+    /**
+     * This is the root context used by all file gen tasks,
+     * it has a [RunVBean] under key "run" to represent the
+     * resolved tasks to run.
      */
     val globalVelocityContext: VelocityContext
-
 
     val resourceResolver: ResourceResolver<NamedInputStream>
 
@@ -140,7 +145,7 @@ private class JjtxRootContext(
 
     override val project: Project = grammarFile.project
 
-    override val grammarName: String = grammarFile.virtualFile.nameWithoutExtension
+    override val grammarName: String get() = jjtxOptsModel.grammarName
 
     override val grammarDir: Path = grammarFile.path.parent
 
@@ -152,12 +157,23 @@ private class JjtxRootContext(
     }
 
 
+    override val initialVelocityContext: VelocityContext by lazy {
+        val map = jjtxOptsModel.templateContext + mapOf(
+            "grammar" to GrammarVBean.create(this),
+            // we need to copy it, otherwise the map ends up containing itself
+            // velocity contexts mutate the map they're created with...
+            "global" to jjtxOptsModel.templateContext.toImmutableHashMap(), // alias global context
+            // allows escaping the "#" easily.
+            "H" to "#",
+            "sorter" to SortTool()
+        )
+        VelocityContext(map.toImmutableHashMap()) // don't mutate the shared context, ever
+    }
+
     override val globalVelocityContext: VelocityContext by lazy {
-        VelocityContext().also {
-            it["grammar"] = GrammarVBean.create(this)
-            it["global"] = jjtxOptsModel.templateContext
-            it["H"] = "#"
-        }
+        initialVelocityContext + mapOf(
+            "run" to RunVBean.create(this)
+        )
     }
 
 

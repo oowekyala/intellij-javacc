@@ -1,0 +1,69 @@
+# This is approximately how JJTree would generate nodes
+vanilla:
+  "v: $node == $grammar.rootNode":
+    - formatter: java
+      template: |
+        #evaluate( $!copyrightHeader )
+        #evaluate( $!packageDecl )
+        /** Root node for the ${grammar.name} AST. */
+        public interface $thisClass.simpleName {
+            // TODO
+        }
+    - genClassName: "${grammar.nodePackage}.Abstract${node.name}"
+      formatter: java
+      template: |
+        #evaluate( $!copyrightHeader )
+        #evaluate( $!packageDecl )
+
+        import ${run.javaccGen.support.nodeIds.class.qualifiedName};
+        import ${grammar.parser.class.qualifiedName};
+
+
+        public abstract class ${thisClass.simpleName} implements ${node.name} {
+
+            private final int id;
+            private final ${grammar.parser.class.simpleName} parser;
+
+            // TODO handle children
+
+            public ${thisClass.simpleName}(int id) {
+                this(null, id);
+            }
+
+            public ${thisClass.simpleName}(${grammar.parser.class.simpleName} parser, int id) {
+                this.id = id;
+                this.parser = parser;
+            }
+
+            @Override
+            public String toString() {
+              return ${run.javaccGen.support.nodeIds.class.simpleName}.jjtNodeName[id];
+            }
+
+            #foreach($visitor in $run.commonGen.values())
+                #evaluate($visitor.context.acceptMethod)
+            #end
+
+        }
+  "r:.*":
+    - formatter: java
+      template: |
+        #evaluate( $!copyrightHeader )
+        #evaluate( $!packageDecl )
+
+        public class ${thisClass.simpleName} extends Abstract${node.superNode.class.simpleName} {
+
+
+            public ${thisClass.simpleName}(int id) {
+                super(id);
+            }
+
+            public ${thisClass.simpleName}(${grammar.parser.class.simpleName} parser, int id) {
+                super(parser, id);
+            }
+
+            #foreach($visitor in $run.commonGen.values())
+            #evaluate($visitor.context.acceptMethod)
+            #end
+
+        }

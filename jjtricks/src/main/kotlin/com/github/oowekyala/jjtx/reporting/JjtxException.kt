@@ -22,6 +22,7 @@ class JjtricksExceptionWrapper(override val cause: Throwable, message: String?, 
         private fun positionedMessage(cause: Throwable) =
             VelocityExtractor.extract(cause)
                 ?: GJFormatExtractor.extract(cause)
+                ?: SnakeYamlLineColExtractor.extract(cause)
 
         fun withKnownFileCtx(cause: Throwable, fileContents: String, path: Path): JjtricksExceptionWrapper =
             positionedMessage(cause)?.let {

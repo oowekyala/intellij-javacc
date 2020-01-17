@@ -1,5 +1,6 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
+import com.github.oowekyala.jjtx.reporting.JjtricksExceptionWrapper
 import com.github.oowekyala.jjtx.util.io.NamedInputStream
 import com.github.oowekyala.jjtx.util.io.extension
 import com.google.gson.Gson
@@ -35,8 +36,11 @@ fun parseGuessFromExtension(input: NamedInputStream, preference: DataLanguage = 
 
 internal inline fun <reified T> DataAstNode.load(): T? {
     val type = object : TypeLiteral<T>() {}
-    val any = Gson().fromJson<Any>(toJson(), type.type)
-    return any as T?
+    return try {
+        Gson().fromJson<Any>(toJson(), type.type) as T?
+    } catch (e: Exception) {
+        throw JjtricksExceptionWrapper(e, message = null, position = this.position)
+    }
 }
 
 fun DataAstNode.toYamlString(): String = YamlLang.writeToString(this)

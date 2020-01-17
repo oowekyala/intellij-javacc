@@ -410,13 +410,7 @@ val JccCharacterListRegexUnit.isNegated
 
 /** Converts this node to the enum constant from [RegexKind]. */
 val JccRegexKind.modelConstant: RegexKind
-    get() = when (text.trim()) {
-        "TOKEN"         -> RegexKind.TOKEN
-        "SPECIAL_TOKEN" -> RegexKind.SPECIAL_TOKEN
-        "MORE"          -> RegexKind.MORE
-        "SKIP"          -> RegexKind.SKIP
-        else            -> throw IllegalArgumentException("Unknown regex kind ${text.trim()}")
-    }
+    get() = RegexKind.valueOf(text.trim())
 
 /** True if this [JccCharacterListRegexUnit] is of the form `~[]`, which matches any character. */
 val JccCharacterListRegexUnit.isAnyMatch: Boolean

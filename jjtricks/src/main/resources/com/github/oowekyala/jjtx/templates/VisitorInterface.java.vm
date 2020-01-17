@@ -1,0 +1,15 @@
+#evaluate( $!copyrightHeader )
+#evaluate( $!packageDecl )
+#evaluate( $!versionSpecificDecls )
+
+#evaluate( $!moreHeader )
+
+$!visibility $!modifiers interface ${thisClass.simpleName}#evaluate($!generics) {
+
+    #foreach($node in $grammar.typeHierarchy)
+
+        #evaluate($methodTemplate)
+
+    #end
+
+}

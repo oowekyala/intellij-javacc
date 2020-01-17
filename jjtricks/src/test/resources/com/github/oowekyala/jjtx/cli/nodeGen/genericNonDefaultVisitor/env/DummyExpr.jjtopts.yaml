@@ -1,0 +1,21 @@
+jjtx:
+  commonGen:
+    genericVoidVisitor:
+      <<: !from '/jjtx/Visitors.yaml#/genericVoidVisitor'
+      context:
+        <<: !from '/jjtx/Visitors.yaml#/genericVoidVisitor/context'
+        recursive: true
+        nodeGetChildMethod: getChild(i)
+        nodeNumChildMethod: node.numChildren()
+
+  nodePrefix: Ex
+  typeHierarchy:
+    name: "%MyNodeParent"
+    subtypes:
+      - name: "Expression"
+        subtypes:
+          - "r:.*Expression"
+          - name: Literal
+            subtypes:
+              - NullLiteral
+              - IntegerLiteral

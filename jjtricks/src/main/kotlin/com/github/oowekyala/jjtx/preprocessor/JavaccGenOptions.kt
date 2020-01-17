@@ -1,5 +1,14 @@
 package com.github.oowekyala.jjtx.preprocessor
 
+import com.github.oowekyala.jjtx.JjtxContext
+import com.github.oowekyala.jjtx.postprocessor.SpecialTemplate
+import com.github.oowekyala.jjtx.reporting.reportNonFatal
+import com.github.oowekyala.jjtx.templates.FileGenBean
+import com.github.oowekyala.jjtx.templates.FileGenTask
+import com.github.oowekyala.jjtx.templates.toBean
+import com.github.oowekyala.jjtx.templates.toFileGen
+import com.github.oowekyala.jjtx.util.mapValuesNotNull
+
 /**
  * Compatibility options for JJTree.
  */
@@ -21,74 +30,41 @@ data class JavaccGenOptions(
     val dontCloseBeforeLastParserAction: Boolean = false,
 
     /**
-     * If set to true, jjtThis is available in the closing condition of
-     * its own node scope. In vanilla JJTree, #Node(jjtThis.something())
-     * isn't compiled correctly.
-     */
-    val fixJjtThisConditionScope: Boolean = true,
-
-    /**
-     * If set to true, the tokens are set before calling the node open
-     * and close hooks. This is better as the tokens are then available
-     * inside those hooks.
-     */
-    val setTokensBeforeHooks: Boolean = true,
-
-    /**
      * If set to true, the parser will implement the interface containing
      * the constants. This is a code smell and is kept only for compatibility
      * with Jjtree.
      */
-    val implementNodeConstants: Boolean = false,
-
-    /**
-     * Use descriptive variable names for generated variables, instead
-     * of Jjtree-like `jjtn000`, `jjtc000`, etc
-     */
-    val descriptiveVariableNames: Boolean = true,
+    val implementsList: List<String> = emptyList(),
 
     /**
      * Cast the exceptions at run-time to force declaration of checked exceptions.
-     * If you trust your own code, set it to false exceptions to throw exceptions
-     * immediately.
+     * This kind-of obfuscates the parser and the jj file. If you trust your own
+     * code, set it to false to throw exceptions immediately.
      */
-    val castExceptions: Boolean = false
-) {
+    val castExceptions: Boolean = true,
 
+    val supportFiles: Map<String, FileGenTask> = emptyMap()
+)
 
-    companion object {
-
-        /**
-         * Compatibility options mimicking JJTree output the closest.
-         */
-        val FullJjtreeCompat = JavaccGenOptions(
-            dontCloseBeforeLastParserAction = false,
-            fixJjtThisConditionScope = false,
-            setTokensBeforeHooks = false,
-            implementNodeConstants = true,
-            descriptiveVariableNames = false,
-            castExceptions = true
-        )
-    }
-}
-
-/**
- * Defaults correspond to [JavaccGenOptions.FullJjtreeCompat].
- */
-data class JjtreeCompatBean(
-    var fixJjtThisConditionScope: Boolean = false,
-    var implementNodeConstants: Boolean = true,
-    //    var dontCloseBeforeLastParserAction: Boolean = false,
-    var setTokensBeforeHooks: Boolean = false,
-    var descriptiveVariableNames: Boolean = false,
-    var forceCheckedExceptionsDeclaration: Boolean = true
-) {
-
-    fun toModel(): JavaccGenOptions = JavaccGenOptions(
-        fixJjtThisConditionScope = fixJjtThisConditionScope,
-        implementNodeConstants = implementNodeConstants,
-        setTokensBeforeHooks = setTokensBeforeHooks,
-        descriptiveVariableNames = descriptiveVariableNames,
-        castExceptions = forceCheckedExceptionsDeclaration
+internal fun Map<String, FileGenBean>?.toModel(ctx: JjtxContext): JavaccGenOptions =
+    if (this == null) JavaccGenOptions()
+    else JavaccGenOptions(
+        castExceptions = this[SpecialTemplate.JJ_FILE.id]?.context?.get("forceCheckedExceptionDeclaration")?.let { cast ->
+            if (cast !is Boolean) {
+                ctx.messageCollector.reportNonFatal("Expected 'forceCheckedExceptionDeclaration' to be a boolean")
+                true
+            } else cast
+        } ?: true,
+        implementsList = this[SpecialTemplate.JJ_FILE.id]?.context?.get("implements")?.let { impl ->
+            if (impl !is Collection<*> || impl.any { it !is String }) {
+                ctx.messageCollector.reportNonFatal("Expected 'implements' to be a collection of strings")
+                emptyList()
+            } else impl.map { it.toString() }
+        } ?: emptyList(),
+        supportFiles = this.mapValuesNotNull { (id, fgb) ->
+            fgb.toFileGen(ctx, positionInfo = null, id = id)?.resolveStaticTemplates(ctx)
+        }
     )
-}
+
+fun JavaccGenOptions.toBean() = supportFiles.mapValues { (_, v) -> v.toBean() }
+

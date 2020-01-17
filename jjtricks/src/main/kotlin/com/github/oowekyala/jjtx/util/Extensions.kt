@@ -3,8 +3,6 @@
 package com.github.oowekyala.jjtx.util
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.intellij.openapi.util.text.StringUtil
 import org.apache.commons.lang3.text.WordUtils
 import org.apache.velocity.VelocityContext
@@ -16,8 +14,12 @@ import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.CompletableFuture
+import java.util.stream.IntStream
+import java.util.stream.Stream
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
 
 fun String.splitAroundFirst(delimiter: Char): Pair<String, String> =
     Pair(substringBefore(delimiter, missingDelimiterValue = ""), substringAfter(delimiter))
@@ -42,6 +44,28 @@ val Path.extension: String?
 val Path.baseName: String
     get() = fileName.toString().substringBefore('.')
 
+fun List<CompletableFuture<*>>.joinTasks() {
+    CompletableFuture.allOf(*toTypedArray()).join()
+}
+
+fun <T> List<T>.batches(length: Int): Stream<List<T>> {
+    if (length <= 0)
+        throw IllegalArgumentException("length = $length")
+    val size = size
+    if (size <= 0)
+        return Stream.empty()
+
+    val fullChunks = (size - 1) / length
+
+    return IntStream.range(0, fullChunks + 1)
+        .mapToObj { n ->
+            subList(
+                n * length,
+                if (n == fullChunks) size else (n + 1) * length
+            )
+        }
+}
+
 fun Path.bufferedReader(): Reader = toFile().bufferedReader()
 fun Path.inputStream(): InputStream = FileInputStream(toFile())
 fun Path.isDirectory(): Boolean = Files.isDirectory(this)
@@ -52,56 +76,49 @@ fun Path.createFile() {
     Files.createFile(this)
 }
 
+fun Path.resolveQname(qname: String): Path = resolve(qname.asQnamePath())
+fun String.asQnamePath(): Path = replace('.', '/').toPath()
+fun String.asQnameFile(): Path = replace('.', '/').let { "$it.java" }.toPath()
+
+
+fun <K, V, R> Map<K, V>.mapValuesNotNull(f: (Map.Entry<K, V>) -> R?): Map<K, R> =
+    mapValuesTo(mutableMapOf(), f).filterValues { it != null } as Map<K, R>
+
 fun String.wrap(lineLength: Int, indent: Int = 0): String =
     WordUtils.wrap(this, lineLength, "\n".padEnd(indent + 1), false)
 
+fun Path.overwrite(contents: () -> String) = toFile().apply {
+    parentFile.mkdirs()
+    createNewFile()
+    writeText(contents())
+}
 
 fun String.toPath() = Paths.get(this)
 
-fun JsonObject.asMap(): Map<String, JsonElement> {
-    return object : Map<String, JsonElement> {
-        val obj = this@asMap
 
-        override val keys: Set<String>
-            get() = obj.keySet()
-        override val size: Int
-            get() = obj.size()
-        override val values: Collection<JsonElement>
-            get() = obj.entrySet().map { it.value }
+operator fun VelocityContext.plus(map: Map<String, Any?>) =
+    // this copies the map to make modifications local
+    VelocityContext(map.toMutableMap(), this)
 
-        override fun containsKey(key: String): Boolean = obj.has(key)
-
-        override fun containsValue(value: JsonElement): Boolean =
-            obj.entrySet().any {
-                it.value == value
-            }
-
-        override fun get(key: String): JsonElement? = obj[key]
-
-        override fun isEmpty(): Boolean = obj.keySet().isEmpty()
-
-        override val entries: Set<Map.Entry<String, JsonElement>>
-            get() = obj.entrySet()
-
+fun VelocityEngine.template(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
+    if (template.indexOfAny(charArrayOf('$', '#')) < 0) {
+        // shortcut when the string is a constant template (has no meta characters)
+        template
+    } else {
+        StringWriter().also {
+            this.evaluate(ctx, it, logId, template)
+        }.toString()
     }
-}
 
-fun VelocityEngine.evaluate(ctx: VelocityContext, template: String, logId: String = "jjtx-velocity"): String =
-    StringWriter().also {
-        this.evaluate(ctx, it, logId, template)
-    }.toString()
-
-inline fun VelocityEngine.evaluate(ctx: VelocityContext,
+inline fun VelocityEngine.template(ctx: VelocityContext,
                                    template: String,
                                    logId: String = "jjtx-velocity",
                                    onException: (Throwable) -> Nothing): String =
-    StringWriter().also {
         try {
-            this.evaluate(ctx, it, logId, template)
+            this.template(ctx = ctx, logId = logId, template = template)
         } catch (e: Throwable) {
             onException(e)
         }
-    }.toString()
 
 internal fun <R : Any, T> ReadOnlyProperty<R, T>.lazily(): ReadOnlyProperty<R, T> =
     object : ReadOnlyProperty<R, T> {
@@ -132,3 +149,6 @@ fun String.matches(regex: String): Boolean = matches(Regex(regex))
 val JccFile.path: Path
     get() = Paths.get(virtualFile.path).normalize()
 const val baseIndent = "    "
+operator fun VelocityContext.set(key: String, value: Any) {
+    put(key, value)
+}

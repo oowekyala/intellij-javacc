@@ -1,0 +1,21 @@
+#evaluate( $!copyrightHeader )
+#evaluate( $!packageDecl )
+
+$!visibility $!modifiers interface ${thisClass.simpleName} {
+
+    ## Sort to get a stable ordering, useful bc changes to type hierarchy shouldn't change
+    ## the constants, which are inlined
+    #set ( $stable = $sorter.sort($grammar.typeHierarchy, "name") )
+
+    #foreach($node in $stable)
+         public int #evaluate( $nodeIdTemplate ) = ${foreach.index};
+    #end
+
+    public String[] jjtNodeName = {
+        #foreach($node in $stable)
+            "${node.name}",
+
+        #end
+    };
+
+}

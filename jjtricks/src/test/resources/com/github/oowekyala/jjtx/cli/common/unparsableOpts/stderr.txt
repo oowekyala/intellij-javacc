@@ -1,0 +1,15 @@
+JJTricks v1.0
+(Run with -h parameter for a usage summary)
+Running tasks [gen:common, gen:nodes, gen:javacc-support, gen:javacc, gen:parser]
+
+[init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
+
+[ERROR]    YAML syntax error
+           mapping values are not allowed here
+           in @tmp@/DummyExpr.jjtopts.yaml:14:17:
+                nodePrefix: bar:
+                               ^
+
+JJTricks exited with a fatal error
+Rerun with --warn option for a stack trace
+If you think this is a bug, please report it to https://github.com/oowekyala/intellij-javacc/issues/new

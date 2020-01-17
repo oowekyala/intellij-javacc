@@ -3,9 +3,11 @@ package com.github.oowekyala.jjtx.typeHierarchy
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.jjtx.JjtxContext
 import com.github.oowekyala.jjtx.JjtxOptsModel
-import com.github.oowekyala.jjtx.reporting.MessageCategory.*
+import com.github.oowekyala.jjtx.reporting.MessageCategory.WRONG_TYPE
 import com.github.oowekyala.jjtx.reporting.report
-import com.github.oowekyala.jjtx.util.*
+import com.github.oowekyala.jjtx.util.JsonPointer
+import com.github.oowekyala.jjtx.util.Position
+import com.github.oowekyala.jjtx.util.TreeOps
 import com.github.oowekyala.jjtx.util.dataAst.*
 import com.github.oowekyala.treeutils.TreeLikeAdapter
 
@@ -19,10 +21,20 @@ import com.github.oowekyala.treeutils.TreeLikeAdapter
  * The documentation of this class assumes the finished
  * form of the tree.
  *
+ *     thNode ::= singleNodeMatcher
+ *              | { name: singleNodeMatcher, subtypes: childNodeMatcher | array<thNode> }
+ *
+ *     singleNodeMatcher ::= <ident> | <qname> | "%" ident
+ *
+ *     childNodeMatcher ::= singleNodeMatcher | "r:" <regex>
+ *
+ *
  * @property nodeName The fully qualified name of the represented node
  * @property positionInfo The position in the jjtopts file where this node was defined, or null
  * @property children The children (subtypes) of this node
  * @property parent The direct supertype of this node, or null if this is the root
+ * @property isExternal True if the node matches no production. This is populated during the expansion
+ *                      pass and is irrelevant before then.
  *
  * @author Clément Fournier
  */
@@ -30,7 +42,8 @@ internal class TypeHierarchyTree internal constructor(
     val nodeName: String,
     val positionInfo: Position?,
     children: List<TypeHierarchyTree>,
-    internal val specificity: Specificity = Specificity.UNKNOWN
+    internal val specificity: Specificity = Specificity.UNKNOWN,
+    val isExternal: Boolean = false
 ) : TreeOps<TypeHierarchyTree> {
 
 
@@ -56,21 +69,19 @@ internal class TypeHierarchyTree internal constructor(
         children.forEach { it.parent = this }
     }
 
-    fun deepCopy(): TypeHierarchyTree {
-        return TypeHierarchyTree(
-            nodeName,
-            positionInfo,
-            children.map { it.deepCopy() },
-            specificity
-        )
-    }
+    fun deepCopy(): TypeHierarchyTree = copy(children = children.map { it.deepCopy() })
 
     internal fun copy(nodeName: String = this.nodeName,
                       positionInfo: Position? = this.positionInfo,
                       children: List<TypeHierarchyTree> = this.children,
+                      isExternal: Boolean = this.isExternal,
                       specificity: Specificity = this.specificity): TypeHierarchyTree =
         TypeHierarchyTree(
-            nodeName, positionInfo, children, specificity
+            nodeName = nodeName,
+            positionInfo = positionInfo,
+            children = children,
+            specificity = specificity,
+            isExternal = isExternal
         )
 
     fun process(ctx: JjtxContext): TypeHierarchyTree {
@@ -79,7 +90,14 @@ internal class TypeHierarchyTree internal constructor(
         val expanded = this.expandAllNames(jjtreeDeclsByRawName.keys, ctx)
         val dedup = expanded.removeDuplicates(ctx)
         val adopted = dedup.adoptOrphansOnRoot(jjtreeDeclsByRawName.values.flatten(), ctx)
-        adopted.descendantsOrSelf().forEach { it.processed = true }
+        var n = 0
+        adopted.descendantsOrSelf().forEach {
+            it.processed = true
+            n++
+        }
+        require(n >= jjtreeDeclsByRawName.size) {
+            "Missing nodes?"
+        }
         return adopted
     }
 
@@ -119,28 +137,29 @@ internal class TypeHierarchyTree internal constructor(
             }
         }
 
-        private fun AstScalar.fromJsonPrimitive(ctx: JjtxContext): TypeHierarchyTree? {
-            return if (type == ScalarType.STRING) {
+        private fun AstScalar.fromJsonPrimitive(ctx: JjtxContext): TypeHierarchyTree? =
+            if (type == ScalarType.STRING) {
                 TypeHierarchyTree(any, position, emptyList())
             } else {
                 ctx.messageCollector.report("expected string, got ${this}", WRONG_TYPE, position)
                 null
             }
-        }
 
         private fun AstMap.fromJsonObject(ctx: JjtxContext): TypeHierarchyTree? {
 
-            if (size > 1) {
-                ctx.messageCollector.report("$size", MULTIPLE_HIERARCHY_ROOTS, position)
-                return null
-            } else if (size == 0) {
-                ctx.messageCollector.report("", NO_HIERARCHY_ROOTS, position)
-                return null
+            val name = this["name"].let {
+                if (it == null) {
+                    ctx.messageCollector.report("Expected a \"name\" property, none given", WRONG_TYPE, position)
+                    return null
+                } else if (it !is AstScalar || it.type != ScalarType.STRING) {
+                    ctx.messageCollector.report("Expected \"name\" to be a string", WRONG_TYPE, it.position)
+                    return null
+                } else {
+                    it.any
+                }
             }
 
-            val name = keys.first()
-
-            return when (val children = this[name]) {
+            return when (val children = this["subtypes"]) {
                 is AstScalar -> TypeHierarchyTree(
                     nodeName = name,
                     children = listOfNotNull(children.fromJsonPrimitive(ctx)),
@@ -153,7 +172,7 @@ internal class TypeHierarchyTree internal constructor(
                 )
                 else                                                -> {
                     ctx.messageCollector.report(
-                        "expected array or string, got $children",
+                        "expected \"subtypes\" property (an array or a string), none given",
                         WRONG_TYPE,
                         position
                     )

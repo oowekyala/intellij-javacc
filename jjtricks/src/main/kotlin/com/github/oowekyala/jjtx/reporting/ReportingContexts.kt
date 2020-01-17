@@ -12,4 +12,5 @@ val RootContext = ReportingContext("", null)
 val InitCtx = ReportingContext("init", null)
 
 fun ReportingContext.subKey(suffix: String) = ReportingContext("$key:$suffix", null)
+
 fun taskCtx(taskKey: JjtxTaskKey) = ReportingContext(taskKey.ref, null)

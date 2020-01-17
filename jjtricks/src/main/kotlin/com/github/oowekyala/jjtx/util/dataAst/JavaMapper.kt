@@ -1,19 +1,23 @@
 package com.github.oowekyala.jjtx.util.dataAst
 
 import com.github.oowekyala.jjtx.OptsModelImpl
+import com.github.oowekyala.jjtx.preprocessor.toBean
+import com.github.oowekyala.jjtx.templates.SourceFormatter
+import com.github.oowekyala.jjtx.templates.toBean
+import com.github.oowekyala.jjtx.templates.vbeans.NodeVBean
 import com.github.oowekyala.jjtx.typeHierarchy.TypeHierarchyTree
 import com.github.oowekyala.jjtx.util.dataAst.ScalarType.*
+import com.github.oowekyala.jjtx.util.io.StringSource
 import java.lang.reflect.Method
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import org.yaml.snakeyaml.nodes.Node as YamlNode
 
 internal fun OptsModelImpl.toYaml(): String = toDataNode().toYamlString()
 
 internal fun OptsModelImpl.toDataNode(): DataAstNode {
 
-    val visitors = visitors.toDataNode()
-
-    val th = resolvedTypeHierarchy.toDataNode()
+    val common = commonGen.mapValues { it.value.toBean() }.toDataNode()
 
     return AstMap(
         mapOf(
@@ -21,9 +25,10 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
                 mapOf(
                     "nodePrefix" to nodePrefix.toDataNode(),
                     "nodePackage" to nodePackage.toDataNode(),
-                    "visitors" to visitors,
+                    "commonGen" to common,
+                    "javaccGen" to javaccGen.toBean().toDataNode(),
                     "templateContext" to templateContext.toDataNode(),
-                    "typeHierarchy" to th
+                    "typeHierarchy" to typeHierarchy.toDataNode()
                 )
             )
         )
@@ -31,32 +36,40 @@ internal fun OptsModelImpl.toDataNode(): DataAstNode {
 }
 
 
-internal fun TypeHierarchyTree.toDataNode(): DataAstNode =
-    if (children.isEmpty())
-        AstScalar(nodeName, STRING)
+internal fun NodeVBean.toDataNode(): DataAstNode =
+    if (subNodes.isEmpty())
+        AstScalar(klass.qualifiedName, STRING)
     else
         AstMap(
             mapOf(
-                nodeName to AstSeq(
-                    children.map { it.toDataNode() })
+                "name" to AstScalar(klass.qualifiedName, STRING),
+                "subtypes" to AstSeq(
+                    subNodes.map { it.toDataNode() }
+                )
             )
         )
 
 
 internal fun Any?.toDataNode(): DataAstNode {
     return when (this) {
-        null             -> AstScalar("null", NULL)
-        is String        -> AstScalar(this, STRING)
-        is Number        -> AstScalar(this.toString(), NUMBER)
-        is Boolean       -> AstScalar(this.toString(), BOOLEAN)
-        is Collection<*> -> AstSeq(this.map { it.toDataNode() })
-        is Map<*, *>     ->
+        null                 -> AstScalar("null", NULL)
+        is DataAstNode       -> this
+        is String            -> AstScalar(this, STRING)
+        is Number            -> AstScalar(this.toString(), NUMBER)
+        is Boolean           -> AstScalar(this.toString(), BOOLEAN)
+        is Collection<*>     -> AstSeq(this.map { it.toDataNode() })
+        is TypeHierarchyTree -> this.toDataNode()
+        is NodeVBean         -> this.toDataNode()
+        is StringSource.File -> AstScalar(this.fname, STRING)
+        is StringSource.Str  -> AstScalar(this.source, STRING)
+        is SourceFormatter   -> AstScalar(this.name.toLowerCase(Locale.ROOT), STRING)
+        is Map<*, *>         ->
             AstMap(
                 this.mapNotNull { (k, v) ->
                     v?.let { Pair(k.toDataNode(), v.toDataNode()) }
                 }.toMap()
             )
-        else             -> {
+        else                 -> {
             AstMap(this.propertiesMap().filterValues { it !is AstScalar || it.type != NULL })
         }
     }
@@ -67,7 +80,7 @@ private inline fun <reified T : Any> T.propertiesMap(): Map<String, DataAstNode>
 
 
 // avoids endless loop in the case of cycle
-private val propertyMapCache = WeakHashMap<Class<*>, List<JProperty<*, *>>>()
+private val propertyMapCache = ConcurrentHashMap<Class<*>, List<JProperty<*, *>>>()
 
 private val <T : Any> Class<T>.properties: List<JProperty<T, *>>
     get() = propertyMapCache.computeIfAbsent(this) {
@@ -88,9 +101,9 @@ private class JProperty<in T : Any, out V> private constructor(
 
         fun toPropertyOrNull(method: Method): JProperty<*, *>? {
             return method.propertyName?.let {
-                JProperty<Any, Any?>(it) {
+                JProperty<Any, Any?>(it) { t ->
                     try {
-                        method.invoke(it)
+                        method.invoke(t)
                     } catch (e: Exception) {
                         null
                     }
@@ -101,7 +114,8 @@ private class JProperty<in T : Any, out V> private constructor(
         private val Method.propertyName: String?
             get() {
 
-                if (this == java.lang.Object::class.java.getDeclaredMethod("getClass")) return null
+                if (this.declaringClass == java.lang.Object::class.java) return null
+                if (this == NodeVBean::class.java.getDeclaredMethod("getSuperNode")) return null
 
                 if (parameterCount != 0 || isBridge) return null
 

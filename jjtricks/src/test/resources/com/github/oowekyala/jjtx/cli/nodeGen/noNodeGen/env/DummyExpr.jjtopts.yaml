@@ -1,8 +1,9 @@
 
 jjtx:
-  visitors:
+  commonGen:
 
   nodePrefix: Ex
   nodePackage: "org.expr"
   typeHierarchy:
-    Expression: "r:.*"
+    name: Expression
+    subtypes: "r:.*"
