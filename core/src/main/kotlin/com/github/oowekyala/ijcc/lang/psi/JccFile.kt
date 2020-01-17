@@ -4,6 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiClassOwner
 import com.intellij.psi.PsiFile
 
 /**
@@ -12,9 +13,7 @@ import com.intellij.psi.PsiFile
  * @author Clément Fournier
  * @since 1.0
  */
-interface JccFile : PsiFile, JccPsiElement
-//    FIXME
-//    , PsiClassOwner
+interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
 {
 
     /** The unique parser declaration of this file. */
@@ -56,11 +55,11 @@ interface JccFile : PsiFile, JccPsiElement
 
     // FIXME PsiClassOwnerNotResolved!!
 
-    fun getClasses(): Array<PsiClass>
+    override fun getClasses(): Array<PsiClass>
 
-    fun getPackageName(): String
+    override fun getPackageName(): String
 
-    fun setPackageName(var1: String?)
+    override fun setPackageName(var1: String?)
 
 }
 
