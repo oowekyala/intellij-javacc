@@ -1,3 +1,5 @@
+package com.github.oowekyala.ijcc.lang.psi.stubs
+
 import com.intellij.util.io.DataInputOutputUtil
 import java.io.DataInputStream
 import java.io.DataOutputStream

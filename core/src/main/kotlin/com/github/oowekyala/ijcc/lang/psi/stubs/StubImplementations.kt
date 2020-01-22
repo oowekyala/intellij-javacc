@@ -13,10 +13,6 @@ import com.intellij.psi.StubBuilder
 import com.intellij.psi.stubs.*
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IStubFileElementType
-import readEnum
-import readNullable
-import writeEnum
-import writeNullable
 
 /*
     DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
