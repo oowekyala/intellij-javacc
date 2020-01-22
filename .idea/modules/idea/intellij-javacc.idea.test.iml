@@ -43,6 +43,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="intellij-javacc.core.test" production-on-test="" />
     <orderEntry type="module" module-name="intellij-javacc.idea.main" />
+    <orderEntry type="module" module-name="intellij-javacc.core.main" />
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
@@ -52,13 +53,12 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="intellij-javacc.core.main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.9" level="project" />
     <orderEntry type="module-library">
       <library name="Gradle: com.jetbrains:ideaIC:2019.3.1">
         <ANNOTATIONS>
-          <root url="jar://$MAVEN_REPOSITORY$/com/jetbrains/intellij/idea/ideaIU/2019.3.1/ideaIU-2019.3.1-annotations.zip!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/com/jetbrains/intellij/idea/ideaIU/2019.3.2/ideaIU-2019.3.2-annotations.zip!/" />
         </ANNOTATIONS>
         <CLASSES>
           <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/lib/FastInfoset-1.2.15.jar!/" />

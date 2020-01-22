@@ -1,16 +1,10 @@
 package com.github.oowekyala.ijcc
 
-import com.github.oowekyala.ijcc.lang.psi.impl.GrammarOptionsService
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.pom.PomModel
-import com.intellij.pom.core.impl.PomModelImpl
-import com.intellij.pom.tree.TreeAspect
-import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import java.nio.file.Path
 
 /**

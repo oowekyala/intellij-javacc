@@ -47,9 +47,8 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.JetBrains:Grammar-Kit:2019.3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: ijcc.build:intellij-core:2019.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.jetbrains.intellij.deps.jflex:jflex:1.7.0-1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.github.JetBrains:Grammar-Kit:2019.3" level="project" />
     <orderEntry type="module-library" scope="PROVIDED">
       <library name="Gradle: ijcc.build:ideaIC:2019.3.1">
         <CLASSES>
@@ -73,5 +72,6 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: ijcc.build:intellij-core:2019.3.1" level="project" />
   </component>
 </module>

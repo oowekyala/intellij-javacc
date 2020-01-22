@@ -3,9 +3,9 @@ package com.github.oowekyala.ijcc.lang.injection
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.lang.psi.JccJavaCompilationUnit
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
-import com.github.oowekyala.ijcc.lang.psi.innerRange
 import com.github.oowekyala.ijcc.settings.InjectionSupportLevel.DISABLED
 import com.github.oowekyala.ijcc.settings.pluginSettings
+import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
@@ -28,26 +28,45 @@ object JavaccLanguageInjector : MultiHostInjector {
         try {
             when (context) {
                 // FIXME inject both into the same injection file
-//                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
-                is JccGrammarFileRoot     -> registrar.injectIntoGrammar(context)
+                //                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
+                is JccGrammarFileRoot -> registrar.injectIntoGrammar(context)
             }
         } catch (e: Exception) {
             // TODO log?
         }
     }
-//
-//    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
-//        startInjecting(JavaLanguage.INSTANCE)
-//
-//        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(
-//            jcu.containingFile
-//        ) + "}"
-//
-//        addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
-//        doneInjecting()
-//    }
+    //
+    //    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {
+    //        startInjecting(JavaLanguage.INSTANCE)
+    //
+    //        val suffix = InjectedTreeBuilderVisitor.javaccInsertedDecls(
+    //            jcu.containingFile
+    //        ) + "}"
+    //
+    //        addPlace(null, suffix, jcu, jcu.innerRange(endOffset = 1)) // remove last brace
+    //        doneInjecting()
+    //    }
+
+    private object LOG : EnclosedLogger()
 
     private fun MultiHostRegistrar.injectIntoGrammar(context: JccGrammarFileRoot) {
-        context.linearInjectedStructure.register(this)
+
+        val hostSpecs = context.linearInjectedStructure.prepareRegister()
+
+        if (hostSpecs.isEmpty()) {
+            LOG { debug("Nothing to inject") }
+            return
+        }
+
+        startInjecting(JavaLanguage.INSTANCE, "java")
+
+        for (spec in hostSpecs) {
+            val host = spec.host!!
+            addPlace(spec.prefix, spec.suffix, host, spec.getRangeInsideHost(host))
+        }
+
+        doneInjecting()
     }
+
+
 }

@@ -7,8 +7,6 @@ import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.JavaTokenType
-import com.intellij.psi.impl.source.tree.JavaDocElementType
 import com.intellij.psi.tree.IElementType
 import java.util.*
 
@@ -90,8 +88,8 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
             // Each token type for javacc tokens and for java tokens must fall into one of those categories
 
-            LINE_COMMENT(JavaTokenType.END_OF_LINE_COMMENT)
-            C_COMMENT(JavaTokenType.C_STYLE_COMMENT, JavaDocElementType.DOC_COMMENT)
+            LINE_COMMENT(JCC_END_OF_LINE_COMMENT)
+            C_COMMENT(JCC_C_STYLE_COMMENT)
 
             JAVACC_KEYWORD(
                 JCC_LOOKAHEAD_KEYWORD,
@@ -120,44 +118,44 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
                 JCC_VOID_KEYWORD,
 
 
-                JavaTokenType.NULL_KEYWORD,
+                JCC_NULL_KEYWORD,
 
-                JavaTokenType.ASSERT_KEYWORD,   // since 1.4
-                JavaTokenType.ENUM_KEYWORD,     // since 1.5
+                JCC_ASSERT_KEYWORD,   // since 1.4
+                JCC_ENUM_KEYWORD,     // since 1.5
 
-                JavaTokenType.ABSTRACT_KEYWORD,
-                JavaTokenType.BREAK_KEYWORD,
-                JavaTokenType.CASE_KEYWORD,
-                JavaTokenType.CLASS_KEYWORD,
-                JavaTokenType.CONST_KEYWORD,
-                JavaTokenType.CONTINUE_KEYWORD,
-                JavaTokenType.DEFAULT_KEYWORD,
-                JavaTokenType.DO_KEYWORD,
-                JavaTokenType.ELSE_KEYWORD,
+                JCC_ABSTRACT_KEYWORD,
+                JCC_BREAK_KEYWORD,
+                JCC_CASE_KEYWORD,
+                JCC_CLASS_KEYWORD,
+                JCC_CONST_KEYWORD,
+                JCC_CONTINUE_KEYWORD,
+                JCC_DEFAULT_KEYWORD,
+                JCC_DO_KEYWORD,
+                JCC_ELSE_KEYWORD,
 
-                JavaTokenType.EXTENDS_KEYWORD,
-                JavaTokenType.FINAL_KEYWORD,
-                JavaTokenType.FOR_KEYWORD,
-                JavaTokenType.GOTO_KEYWORD,
-                JavaTokenType.IF_KEYWORD,
-                JavaTokenType.IMPLEMENTS_KEYWORD,
-                JavaTokenType.IMPORT_KEYWORD,
-                JavaTokenType.INSTANCEOF_KEYWORD,
-                JavaTokenType.INTERFACE_KEYWORD,
-                JavaTokenType.NATIVE_KEYWORD,
-                JavaTokenType.NEW_KEYWORD,
-                JavaTokenType.PACKAGE_KEYWORD,
-                JavaTokenType.SUPER_KEYWORD,
-                JavaTokenType.SWITCH_KEYWORD,
-                JavaTokenType.SYNCHRONIZED_KEYWORD,
-                JavaTokenType.THIS_KEYWORD,
-                JavaTokenType.THROW_KEYWORD,
-                JavaTokenType.TRANSIENT_KEYWORD,
-                JavaTokenType.RETURN_KEYWORD,
-                JavaTokenType.STATIC_KEYWORD,
-                JavaTokenType.STRICTFP_KEYWORD,
-                JavaTokenType.WHILE_KEYWORD,
-                JavaTokenType.VOLATILE_KEYWORD
+                JCC_EXTENDS_KEYWORD,
+                JCC_FINAL_KEYWORD,
+                JCC_FOR_KEYWORD,
+                JCC_GOTO_KEYWORD,
+                JCC_IF_KEYWORD,
+                JCC_IMPLEMENTS_KEYWORD,
+                JCC_IMPORT_KEYWORD,
+                JCC_INSTANCEOF_KEYWORD,
+                JCC_INTERFACE_KEYWORD,
+                JCC_NATIVE_KEYWORD,
+                JCC_NEW_KEYWORD,
+                JCC_PACKAGE_KEYWORD,
+                JCC_SUPER_KEYWORD,
+                JCC_SWITCH_KEYWORD,
+                JCC_SYNCHRONIZED_KEYWORD,
+                JCC_THIS_KEYWORD,
+                JCC_THROW_KEYWORD,
+                JCC_TRANSIENT_KEYWORD,
+                JCC_RETURN_KEYWORD,
+                JCC_STATIC_KEYWORD,
+                JCC_STRICTFP_KEYWORD,
+                JCC_WHILE_KEYWORD,
+                JCC_VOLATILE_KEYWORD
             )
 
             OPERATOR_SIGN(
@@ -173,33 +171,33 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
                 JCC_ASTERISK,
                 JCC_QUESTION,
 
-                JavaTokenType.EQEQ,
-                JavaTokenType.NE,
-                JavaTokenType.OROR,
-                JavaTokenType.PLUSPLUS,
-                JavaTokenType.MINUSMINUS,
-                JavaTokenType.ANDAND,
+                JCC_EQEQ,
+                JCC_NE,
+                JCC_OROR,
+                JCC_PLUSPLUS,
+                JCC_MINUSMINUS,
+                JCC_ANDAND,
 
-                JavaTokenType.AND,
-                JavaTokenType.LE,
-                JavaTokenType.GE,
+                JCC_AND,
+                JCC_LE,
+                JCC_GE,
 
-                JavaTokenType.PLUSEQ,
-                JavaTokenType.MINUSEQ,
-                JavaTokenType.ASTERISKEQ,
-                JavaTokenType.DIVEQ,
-                JavaTokenType.ANDEQ,
-                JavaTokenType.OREQ,
-                JavaTokenType.XOREQ,
-                JavaTokenType.PERCEQ,
+                JCC_PLUSEQ,
+                JCC_MINUSEQ,
+                JCC_ASTERISKEQ,
+                JCC_DIVEQ,
+                JCC_ANDEQ,
+                JCC_OREQ,
+                JCC_XOREQ,
+                JCC_PERCEQ,
 
-                JavaTokenType.EXCL,
-                JavaTokenType.DIV,
-                JavaTokenType.PERC,
-                JavaTokenType.AT,
+                JCC_EXCL,
+                JCC_DIV,
+                JCC_PERC,
+                JCC_AT,
 
-                JavaTokenType.DOUBLE_COLON,
-                JavaTokenType.ARROW
+                JCC_DOUBLE_COLON,
+                JCC_ARROW
             )
 
             NUMBER(
