@@ -25,7 +25,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
-import org.apache.commons.lang3.StringEscapeUtils
 
 /**
  * @author Clément Fournier
@@ -362,13 +361,13 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
 
         val left: String = try {
-            StringEscapeUtils.unescapeJava(descriptor.baseCharAsString)
+            descriptor.baseCharAsString.unescapeJavaString()
         } catch (e: IllegalArgumentException) {
             myHolder += errorInfo(descriptor.baseCharElement, e.message)
             return
         }
         val right: String? = try {
-            StringEscapeUtils.unescapeJava(descriptor.toCharAsString)
+            descriptor.toCharAsString?.unescapeJavaString()
         } catch (e: IllegalArgumentException) {
             // if toCharAsString is null then unescapeJava can't throw an exception
             myHolder += errorInfo(descriptor.toCharElement!!, e.message)

@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import org.apache.commons.lang3.StringEscapeUtils
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
@@ -74,7 +73,7 @@ val JccContainerRegularExpression.isUnclosed: Boolean
 
 /** The text matched by this literal regex. */
 val JccLiteralRegexUnit.match: String
-    get() = StringEscapeUtils.unescapeJava(stringLiteral.text.removeSurrounding("\""))
+    get() = stringLiteral.text.removeSurrounding("\"").unescapeJavaString()
 
 /** The text matched by this literal regex. */
 val JccLiteralRegularExpression.match: String
@@ -453,16 +452,6 @@ fun JccRegexElement.safeReplace(regex: JccRegexElement): PsiElement? {
         else                                          -> replace(regex)
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

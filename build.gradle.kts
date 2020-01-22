@@ -98,7 +98,6 @@ subprojects {
     sub.dependencies {
 
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
-        compile("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
 
         // this is for tests
         testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
