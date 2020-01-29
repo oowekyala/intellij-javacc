@@ -11,7 +11,7 @@ plugins {
 
 val PackageRoot = "/com/github/oowekyala/ijcc"
 
-version = "1.5.1"
+version = "1.6"
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
