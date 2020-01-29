@@ -117,6 +117,8 @@
         <findUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
 
+        <lang.implementationTextSelectioner language="JavaCC"
+                                            implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccTextSelectioner" />
 
         <!-- INDEX -->
 
