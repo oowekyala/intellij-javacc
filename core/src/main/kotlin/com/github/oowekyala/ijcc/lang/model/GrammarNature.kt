@@ -21,6 +21,7 @@ enum class GrammarNature(val displayName: String,
     JAVACC("JavaCC", "jj"),
     JJTREE("JJTree", "jjt"),
     JJTRICKS("JJTricks", "jjtx"),
+    J21("JavaCC 21", "javacc"),
 
     /**
      * Special nature in which all features are enabled,

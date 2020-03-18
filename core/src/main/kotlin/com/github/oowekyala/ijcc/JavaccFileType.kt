@@ -46,3 +46,18 @@ object JjtricksFileType : LanguageFileType(JavaccLanguage) {
 
     override fun getDescription(): String = "JJTricks grammar"
 }
+
+/**
+ * This file type is available for Javacc 21.
+ *
+ * @since 1.6
+ */
+object Javacc21FileType : LanguageFileType(JavaccLanguage) {
+    override fun getIcon(): Icon = JccCoreIcons.JAVACC_FILE
+
+    override fun getName(): String = "JAVACC21_GRAMMAR"
+
+    override fun getDefaultExtension(): String = "javacc"
+
+    override fun getDescription(): String = "JavaCC 21 grammar"
+}

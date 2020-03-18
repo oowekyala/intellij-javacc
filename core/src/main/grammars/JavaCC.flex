@@ -41,8 +41,8 @@ import static com.github.oowekyala.ijcc.lang.JccTypes.*;
       this(null);
       this.is21 = true;
 
-      myAssertKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_4);
-      myEnumKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_5);
+      myAssertKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_4);
+      myEnumKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_5);
     }
 
     public void goTo(int offset) {

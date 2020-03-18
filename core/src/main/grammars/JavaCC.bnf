@@ -352,8 +352,8 @@ full_inject_directive ::=
         "INJECT" ":" java_block
 
 grammar_inclusion     ::=
-        "INCLUDE" "(" string_literal ")" [ ":" "{" "}" ]
-        {pin=2}
+        "INCLUDE" "(" string_literal | identifier ")" [ ":" "{" "}" ]
+        {pin=1 recoverWhile="#auto"}
 
 // incomplete productions fall down one of these productions.
 // This is to be able to pin on the name of a production

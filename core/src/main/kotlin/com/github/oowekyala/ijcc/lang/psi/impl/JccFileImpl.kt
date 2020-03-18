@@ -1,9 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi.impl
 
-import com.github.oowekyala.ijcc.JavaccFileType
-import com.github.oowekyala.ijcc.JavaccLanguage
-import com.github.oowekyala.ijcc.JjtreeFileType
-import com.github.oowekyala.ijcc.JjtricksFileType
+import com.github.oowekyala.ijcc.*
 import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
@@ -56,6 +53,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
         JjtreeFileType   -> GrammarNature.JJTREE
         JavaccFileType   -> GrammarNature.JAVACC
         JjtricksFileType -> GrammarNature.JJTRICKS
+        Javacc21FileType -> GrammarNature.J21
         else             -> GrammarNature.UNKNOWN
     }
         set(value) {
