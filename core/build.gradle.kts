@@ -42,6 +42,9 @@ dependencies {
     }
 
     testImplementation(grammarKit)
+
+    sourceSets["test"].compileClasspath += configurations.compileOnly
+    sourceSets["test"].runtimeClasspath += configurations.compileOnly
 }
 
 sourceSets {

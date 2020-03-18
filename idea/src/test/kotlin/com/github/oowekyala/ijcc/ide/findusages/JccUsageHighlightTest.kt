@@ -109,7 +109,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
 
         val caret = document.extractMarkerOffset(project, CARET_TAG)
         assert(caret != -1) { "Caret marker '$CARET_TAG' expected" }
-        editor.caretModel.moveToOffset(caret)
+        myFixture.editor.caretModel.moveToOffset(caret)
 
         myFixture.testAction(HighlightUsagesAction())
         val highlighters = myFixture.editor.markupModel.allHighlighters

@@ -249,13 +249,13 @@ grammar_file_root   ::=
     {name="PARSER_BEGIN"}
 
 option_section 	    ::=
-    ("options" | "OPTIONS") "{" ( option_binding )* "}" {pin=1}
+    ("options" | "OPTIONS") [":"] "{" ( option_binding )* "}" {pin=1}
 
 option_binding	    ::=
-    option_name "=" option_value ";" {pin=1 recoverWhile="#auto"}
+    option_name ["=" option_value] ";" {pin=1 recoverWhile="#auto"} // only optional in 21
 
 option_value        ::=
-    (INTEGER_LITERAL | string_literal | boolean_literal)
+    (INTEGER_LITERAL | string_literal | boolean_literal | identifier) // ident only possible in 21
 
 private option_name ::=
         "LOOKAHEAD" | "IGNORE_CASE" | identifier // TODO "static" ?

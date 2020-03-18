@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.lang.LanguageCommenters
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -31,9 +32,7 @@ abstract class JccTestBase : BasePlatformTestCase(), ParseUtilsMixin {
         get() = camelOrWordsToSnake(getTestName(true))
 
 
-    override fun getProject(): Project {
-        return super.getProject()
-    }
+    override fun getProject(): Project = super.getProject()
 
 
     protected fun checkByText(
