@@ -43,6 +43,9 @@
         TOKEN_MGR_DECLS_KEYWORD   = 'TOKEN_MGR_DECLS'
         EOF_KEYWORD               = 'EOF'
 
+        INJECT_KEYWORD            = 'INJECT'
+        INCLUDE_KEYWORD           = 'INCLUDE'
+
 
         PRIVATE_KEYWORD		= "private"
         PUBLIC_KEYWORD		= "public"
@@ -241,12 +244,12 @@ javacc_input 	    ::=
 // file-wide Java injection.
 grammar_file_root   ::=
     option_section?
-    parser_declaration
+    parser_declaration? // mandated in regular javacc
     ( production_impl )*
     {name="PARSER_BEGIN"}
 
 option_section 	    ::=
-    "options" "{" ( option_binding )* "}" {pin=1}
+    ("options" | "OPTIONS") "{" ( option_binding )* "}" {pin=1}
 
 option_binding	    ::=
     option_name "=" option_value ";" {pin=1 recoverWhile="#auto"}
@@ -291,6 +294,7 @@ private production_impl             ::=
     |   token_manager_decls
     |   inject_directive
     |   full_inject_directive
+    |   grammar_inclusion
     //  errors rules are tried last
     |   error_production
     {recoverWhile="#auto"}
@@ -346,6 +350,10 @@ inject_directive ::=
 
 full_inject_directive ::=
         "INJECT" ":" java_block
+
+grammar_inclusion     ::=
+        "INCLUDE" "(" string_literal ")" [ ":" "{" "}" ]
+        {pin=2}
 
 // incomplete productions fall down one of these productions.
 // This is to be able to pin on the name of a production
@@ -438,7 +446,10 @@ private regex_spec_list_recover   ::= // exclude ident, most important is the rb
 
 
 regex_spec          ::=
-    regular_expression [ java_block ] [ ":" identifier ]
+    regular_expression
+    [ jjtree_node_descriptor ] // only 21 (no expr is allowed, no #void is allowed)
+    [ java_block ]
+    [ ":" identifier ]
     {
         methods=[
             lexicalStateTransition="identifier"

@@ -116,6 +116,9 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "TOKEN_MGR_DECLS"           { return JCC_TOKEN_MGR_DECLS_KEYWORD; }
     "EOF"                       { return JCC_EOF_KEYWORD; }
 
+    "INJECT"                    { return is21 ? JCC_INJECT_KEYWORD : JCC_IDENT; }
+    "INCLUDE"                   { return is21 ? JCC_INCLUDE_KEYWORD : JCC_IDENT; }
+
     /* Java keywords used by JavaCC */
     "true"                      { return JCC_TRUE_KEYWORD; }
     "false"                     { return JCC_FALSE_KEYWORD; }
