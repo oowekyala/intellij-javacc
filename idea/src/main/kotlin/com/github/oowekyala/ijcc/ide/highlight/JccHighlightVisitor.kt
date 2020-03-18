@@ -140,8 +140,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
 
-        if (myFile.grammarNature < GrammarNature.JJTREE) {
-            myHolder += JccHighlightUtil.errorInfo(
+        if (myFile.grammarNature == GrammarNature.JAVACC) {
+            myHolder += errorInfo(
                 nodeDescriptor,
                 JccErrorMessages.unexpectedJjtreeConstruct()
             ).withQuickFix(fixes = *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))

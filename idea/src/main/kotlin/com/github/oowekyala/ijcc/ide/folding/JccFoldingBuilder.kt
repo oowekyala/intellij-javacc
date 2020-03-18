@@ -86,6 +86,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                 ?: ""}/"
             is JccJavacodeProduction      -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
                 ?: ""}/"
+            is JccInjectDirective         -> "INJECT (" + (psi.identifier?.text ?: "???") + ") {..}"
+            is JccFullInjectDirective     -> "INJECT {..}"
             else                          -> throw UnsupportedOperationException("Unhandled case $psi")
         }
     }
@@ -179,6 +181,10 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             }
 
             override fun visitOptionSection(o: JccOptionSection) {
+                result += FoldingDescriptor(o, o.textRange)
+            }
+
+            override fun visitInjectDirective(o: JccInjectDirective) {
                 result += FoldingDescriptor(o, o.textRange)
             }
 
