@@ -412,17 +412,17 @@ token_manager_decls ::=
         "TOKEN_MGR_DECLS" ":" java_block  {pin=1} // TODO inject java here
 
 
-lexical_state_list 	::=
+lexical_state_list  ::=
         "<" ( "*" | identifier ( "," identifier )* ) ">"
         {pin=1}
 
-regex_kind 	        ::=
+regex_kind          ::=
         "TOKEN"
-    | 	"SPECIAL_TOKEN"
-    | 	"SKIP"
-    | 	"MORE"
+    |   "SPECIAL_TOKEN"
+    |   "SKIP"
+    |   "MORE"
 
-regex_production 	::=
+regex_production    ::=
     [ lexical_state_list ]
     regex_kind [ "[" "IGNORE_CASE" "]" ] ":"
     <<in_block regex_spec_list>>
@@ -437,7 +437,7 @@ private regex_spec_list_recover   ::= // exclude ident, most important is the rb
     !( 'JAVACODE' | 'MORE' | 'SKIP' | 'SPECIAL_TOKEN' | 'TOKEN' | 'TOKEN_MGR_DECLS' | '}')
 
 
-regex_spec 	        ::=
+regex_spec          ::=
     regular_expression [ java_block ] [ ":" identifier ]
     {
         methods=[
@@ -473,7 +473,7 @@ private regex_spec_recover      ::= // exclude ident, most important is the pipe
  */
 
 
-private expansion_choices 	    ::=
+private expansion_choices       ::=
         expansion_alternative
     |   expansion_sequence
 
@@ -485,12 +485,12 @@ private alternative_tail        ::=
     "|" expansion_sequence
     {pin=1}
 
-expansion_sequence 	            ::=
+expansion_sequence              ::=
     ( expansion_unit )+ {pin=1 recoverWhile="#auto"}
 
 
 
-expansion_unit 	                ::=
+expansion_unit                  ::=
     priv_expansion_unit scoped_expansion_unit? error_jjtree_annot?
     {recoverWhile="#auto"}
 
@@ -498,11 +498,11 @@ left scoped_expansion_unit      ::=
     jjtree_node_descriptor
     { methods=[nameIdentifier="jjtree_node_descriptor/identifier"] }
 
-private priv_expansion_unit 	::=
+private priv_expansion_unit     ::=
     (   local_lookahead_unit
-    | 	parser_actions_unit
-    | 	parenthesized_expansion_unit
-    | 	optional_expansion_unit
+    |   parser_actions_unit
+    |   parenthesized_expansion_unit
+    |   optional_expansion_unit
     |   try_catch_expansion_unit
     |   assigned_expansion_unit
     |   assignable_expansion_unit
@@ -523,7 +523,7 @@ regex_expansion_unit            ::=
     regular_expression
 
 
-local_lookahead_unit 	        ::=
+local_lookahead_unit            ::=
     "LOOKAHEAD" "(" local_lookahead_tail ")" {pin=1}
 
 /* TODO error recovery is made considerably harder by this shit
@@ -579,7 +579,7 @@ finally_clause                  ::=
 */
 
 
-regular_expression	            ::=
+regular_expression              ::=
         literal_regular_expression
     |   eof_regular_expression
     // Pins try to match these in order to allow autocompletion
@@ -624,21 +624,21 @@ container_regular_expression    ::=
       |- JccCharacterListRegexUnit       ["a"-"z", ...]
  */
 
-private complex_regex_choices 	::=
+private complex_regex_choices   ::=
         regex_alternative_elt
     |   regex_sequence_elt
 
-regex_alternative_elt 	        ::=
+regex_alternative_elt           ::=
     regex_sequence_elt ( "|" regex_sequence_elt )+
 
 regex_sequence_elt              ::=
     regex_unit+ {pin('.*')=1}
 
-regex_unit 	    ::=
+regex_unit                      ::=
         literal_regex_unit
-    | 	token_reference_regex_unit
-    | 	character_list_regex_unit
-    | 	parenthesized_regex_unit
+    |   token_reference_regex_unit
+    |   character_list_regex_unit
+    |   parenthesized_regex_unit
     {recoverWhile="#auto"}
 
 literal_regex_unit              ::=
@@ -652,10 +652,10 @@ parenthesized_regex_unit        ::=
     "(" complex_regex_choices ")" occurrence_indicator_or_range?
     {methods=[occurrence_indicator="occurrence_indicator_or_range"]}
 
-character_list_regex_unit                  ::=
+character_list_regex_unit       ::=
     [ "~" ] "[" [ character_descriptor ( "," character_descriptor )* ] "]" {pin="["}
 
-character_descriptor 	        ::=
+character_descriptor            ::=
     STRING_LITERAL [ "-" STRING_LITERAL ]
     {pin=1 recoverWhile="#auto"}
 
