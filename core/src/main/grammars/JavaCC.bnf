@@ -286,9 +286,11 @@ parser_end          ::=
 
 private production_impl             ::=
         javacode_production
-    | 	bnf_production
-    | 	regex_production
-    | 	token_manager_decls
+    |   bnf_production
+    |   regex_production
+    |   token_manager_decls
+    |   inject_directive
+    |   full_inject_directive
     //  errors rules are tried last
     |   error_production
     {recoverWhile="#auto"}
@@ -300,7 +302,7 @@ javacode_production                 ::=
         java_block
         {pin=2}
 
-bnf_production 	                    ::=
+bnf_production                      ::=
         java_non_terminal_production_header [ jjtree_node_descriptor | error_jjtree_annot_in_header ] ":"
         java_block
         curly_then_expansion_choices
@@ -335,6 +337,15 @@ java_non_terminal_production_header ::=  // TODO inject java here
         java_parameter_list
         [ java_throws_list ]
         {pin=4 recoverWhile="#auto"}
+
+inject_directive ::=
+        "INJECT" "(" [ "interface" | "class" ] identifier ")" [":"]
+        java_block
+        java_block
+        {pin=2}
+
+full_inject_directive ::=
+        "INJECT" ":" java_block
 
 // incomplete productions fall down one of these productions.
 // This is to be able to pin on the name of a production
