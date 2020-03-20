@@ -1,6 +1,5 @@
 package com.github.oowekyala.ijcc.lang.model
 
-import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.JustDefaultState
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -128,7 +127,7 @@ data class ExplicitToken(override val psiPointer: SmartPsiElementPointer<JccRege
     override val isPrivate: Boolean get() = spec?.isPrivate == true
     override val isIgnoreCase: Boolean get() = spec?.isIgnoreCase == true
     override val lexicalStatesOrEmptyForAll: List<String>
-        get() = spec?.lexicalStatesOrEmptyForAll ?: JustDefaultState // default?
+        get() = spec?.lexicalStatesOrEmptyForAll ?: emptyList()
 
 }
 
@@ -147,7 +146,7 @@ data class SyntheticToken(override val psiPointer: SmartPsiElementPointer<JccReg
     // constants for all synthetic tokens
     override val regexKind: RegexKind = RegexKind.TOKEN
     override val isPrivate: Boolean = false
-    override val lexicalStatesOrEmptyForAll: List<String> = JustDefaultState
+    override val lexicalStatesOrEmptyForAll: List<String> = listOfNotNull(declUnit?.containingFile?.defaultLexStateName)
     override val lexicalStateTransition: String? = null
     override val isIgnoreCase: Boolean = false
 

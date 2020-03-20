@@ -32,7 +32,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager">
     <output-test url="file://$MODULE_DIR$/../../../jjtricks/out/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../jjtricks/src/test">
@@ -46,8 +46,6 @@
     <orderEntry type="module" module-name="intellij-javacc.core.main" />
     <orderEntry type="library" name="Gradle: com.google.googlejavaformat:google-java-format:1.7" level="project" />
     <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-junit5:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:guava:27.0.1-jre" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.velocity:velocity:1.7" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
@@ -61,13 +59,10 @@
     <orderEntry type="library" name="Gradle: net.java.dev.javacc:javacc:5.0" level="project" />
     <orderEntry type="library" name="Gradle: fr.inria.gforge.spoon:spoon-core:8.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.xenomachina:kotlin-argparser:2.0.7" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: ijcc.build:intellij-core:2019.3.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />
-    <orderEntry type="library" name="Gradle: io.kindedj:kindedj:1.1.0" level="project" />
     <orderEntry type="module-library">
       <library name="Gradle: ijcc.build:ideaIC:2019.3.1">
         <CLASSES>
@@ -96,30 +91,15 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: org.javassist:javassist:3.21.0-GA" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.common:3.10.600" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.commands:3.9.600" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.preferences:3.7.600" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.registry:3.8.600" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.app:1.4.300" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.contenttype:3.7.500" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.jobs:3.10.600" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.osgi:3.15.100" level="project" />
-    <orderEntry type="library" name="Gradle: org.opentest4j:opentest4j:1.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apiguardian:apiguardian-api:1.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
-    <orderEntry type="library" name="Gradle: com.univocity:univocity-parsers:2.6.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-component-annotations:1.7.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-invoker:3.0.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-shared-utils:3.2.1" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
-    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: com.xenomachina:xenocom:0.0.7" level="project" />
-    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.errorprone:javac-shaded:9+181-r4173-1" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-launcher:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-engine:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-suite-api:1.2.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:failureaccess:1.0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -127,14 +107,15 @@
     <orderEntry type="library" name="Gradle: com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.j2objc:j2objc-annotations:1.1" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.mojo:animal-sniffer-annotations:1.17" level="project" />
-    <orderEntry type="library" name="Gradle: commons-validator:commons-validator:1.6" level="project" />
-    <orderEntry type="library" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />
     <orderEntry type="library" name="Gradle: commons-collections:commons-collections:3.2.2" level="project" />
     <orderEntry type="library" name="Gradle: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: commons-validator:commons-validator:1.6" level="project" />
+    <orderEntry type="library" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />
     <orderEntry type="library" name="Gradle: org.json:json:20180130" level="project" />
     <orderEntry type="library" name="Gradle: com.damnhandy:handy-uri-templates:2.1.6" level="project" />
     <orderEntry type="library" name="Gradle: com.google.re2j:re2j:1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.errorprone:javac-shaded:9+181-r4173-1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-invoker:3.0.1" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jdt:org.eclipse.jdt.core:3.16.0" level="project" />
     <orderEntry type="library" name="Gradle: com.martiansoftware:jsap:2.1" level="project" />
     <orderEntry type="library" name="Gradle: log4j:log4j:1.2.17" level="project" />
@@ -143,23 +124,42 @@
     <orderEntry type="library" name="Gradle: org.tukaani:xz:1.8" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.10" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-compress:1.19" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-launcher:1.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-engine:1.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-suite-api:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.xenomachina:xenocom:0.0.7" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Gradle: com.univocity:univocity-parsers:2.6.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apiguardian:apiguardian-api:1.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.opentest4j:opentest4j:1.1.0" level="project" />
     <orderEntry type="library" name="Gradle: commons-digester:commons-digester:1.8.1" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.maven.shared:maven-shared-utils:3.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-component-annotations:1.7.1" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.resources:3.13.600" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.text:3.10.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.expressions:3.6.600" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.runtime:3.17.0" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.filesystem:1.7.600" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.plexus:plexus-utils:3.0.24" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.javassist:javassist:3.21.0-GA" level="project" />
+    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.expressions:3.6.600" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.preferences:3.7.600" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.commands:3.9.600" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.common:3.10.600" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.osgi:3.15.100" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.jobs:3.10.600" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.core.contenttype:3.7.500" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.app:1.4.300" level="project" />
+    <orderEntry type="library" name="Gradle: org.eclipse.platform:org.eclipse.equinox.registry:3.8.600" level="project" />
+    <orderEntry type="library" name="Gradle: io.kindedj:kindedj:1.1.0" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="intellij-javacc.jjtricks.main" />
 </module>

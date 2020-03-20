@@ -30,6 +30,10 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
         getOptionValueOrDefault(JjtOption.NODE_CLASS)
     }
 
+    val defaultLexicalState21: String by lazy {
+        getOptionValueOrDefault(J21Option.DEFAULT_LEXICAL_STATE)
+    }
+
     override val grammarName: String? = null
 
     override val nodeTakesParserArg: Boolean by lazy {
@@ -70,7 +74,10 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
 
         /** Indexes all known JavaCC or JJTree options by their name.*/
         val knownOptions: Map<String, GenericOption<*>> =
-            JccOption.values.plus(JjtOption.values).associateBy { it.name }
+            JccOption.values
+                .plus(JjtOption.values)
+                .plus(J21Option.values)
+                .associateBy { it.name }
 
         private val packageRegex = Regex("\\bpackage\\s+([.\\w]+)")
 

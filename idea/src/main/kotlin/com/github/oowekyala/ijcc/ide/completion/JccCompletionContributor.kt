@@ -53,7 +53,7 @@ class JccCompletionContributor : CompletionContributor() {
 
             InlineGrammarOptions.knownOptions
                 .filterKeys { it !in alreadyThere }
-                .filterValues { it.supportedNature <= fileNature }
+                .filterValues { it.supports(fileNature) }
                 .map { (name, opt) ->
                     LookupElementBuilder.create(name)
                         .withPsiElement(file.realOrFakeOptionNodeFor(name))

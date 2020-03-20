@@ -94,7 +94,7 @@ val JccRegexSpec.regexKind: RegexKind
     get() = production.regexKind.modelConstant
 
 val JccRegexProduction.lexicalStatesNameOrEmptyForAll: List<String>
-    get() = lexicalStateList?.identifierList?.map { it.name } ?: LexicalState.JustDefaultState
+    get() = lexicalStateList?.identifierList?.map { it.name } ?: listOf(containingFile.defaultLexStateName)
 
 /**
  * Lexical states explicitly declared on this regex production.

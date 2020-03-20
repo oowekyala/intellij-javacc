@@ -32,7 +32,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager">
     <output-test url="file://$MODULE_DIR$/../../../core/out/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../core/src/test">
@@ -42,46 +42,30 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="intellij-javacc.core.main" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-util-ui.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-util-ex.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
     <orderEntry type="module-library">
       <library name="Gradle: ijcc.build:ideaIC:2019.3.1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/asm-all-7.0.1.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/trove4j.jar!/" />
           <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/annotations.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/asm-all-7.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/automaton-1.12-1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/bootstrap.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/extensions.jar!/" />
           <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/guava-27.1-jre.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/util.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/idea.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/idea_rt.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/jdom.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/jna.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/log4j.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/openapi.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/picocontainer-1.2.jar!/" />
           <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-api.jar!/" />
           <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-impl.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/picocontainer-1.2.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/idea.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/jdom.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/automaton-1.12-1.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/extensions.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/bootstrap.jar!/" />
           <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/streamex-0.6.8.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/jna.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/openapi.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/idea_rt.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/log4j.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/trove4j.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/util.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-util-ex.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../dependencies/repo/ijcc.build/ideaIC/2019.3.1/artifacts/lib/platform-util-ui.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -89,39 +73,39 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: org.jetbrains.intellij.deps.jflex:jflex:1.7.0-1" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.JetBrains:Grammar-Kit:2019.3" level="project" />
-    <orderEntry type="library" name="Gradle: io.kindedj:kindedj:1.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.javassist:javassist:3.21.0-GA" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:guava:20.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.opentest4j:opentest4j:1.1.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apiguardian:apiguardian-api:1.0.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.2.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
-    <orderEntry type="library" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
-    <orderEntry type="library" name="Gradle: com.univocity:univocity-parsers:2.6.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.oowekyala.treeutils:tree-matchers:2.0.2" level="project" />
     <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-junit5:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: ijcc.build:intellij-core:2019.3.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />
-    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: com.github.oowekyala.treeutils:tree-printers:2.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-runner-jvm:3.1.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-core:3.1.11" level="project" />
+    <orderEntry type="library" name="Gradle: io.kotlintest:kotlintest-assertions:3.1.11" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-launcher:1.2.0" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-engine:1.2.0" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-suite-api:1.2.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-common:1.3.11" level="project" />
     <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-core:0.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Gradle: com.univocity:univocity-parsers:2.6.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apiguardian:apiguardian-api:1.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.opentest4j:opentest4j:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.arrow-kt:arrow-annotations:0.7.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:20.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.javassist:javassist:3.21.0-GA" level="project" />
+    <orderEntry type="library" name="Gradle: io.kindedj:kindedj:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.JetBrains:Grammar-Kit:2019.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.intellij.deps.jflex:jflex:1.7.0-1" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="intellij-javacc.core.main" />
 </module>

@@ -170,11 +170,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 "Unknown option: ${binding.name}"
             )
             return
-        } else if (myFile.grammarNature < GrammarNature.JJTREE && opt.supportedNature < GrammarNature.JJTREE) {
+        } else if (!opt.supports(myFile.grammarNature) && myFile.grammarNature == GrammarNature.JAVACC) {
             myHolder += warningInfo(
                 binding.namingLeaf,
                 JccErrorMessages.unexpectedJjtreeOption()
-            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
+            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, opt.supportedNature))
 
         } else {
             myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)

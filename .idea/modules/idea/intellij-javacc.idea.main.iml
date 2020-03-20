@@ -28,7 +28,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/../../../idea/out/production/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../idea/src/main">
@@ -39,63 +39,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="intellij-javacc.core.main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/.sdkman/candidates/java/8.0.232-open/lib/tools.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.3.11" level="project" />
-    <orderEntry type="module-library" scope="PROVIDED">
-      <library name="Gradle: unzipped.com.jetbrains.plugins:java:unzipped.com.jetbrains.plugins:ideaIC-IC-193.5662.53-withSources">
-        <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-spi-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-transport-http-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/javac2.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/resources_en.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-dependency-resolver.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-utils-3.0.22.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java_resources_en.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/debugger-memory-agent-0.0.11.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-impl-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-model-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-interpolation-1.21.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-api-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-launcher.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java-api.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-repository-metadata-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-connector-basic-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jdkAnnotations.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/ecj-4.10.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-model-builder-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/commons-lang3-3.4.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java-impl.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jshell-protocol.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-builders-6.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-builders.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-artifact-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-util-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-builder-support-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-transport-file-1.1.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jgoodies-common-1.4.0.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/completion-ranking-java-0.0.7.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-aether-provider-3.3.9.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-component-annotations-1.6.jar!/" />
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/resources.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/2dae8e50d4b0508cad2e680b53414f657954f390/ideaIC-2019.3.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
       <library name="Gradle: com.jetbrains:ideaIC:2019.3.1">
         <ANNOTATIONS>
@@ -306,6 +249,63 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="Gradle: unzipped.com.jetbrains.plugins:java:unzipped.com.jetbrains.plugins:ideaIC-IC-193.5662.53-withSources">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-spi-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-transport-http-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/javac2.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/resources_en.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-dependency-resolver.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-utils-3.0.22.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java_resources_en.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/debugger-memory-agent-0.0.11.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-impl-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-model-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-interpolation-1.21.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-api-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-launcher.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java-api.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-repository-metadata-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-connector-basic-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jdkAnnotations.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/ecj-4.10.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-model-builder-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/commons-lang3-3.4.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/java-impl.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jshell-protocol.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-builders-6.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jps-builders.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-artifact-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-util-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-builder-support-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/aether-transport-file-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/jgoodies-common-1.4.0.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/completion-ranking-java-0.0.7.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/maven-aether-provider-3.3.9.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/plexus-component-annotations-1.6.jar!/" />
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/52292e4f8a0ccb3ceb08bd81fd57b88923ac8e99/ideaIC-2019.3.1/plugins/java/lib/resources.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2019.3.1/2dae8e50d4b0508cad2e680b53414f657954f390/ideaIC-2019.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-reflect:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.sdkman/candidates/java/8.0.232-open/lib/tools.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

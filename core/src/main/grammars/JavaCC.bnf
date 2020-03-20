@@ -352,7 +352,7 @@ full_inject_directive ::=
         "INJECT" ":" java_block
 
 grammar_inclusion     ::=
-        "INCLUDE" "(" string_literal | identifier ")" [ ":" "{" "}" ]
+        "INCLUDE" "(" (string_literal | identifier) ")" [ ":" "{" "}" ]
         {pin=1 recoverWhile="#auto"}
 
 // incomplete productions fall down one of these productions.
