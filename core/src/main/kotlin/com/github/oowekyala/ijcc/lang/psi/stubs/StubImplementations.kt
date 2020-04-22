@@ -34,7 +34,7 @@ class JccFileStub(val file: JccFile?,
                   val jccParserFileQname: String)
     : PsiFileStubImpl<JccFile>(file), JccStub<JccFile> {
 
-    object Type : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
+    object TYPE : IStubFileElementType<JccFileStub>("JCC_FILE", JavaccLanguage) {
 
         override fun getStubVersion(): Int = StubVersion
 
@@ -81,7 +81,7 @@ class JccFileStub(val file: JccFile?,
 fun factory(id: String): IElementType = when (id) {
     "JCC_BNF_PRODUCTION"        -> BnfProductionStubImpl.TYPE
     "JCC_JAVACODE_PRODUCTION"   -> JavacodeProductionStubImpl.TYPE
-    "JCC_SCOPED_EXPANSION_UNIT" -> JccScopedExpansionUnitStub.Type
+    "JCC_SCOPED_EXPANSION_UNIT" -> JccScopedExpansionUnitStub.TYPE
     else                        -> IJccElementType(id)
 }
 
@@ -133,7 +133,7 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
     : JjtNodeClassOwnerStub<JccScopedExpansionUnit>(parent, elementType, jjtNodeRawName) {
 
 
-    object Type :
+    object TYPE :
         NodeClassOwnerStubElementType<JccScopedExpansionUnitStub, JccScopedExpansionUnit>("SCOPED_EXPANSION_UNIT") {
 
         override fun createPsi(stub: JccScopedExpansionUnitStub): JccScopedExpansionUnit =

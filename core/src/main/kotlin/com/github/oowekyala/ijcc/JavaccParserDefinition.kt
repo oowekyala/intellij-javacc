@@ -28,7 +28,7 @@ object JavaccParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project): PsiParser = JavaccParser()
 
-    override fun getFileNodeType(): IFileElementType = JccFileStub.Type
+    override fun getFileNodeType(): IFileElementType = JccFileStub.TYPE
 
     override fun getWhitespaceTokens(): TokenSet = JccTypesExt.WhitespaceTypeSet
 
