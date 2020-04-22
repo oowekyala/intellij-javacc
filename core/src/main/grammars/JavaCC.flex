@@ -18,8 +18,6 @@ package com.github.oowekyala.ijcc.lang.lexer;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.JavaTokenType;
-import com.intellij.psi.impl.source.tree.JavaDocElementType;
 
 import static com.github.oowekyala.ijcc.lang.JccTypes.*;
 
@@ -37,11 +35,14 @@ import static com.github.oowekyala.ijcc.lang.JccTypes.*;
 %{
     private boolean myAssertKeyword;
     private boolean myEnumKeyword;
+    private boolean is21;
 
     public JavaccLexer() {
       this(null);
-      myAssertKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_4);
-      myEnumKeyword = false; // level.isAtLeast(LanguageLevel.JDK_1_5);
+      this.is21 = true;
+
+      myAssertKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_4);
+      myEnumKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_5);
     }
 
     public void goTo(int offset) {
@@ -93,9 +94,9 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
     {WHITE_SPACE_CHAR}+         { return TokenType.WHITE_SPACE; }
 
-    {C_STYLE_COMMENT}           { return JavaTokenType.C_STYLE_COMMENT; }
-    {END_OF_LINE_COMMENT}       { return JavaTokenType.END_OF_LINE_COMMENT; }
-    {DOC_COMMENT}               { return JavaTokenType.C_STYLE_COMMENT; }
+    {C_STYLE_COMMENT}           { return JCC_C_STYLE_COMMENT; }
+    {END_OF_LINE_COMMENT}       { return JCC_END_OF_LINE_COMMENT; }
+    {DOC_COMMENT}               { return JCC_C_STYLE_COMMENT; }
 
     {LONG_LITERAL}              { return JCC_LONG_LITERAL; }
     {INTEGER_LITERAL}           { return JCC_INTEGER_LITERAL; }
@@ -117,6 +118,9 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
     "SKIP"                      { return JCC_SKIP_KEYWORD; }
     "TOKEN_MGR_DECLS"           { return JCC_TOKEN_MGR_DECLS_KEYWORD; }
     "EOF"                       { return JCC_EOF_KEYWORD; }
+
+    "INJECT"                    { return is21 ? JCC_INJECT_KEYWORD : JCC_IDENT; }
+    "INCLUDE"                   { return is21 ? JCC_INCLUDE_KEYWORD : JCC_IDENT; }
 
     /* Java keywords used by JavaCC */
     "true"                      { return JCC_TRUE_KEYWORD; }
@@ -147,43 +151,43 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
     /* Java keywords not relevant to JavaCC */
 
-    "null"                      { return JavaTokenType.NULL_KEYWORD; }
+    "null"                      { return JCC_NULL_KEYWORD; }
 
-    "assert"                    { return JavaTokenType.ASSERT_KEYWORD; } // since 1.4
-    "enum"                      { return JavaTokenType.ENUM_KEYWORD; }     // since 1.5
+    "assert"                    { return JCC_ASSERT_KEYWORD; } // since 1.4
+    "enum"                      { return JCC_ENUM_KEYWORD; }     // since 1.5
 
 
-    "abstract"                  { return JavaTokenType.ABSTRACT_KEYWORD; }
-    "break"                     { return JavaTokenType.BREAK_KEYWORD; }
-    "case"                      { return JavaTokenType.CASE_KEYWORD; }
-    "class"                     { return JavaTokenType.CLASS_KEYWORD; }
-    "const"                     { return JavaTokenType.CONST_KEYWORD; }
-    "continue"                  { return JavaTokenType.CONTINUE_KEYWORD; }
-    "default"                   { return JavaTokenType.DEFAULT_KEYWORD; }
-    "do"                        { return JavaTokenType.DO_KEYWORD; }
-    "else"                      { return JavaTokenType.ELSE_KEYWORD; }
+    "abstract"                  { return JCC_ABSTRACT_KEYWORD; }
+    "break"                     { return JCC_BREAK_KEYWORD; }
+    "case"                      { return JCC_CASE_KEYWORD; }
+    "class"                     { return JCC_CLASS_KEYWORD; }
+    "const"                     { return JCC_CONST_KEYWORD; }
+    "continue"                  { return JCC_CONTINUE_KEYWORD; }
+    "default"                   { return JCC_DEFAULT_KEYWORD; }
+    "do"                        { return JCC_DO_KEYWORD; }
+    "else"                      { return JCC_ELSE_KEYWORD; }
 
-    "final"                     { return JavaTokenType.FINAL_KEYWORD; }
-    "for"                       { return JavaTokenType.FOR_KEYWORD; }
-    "goto"                      { return JavaTokenType.GOTO_KEYWORD; }
-    "if"                        { return JavaTokenType.IF_KEYWORD; }
-    "implements"                { return JavaTokenType.IMPLEMENTS_KEYWORD; }
-    "import"                    { return JavaTokenType.IMPORT_KEYWORD; }
-    "instanceof"                { return JavaTokenType.INSTANCEOF_KEYWORD; }
-    "interface"                 { return JavaTokenType.INTERFACE_KEYWORD; }
-    "native"                    { return JavaTokenType.NATIVE_KEYWORD; }
-    "new"                       { return JavaTokenType.NEW_KEYWORD; }
-    "package"                   { return JavaTokenType.PACKAGE_KEYWORD; }
-    "switch"                    { return JavaTokenType.SWITCH_KEYWORD; }
-    "synchronized"              { return JavaTokenType.SYNCHRONIZED_KEYWORD; }
-    "this"                      { return JavaTokenType.THIS_KEYWORD; }
-    "throw"                     { return JavaTokenType.THROW_KEYWORD; }
-    "transient"                 { return JavaTokenType.TRANSIENT_KEYWORD; }
-    "return"                    { return JavaTokenType.RETURN_KEYWORD; }
-    "static"                    { return JavaTokenType.STATIC_KEYWORD; }
-    "strictfp"                  { return JavaTokenType.STRICTFP_KEYWORD; }
-    "while"                     { return JavaTokenType.WHILE_KEYWORD; }
-    "volatile"                  { return JavaTokenType.VOLATILE_KEYWORD; }
+    "final"                     { return JCC_FINAL_KEYWORD; }
+    "for"                       { return JCC_FOR_KEYWORD; }
+    "goto"                      { return JCC_GOTO_KEYWORD; }
+    "if"                        { return JCC_IF_KEYWORD; }
+    "implements"                { return JCC_IMPLEMENTS_KEYWORD; }
+    "import"                    { return JCC_IMPORT_KEYWORD; }
+    "instanceof"                { return JCC_INSTANCEOF_KEYWORD; }
+    "interface"                 { return JCC_INTERFACE_KEYWORD; }
+    "native"                    { return JCC_NATIVE_KEYWORD; }
+    "new"                       { return JCC_NEW_KEYWORD; }
+    "package"                   { return JCC_PACKAGE_KEYWORD; }
+    "switch"                    { return JCC_SWITCH_KEYWORD; }
+    "synchronized"              { return JCC_SYNCHRONIZED_KEYWORD; }
+    "this"                      { return JCC_THIS_KEYWORD; }
+    "throw"                     { return JCC_THROW_KEYWORD; }
+    "transient"                 { return JCC_TRANSIENT_KEYWORD; }
+    "return"                    { return JCC_RETURN_KEYWORD; }
+    "static"                    { return JCC_STATIC_KEYWORD; }
+    "strictfp"                  { return JCC_STRICTFP_KEYWORD; }
+    "while"                     { return JCC_WHILE_KEYWORD; }
+    "volatile"                  { return JCC_VOLATILE_KEYWORD; }
 
 
     {IDENTIFIER}                { return JCC_IDENT; }
@@ -191,34 +195,34 @@ STRING_LITERAL      =   \" ([^\\\"\r\n] | {ESCAPE_SEQUENCE})* (\"|\\)?
 
     /* Java tokens not relevant to JavaCC */
 
-    "=="                        { return JavaTokenType.EQEQ; }
-    "!="                        { return JavaTokenType.NE; }
-    "||"                        { return JavaTokenType.OROR; }
-    "++"                        { return JavaTokenType.PLUSPLUS; }
-    "--"                        { return JavaTokenType.MINUSMINUS; }
-    "&&"                        { return JavaTokenType.ANDAND; }
+    "=="                        { return JCC_EQEQ; }
+    "!="                        { return JCC_NE; }
+    "||"                        { return JCC_OROR; }
+    "++"                        { return JCC_PLUSPLUS; }
+    "--"                        { return JCC_MINUSMINUS; }
+    "&&"                        { return JCC_ANDAND; }
 
-    "&"                         { return JavaTokenType.AND; }
-    "<="                        { return JavaTokenType.LE; }
-    ">="                        { return JavaTokenType.GE; }
+    "&"                         { return JCC_AND; }
+    "<="                        { return JCC_LE; }
+    ">="                        { return JCC_GE; }
 
 
-    "+="                        { return JavaTokenType.PLUSEQ; }
-    "-="                        { return JavaTokenType.MINUSEQ; }
-    "*="                        { return JavaTokenType.ASTERISKEQ; }
-    "/="                        { return JavaTokenType.DIVEQ; }
-    "&="                        { return JavaTokenType.ANDEQ; }
-    "|="                        { return JavaTokenType.OREQ; }
-    "^="                        { return JavaTokenType.XOREQ; }
-    "%="                        { return JavaTokenType.PERCEQ; }
+    "+="                        { return JCC_PLUSEQ; }
+    "-="                        { return JCC_MINUSEQ; }
+    "*="                        { return JCC_ASTERISKEQ; }
+    "/="                        { return JCC_DIVEQ; }
+    "&="                        { return JCC_ANDEQ; }
+    "|="                        { return JCC_OREQ; }
+    "^="                        { return JCC_XOREQ; }
+    "%="                        { return JCC_PERCEQ; }
 
-    "!"                         { return JavaTokenType.EXCL; }
-    "/"                         { return JavaTokenType.DIV; }
-    "%"                         { return JavaTokenType.PERC; }
-    "@"                         { return JavaTokenType.AT; }
+    "!"                         { return JCC_EXCL; }
+    "/"                         { return JCC_DIV; }
+    "%"                         { return JCC_PERC; }
+    "@"                         { return JCC_AT; }
 
-    "::"                        { return JavaTokenType.DOUBLE_COLON; }
-    "->"                        { return JavaTokenType.ARROW; }
+    "::"                        { return JCC_DOUBLE_COLON; }
+    "->"                        { return JCC_ARROW; }
 
 
     /* Tokens used by JavaCC */

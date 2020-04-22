@@ -46,7 +46,7 @@ class RegexMayMatchEmptyStringInspection : JccInspectionBase(DisplayName) {
                 if (r.isEmptyMatchPossible()) {
                     holder.registerProblem(
                         root, // report on the root and not on the name
-                        makeMessage(o.name, LexicalState.JustDefaultState),
+                        makeMessage(o.name, listOfNotNull(o.containingFile.defaultLexStateName)),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING
                     )
                 }

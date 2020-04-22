@@ -23,7 +23,6 @@ class JccIdentifierImpl(node: ASTNode) : JccPsiElementImpl(node), JccIdentifier 
     override fun getName(): String = text
 
     override fun getReference(): PsiReference? = when {
-        isJjtreeNodeIdentifier -> JjtNodePolyReference(this.firstAncestorOrNull()!!)
         isLexicalStateName     -> JccLexicalStateReference(this)
         else                   -> null
     }

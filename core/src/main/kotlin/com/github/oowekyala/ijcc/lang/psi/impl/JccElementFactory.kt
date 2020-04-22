@@ -5,12 +5,10 @@ import com.github.oowekyala.ijcc.JjtreeFileType
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiParserFacade
 import com.intellij.psi.util.PsiTreeUtil
 import org.intellij.lang.annotations.Language
@@ -24,7 +22,7 @@ import org.intellij.lang.annotations.Language
 open class JccElementFactory(val project: Project) {
 
 
-    private fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
+    fun <T : PsiElement> PsiElement.findChildOfType(clazz: Class<out T>): T? =
         PsiTreeUtil.findChildOfType(this, clazz)
 
 
@@ -167,19 +165,6 @@ open class JccElementFactory(val project: Project) {
         val file = createFile(fileText)
 
         return file.parserDeclaration!!.javaCompilationUnit!!
-    }
-
-    fun createJavaMethodForNonterminal(header: JccJavaNonTerminalProductionHeader): PsiMethod {
-        val text = """
-            class Foo {
-                ${header.toJavaMethodHeader()} {
-
-                }
-            }
-        """.trimIndent()
-
-        return project.psiFileFactory.createFileFromText("dummy.java", JavaFileType.INSTANCE, text)
-            .findChildOfType(PsiMethod::class.java)!!
     }
 
     fun createFile(text: String): JccFile =

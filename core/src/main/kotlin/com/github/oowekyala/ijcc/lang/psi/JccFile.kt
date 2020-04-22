@@ -64,6 +64,9 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
 }
 
 
+val JccFile.defaultLexStateName: String
+    get() = grammarOptions.inlineBindings.defaultLexicalState21
+
 val JccFile.allJjtreeDecls: Map<String, List<JjtNodeClassOwner>>
     get() = (this as JccFileImpl).syntaxGrammar.allJjtreeNodes
 
@@ -79,4 +82,3 @@ fun JccFile.getProductionByNameMulti(name: String): List<JccNonTerminalProductio
 
 fun JccFile.allProductions(): Sequence<JccProduction> =
     grammarFileRoot?.childrenSequence()?.filterIsInstance<JccProduction>().orEmpty()
-

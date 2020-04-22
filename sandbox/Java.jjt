@@ -1982,7 +1982,7 @@ Dims:
 */
 
 
-void IntersectionType(boolean inCast) #IntersectionType(isIntersection):
+void IntersectionType(boolean inCast) #void:
 {boolean isIntersection=false;}
 {
   // The first type may be annotated, but the annotations are handled outside

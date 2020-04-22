@@ -96,7 +96,7 @@ private class JjtxCompilVisitor(val file: JccFile,
     }
 
     override fun visitOptionBinding(o: JccOptionBinding) {
-        if (o.modelOption!!.supportedNature > GrammarNature.JAVACC) {
+        if (!o.modelOption!!.supports(GrammarNature.JAVACC)) {
             // comment it
             out.print("// ")
         }

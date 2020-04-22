@@ -15,12 +15,15 @@ import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.completion.simple.BracesTailType
+import com.intellij.codeInsight.completion.simple.ParenthesesTailType
 //import com.intellij.codeInsight.lookup.BracesTailType
 import com.intellij.codeInsight.lookup.EqTailType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.editor.Editor
 import com.intellij.patterns.ElementPattern
 import com.intellij.psi.PsiElement
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
@@ -50,7 +53,7 @@ class JccCompletionContributor : CompletionContributor() {
 
             InlineGrammarOptions.knownOptions
                 .filterKeys { it !in alreadyThere }
-                .filterValues { it.supportedNature <= fileNature }
+                .filterValues { it.supports(fileNature) }
                 .map { (name, opt) ->
                     LookupElementBuilder.create(name)
                         .withPsiElement(file.realOrFakeOptionNodeFor(name))
@@ -84,23 +87,37 @@ class JccCompletionContributor : CompletionContributor() {
         jjtreeHashPattern.completeWith {
             val file = parameters.originalPosition?.containingFile as? JccFile ?: return@completeWith
 
+
+            val nodeOwner =
+                parameters.originalPosition // leaf
+                    ?.parent // JccIdent
+                    ?.let { it.parent as? JccJjtreeNodeDescriptor }
+                    ?.parent as? JjtNodeClassOwner
+                    ?: return@completeWith
+
             file.allJjtreeDecls
                 .forEach { (nodeName, declarators) ->
-                    LookupElementBuilder.create(nodeName)
-                        .withPresentableText("#$nodeName")
-                        .withPsiElement(declarators.firstOrNull())
-                        .withIcon(JccIcons.JJTREE_NODE)
+                    makeJjtreeLookupElt(nodeName, declarators)
                         .withPriority(declarators.size.toDouble())
                         .runIt {
-                            if (declarators.singleOrNull() != parameters.originalPosition) {
+                            if (nodeOwner !in declarators) {
                                 // don't self complete
                                 result.addElement(it)
                             }
                         }
                 }
 
-            if (parameters.originalPosition?.parent is JccNonTerminalProduction) {
+            if (nodeOwner is JccNonTerminalProduction) {
                 result.addElement(VoidJjtreeAnnotVariant)
+
+                val self =
+                    makeJjtreeLookupElt(nodeName = nodeOwner.name, declarators = emptyList())
+                        .withBoldness(true)
+                        .withTailText("(...)")
+                        .withTail(CallParensTailType)
+                        .withPriority(3.0)
+
+                result.addElement(self)
             }
         }
 
@@ -128,6 +145,14 @@ class JccCompletionContributor : CompletionContributor() {
 
             if (accepted) result.addAllElements(RegexProdVariants)
         }
+    }
+
+    private fun makeJjtreeLookupElt(nodeName: String,
+                                    declarators: List<JjtNodeClassOwner>): LookupElementBuilder {
+        return LookupElementBuilder.create(nodeName)
+            .withPresentableText("#$nodeName")
+            .withPsiElement(declarators.firstOrNull())
+            .withIcon(JccIcons.JJTREE_NODE)
     }
 
     private fun ElementPattern<out PsiElement>.completeWith(completionType: CompletionType? = CompletionType.BASIC,
@@ -167,6 +192,17 @@ class JccCompletionContributor : CompletionContributor() {
 
 
     }
+
+}
+
+object CallParensTailType : ParenthesesTailType() {
+    override fun isSpaceWithinParentheses(styleSettings: CommonCodeStyleSettings,
+                                          editor: Editor,
+                                          tailOffset: Int): Boolean = false
+
+    override fun isSpaceBeforeParentheses(styleSettings: CommonCodeStyleSettings,
+                                          editor: Editor,
+                                          tailOffset: Int): Boolean = false
 
 }
 

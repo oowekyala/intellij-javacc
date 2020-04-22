@@ -117,9 +117,12 @@
         <findUsagesHandlerFactory
                 implementation="com.github.oowekyala.ijcc.ide.findusages.JccStringTokenFindUsagesHandlerFactory"/>
 
+        <lang.implementationTextSelectioner language="JavaCC"
+                                            implementationClass="com.github.oowekyala.ijcc.ide.findusages.JccTextSelectioner" />
 
         <!-- INDEX -->
 
+        <stubElementTypeHolder class="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccStubElementTypeHolder" />
         <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
         <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
 

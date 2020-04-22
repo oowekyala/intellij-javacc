@@ -17,7 +17,6 @@ val grammarKit: Configuration by configurations.creating
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
-    implementation("org.apache.commons:commons-lang3:3.9") // only used to unescape java I think
 
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) {
@@ -43,6 +42,9 @@ dependencies {
     }
 
     testImplementation(grammarKit)
+
+    sourceSets["test"].compileClasspath += configurations.compileOnly
+    sourceSets["test"].runtimeClasspath += configurations.compileOnly
 }
 
 sourceSets {

@@ -62,7 +62,7 @@ class LexicalGrammar(file: JccFile) : BaseCachedModelObject(file) {
 
 
     val defaultState: LexicalState
-        get() = lexicalStatesMap.getValue(LexicalState.DefaultStateName)
+        get() = lexicalStatesMap.getValue(file.defaultLexStateName)
 
     /**
      * Returns the first token that has the given name. It's unique in well-formed
@@ -98,7 +98,7 @@ class LexicalGrammar(file: JccFile) : BaseCachedModelObject(file) {
         // state name to builder
         val builders = file.initBuilders()
 
-        val defaultBuilder = builders.getValue(DefaultStateName)
+        val defaultBuilder = builders.getValue(file.defaultLexStateName)
 
         for (production in file.allProductions()) {
 
@@ -167,7 +167,7 @@ class LexicalGrammar(file: JccFile) : BaseCachedModelObject(file) {
                 .associateTo(mutableMapOf()) { id ->
                     Pair(id.name, LexicalStateBuilder(id.name, SmartPointerManager.createPointer(id)))
                 }
-                .also { it.computeIfAbsent(DefaultStateName) { name -> LexicalStateBuilder(name, null) } }
+                .also { it.computeIfAbsent(defaultLexStateName) { name -> LexicalStateBuilder(name, null) } }
 
         /**
          * Returns a stream of all "potential" tokens in a grammar. String tokens

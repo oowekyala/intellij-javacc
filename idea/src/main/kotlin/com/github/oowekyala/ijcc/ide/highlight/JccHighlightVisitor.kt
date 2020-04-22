@@ -25,7 +25,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.tree.TokenSet
-import org.apache.commons.lang3.StringEscapeUtils
 
 /**
  * @author Clément Fournier
@@ -141,8 +140,8 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visitJjtreeNodeDescriptor(nodeDescriptor: JccJjtreeNodeDescriptor) {
 
-        if (myFile.grammarNature < GrammarNature.JJTREE) {
-            myHolder += JccHighlightUtil.errorInfo(
+        if (myFile.grammarNature == GrammarNature.JAVACC) {
+            myHolder += errorInfo(
                 nodeDescriptor,
                 JccErrorMessages.unexpectedJjtreeConstruct()
             ).withQuickFix(fixes = *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
@@ -171,11 +170,11 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
                 "Unknown option: ${binding.name}"
             )
             return
-        } else if (myFile.grammarNature < GrammarNature.JJTREE && opt.supportedNature < GrammarNature.JJTREE) {
+        } else if (!opt.supports(myFile.grammarNature) && myFile.grammarNature == GrammarNature.JAVACC) {
             myHolder += warningInfo(
                 binding.namingLeaf,
                 JccErrorMessages.unexpectedJjtreeOption()
-            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
+            ).withQuickFix(*JccErrorMessages.changeNatureFixes(myFile, opt.supportedNature))
 
         } else {
             myHolder += highlightInfo(binding.namingLeaf, OPTION_NAME.highlightType)
@@ -362,13 +361,13 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
 
         val left: String = try {
-            StringEscapeUtils.unescapeJava(descriptor.baseCharAsString)
+            descriptor.baseCharAsString.unescapeJavaString()
         } catch (e: IllegalArgumentException) {
             myHolder += errorInfo(descriptor.baseCharElement, e.message)
             return
         }
         val right: String? = try {
-            StringEscapeUtils.unescapeJava(descriptor.toCharAsString)
+            descriptor.toCharAsString?.unescapeJavaString()
         } catch (e: IllegalArgumentException) {
             // if toCharAsString is null then unescapeJava can't throw an exception
             myHolder += errorInfo(descriptor.toCharElement!!, e.message)

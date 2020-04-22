@@ -3,12 +3,16 @@ package com.github.oowekyala.ijcc.ide.structureview
 import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.impl.JccElementFactory
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.util.plusAssign
+import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiSubstitutor
 import com.intellij.psi.util.PsiFormatUtil
@@ -112,6 +116,20 @@ private val JccNonTerminalProduction.presentableText: String
         )
         return StringUtil.replace(StringUtil.replace(method, ":void", ""), ":", ": ")
     }
+
+
+fun JccElementFactory.createJavaMethodForNonterminal(header: JccJavaNonTerminalProductionHeader): PsiMethod {
+    val text = """
+            class Foo {
+                ${header.toJavaMethodHeader()} {
+
+                }
+            }
+        """.trimIndent()
+
+    return PsiFileFactory.getInstance(project).createFileFromText("dummy.java", JavaFileType.INSTANCE, text)
+        .findChildOfType(PsiMethod::class.java)!!
+}
 
 
 val JccPsiElement.locationString: String?

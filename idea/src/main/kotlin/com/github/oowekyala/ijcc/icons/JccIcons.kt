@@ -55,6 +55,7 @@ val GrammarNature.icon: Icon
         JAVACC   -> JccIcons.JAVACC_FILE
         JJTREE   -> JccIcons.JJTREE_FILE
         JJTRICKS -> JccIcons.JJTREE_FILE // TODO
+        J21      -> JccIcons.JAVACC_FILE // TODO
         UNKNOWN  -> AllIcons.FileTypes.Unknown
     }
 

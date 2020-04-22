@@ -10,5 +10,6 @@ class JavaccFileTypeFactory : FileTypeFactory() {
         consumer.consume(JavaccFileType, "jj")
         consumer.consume(JjtreeFileType, "jjt")
         consumer.consume(JjtricksFileType, "jjtx")
+        consumer.consume(Javacc21FileType, "javacc")
     }
 }

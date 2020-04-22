@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.util
 
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
+import com.intellij.openapi.application.runWriteAction
 //import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
@@ -80,28 +81,26 @@ interface ParseUtilsMixin {
     private fun Document.extractMultipleMarkerOffsets(project: Project, caretMarker: String = "<caret>"): List<Int> {
         val offsets = ArrayList<Int>()
 
+        runWriteAction {
+            val text = StringBuilder(text)
+            while (true) {
+                val offset = text.indexOf(caretMarker)
+                if (offset >= 0) {
+                    text.delete(offset, offset + caretMarker.length)
+                    setText(text.toString())
 
-        //        runWriteAction {
-        val text = StringBuilder(text)
-        while (true) {
-            val offset = text.indexOf(caretMarker)
-            if (offset >= 0) {
-                text.delete(offset, offset + caretMarker.length)
-                setText(text.toString())
-
-                offsets += offset
-            } else {
-                break
+                    offsets += offset
+                } else {
+                    break
                 }
             }
-        //        }
+        }
 
         PsiDocumentManager.getInstance(project).commitAllDocuments()
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(this)
 
         return offsets
     }
-
 
 
     companion object {

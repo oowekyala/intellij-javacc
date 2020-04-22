@@ -1,0 +1,29 @@
+
+INJECT(Foo): {} {}
+INJECT(class Foo): {} {}
+INJECT(interface Foo): {} {}
+
+INJECT(Foo) {} {}
+INJECT(class Foo) {} {}
+INJECT(interface Foo) {} {}
+
+INCLUDE(Java)
+INCLUDE(Java) :{}
+INCLUDE("Java")
+INCLUDE("Java") :{}
+INCLUDE("Java"
+INCLUDE(
+INCLUDE
+
+// errors
+INJECT(interface Foo) {}
+INJECT(interface Foo):
+
+INJECT:{}
+INJECT {}
+
+
+void assignments(): {}
+{
+  "&&"
+}

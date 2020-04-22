@@ -32,6 +32,9 @@ abstract class GenericOption<T : Any>(
     /** Name of this option. */
     abstract val name: String
 
+    open fun supports(g: GrammarNature) = supportedNature <= g
+
+
     /** Gets the value of this option from an binding. If it's null then the default value is used. */
     open fun getValue(optionBinding: JccOptionBinding?, config: IGrammarOptions): T =
         optionBinding

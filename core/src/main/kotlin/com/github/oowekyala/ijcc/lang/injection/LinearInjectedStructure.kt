@@ -4,8 +4,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
 import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.github.oowekyala.ijcc.util.removeLast
-import com.intellij.lang.injection.MultiHostRegistrar
-import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.SmartPointerManager
@@ -29,26 +27,12 @@ class LinearInjectedStructure(hostSpecs: List<HostSpec>) {
     var hostSpecs = hostSpecs
         private set
 
-    private object LOG : EnclosedLogger()
 
-    fun register(registrar: MultiHostRegistrar) {
+    fun prepareRegister(): List<HostSpec> {
         hostSpecs = removeStaleSpecs(hostSpecs)
 
-        if (hostSpecs.isEmpty()) {
-            LOG { debug("Nothing to inject") }
-            return
-        }
-
-        registrar.startInjecting(JavaLanguage.INSTANCE, "java")
-
-        for (spec in hostSpecs) {
-            val host = spec.host!!
-            registrar.addPlace(spec.prefix, spec.suffix, host, spec.getRangeInsideHost(host))
-        }
-
-        registrar.doneInjecting()
+        return hostSpecs
     }
-
 
     private companion object {
         fun removeStaleSpecs(specs: List<HostSpec>): List<HostSpec> {
@@ -79,7 +63,7 @@ class LinearInjectedStructure(hostSpecs: List<HostSpec>) {
                     preFilterList += myRes
                 } else {
                     // host == null
-                    LOG { debug("Removed null host") }
+                    // LOG { debug("Removed null host") }
                     nextPrefixBuilder += spec.prefix.orEmpty()
                     nextPrefixBuilder += spec.suffix.orEmpty()
                     // continue until the next valid spec

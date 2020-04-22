@@ -1,10 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
+import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.NonTerminalStub
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -33,6 +35,9 @@ abstract class JccNonTerminalProductionImpl<TStub : NonTerminalStub<*>>
                 JccJavaNonTerminalProductionHeader::class.java
             )
         )
+
+    override fun getReference(): PsiReference? =
+        if (isNotVoid) JjtNodePolyReference(this) else null
 
     open fun accept(visitor: JccVisitor) {
         visitor.visitNonTerminalProduction(this)

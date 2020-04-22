@@ -22,7 +22,7 @@ object JccProductionToParserLineMarkerProvider
             .setTarget(target)
             .setTooltipText("Navigate to parser method in ${target.containingClass?.name}")
             .setPopupTitle("Parser class ${target.containingClass?.name}")
-            .createLineMarkerInfo(elt.nameIdentifier)
+            .createLineMarkerInfo(elt.nameIdentifier.leaf)
             .let { sequenceOf(it) }
     }
 

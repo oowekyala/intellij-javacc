@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
+import com.github.oowekyala.ijcc.ide.structureview.createJavaMethodForNonterminal
 import com.github.oowekyala.ijcc.lang.cfa.*
 import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*

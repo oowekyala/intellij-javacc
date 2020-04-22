@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.ide.completion.withTail
 import com.github.oowekyala.ijcc.ide.structureview.presentableText
 import com.github.oowekyala.ijcc.ide.structureview.presentationIcon
-import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.allJjtreeDecls
 import com.github.oowekyala.ijcc.lang.psi.canReferencePrivate
@@ -68,36 +67,39 @@ object IdeRefVariantsService : JccRefVariantService() {
         ref.element.containingFile
             .lexicalGrammar
             .defaultState
-            .tokens
-            .asSequence()
-            .filter { !it.isPrivate && it.regexKind == RegexKind.TOKEN }
-            .mapNotNull { token ->
-                val asString = token.asStringToken ?: return@mapNotNull null
+            .let { dftState ->
+                dftState.tokens
+                    .asSequence()
+                    .filter { !it.isPrivate && it.regexKind == RegexKind.TOKEN }
+                    .mapNotNull { token ->
+                        val asString = token.asStringToken ?: return@mapNotNull null
 
-                LookupElementBuilder
-                    .create(asString.text.removeSuffix("\""))
-                    .withPsiElement(token.psiElement)
-                    .withPresentableText(asString.text)
-                    .withIcon(JccIcons.TOKEN)
-                    .withTypeText(token.let {
-                        buildString {
-                            if (it.lexicalStatesOrEmptyForAll != LexicalState.JustDefaultState) {
-                                // <A, B>
-                                it.lexicalStatesOrEmptyForAll.joinTo(
-                                    this,
-                                    separator = ", ",
-                                    prefix = "<",
-                                    postfix = ">"
-                                )
-                            }
-                            it.lexicalStateTransition?.let {
-                                append(" -> ")
-                                append(it)
-                            }
-                        }
-                    }, true)
-                    .withTail("\" ")
-            }.toList().toTypedArray()
+                        LookupElementBuilder
+                            .create(asString.text.removeSuffix("\""))
+                            .withPsiElement(token.psiElement)
+                            .withPresentableText(asString.text)
+                            .withIcon(JccIcons.TOKEN)
+                            .withTypeText(token.let {
+                                buildString {
+                                    if (it.lexicalStatesOrEmptyForAll != listOfNotNull(dftState.name)) {
+                                        // <A, B>
+                                        it.lexicalStatesOrEmptyForAll.joinTo(
+                                            this,
+                                            separator = ", ",
+                                            prefix = "<",
+                                            postfix = ">"
+                                        )
+                                    }
+                                    it.lexicalStateTransition?.let {
+                                        append(" -> ")
+                                        append(it)
+                                    }
+                                }
+                            }, true)
+                            .withTail("\" ")
+                    }.toList().toTypedArray()
+            }
+
 
     override fun jjtreeNodeVariants(ref: JjtNodePolyReference): Array<Any> =
         ref.element.containingFile.allJjtreeDecls

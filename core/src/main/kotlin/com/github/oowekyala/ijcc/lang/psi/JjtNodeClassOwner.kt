@@ -12,6 +12,8 @@ package com.github.oowekyala.ijcc.lang.psi
  */
 interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 
+    // TODO 21 regex specs
+
     val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
 
     @JvmDefault

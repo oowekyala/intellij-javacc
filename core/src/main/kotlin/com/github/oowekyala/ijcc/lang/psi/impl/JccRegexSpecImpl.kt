@@ -18,18 +18,14 @@ class JccRegexSpecImpl(node: ASTNode) : JccPsiElementImpl(node), JccRegexSpec {
             super.accept(visitor)
     }
 
-    override fun getRegularExpression(): JccRegularExpression {
-        return findNotNullChildByClass(JccRegularExpression::class.java)
-    }
+    override fun getRegularExpression(): JccRegularExpression =
+        findNotNullChildByClass(JccRegularExpression::class.java)
 
-    override fun getLexicalStateTransition(): JccIdentifier? {
-        return findChildByClass(JccIdentifier::class.java)
-    }
+    override fun getLexicalStateTransition(): JccIdentifier? = findChildByClass(JccIdentifier::class.java)
 
-    override fun getLexicalActions(): JccJavaBlock? {
-        return findChildByClass(JccJavaBlock::class.java)
-    }
+    override fun getLexicalActions(): JccJavaBlock? = findChildByClass(JccJavaBlock::class.java)
 
+    override fun getJjtreeNodeDescriptor(): JccJjtreeNodeDescriptor? = findChildByClass(JccJjtreeNodeDescriptor::class.java)
 
     override fun getName(): String? = nameIdentifier?.text
 
