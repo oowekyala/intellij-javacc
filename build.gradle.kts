@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "com.github.oowekyala"
-version = "1.5"
+version = "1.6"
 
 extra["customDepsOrg"] = "ijcc.build"
 
