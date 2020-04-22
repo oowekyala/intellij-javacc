@@ -1,10 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.github.oowekyala.ijcc.lang.psi.impl
 
+import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -32,6 +34,8 @@ class JccScopedExpansionUnitImpl : JjtNodeClassOwnerImpl<JccScopedExpansionUnitS
         else
             super.accept(visitor)
     }
+
+    override fun getReference(): PsiReference = JjtNodePolyReference(this)
 
     override val expansionUnit: JccExpansionUnit
         get() = notNullChild<JccExpansionUnit>(PsiTreeUtil.getChildOfType(this, JccExpansionUnit::class.java))
