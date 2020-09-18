@@ -1,12 +1,12 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.JavaccLanguage
+import com.github.oowekyala.ijcc.lang.JccTypes.JCC_C_STYLE_COMMENT
 import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
+import com.github.oowekyala.ijcc.lang.JccTypes.JCC_END_OF_LINE_COMMENT
 import com.github.oowekyala.ijcc.util.contains
 import com.intellij.codeInspection.InspectionProfileEntry
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.psi.JavaTokenType.C_STYLE_COMMENT
-import com.intellij.psi.JavaTokenType.END_OF_LINE_COMMENT
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.JavaDocElementType
 
@@ -35,9 +35,8 @@ val PsiElement.isJccComment: Boolean
 
 val PsiElement.trimCommentMarkers: String
     get() = when (node.elementType) {
-        END_OF_LINE_COMMENT            -> text.removePrefix("//")
-        C_STYLE_COMMENT                -> text.removeSurrounding("/*", "*/")
-        JavaDocElementType.DOC_COMMENT -> text.removeSurrounding("/**", "*/")
-        else                           -> text
+        JCC_END_OF_LINE_COMMENT -> text.removePrefix("//")
+        JCC_C_STYLE_COMMENT     -> text.removeSurrounding("/*", "*/")
+        else                    -> text
     }
 
