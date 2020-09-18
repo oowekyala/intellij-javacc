@@ -1,9 +1,8 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
-import java.net.URI
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
+import java.net.URI
 
 plugins {
     id("org.jetbrains.intellij") version "0.4.22"
@@ -15,6 +14,7 @@ plugins {
 group = "com.github.oowekyala"
 version = "1.6"
 
+val IntellijVersion = "2020.1"
 val KotlinVersion = "1.4.10"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
@@ -157,13 +157,14 @@ tasks {
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
-        version = "2020.1" // TODO use extra versions.intellijSdk
+        version = IntellijVersion
         updateSinceUntilBuild = false
         ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
         setPlugins("java")
     }
 
     runIde {
+        // this launches in the sandbox subdir
         jvmArgs = listOf("-Xmx2G")
         setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }

@@ -28,7 +28,7 @@ val JccOptionValue.stringValue: String
     }
 
 
-val JccOptionValue.optionType: JccOptionType.BaseOptionType<*>
+val JccOptionValue.optionType: JccOptionType.BaseOptionType<*>?
     get() {
         val int = integerLiteral
         val string = stringLiteral
@@ -38,7 +38,7 @@ val JccOptionValue.optionType: JccOptionType.BaseOptionType<*>
             int != null    -> JccOptionType.BaseOptionType.INTEGER
             string != null -> JccOptionType.BaseOptionType.STRING
             bool != null   -> JccOptionType.BaseOptionType.BOOLEAN
-            else           -> throw IllegalStateException()
+            else           -> null
         }
     }
 
