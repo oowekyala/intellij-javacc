@@ -67,8 +67,8 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
             }
 
             TOKEN: {
-               <FOO: <#PRIV>>
-             | <BAR: <#PRIV> | "h" >
+               <FOO: <PRIV>>
+             | <BAR: <PRIV> | "h" >
             }
         """.inGrammarCtx()
     )
