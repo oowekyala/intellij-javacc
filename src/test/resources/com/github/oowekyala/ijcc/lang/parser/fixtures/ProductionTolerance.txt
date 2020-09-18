@@ -26,20 +26,16 @@ JCC_FILE
           PsiElement(IDENT)('JJTreeParser')
         PsiElement())(')')
       JccJavaCompilationUnitImpl(JCC_JAVA_COMPILATION_UNIT)
-        PsiElement(PACKAGE_KEYWORD)('package')
+        PsiElement(package)('package')
         PsiElement(IDENT)('org')
         PsiElement(.)('.')
         PsiElement(IDENT)('javacc')
         PsiElement(.)('.')
         PsiElement(IDENT)('jjtree')
         PsiElement(;)(';')
-        PsiDocComment
-          PsiElement(DOC_COMMENT_START)('/**')
-          PsiElement(DOC_COMMENT_LEADING_ASTERISKS)('*')
-          PsiElement(DOC_COMMENT_DATA)('  This is my parser declaration')
-          PsiElement(DOC_COMMENT_END)('*/')
+        PsiComment(C_STYLE_COMMENT)('/**\n     *  This is my parser declaration\n     */')
         PsiElement(public)('public')
-        PsiElement(CLASS_KEYWORD)('class')
+        PsiElement(class)('class')
         PsiElement(IDENT)('JJTreeParser')
         PsiElement({)('{')
         PsiElement(void)('void')
@@ -90,7 +86,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('fooo')
@@ -144,18 +140,18 @@ JCC_FILE
       PsiErrorElement:<method header> expected, got 's'
         <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('s')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(RangeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('String')
@@ -217,18 +213,18 @@ JCC_FILE
     PsiErrorElement:<identifier>, <parameter list> or IDENT expected, got 'f'
       <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('f')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'string'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'string'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(RangeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('string')
@@ -285,7 +281,7 @@ JCC_FILE
       PsiErrorElement:<method header> expected, got 'a'
         <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('a')
@@ -353,7 +349,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('a')
@@ -421,11 +417,11 @@ JCC_FILE
     PsiComment(END_OF_LINE_COMMENT)('// In the following, we use nodes to represent the operators because there may be several expressions chained.')
     PsiComment(END_OF_LINE_COMMENT)('// e.g. E1 + E2 - E3 ~> E1 PlusOperator E2 MinusOperator E3')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('a')
-      PsiErrorElement:'.', <identifier> or '[' expected, got 'void'
+      PsiErrorElement:'.', <, <identifier> or '[' expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(AdditiveExpr)
@@ -483,18 +479,18 @@ JCC_FILE
             PsiElement(*)('*')
       PsiElement(})('}')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('a')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(AdditiveOperator)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('String')
@@ -601,7 +597,7 @@ JCC_FILE
             PsiElement(*)('*')
       PsiElement(})('}')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('f')
@@ -681,25 +677,25 @@ JCC_FILE
             PsiElement(})('}')
       PsiElement(})('}')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('f')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'g'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'g'
       <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('g')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(UnionExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('String')
@@ -755,7 +751,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('f')
@@ -833,7 +829,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('f')
@@ -848,7 +844,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
@@ -983,7 +979,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
@@ -1045,7 +1041,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
@@ -1111,7 +1107,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
@@ -1164,11 +1160,11 @@ JCC_FILE
             PsiElement(*)('*')
       PsiElement(})('}')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('foo')
-      PsiErrorElement:'.', <identifier> or '[' expected, got '('
+      PsiErrorElement:'.', <, <identifier> or '[' expected, got '('
         <empty list>
     PsiElement(()('(')
     PsiElement())(')')
@@ -1178,7 +1174,7 @@ JCC_FILE
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
@@ -1231,18 +1227,18 @@ JCC_FILE
             PsiElement(*)('*')
       PsiElement(})('}')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
-      JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+      JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('bar')
-    PsiErrorElement:'.', <identifier>, <parameter list>, IDENT or '[' expected, got 'foo'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'foo'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the next production to be parsed')
     JccBnfProductionImpl(MultiplicativeExpr)
       JccJavaNonTerminalProductionHeaderImpl(JCC_JAVA_NON_TERMINAL_PRODUCTION_HEADER)
         JccJavaAccessModifierImpl(JCC_JAVA_ACCESS_MODIFIER)
           <empty list>
-        JccJavaReturnTypeImpl(JCC_JAVA_RETURN_TYPE)
+        JccJavaTypeImpl(JCC_JAVA_TYPE)
           JccJavaNameImpl(JCC_JAVA_NAME)
             JccIdentifierImpl(JCC_IDENTIFIER)
               PsiElement(IDENT)('foo')
