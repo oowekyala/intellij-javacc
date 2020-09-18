@@ -11,11 +11,11 @@ fun <T, C : Collection<T>> C?.eachShouldMatchInOrder(vararg assertions: (T) -> U
 
     this!! // just to inform the type system
 
-    this.size ktShouldBe assertions.size
 
     this.zip(assertions).forEach { (item, matcher) ->
         matcher(item)
     }
+    this.size ktShouldBe assertions.size
 }
 
 

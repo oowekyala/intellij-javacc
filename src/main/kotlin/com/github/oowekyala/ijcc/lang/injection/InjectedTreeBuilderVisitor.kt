@@ -63,7 +63,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
 
-    override fun visitPsiElement(o: JccPsiElement) {
+    override fun visitElement(o: PsiElement) {
         nodeStackImpl.push(EmptyLeaf)
     }
 
@@ -362,7 +362,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
             val leaf =
 
-                if (jcu != null)
+                if (jcu != null && jcu.text.isBlank().not())
                     SurroundNode(
                         MultiChildNode(
                             children = listOf(
