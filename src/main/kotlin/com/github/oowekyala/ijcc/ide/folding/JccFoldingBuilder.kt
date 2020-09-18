@@ -26,10 +26,12 @@ import com.intellij.psi.javadoc.PsiDocComment
  */
 class JccFoldingBuilder : CustomFoldingBuilder() {
 
-    override fun buildLanguageFoldRegions(descriptors: MutableList<FoldingDescriptor>,
-                                          root: PsiElement,
-                                          document: Document,
-                                          quick: Boolean) {
+    override fun buildLanguageFoldRegions(
+        descriptors: MutableList<FoldingDescriptor>,
+        root: PsiElement,
+        document: Document,
+        quick: Boolean
+    ) {
         val tmp = mutableListOf<FoldingDescriptor>()
 
         root.accept(FolderVisitor(tmp))
@@ -55,15 +57,13 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
             is JccJavaBlock,
             is JccParserActionsUnit     -> opts.isFoldJavaFragments
             is JccLocalLookaheadUnit    -> opts.isFoldLookaheads
-            is PsiComment               ->
-                psi.text.matches(BGEN_PATTERN) && opts.isFoldBgenSections
+            is PsiComment               -> opts.isFoldBgenSections && psi.text.matches(BGEN_PATTERN)
             else                        -> true
         }
     }
 
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String {
-        val psi = node.psi
-        return when (psi) {
+        return when (val psi = node.psi) {
             is PsiComment                 ->
                 when {
                     // start comment of a generated section
@@ -82,10 +82,8 @@ class JccFoldingBuilder : CustomFoldingBuilder() {
                     "LOOKAHEAD(${psi.integerLiteral!!.text})"
                 } else "LOOKAHEAD(_)" // use one char instead of .. for alignment
             }
-            is JccBnfProduction           -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
-                ?: ""}/"
-            is JccJavacodeProduction      -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" }
-                ?: ""}/"
+            is JccBnfProduction           -> "/BNF ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" } ?: ""}/"
+            is JccJavacodeProduction      -> "/JAVACODE ${psi.name}()${psi.jjtreeNodeDescriptor?.text?.let { " $it" } ?: ""}/"
             is JccInjectDirective         -> "INJECT (" + (psi.identifier?.text ?: "???") + ") {..}"
             is JccFullInjectDirective     -> "INJECT {..}"
             else                          -> throw UnsupportedOperationException("Unhandled case $psi")

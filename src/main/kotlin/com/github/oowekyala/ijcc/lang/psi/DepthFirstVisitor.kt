@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveVisitor
 
 /**
@@ -8,8 +9,8 @@ import com.intellij.psi.PsiRecursiveVisitor
  */
 open class DepthFirstVisitor : JccVisitor(), PsiRecursiveVisitor {
 
-    override fun visitPsiElement(o: JccPsiElement) {
-        o.acceptChildren(this)
+    override fun visitElement(element: PsiElement) {
+        element.acceptChildren(this)
     }
 
 }

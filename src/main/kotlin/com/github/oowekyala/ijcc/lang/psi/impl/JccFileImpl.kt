@@ -10,6 +10,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElementVisitor
 import com.intellij.util.IncorrectOperationException
 
 
@@ -114,6 +115,13 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override fun setPackageName(packageName: String?) {
         throw IncorrectOperationException("Cannot set the package of the parser that way")
+    }
+
+    override fun accept(visitor: PsiElementVisitor) {
+        if (visitor is JccVisitor)
+            visitor.visitPsiElement(this)
+        else
+            visitor.visitFile(this)
     }
 
 

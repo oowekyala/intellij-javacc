@@ -9,7 +9,7 @@ PARSER_END(JJTreeParser)</fold>
 <fold text='/BNF QuantifiedExpr()/' expand='true'>void QuantifiedExpr():
 {}
 {
-  (<SOME> <fold text="{..}"><fold text='{..}' expand='false'>{ jjtThis.setUniversallyQuantified(false); }</fold>)
+  (<SOME> <fold text='{..}' expand='false'>{ jjtThis.setUniversallyQuantified(false); }</fold>)
   VarBindingList(false)
   <SATISFIES> ExprSingle()
 }</fold>
