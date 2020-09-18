@@ -15,7 +15,7 @@ import org.junit.Test
  * @author Clément Fournier
  * @since 1.0
  */
-class InjectedTreeBuilderTest : JccCoreTestBase() {
+class InjectedTreeBuilderTest : JccTestBase() {
 
 
     private inline fun <reified N : InjectionStructureTree> matchAsExpansion(ignoreChildren: Boolean = false,

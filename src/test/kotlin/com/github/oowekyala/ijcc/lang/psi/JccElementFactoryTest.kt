@@ -1,15 +1,14 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
-import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
-import com.github.oowekyala.ijcc.lang.util.project
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import org.junit.Test
 
 /**
  * @author Clément Fournier
  * @since 1.0
  */
-class JccElementFactoryTest : JccCoreTestBase() {
+class JccElementFactoryTest : JccTestBase() {
 
     // mostly catches ClassCastExceptions
 

@@ -16,7 +16,6 @@ import org.intellij.lang.annotations.Language
 interface ParseUtilsMixin {
     fun getProject(): Project
 
-
     @Language("JavaCC")
     fun String.inExpansionCtx(): String = asExpansion().containingFile.text
 
@@ -52,7 +51,7 @@ interface ParseUtilsMixin {
     fun String.asJccFile(): JccFile = getProject().jccEltFactory.createFile(this)
 
     fun String.asJccGrammar(): JccFile =
-        getProject().jccEltFactory.createFile("${JccCoreTestBase.DummyHeader}$this")
+        getProject().jccEltFactory.createFile("${JccTestBase.DummyHeader}$this")
 
 
     fun replaceCaretMarker(text: String) = text.replace("/*caret*/", "<caret>")

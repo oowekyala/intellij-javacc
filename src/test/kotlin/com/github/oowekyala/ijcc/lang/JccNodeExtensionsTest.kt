@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccContainerRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.psi.isPrivate
 import com.github.oowekyala.ijcc.lang.psi.isUnclosed
-import com.github.oowekyala.ijcc.lang.util.project
 import io.kotlintest.shouldBe
 import org.junit.Test
 

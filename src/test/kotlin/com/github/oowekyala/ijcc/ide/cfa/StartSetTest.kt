@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.ide.cfa
 
 import com.github.oowekyala.ijcc.lang.cfa.*
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccBnfProduction
 import com.github.oowekyala.ijcc.lang.shouldBeA
 import com.github.oowekyala.ijcc.lang.shouldContainOneSuch
-import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.matchers.collections.shouldNotBeEmpty
 import io.kotlintest.matchers.haveSize
@@ -17,7 +17,7 @@ import org.junit.Test
  * @author Clément Fournier
  * @since 1.0
  */
-class StartSetTest : JccCoreTestBase() {
+class StartSetTest : JccTestBase() {
 
     private fun String.test(vararg otherProdNamesAndExps: Pair<String, String>,
                             groupAtomic: Boolean = false,

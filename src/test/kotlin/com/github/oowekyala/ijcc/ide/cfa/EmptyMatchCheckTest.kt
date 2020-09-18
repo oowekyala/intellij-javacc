@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.cfa
 import com.github.oowekyala.ijcc.lang.cfa.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.lang.cfa.leftMostSet
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.util.JccCoreTestBase
+import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldBe
 import org.junit.Test
@@ -12,7 +12,7 @@ import org.junit.Test
  * @author Clément Fournier
  * @since 1.0
  */
-class EmptyMatchCheckTest : JccCoreTestBase() {
+class EmptyMatchCheckTest : JccTestBase() {
 
     private inline fun <reified R : JccExpansion> String.test(isPos: Boolean,
                                                               vararg otherProdNamesAndExps: Pair<String, String>) {
