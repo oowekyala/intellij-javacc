@@ -1,7 +1,0 @@
-JJTricks v1.0
-(Run with -h parameter for a usage summary)
-Running tasks [gen:common]
-
-[init]                Config chain: DummyExpr.jjtopts.yaml -> /jjtx/Root.jjtopts.yaml -> DummyExpr.jjt
-[gen:common]          Executing tasks 'defaultJjtreeVisitor, parameterlessVisitor'
-[gen:common]          Generated 2 classes in @output@

@@ -1,7 +1,1 @@
 rootProject.name = 'intellij-javacc'
-
-include 'prepare-deps'
-include 'idea'
-include 'core'
-include 'jjtricks'
-
