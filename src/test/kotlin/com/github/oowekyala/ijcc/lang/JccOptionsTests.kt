@@ -18,10 +18,10 @@ import io.kotlintest.shouldBe
 class JccOptionsTests : BasePlatformTestCase() {
 
 
-    override fun getTestDataPath(): String = TestResourcesPath
+    override fun getTestDataPath(): String = OptionsTestDataPath
 
     fun testDefaultOverride() {
-        myFixture.configureByFiles("$OptionsTestDataPath/LookaheadOverride.jjt")
+        myFixture.configureByFiles("LookaheadOverride.jjt")
         val file = myFixture.file as JccFile
 
         // overridden
@@ -30,7 +30,7 @@ class JccOptionsTests : BasePlatformTestCase() {
 
 
     fun testPackageResolution() {
-        myFixture.configureByFiles("$OptionsTestDataPath/LookaheadOverride.jjt")
+        myFixture.configureByFiles("LookaheadOverride.jjt")
         val file = myFixture.file as JccFile
 
         file.grammarOptions.parserPackage shouldBe "org.javacc.jjtree"
@@ -38,7 +38,7 @@ class JccOptionsTests : BasePlatformTestCase() {
     }
 
     fun testNodePackageOverride() {
-        myFixture.configureByFiles("$OptionsTestDataPath/PackageOverride.jjt")
+        myFixture.configureByFiles("PackageOverride.jjt")
         val file = myFixture.file as JccFile
 
         file.grammarOptions.parserPackage shouldBe "org.javacc.jjtree"
@@ -46,7 +46,7 @@ class JccOptionsTests : BasePlatformTestCase() {
     }
 
     fun testInvalidOptionType() {
-        myFixture.configureByFiles("$OptionsTestDataPath/InvalidOptionType.jjt")
+        myFixture.configureByFiles("InvalidOptionType.jjt")
         val file = myFixture.file as JccFile
         val config = file.grammarOptions
 
