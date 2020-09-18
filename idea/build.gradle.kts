@@ -66,7 +66,7 @@ tasks {
 
 
     intellij {
-        version = "2019.3.1"
+        version = "2020.1" // TODO use extra versions.intellijSdk
         updateSinceUntilBuild = false
         ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
         setPlugins("java")

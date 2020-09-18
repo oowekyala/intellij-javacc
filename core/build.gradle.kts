@@ -7,7 +7,7 @@ import org.jetbrains.grammarkit.tasks.GenerateParser
 plugins {
     kotlin("jvm")
     id("java")
-    id("org.jetbrains.grammarkit") version "2019.3"
+    id("org.jetbrains.grammarkit") version "2020.1"
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
@@ -31,13 +31,39 @@ dependencies {
         )
     }
 
+    /*
+    lib/annotations-19.0.0.jar
+    lib/asm-all-7.0.1.jar
+    lib/automaton-1.12-1.jar
+    lib/extensions.jar
+    lib/guava-28.2-jre.jar
+    lib/idea.jar
+    lib/platform-api.jar
+    lib/platform-concurrency.jar
+    lib/platform-impl.jar
+    lib/util.jar
+    lib/trove4j.jar
+    lib/jdom.jar
+     */
+
     grammarKit(intellijDep()) {
         // Dependencies for the grammar-kit plugin
         // https://github.com/JetBrains/Grammar-Kit/blob/master/resources/META-INF/MANIFEST.MF
         includeJars(
-            "annotations", "asm-all", "automaton", "extensions",
-            "guava", "idea", "jdom", "picocontainer", "platform-api",
-            "platform-impl", "trove4j", "util", rootProject = rootProject
+            "annotations",
+            "asm-all",
+            "automaton",
+            "extensions",
+            "guava",
+            "idea",
+            "jdom",
+            "platform-api",
+            "platform-impl",
+            "platform-concurrency",
+            "trove4j",
+            "util",
+            "testFramework",
+            rootProject = rootProject
         )
     }
 

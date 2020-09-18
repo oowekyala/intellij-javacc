@@ -29,13 +29,13 @@ version = "1.6"
 extra["customDepsOrg"] = "ijcc.build"
 
 extra["versions.kotlin"] = "1.3.11" // sync with above plugin version
-extra["versions.intellijSdk"] = "2019.3.1"
+extra["versions.intellijSdk"] = "2020.1"
 
 extra["versions.jar.asm-all"] = "7.0.1"
-extra["versions.jar.guava"] = "27.1-jre"
-extra["versions.jar.picocontainer"] = "1.2"
+extra["versions.jar.guava"] = "28.2-jre"
+// extra["versions.jar.picocontainer"] = "1.2"
 extra["versions.jar.automaton"] = "1.12-1"
-extra["versions.jar.streamex"] = "0.6.8"
+extra["versions.jar.streamex"] = "0.7.2"
 
 extra["verifyDependencyOutput"] = false
 extra["intellijReleaseType"] =
@@ -51,7 +51,7 @@ extra["IntellijCoreDependencies"] =
         "jdom",
         "jna",
         "log4j",
-        "picocontainer",
+//        "picocontainer",
 //        "snappy-in-java",
         "streamex",
         "trove4j"
@@ -113,9 +113,9 @@ subprojects {
         testImplementation(intellijDep()) {
             includeIjCoreDeps(project)
             includeJars(
-                "openapi", "bootstrap", "idea_rt",
+                 "bootstrap", "idea_rt",
                 "annotations", "asm-all", "automaton", "extensions",
-                "guava", "idea", "jdom", "picocontainer", "platform-api",
+                "guava", "idea", "jdom", "platform-api",
                 "platform-impl", "trove4j", "util", rootProject = rootProject
             )
         }
