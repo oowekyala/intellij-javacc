@@ -46,6 +46,9 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.11" level="project" />
     <orderEntry type="module-library" scope="PROVIDED">
       <library name="Gradle: com.jetbrains:ideaIC:2020.1">
+        <ANNOTATIONS>
+          <root url="jar://$MAVEN_REPOSITORY$/com/jetbrains/intellij/idea/ideaIU/2020.2.2/ideaIU-2020.2.2-annotations.zip!/" />
+        </ANNOTATIONS>
         <CLASSES>
           <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2020.1/cbeeb1f1aebd4c9ea8fb5ab990c5904a676fc41a/ideaIC-2020.1/lib/FastInfoset-1.2.15.jar!/" />
           <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2020.1/cbeeb1f1aebd4c9ea8fb5ab990c5904a676fc41a/ideaIC-2020.1/lib/HdrHistogram-2.1.4.jar!/" />
