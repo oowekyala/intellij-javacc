@@ -63,7 +63,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
     // catch all method, so that the number of leaves
     // corresponds to the number of visited children
 
-    override fun visitElement(element: PsiElement?) {
+    override fun visitPsiElement(o: JccPsiElement) {
         nodeStackImpl.push(EmptyLeaf)
     }
 

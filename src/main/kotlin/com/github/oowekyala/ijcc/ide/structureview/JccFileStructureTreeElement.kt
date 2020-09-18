@@ -61,7 +61,7 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
                         it,
                         jjtNodes
                             .plus(syntheticTokensByProd[it].filterNotNull())
-                            .sortedBy { it.textOffset }
+                            .sortedBy(JccPsiElement::getTextOffset)
                             .map(::JccStructureTreeElement)
                             .toList()
 
