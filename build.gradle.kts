@@ -2,11 +2,8 @@
 
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import java.net.URI
-import com.github.oowekyala.localDepsRepo
-import com.github.oowekyala.includeJars
-import com.github.oowekyala.intellijCoreDep
-import com.github.oowekyala.includeIjCoreDeps
-import com.github.oowekyala.intellijDep
+import org.jetbrains.grammarkit.tasks.GenerateLexer
+import org.jetbrains.grammarkit.tasks.GenerateParser
 
 plugins {
     id("org.jetbrains.intellij") version "0.4.22"
@@ -22,29 +19,24 @@ val KotlinVersion = "1.4.10"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 
-group = "com.github.oowekyala"
-version = "1.0-SNAPSHOT"
 
-
-buildScript {
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven {
-            url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
-        }
-        maven {
-            url = URI("https://dl.bintray.com/kotlin/kotlinx")
-        }
-        maven {
-            url = URI("https://jitpack.io")
-        }
-        maven {
-            url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
-        maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
-
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
     }
+    maven {
+        url = URI("https://dl.bintray.com/kotlin/kotlinx")
+    }
+    maven {
+        url = URI("https://jitpack.io")
+    }
+    maven {
+        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
+    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
+
 }
 
 
@@ -68,14 +60,12 @@ sourceSets {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
-    implementation(kotlin("reflect")) // this could be avoided
-    testCompile("junit", "junit", "4.12")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion") // this could be avoided
 
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
 
     // this is for tests
     testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
-    testCompile("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
 
     testImplementation(kotlin("test"))
@@ -96,15 +86,12 @@ tasks {
         group = GenerationTaskGroup
         description = "Generate the parser and PSI hierarchy"
 
-        val PathToPsiRoot = "${com.github.oowekyala.IjccPackage}/lang/psi"
 
         source = "src/main/grammars/JavaCC.bnf"
         targetRoot = "$buildDir/gen"
-        pathToParser = "/com/github/oowekyala/ijcc/lang/parser/JavaccParser.java"
+        pathToParser = "$PackageRoot/lang/parser/JavaccParser.java"
         pathToPsiRoot = PathToPsiRoot
         purgeOldFiles = true
-
-        classpath(grammarKit)
 
         doLast {
             // Eliminate the duplicate PSI classes found in the generated and main source tree
@@ -179,6 +166,21 @@ tasks {
     runIde {
         jvmArgs = listOf("-Xmx2G")
         setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
+    }
+
+
+    // compresses the icons and replaces them in the copied resource directory
+    // the icons in the source dir are "optimised for maintainability", which means
+    // much bigger than needed
+    // you need svgo on your path (npm install -g svgo)
+    val compressIcons by creating(Exec::class.java) {
+        dependsOn("processResources")
+
+        commandLine(
+            "svgo",
+            "-f",
+            "src/main/resources$PackageRoot/icons"
+        )
     }
 
     buildPlugin {
