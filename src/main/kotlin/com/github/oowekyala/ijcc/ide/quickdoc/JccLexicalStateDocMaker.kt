@@ -33,7 +33,7 @@ object JccLexicalStateDocMaker {
             buildSection("Successors") {
                 successors.joinTo(this) {
                     psiLink(
-                        linkText = it,
+                        linkTextUnescaped = it,
                         linkTarget = JccDocUtil.linkRefToLexicalState(it)
                     )
                 }
@@ -41,7 +41,7 @@ object JccLexicalStateDocMaker {
             buildSection("Predecessors") {
                 predecessors.joinTo(this) {
                     psiLink(
-                        linkText = it,
+                        linkTextUnescaped = it,
                         linkTarget = JccDocUtil.linkRefToLexicalState(it)
                     )
                 }

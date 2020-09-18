@@ -31,7 +31,7 @@ object JccTerminalDocMaker {
     }
 
     fun htmlNameOfToken(name: String?) =
-        name?.let { bold(angles(it)) } ?: "(unnamed)"
+        name?.let { bold(angles(HtmlUtil.escapeHtml(it))) } ?: "(unnamed)"
 
     @TestOnly
     fun makeDocImpl(name: String?,
@@ -57,7 +57,7 @@ object JccTerminalDocMaker {
                     if (it.isEmpty()) append("All")
                     else it.joinTo(this) { name ->
                         val ref = linkRefToLexicalState(name)
-                        psiLink(linkTarget = ref, linkText = name)
+                        psiLink(linkTarget = ref, linkTextUnescaped = name)
                     }
                 }
             }
@@ -78,7 +78,7 @@ object JccTerminalDocMaker {
         override fun visitLiteralRegularExpression(o: JccLiteralRegularExpression) {
             val reffed = o.typedReference.resolveToken(exact = true)?.let { JccDocUtil.linkRefToToken(it) }
             if (reffed != null) {
-                psiLink(builder = sb, linkTarget = reffed, linkText = HtmlUtil.escapeHtml(o.text))
+                psiLink(builder = sb, linkTarget = reffed, linkTextUnescaped = o.text)
             } else {
                 o.unit.accept(this)
             }
@@ -96,9 +96,9 @@ object JccTerminalDocMaker {
             val reffed = o.typedReference.resolveToken()
 
             // make the linktext be the literal if needed.
-            val linkText = reffed?.asStringToken?.text?.let(HtmlUtil::escapeHtml) ?: angles(o.name!!)
+            val linkText = reffed?.asStringToken?.text ?: angles(o.name!!)
 
-            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToToken(it) }, linkText = linkText)
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToToken(it) }, linkTextUnescaped = linkText)
         }
 
         override fun visitRefRegularExpression(o: JccRefRegularExpression) {

@@ -202,7 +202,7 @@ val GenericOption<*>.description: String?
         fun String.escapeMarkup(): String =
             replace(OptionLinkRegex) {
                 val name = it.groupValues[1]
-                HtmlUtil.psiLink(linkTarget = JccDocUtil.linkRefToOption(name), linkText = name)
+                HtmlUtil.psiLink(linkTarget = JccDocUtil.linkRefToOption(name), linkTextUnescaped = name)
             }
 
         try {

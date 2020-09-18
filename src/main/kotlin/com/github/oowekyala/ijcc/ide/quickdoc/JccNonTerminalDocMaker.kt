@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.quickdoc
 
 import com.github.oowekyala.ijcc.ide.inspections.docIsNecessary
-import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.angles
 import com.github.oowekyala.ijcc.ide.quickdoc.HtmlUtil.psiLink
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.SectionsBuilder
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
@@ -88,12 +87,12 @@ object JccNonTerminalDocMaker {
                         str != null           -> psiLink(
                             builder = this,
                             linkTarget = JccDocUtil.linkRefToToken(it.token),
-                            linkText = str.text.let(HtmlUtil::escapeHtml)
+                            linkTextUnescaped = str.text
                         )
                         it.token.name != null -> psiLink(
                             builder = this,
                             linkTarget = JccDocUtil.linkRefToToken(it.token),
-                            linkText = angles(it.token.name!!)
+                            linkTextUnescaped = "<${(it.token.name!!)}>"
                         )
                         else                  -> it.token.regularExpression?.accept(JccTerminalDocMaker.RegexDocVisitor(this))
                     }
@@ -102,7 +101,7 @@ object JccNonTerminalDocMaker {
                     psiLink(
                         builder = this,
                         linkTarget = JccDocUtil.linkRefToProd(it.production),
-                        linkText = "${it.production.name}()"
+                        linkTextUnescaped = "${it.production.name}()"
                     )
                 is AtomicUnresolved     -> it.ref.accept(JccTerminalDocMaker.RegexDocVisitor(this))
                 is AtomicUnresolvedProd -> it.ref.accept(ExpansionMinifierVisitor(this))
@@ -173,7 +172,7 @@ object JccNonTerminalDocMaker {
                 psiLink(
                     builder = sb,
                     linkTarget = JccDocUtil.linkRefToToken(reffed),
-                    linkText = o.text,
+                    linkTextUnescaped = o.text,
                     isCodeLink = true
                 )
             } else {
@@ -202,7 +201,7 @@ object JccNonTerminalDocMaker {
         override fun visitNonTerminalExpansionUnit(o: JccNonTerminalExpansionUnit) {
             val reffed = o.typedReference.resolveProduction()
 
-            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToProd(it) }, linkText = "${o.name}()")
+            psiLink(builder = sb, linkTarget = reffed?.let { JccDocUtil.linkRefToProd(it) }, linkTextUnescaped = "${o.name}()")
         }
 
         override fun visitAssignedExpansionUnit(o: JccAssignedExpansionUnit) {
@@ -240,7 +239,7 @@ internal fun SectionsBuilder.jjtreeSection(owner: JjtNodeClassOwner) {
 
         owner.nodeQualifiedName?.let { qname ->
             val simpleName = qname.split(".").last()
-            psiLink(builder = this, linkTarget = qname, linkText = simpleName)
+            psiLink(builder = this, linkTarget = qname, linkTextUnescaped = simpleName)
         } ?: append("none")
 
     }

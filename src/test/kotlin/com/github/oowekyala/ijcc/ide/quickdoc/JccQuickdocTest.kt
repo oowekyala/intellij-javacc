@@ -7,6 +7,7 @@ import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.buildQuickDoc
 import com.github.oowekyala.ijcc.ide.quickdoc.JccDocUtil.linkRefToLexicalState
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.BnfSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.JJTreeSectionName
+import com.github.oowekyala.ijcc.ide.quickdoc.JccNonTerminalDocMaker.StartSectionName
 import com.github.oowekyala.ijcc.ide.quickdoc.JccTerminalDocMaker.makeDocImpl
 import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.model.RegexKind
@@ -49,17 +50,23 @@ class JccQuickdocTest : JccTestBase() {
                 else psiLink("$myDummyPackage.ASTFoo", "ASTFoo")
             }
         }
+
+        sections {
+            section(StartSectionName) {
+                "&nbsp;&nbsp;" + "\"hey\"".unnamedTokenLink(0)
+            }
+        }
     }
 
     private val simpleFooTokenDoc = buildQuickDoc {
         definition { "TOKEN\t${bold(angles("FOO"))}" }
         sections {
-            section("Expansion") { "\"foo\"" }
+            section("Expansion") { "&quot;foo&quot;" }
             section("Case-sensitive") { "true" }
             section(header = "Lexical states") {
                 psiLink(
                     linkTarget = linkRefToLexicalState("DEFAULT"),
-                    linkText = "DEFAULT"
+                    linkTextUnescaped = "DEFAULT"
                 )
             }
         }
@@ -148,7 +155,7 @@ class JccQuickdocTest : JccTestBase() {
         buildQuickDoc {
             definition { "TOKEN\t" + bold(angles("BAR")) }
             sections {
-                section(header = "Expansion") { "( \"bar\" ) | " + psiLink("token/FOO", "\"foo\"") }
+                section(header = "Expansion") { "( &quot;bar&quot; ) | " + psiLink("token/FOO", "\"foo\"") }
                 section("Case-sensitive") { "true" }
                 section(header = "Lexical states") { psiLink(linkRefToLexicalState("DEFAULT"), "DEFAULT") }
             }
@@ -285,7 +292,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        makeSyntheticDoc("ab", "\"a\" | \"b\"")
+        makeSyntheticDoc("ab", "&quot;a&quot; | &quot;b&quot;")
     )
 
     fun `test link from synthetic`() = doTest(
@@ -310,7 +317,7 @@ class JccQuickdocTest : JccTestBase() {
         }
 
     """,
-        makeSyntheticDoc("ab", "\"a\" | " + psiLink("token/BAR", "&lt;BAR&gt;"))
+        makeSyntheticDoc("ab", "&quot;a&quot; | " + psiLink("token/BAR", "<BAR>"))
     )
 
 
@@ -396,7 +403,7 @@ class JccQuickdocTest : JccTestBase() {
     private fun String.unnamedTokenLink(i: Int) =
         psiLink(
             linkTarget = JccDocUtil.linkRefToStringToken(i),
-            linkText = this
+            linkTextUnescaped = this
         )
 
 }
