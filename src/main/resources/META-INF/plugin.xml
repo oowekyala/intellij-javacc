@@ -25,7 +25,8 @@
     </description>
 
     <vendor email="clement.fournier76@gmail.com" url="https://github.com/oowekyala">Clément Fournier</vendor>
-    <idea-version since-build="193.3519.25"/>
+    <!-- You can find the version we use to build by running the sandbox, then Help/About  -->
+    <idea-version since-build="201.6668.121"/>
 
     <application-components>
         <!-- Add your application components here -->

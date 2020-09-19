@@ -14,7 +14,7 @@ plugins {
 group = "com.github.oowekyala"
 version = "1.6"
 
-val IntellijVersion = "2020.1"
+val IntellijVersion = "2020.1" // note: "since" version should be updated manually in plugin.xml
 val KotlinVersion = "1.4.10"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
