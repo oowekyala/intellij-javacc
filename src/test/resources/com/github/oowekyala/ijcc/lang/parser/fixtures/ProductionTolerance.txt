@@ -144,7 +144,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('s')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(RangeExpr)
@@ -217,7 +217,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('f')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'string'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'string'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(RangeExpr)
@@ -421,7 +421,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('a')
-      PsiErrorElement:'.', <, <identifier> or '[' expected, got 'void'
+      PsiErrorElement:'.', <, <identifier>, '@' or '[' expected, got 'void'
         <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(AdditiveExpr)
@@ -483,7 +483,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('a')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(AdditiveOperator)
@@ -681,14 +681,14 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('f')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'g'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'g'
       <empty list>
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
       JccJavaTypeImpl(JCC_JAVA_TYPE)
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('g')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'String'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'String'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the rest of the file to be parsed')
     JccBnfProductionImpl(UnionExpr)
@@ -1164,7 +1164,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('foo')
-      PsiErrorElement:'.', <, <identifier> or '[' expected, got '('
+      PsiErrorElement:'.', <, <identifier>, '@' or '[' expected, got '('
         <empty list>
     PsiElement(()('(')
     PsiElement())(')')
@@ -1231,7 +1231,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('bar')
-    PsiErrorElement:'.', <, <identifier>, <parameter list>, IDENT or '[' expected, got 'foo'
+    PsiErrorElement:'.', <, <identifier>, <parameter list>, '@', IDENT or '[' expected, got 'foo'
       <empty list>
     PsiComment(END_OF_LINE_COMMENT)('// should not prevent the next production to be parsed')
     JccBnfProductionImpl(MultiplicativeExpr)

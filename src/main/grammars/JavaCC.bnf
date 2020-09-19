@@ -728,20 +728,23 @@ boolean_literal                 ::=    "true" | "false"     {name="boolean liter
 java_name                       ::=    identifier ("." identifier)* {pin=1}
 
 java_return_type                ::=    "void" | java_type
-java_type                       ::=    (PRIMITIVE_TYPE  ("[" "]")* | java_ref_type)
-private java_ref_type           ::=    java_coi_type ("[" "]")* | PRIMITIVE_TYPE ("[" "]")+ // don't pin
+java_type                       ::=    java_annot* (PRIMITIVE_TYPE  (java_annot* "[" "]")* | java_ref_type)
+private java_ref_type           ::=    java_coi_type (java_annot* "[" "]")* | PRIMITIVE_TYPE (java_annot* "[" "]")+ // don't pin
 private java_coi_type           ::=    java_name java_type_args?
 
 private java_type_args          ::=    "<" [ java_type_arg ( ',' java_type_arg )* ] ">"
 private java_type_arg           ::=    java_ref_type | java_wildcard
 private java_wildcard           ::=    "?" (java_wildcard_bound)?               {pin=1 recoverWhile="#auto"}
-private java_wildcard_bound     ::=    ("extends" | "super") java_ref_type      {pin=1 recoverWhile="#auto"}
+private java_wildcard_bound     ::=    ("extends" | "super") java_annot* java_ref_type      {pin=1 recoverWhile="#auto"}
 
 java_access_modifier            ::=    [ "public" | "protected" | "private" ]
 
 java_expression_list            ::=    <<comma_separated_list java_expression>>
 private java_parameter_list     ::=   "(" [ java_formal_parameter [ ("," java_formal_parameter)* ] ] ")" {name = "parameter list"}
-java_formal_parameter           ::=    java_type ["..."] identifier ("[" "]")* {pin=1 recoverWhile="#auto"}
+java_formal_parameter           ::=   java_annot* java_type [java_annot* "..."] identifier ("[" "]")* {pin=java_type recoverWhile="#auto"}
+
+java_annot  ::= "@" java_name java_annot_members?
+java_annot_members ::= "(" java_expression_list ")" // not really expressions, but whatever
 
 // externals
 

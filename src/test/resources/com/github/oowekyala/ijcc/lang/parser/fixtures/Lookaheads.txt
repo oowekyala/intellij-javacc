@@ -154,7 +154,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('getToken')
-      PsiErrorElement:'.', <, <identifier> or '[' expected, got '('
+      PsiErrorElement:'.', <, <identifier>, '@' or '[' expected, got '('
         <empty list>
     PsiElement(()('(')
     PsiElement(INTEGER_LITERAL)('1')
@@ -165,7 +165,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('kind')
-      PsiErrorElement:'.', <, <identifier> or '[' expected, got '!='
+      PsiErrorElement:'.', <, <identifier>, '@' or '[' expected, got '!='
         <empty list>
     PsiElement(!=)('!=')
     JccErrorProductionImpl(JCC_ERROR_PRODUCTION)
@@ -173,7 +173,7 @@ JCC_FILE
         JccJavaNameImpl(JCC_JAVA_NAME)
           JccIdentifierImpl(JCC_IDENTIFIER)
             PsiElement(IDENT)('NATURAL')
-      PsiErrorElement:'.', <, <identifier> or '[' expected, got '}'
+      PsiErrorElement:'.', <, <identifier>, '@' or '[' expected, got '}'
         <empty list>
     PsiElement(})('}')
     PsiElement())(')')
