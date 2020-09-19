@@ -14,7 +14,7 @@ import org.intellij.lang.annotations.Language
 class JccUsageHighlightTest : JccAnnotationTestBase() {
 
 
-    fun `test production usages from decl`() = doTest(
+    fun `DISABLED test production usages from decl`() = doTest(
         """
             $DummyHeader
 
