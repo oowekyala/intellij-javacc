@@ -47,7 +47,6 @@ object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor()
             element.nameIdentifier.leaf,
             element.nameIdentifier.textRange,
             JccIcons.GUTTER_RECURSION,
-            Pass.LINE_MARKERS,
             FunctionUtil.constant("Recursive call"),
             null,
             GutterIconRenderer.Alignment.RIGHT

@@ -37,7 +37,7 @@ object HtmlUtil {
     @Language("HTML")
     fun link(target: String, text: String) = "<a href=\"$target\">$text</a>"
 
-    fun escapeHtml(text: String) = StringUtil.escapeXml(text)
+    fun escapeHtml(text: String) = StringUtil.escapeXmlEntities(text)
 
     /**
      * Kotlin wrapper around [DocumentationManager.createHyperlink]

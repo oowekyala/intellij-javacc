@@ -11,10 +11,11 @@ import com.intellij.psi.PsiFile
  * @author Clément Fournier
  * @since 1.0
  */
-abstract class JccTemplateContextBase(id: String,
-                                      displayName: String,
-                                      baseContextType: Class<out TemplateContextType>)
-    : TemplateContextType("JAVACC_$id", displayName, baseContextType) {
+abstract class JccTemplateContextBase(
+    id: String,
+    displayName: String,
+    baseContextType: Class<out TemplateContextType>
+) : TemplateContextType("JAVACC_$id", displayName, baseContextType) {
 
     override fun isInContext(file: PsiFile, offset: Int): Boolean {
         return file is JccFile && isInContext(file, offset)

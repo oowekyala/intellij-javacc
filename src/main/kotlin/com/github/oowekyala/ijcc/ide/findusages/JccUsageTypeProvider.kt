@@ -23,14 +23,14 @@ object JccUsageTypeProvider : UsageTypeProviderEx {
 
 
     override fun getUsageType(element: PsiElement): UsageType? =
-        JccUsageTypeProvider.getUsageType(element, UsageTarget.EMPTY_ARRAY)
+        getUsageType(element, UsageTarget.EMPTY_ARRAY)
 
     object JccUsageTypes {
 
-        val NONTERMINAL_REFERENCE = UsageType("Non-terminal reference")
-        val JJTREE_NODE_PARTIAL_DECLARATION = UsageType("JJTree node partial declaration")
-        val IMPLICIT_STRING_TOKEN_REFERENCE = UsageType("String token implicit reference")
-        val EXPLICIT_TOKEN_REFERENCE = UsageType("Token explicit reference")
+        val NONTERMINAL_REFERENCE = UsageType { "Non-terminal reference" }
+        val JJTREE_NODE_PARTIAL_DECLARATION = UsageType { "JJTree node partial declaration" }
+        val IMPLICIT_STRING_TOKEN_REFERENCE = UsageType { "String token implicit reference" }
+        val EXPLICIT_TOKEN_REFERENCE = UsageType { "Token explicit reference" }
 
     }
 

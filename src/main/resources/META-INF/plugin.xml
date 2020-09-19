@@ -1,5 +1,5 @@
 <!-- @formatter:off -->
-<idea-plugin>
+<idea-plugin require-restart="false">
     <id>com.github.oowekyala.javacc</id>
     <name>JavaCC</name>
     <description><![CDATA[
@@ -74,7 +74,22 @@
                 implementationClass="com.github.oowekyala.ijcc.ide.highlight.JavaccSyntaxHighlighterFactory"/>
 
         <!-- LANGUAGE -->
-        <fileTypeFactory implementation="com.github.oowekyala.ijcc.JavaccFileTypeFactory"/>
+
+        <fileType name="JAVACC_GRAMMAR"
+                  language="JavaCC"
+                  extensions="jj"
+                  implementationClass="com.github.oowekyala.ijcc.JavaccFileType" />
+
+        <fileType name="JJTREE_GRAMMAR"
+                  language="JavaCC"
+                  extensions="jjt"
+                  implementationClass="com.github.oowekyala.ijcc.JjtreeFileType" />
+
+        <fileType name="JAVACC21_GRAMMAR"
+                  language="JavaCC"
+                  extensions="javacc"
+                  implementationClass="com.github.oowekyala.ijcc.Javacc21FileType" />
+
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
 
@@ -98,7 +113,7 @@
 
         <!-- LIVE TEMPLATES -->
 
-        <defaultLiveTemplatesProvider implementation="com.github.oowekyala.ijcc.JavaccTemplatesProvider"/>
+        <defaultLiveTemplates file="/com/github/oowekyala/ijcc/liveTemplates/JavaCC" />
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
         <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>

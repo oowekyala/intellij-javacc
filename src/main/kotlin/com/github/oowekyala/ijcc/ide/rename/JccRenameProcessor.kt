@@ -89,7 +89,11 @@ object JccRenameProcessor : RenamePsiElementProcessor() {
         }
     }
 
-    override fun findReferences(element: PsiElement): MutableCollection<PsiReference> {
+    override fun findReferences(
+        element: PsiElement,
+        searchScope: SearchScope,
+        searchInCommentsAndStrings: Boolean
+    ): MutableCollection<PsiReference> {
 
         val file = element.containingFile
 

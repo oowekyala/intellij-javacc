@@ -14,7 +14,7 @@ import com.intellij.psi.PsiResolveHelper
  * @author Clément Fournier
  * @since 1.0
  */
-class InjectedJavaHighlightVisitor(private val resolveHelper: PsiResolveHelper) : HighlightVisitorImpl(resolveHelper) {
+class InjectedJavaHighlightVisitor : HighlightVisitorImpl() {
 
     override fun suitableForFile(file: PsiFile): Boolean =
         InjectedLanguageManager.getInstance(file.project).let { manager ->
@@ -24,6 +24,6 @@ class InjectedJavaHighlightVisitor(private val resolveHelper: PsiResolveHelper) 
         }
 
     override fun clone(): HighlightVisitorImpl =
-        InjectedJavaHighlightVisitor(resolveHelper)
+        InjectedJavaHighlightVisitor()
 
 }

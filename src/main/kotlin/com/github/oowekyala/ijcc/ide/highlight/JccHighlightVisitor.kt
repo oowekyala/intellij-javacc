@@ -36,8 +36,6 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
 
     override fun visit(element: PsiElement) = element.accept(this)
 
-    override fun order(): Int = 0
-
     private var myHolderImpl: HighlightInfoHolder? = null
     private val myHolder: HighlightInfoHolder // never null during analysis
         get() = myHolderImpl!!
