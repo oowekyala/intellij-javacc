@@ -180,7 +180,7 @@ tasks {
         commandLine(
             "svgo",
             "-f",
-            "src/main/resources$PackageRoot/icons"
+            "$buildDir/resources/main$PackageRoot/icons"
         )
     }
 
