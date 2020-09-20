@@ -335,7 +335,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                         final private LookaheadSuccess jj_ls = new LookaheadSuccess();
                         private boolean jj_scan_token(int kind) {}
                         private Token jj_consume_token(int kind) throws ParseException {}
-                        public void ReInit(XPathParserTokenManager tm) {}
+                        public void ReInit(${parserName}TokenManager tm) {}
 
                         /** Generated Token Manager. */
                         public ${parserName}TokenManager token_source;
@@ -351,12 +351,6 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                         static private int[] jj_la1_1;
                         static private int[] jj_la1_2;
                         static private int[] jj_la1_3;
-                        static {
-                           jj_la1_init_0();
-                           jj_la1_init_1();
-                           jj_la1_init_2();
-                           jj_la1_init_3();
-                        }
                         private static void jj_la1_init_0() {
                            jj_la1_0 = new int[] {0x20000000,0x900b4400,0x0,0x20000000,0x40000000,0x0,0x0,0x40000,0x40000,0x1000,0x0,0x4000,0x4000,0x0,0x0,0x2000,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x4000,0x4000,0x4000,0x8000,0x90080400,0x900b0400,0x30000,0x30000,0x10000000,0x0,0x10000000,0x0,0x0,0x0,0x0,0x280000,0x280000,0x20000000,0x900b4400,0x900b4400,0x200000,0x80000,0x0,0x80080400,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x20000000,0x0,0x400,0x400,0x0,0x0,0x80000,0x80000,0x0,0x20000000,0x80000,0x0,0x0,0x0,};
                         }

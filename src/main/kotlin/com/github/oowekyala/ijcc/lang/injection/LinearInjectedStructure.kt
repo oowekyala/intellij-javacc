@@ -100,7 +100,7 @@ class HostSpec(val prefix: String?, val suffix: String?,
 
     val host: PsiLanguageInjectionHost?
         get() {
-            val curHost = HostIndex[this]!!.element ?: return null // stale pointer
+            val curHost = HostIndex[this]?.element ?: return null // stale pointer
 
             var replacedHost = curHost
             var replacementHost = ReplaceMap[curHost]

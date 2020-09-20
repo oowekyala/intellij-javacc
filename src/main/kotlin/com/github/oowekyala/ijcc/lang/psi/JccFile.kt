@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.LexicalGrammar
+import com.github.oowekyala.ijcc.lang.model.SyntaxGrammar
 import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassOwner
@@ -33,6 +34,8 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
 
     /** Information about lexical states and defined tokens. */
     val lexicalGrammar: LexicalGrammar
+
+    val syntaxGrammar: SyntaxGrammar
 
     /**
      * Named regexes of the TOKEN kind defined globally in the file.

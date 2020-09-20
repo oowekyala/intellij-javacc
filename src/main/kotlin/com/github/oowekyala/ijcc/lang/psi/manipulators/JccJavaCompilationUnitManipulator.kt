@@ -16,10 +16,10 @@ import com.intellij.psi.AbstractElementManipulator
 class JccJavaCompilationUnitManipulator : AbstractElementManipulator<JccJavaCompilationUnit>() {
 
 
-//    override fun getRangeInElement(element: JccJavaCompilationUnit): TextRange {
-//        val braceOffset = element.lastChild.siblingSequence(false).first { it.isOfType(JccTypes.JCC_RBRACE) }
-//        return TextRange.from(0, braceOffset.textRange.startOffset - element.textRange.startOffset)
-//    }
+    override fun getRangeInElement(element: JccJavaCompilationUnit): TextRange {
+        val braceOffset = element.lastChild.siblingSequence(false).firstOrNull { it.isOfType(JccTypes.JCC_RBRACE) } ?: return super.getRangeInElement(element)
+        return TextRange.from(0, braceOffset.textRange.startOffset - element.textRange.startOffset)
+    }
 
 
     override fun handleContentChange(element: JccJavaCompilationUnit,

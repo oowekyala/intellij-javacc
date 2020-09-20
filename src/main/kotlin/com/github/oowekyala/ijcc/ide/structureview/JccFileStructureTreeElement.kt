@@ -5,10 +5,12 @@ import com.github.oowekyala.ijcc.lang.model.SyntheticToken
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.pom.Navigatable
 import com.intellij.util.containers.MostlySingularMultiMap
+import javax.swing.Icon
 
 /**
  * Root of the structure view tree.
@@ -16,24 +18,21 @@ import com.intellij.util.containers.MostlySingularMultiMap
  * @author Clément Fournier
  * @since 1.1
  */
-class JccFileStructureTreeElement(private val myFile: JccFile)
-    : StructureViewTreeElement, Navigatable by myFile {
+class JccFileStructureTreeElement(private val myFile: JccFile) : PsiTreeElementBase<JccFile>(myFile) {
 
     override fun getPresentation(): ItemPresentation = myFile.presentationForStructure
 
+    override fun getPresentableText(): String? = myFile.presentableText
+
+    override fun getIcon(open: Boolean): Icon? = myFile.presentationIcon
+
     override fun getValue(): JccFile = myFile
 
-    private val myChildren: Array<out TreeElement>
-
-    override fun getChildren(): Array<out TreeElement> = myChildren
-
-
-    init {
-
+    override fun getChildrenBase(): Collection<StructureViewTreeElement> {
         // only iterates the tokens of the lexical grammar once instead of once per production.
 
         with(myFile) {
-            val syntheticTokensByProd : MostlySingularMultiMap<JccNonTerminalProduction, JccRegexExpansionUnit?> =
+            val syntheticTokensByProd: MostlySingularMultiMap<JccNonTerminalProduction, JccRegexExpansionUnit?> =
                 lexicalGrammar
                     .defaultState
                     .tokens
@@ -80,9 +79,9 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
             val otherLeaves =
                 listOfNotNull(tokenManagerDecls.firstOrNull()).map(::JccStructureTreeElement)
 
-            val parserClass = myFile.classes.toList().map { JccJavaClassTreeElementWrapper(it) }
+            val parserClass = myFile.classes.toList().map { JccJavaClassTreeElementWrapper(it, myFile) }
 
-            myChildren = sequenceOf(
+            return sequenceOf(
                 optionsNode,
                 otherLeaves.asSequence(),
                 parserClass.asSequence(),
@@ -91,10 +90,6 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
             )
                 .flatMap { it }
                 .toList()
-                .toTypedArray()
         }
-
-
     }
-
 }

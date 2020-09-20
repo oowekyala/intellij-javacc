@@ -1,59 +1,67 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
-import com.github.oowekyala.ijcc.lang.psi.JccOptionSection
-import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
-import com.github.oowekyala.ijcc.lang.psi.JccRegexProduction
-import com.github.oowekyala.ijcc.lang.psi.JccTokenManagerDecls
+import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.structureView.impl.java.JavaClassTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiMethod
+import javax.swing.Icon
 
 /**
  * One element of the structure view. This class is used for all elements, regardless of their type.
- *
- * TODO represent synthetic members as non navigatable?
- *
  */
-class JccStructureTreeElement(val element: JccPsiElement,
-                              children: List<TreeElement>)
-    : StructureViewTreeElement, SortableTreeElement, Navigatable by element {
+class JccStructureTreeElement(
+    element: JccPsiElement,
+    val children: List<StructureViewTreeElement>
+) : PsiTreeElementBase<JccPsiElement>(element), SortableTreeElement, Navigatable {
 
     constructor(element: JccPsiElement) : this(element, emptyList())
-
-    private val myChildren: Array<out TreeElement> = children.toTypedArray()
-
-    override fun getChildren(): Array<out TreeElement> = myChildren
-
-    override fun getValue(): Any = element
 
     override fun getAlphaSortKey(): String = when (element) {
         is JccOptionSection -> "aaaaaaa"
         is JccTokenManagerDecls -> "aaaaaZZ"
         is JccRegexProduction -> "aaaaZZZ"
-        else                    -> element.presentableText
+        else                    -> element!!.presentableText
     }
 
+    override fun getPresentableText(): String? = element!!.presentableText
 
-    override fun getPresentation(): ItemPresentation = element.presentationForStructure
+    override fun getLocationString(): String? = element!!.locationString
+
+    override fun getIcon(open: Boolean): Icon? = element!!.presentationIcon
+
+    override fun getPresentation(): ItemPresentation = element!!.presentationForStructure
+
+    override fun getChildrenBase(): Collection<StructureViewTreeElement> = children
 
 }
 
-class JccJavaClassTreeElementWrapper(val psiClass: JavaClassTreeElement, val name: String) :
-    StructureViewTreeElement by psiClass, SortableTreeElement {
+class JccJavaClassTreeElementWrapper(klass: PsiClass, val jccFile: JccFile) :
+    PsiTreeElementBase<PsiClass>(klass), SortableTreeElement {
 
-    constructor(klass: PsiClass) : this(JavaClassTreeElement(klass, false), klass.name ?: "anon")
+    private val ideDefault = JavaClassTreeElement(klass, false)
 
-    override fun getPresentation(): ItemPresentation =
-        psiClass.presentation.let {
-            PresentationData("parser class $name", it.locationString, it.getIcon(true), null)
+    override fun getPresentableText(): String? = "parser class ${element!!.name}"
+
+    override fun getIcon(open: Boolean): Icon? = ideDefault.getIcon(open)
+
+    override fun getAlphaSortKey(): String = "aaaaaaZ"
+
+    override fun getChildrenBase(): Collection<StructureViewTreeElement> {
+        val base = ideDefault.childrenBase.toMutableList()
+        base.removeIf { elt ->
+            // remove methods which are productions
+            val psi = elt.value as? PsiMethod  ?: return@removeIf false
+            jccFile.syntaxGrammar.getProductionByNameMulti(psi.name).isNotEmpty()
         }
 
-    override fun getAlphaSortKey(): String =
-        "aaaaaaZ"
+        return base
+    }
 }
 

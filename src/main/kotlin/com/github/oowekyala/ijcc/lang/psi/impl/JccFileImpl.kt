@@ -98,7 +98,7 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     private var mySyntaxGrammarImpl: SyntaxGrammar? = null
 
-    val syntaxGrammar: SyntaxGrammar
+    override val syntaxGrammar: SyntaxGrammar
         get() = mySyntaxGrammarImpl ?: let { mySyntaxGrammarImpl = SyntaxGrammar(this); mySyntaxGrammarImpl!! }
 
     private var myGrammarOptionsImpl: IGrammarOptions? = null
