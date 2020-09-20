@@ -16,6 +16,12 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Install NPM
+        uses: bahmutov/npm-install@v1
+
+      - name: Install SVGO
+        run: npm i svgo
+
       - name: Build the plugin using Gradle
         run: ./gradlew buildPlugin
 
