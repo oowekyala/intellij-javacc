@@ -1,11 +1,11 @@
-name: IntelliJ Platform Plugin Compatibility
+name: Build & verify
 
 on:
   push:
 
 jobs:
-  compatibility:
-    name: Ensure plugin compatibility against 2019.3 for IDEA Community, IDEA Ultimate, PyCharm Community, GoLand, CLion, and the latest EAP snapshot of IDEA Community.
+  build:
+    name: Build plugin, verify compatiblity against declared minimum support version of intellij.
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
