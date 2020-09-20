@@ -18,8 +18,11 @@ jobs:
 
       - name: Build the plugin using Gradle
         uses: eskatos/gradle-command-action@v1
-          with:
-            arguments: buildPlugin
+        with:
+          arguments: buildPlugin
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
