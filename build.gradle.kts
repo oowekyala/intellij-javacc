@@ -44,7 +44,8 @@ repositories {
 ext {
     // creates secret properties
     set("intellijPublishToken", "")
-    apply(from = "secrets.properties")
+    if (projectDir.resolve("secrets.properties").exists())
+        apply(from = "secrets.properties")
 }
 
 sourceSets {
