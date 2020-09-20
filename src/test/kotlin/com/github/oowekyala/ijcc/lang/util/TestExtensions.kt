@@ -1,6 +1,8 @@
 package com.github.oowekyala.ijcc.lang.util
 
-import io.kotlintest.*
+import io.kotlintest.Matcher
+import io.kotlintest.Result
+import io.kotlintest.shouldNotBe
 import io.kotlintest.should as ktShould
 import io.kotlintest.shouldBe as ktShouldBe
 

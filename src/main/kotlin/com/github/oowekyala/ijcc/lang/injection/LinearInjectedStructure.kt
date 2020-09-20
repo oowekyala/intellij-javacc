@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.injection
 
 import com.github.oowekyala.ijcc.lang.psi.JccGrammarFileRoot
-import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.github.oowekyala.ijcc.util.plusAssign
 import com.github.oowekyala.ijcc.util.removeLast
 import com.intellij.openapi.util.TextRange

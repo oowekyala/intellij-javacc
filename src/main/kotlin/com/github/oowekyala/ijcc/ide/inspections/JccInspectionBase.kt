@@ -2,13 +2,12 @@ package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.JavaccLanguage
 import com.github.oowekyala.ijcc.lang.JccTypes.JCC_C_STYLE_COMMENT
-import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
 import com.github.oowekyala.ijcc.lang.JccTypes.JCC_END_OF_LINE_COMMENT
+import com.github.oowekyala.ijcc.lang.psi.JccTypesExt
 import com.github.oowekyala.ijcc.util.contains
 import com.intellij.codeInspection.InspectionProfileEntry
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.JavaDocElementType
 
 /**
  * Base class for inspections.

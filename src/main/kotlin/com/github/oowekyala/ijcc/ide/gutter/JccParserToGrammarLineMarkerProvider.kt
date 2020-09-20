@@ -9,9 +9,7 @@ import com.intellij.openapi.util.NotNullLazyValue
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.impl.file.PsiFileImplUtil
 import com.intellij.psi.util.PsiUtil
-import com.intellij.util.PsiNavigateUtil
 
 /**
  * @author Clément Fournier

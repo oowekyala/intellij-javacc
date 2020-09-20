@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.ide.refs.JccTerminalReference
-import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.DefaultStateName
 import com.github.oowekyala.ijcc.lang.model.LexicalState.Companion.LexicalStateBuilder
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular

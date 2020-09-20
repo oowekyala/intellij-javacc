@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import com.github.oowekyala.ijcc.lang.model.JccOption.STATIC
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
 

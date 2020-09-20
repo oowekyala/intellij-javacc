@@ -8,7 +8,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import io.kotlintest.shouldBe
 
 /**

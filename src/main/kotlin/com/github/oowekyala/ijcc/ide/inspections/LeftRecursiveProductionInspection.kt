@@ -2,7 +2,10 @@ package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.cfa.LeftMostSet
 import com.github.oowekyala.ijcc.lang.cfa.leftMostSet
-import com.github.oowekyala.ijcc.lang.psi.*
+import com.github.oowekyala.ijcc.lang.psi.JccFile
+import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalExpansionUnit
+import com.github.oowekyala.ijcc.lang.psi.JccNonTerminalProduction
+import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager

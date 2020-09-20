@@ -2,11 +2,8 @@ package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.ide.refs.JccNonTerminalReference
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.util.asMap
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
-import com.intellij.psi.SmartPointerManager
-import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.util.containers.MostlySingularMultiMap
 
 /**

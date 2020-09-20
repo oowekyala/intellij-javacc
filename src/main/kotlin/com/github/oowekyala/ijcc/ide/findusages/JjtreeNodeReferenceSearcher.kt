@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.findusages
 
 import com.github.oowekyala.ijcc.ide.refs.JjtNodePolyReference
-import com.github.oowekyala.ijcc.lang.psi.getJjtreeDeclsForRawName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.openapi.application.QueryExecutorBase
 import com.intellij.psi.PsiReference

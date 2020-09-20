@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.inspections
 
 import com.github.oowekyala.ijcc.lang.cfa.isEmptyMatchPossible
-import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder

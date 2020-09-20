@@ -9,7 +9,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.impl.source.tree.injected.changesHandler.contentRange
 import java.util.*
 
 /**

@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.injection.MultilineTextEscaper
-import com.github.oowekyala.ijcc.lang.psi.manipulators.JccJavaCompilationUnitManipulator
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiLanguageInjectionHost

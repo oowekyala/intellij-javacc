@@ -6,7 +6,6 @@ import com.github.oowekyala.ijcc.settings.pluginSettings
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiResolveHelper
 
 /**
  * Highlighter for java code fragments.

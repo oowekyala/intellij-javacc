@@ -1,11 +1,6 @@
 package com.github.oowekyala.ijcc.lang.model
 
 import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.*
-import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType
-import com.github.oowekyala.ijcc.lang.model.JccOptionType.RefinedOptionType.PACKAGE
-import com.github.oowekyala.ijcc.lang.psi.JccOptionBinding
-import com.github.oowekyala.ijcc.lang.psi.matchesType
-import com.github.oowekyala.ijcc.lang.psi.stringValue
 
 /**
  * @author Clément Fournier

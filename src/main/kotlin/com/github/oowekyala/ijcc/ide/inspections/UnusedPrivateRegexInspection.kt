@@ -11,7 +11,6 @@ import com.intellij.openapi.util.Condition
 import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.containers.JBIterable
 import gnu.trove.THashSet
 import org.intellij.lang.annotations.Language

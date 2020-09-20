@@ -1,7 +1,10 @@
 package com.github.oowekyala.ijcc.lang.psi
 
 import com.github.oowekyala.ijcc.lang.JccTypes
-import com.github.oowekyala.ijcc.lang.model.*
+import com.github.oowekyala.ijcc.lang.model.ExplicitToken
+import com.github.oowekyala.ijcc.lang.model.RegexKind
+import com.github.oowekyala.ijcc.lang.model.SyntheticToken
+import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement

@@ -4,7 +4,6 @@ import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.JccTokenReferenceRegexUnit
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
-import com.github.oowekyala.ijcc.lang.psi.impl.JccFileImpl
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager

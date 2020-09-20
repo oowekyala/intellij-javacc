@@ -5,7 +5,6 @@ import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.ancestorOrSelf
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.intellij.lang.LanguageCommenters
-import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -13,7 +12,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 import org.intellij.lang.annotations.Language
 
 /**

@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc.ide.intentions
 
 import com.github.oowekyala.ijcc.ide.quickdoc.JccTerminalDocMaker
-import com.github.oowekyala.ijcc.lang.psi.JccNamedRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRefRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.JccRegularExpression
 import com.github.oowekyala.ijcc.lang.psi.pattern
