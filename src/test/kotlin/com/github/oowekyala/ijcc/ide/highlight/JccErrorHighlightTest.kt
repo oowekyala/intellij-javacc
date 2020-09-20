@@ -291,6 +291,25 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """
     )
 
+    fun `test FP with special token ref inside regex spec, issue #18`() = checkByText(
+        """
+           $DummyHeader
+
+            SPECIAL_TOKEN : {
+                  <FOO:   "0" >
+            }
+            
+            TOKEN : {
+                <BAR: "a" <FOO> > // should be ok, the expansion is inlined
+            }
+            
+            void foo(): {}{
+                <BAR> // ok
+                <<error descr="Token name FOO refers to a non-token (SPECIAL_TOKEN) regular expression">FOO</error>> // not ok
+            }
+        """
+    )
+
     private fun String.undefinedStringToken() =
         errorAnnot(
             this,

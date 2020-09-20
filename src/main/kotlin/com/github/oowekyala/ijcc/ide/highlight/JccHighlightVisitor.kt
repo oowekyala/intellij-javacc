@@ -319,18 +319,18 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             when {
                 reffed == null                                           ->
                     wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
-                reffed.isPrivate && !o.canReferencePrivate               -> wrongReferenceInfo(
-                    o.nameIdentifier,
-                    "Token name \"${o.name}\" refers to a private (with a #) regular expression"
-                )
-                reffed.regexKind != RegexKind.TOKEN && !reffed.isPrivate -> wrongReferenceInfo(
-                    o.nameIdentifier,
-                    "Token name ${o.name} refers to a non-token (${reffed.regexKind}) regular expression"
-                )
-                else                                                     -> highlightInfo(
-                    o,
-                    TOKEN_REFERENCE.highlightType
-                )
+                reffed.isPrivate && !o.canReferencePrivate               ->
+                    wrongReferenceInfo(
+                        o.nameIdentifier,
+                        "Token name \"${o.name}\" refers to a private (with a #) regular expression"
+                    )
+                reffed.regexKind != RegexKind.TOKEN && !reffed.isPrivate && !o.ancestors(false).any { it is JccRegexSpec } ->
+                    wrongReferenceInfo(
+                        o.nameIdentifier,
+                        "Token name ${o.name} refers to a non-token (${reffed.regexKind}) regular expression"
+                    )
+                else                                                     ->
+                    highlightInfo(o, TOKEN_REFERENCE.highlightType)
             }
 
 
