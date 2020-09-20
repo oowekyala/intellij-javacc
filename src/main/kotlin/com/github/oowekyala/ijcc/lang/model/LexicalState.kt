@@ -47,6 +47,9 @@ class LexicalState private constructor(val lexicalGrammar: LexicalGrammar,
             filterWith(consideredRegexKinds).firstOrNull { it.matchesLiteral(toMatch) }
         else
             filterWith(consideredRegexKinds)
+                // Only remove private regex if we're looking for an exact match
+                // Duplicate private string tokens should still be reported
+                .filter { !it.isPrivate }
                 .mapNotNull { token ->
                     val matcher: Matcher? = token.prefixPattern?.toPattern()?.matcher(toMatch)
 

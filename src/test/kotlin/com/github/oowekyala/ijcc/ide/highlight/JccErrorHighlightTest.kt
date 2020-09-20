@@ -271,6 +271,26 @@ class JccErrorHighlightTest : JccAnnotationTestBase() {
         """
     )
 
+    fun `test FP with private regexp, issue #17`() = checkByText(
+        """
+           $DummyHeader
+
+            // note: the issue is actually in the inspection BnfStringCanNeverBeMatched
+
+            <DEFAULT> TOKEN : {
+                  <#_FRAGMENT:   ["0"-"9"] >
+                | <QUOTED:        "\"" ( <_FRAGMENT> )* "\"">
+                | <ZERO: "0" >
+            }
+
+            public void Rule() : { }
+            {
+              <QUOTED> | <ZERO>
+            }
+
+        """
+    )
+
     private fun String.undefinedStringToken() =
         errorAnnot(
             this,

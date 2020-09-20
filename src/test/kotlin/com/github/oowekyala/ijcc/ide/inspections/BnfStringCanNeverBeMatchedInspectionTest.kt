@@ -164,6 +164,25 @@ class BnfStringCanNeverBeMatchedInspectionTest : JccInspectionTestBase(BnfString
         """
     )
 
+    fun `test FP with private regexp, issue #17`() = checkByText(
+        """
+           $DummyHeader
+
+            <DEFAULT> TOKEN : {
+                  <#_FRAGMENT:   ["0"-"9"] >
+                | <QUOTED:        "\"" ( <_FRAGMENT> )* "\"">
+                | <ZERO: "0" >
+            }
+
+            public void Rule() : { }
+            {
+              <QUOTED> | <ZERO>
+            }
+
+        """
+    )
+
+
     /*
 TODO
     PARSER_END(Foo)
