@@ -17,7 +17,9 @@ jobs:
           java-version: 1.8
 
       - name: Build the plugin using Gradle
-        run: ./gradlew buildPlugin
+        uses: eskatos/gradle-command-action@v1
+          with:
+            arguments: buildPlugin
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
