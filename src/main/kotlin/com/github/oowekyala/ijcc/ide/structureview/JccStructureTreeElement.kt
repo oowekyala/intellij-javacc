@@ -1,12 +1,10 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
 import com.github.oowekyala.ijcc.lang.psi.*
-import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.ide.structureView.impl.java.JavaClassTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
-import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiClass

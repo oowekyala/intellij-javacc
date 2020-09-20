@@ -6,9 +6,7 @@ import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.associateByToMostlySingular
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
-import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
-import com.intellij.pom.Navigatable
 import com.intellij.util.containers.MostlySingularMultiMap
 import javax.swing.Icon
 

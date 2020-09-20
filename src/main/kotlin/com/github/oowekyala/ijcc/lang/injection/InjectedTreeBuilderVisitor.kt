@@ -8,8 +8,6 @@ import com.github.oowekyala.ijcc.util.pop
 import com.intellij.ide.structureView.impl.java.JavaClassTreeElementBase
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
-import com.intellij.psi.util.PsiFormatUtil
-import com.intellij.psi.util.PsiFormatUtilBase
 import java.util.*
 
 /**

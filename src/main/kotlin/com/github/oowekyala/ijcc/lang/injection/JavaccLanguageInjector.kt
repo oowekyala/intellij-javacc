@@ -9,10 +9,7 @@ import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.openapi.diagnostic.LogUtil
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.psi.PsiElement
-import java.lang.RuntimeException
 
 /**
  * Injects Java into the whole grammar file.
