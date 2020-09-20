@@ -170,27 +170,9 @@ tasks {
         setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
 
-
-    // compresses the icons and replaces them in the copied resource directory
-    // the icons in the source dir are "optimised for maintainability", which means
-    // much bigger than needed
-    // you need svgo on your path (npm install -g svgo)
-    val compressIcons by creating(Exec::class.java) {
-        dependsOn("processResources")
-
-        commandLine(
-            "svgo",
-            "-f",
-            "$buildDir/resources/main$PackageRoot/icons"
-        )
-    }
-
     buildPlugin {
-        dependsOn(compressIcons)
-
         archiveVersion.set(project.version.toString())
         archiveBaseName.set("intellij-javacc")
-
     }
 
     publishPlugin {
