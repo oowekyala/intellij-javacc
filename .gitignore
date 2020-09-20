@@ -169,3 +169,4 @@ src/test/testGen/gen/
 jjtricks/src/test/testGen/gen/
 prepare-deps/build
 .idea/intellij-javadocs-4.0.1.xml
+.idea/modules
