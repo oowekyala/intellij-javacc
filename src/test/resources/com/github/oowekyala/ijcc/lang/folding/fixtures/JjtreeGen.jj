@@ -1,0 +1,81 @@
+
+<fold text='/PARSER DECLARATION/' expand='false'>PARSER_BEGIN(Foo)
+
+public class Foo {
+
+}
+
+PARSER_END(Foo)</fold>
+
+
+
+<fold text='/BNF NumericLiteral()/' expand='true'>void NumericLiteral():
+<fold text='{..}' expand='false'>{/*@bgen(jjtree) NumericLiteral */
+  ASTNumericLiteral jjtn000 = new ASTNumericLiteral(this, JJTNUMERICLITERAL);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
+/*@egen*/}</fold>
+{<fold text='/*@bgen(jjtree) NumericLiteral */' expand='false'><fold text='/*@bgen(jjtree) NumericLiteral */' expand='false'>/*@bgen(jjtree) NumericLiteral */</fold>
+    try {
+<fold text='/*...*/' expand='true'>/*@egen*/</fold></fold>
+    ( <INTEGER_LITERAL> <fold text='{..}' expand='false'>{ jjtn000.setIntegerLiteral(); }</fold>
+    | <DECIMAL_LITERAL> <fold text='{..}' expand='false'>{ jjtn000.setDecimalLiteral(); }</fold>
+    | <DOUBLE_LITERAL>  <fold text='{..}' expand='false'>{ jjtn000.setDoubleLiteral();  }</fold>
+    )<fold text='/*@bgen(jjtree)*/' expand='false'><fold text='/*@bgen(jjtree)*/' expand='false'>/*@bgen(jjtree)*/</fold>
+    <fold text='{..}' expand='false'>{
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+      jjtn000.jjtSetLastToken(getToken(0));
+    }</fold>
+<fold text='/*...*/' expand='true'>/*@egen*/</fold></fold>
+    <fold text='{..}' expand='false'>{ jjtn000.setImage(token.getImage()); }</fold><fold text='/*@bgen(jjtree)*/' expand='false'><fold text='/*@bgen(jjtree)*/' expand='false'>/*@bgen(jjtree)*/</fold>
+    } finally <fold text='{..}' expand='false'>{
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtn000.jjtSetLastToken(getToken(0));
+      }
+    }</fold>
+<fold text='/*...*/' expand='true'>/*@egen*/</fold></fold>
+}</fold>
+
+
+<fold text='/BNF FunctionCall()/' expand='true'>void FunctionCall():
+<fold text='{..}' expand='false'>{/*@bgen(jjtree) FunctionCall */
+  ASTFunctionCall jjtn000 = new ASTFunctionCall(this, JJTFUNCTIONCALL);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtn000.jjtSetFirstToken(getToken(1));
+/*@egen*/}</fold>
+{<fold text='/*@bgen(jjtree) FunctionCall */' expand='false'><fold text='/*@bgen(jjtree) FunctionCall */' expand='false'>/*@bgen(jjtree) FunctionCall */</fold>
+    try {
+<fold text='/*...*/' expand='true'>/*@egen*/</fold></fold>
+    EQName() ArgumentList()<fold text='/*@bgen(jjtree)*/' expand='false'><fold text='/*@bgen(jjtree)*/' expand='false'>/*@bgen(jjtree)*/</fold>
+    } catch (Throwable jjte000) <fold text='{..}' expand='false'>{
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    }</fold> finally <fold text='{..}' expand='false'>{
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtn000.jjtSetLastToken(getToken(0));
+      }
+    }</fold>
+<fold text='/*...*/' expand='true'>/*@egen*/</fold></fold>
+}</fold>
+
+<fold text='/BNF FunctionItemExpr()/' expand='true'>void FunctionItemExpr()      :
+{}
+{
+    NamedFunctionRef() | InlineFunctionExpr()
+}</fold>

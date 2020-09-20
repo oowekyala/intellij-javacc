@@ -2000,12 +2000,6 @@ void TypeAnnotationList() #void:
   (TypeAnnotation())*
 }
 
-void AnnotatedType() #void:
-{}
-{
-  TypeAnnotationList() Type()
-}
-
 
 void AnnotatedRefType() #void:
 {}
@@ -2513,6 +2507,12 @@ void MemberSelector() #void :
   LOOKAHEAD(2) ("." {jjtree.extendLeft();} TypeArguments() <IDENTIFIER> {setLastTokenImage (jjtThis) ;} ArgumentList())  #MethodCall
 | LOOKAHEAD(3) ("." {jjtree.extendLeft();} <IDENTIFIER> {setLastTokenImage(jjtThis);} ArgumentList())                    #MethodCall
 |              ("." {jjtree.extendLeft();} <IDENTIFIER> {setLastTokenImage(jjtThis);})                                   #FieldAccess
+}
+
+void AnnotatedType() #void:
+{}
+{
+  TypeAnnotationList() AnnotatedType()
 }
 
 void MethodReference(): // LHS is injected
@@ -3122,8 +3122,8 @@ void AnnotationTypeMemberDeclaration():
  modifiers = Modifiers()
  (
    LOOKAHEAD(Type() <IDENTIFIER> "(") AnnotationMethodDeclaration(modifiers)
-  |
-   ClassOrInterfaceDeclaration(modifiers)
+  //|
+//   ClassOrInterfaceDeclaration(modifiers)
   |
    LOOKAHEAD(3) EnumDeclaration(modifiers)
   |

@@ -1,8 +1,0 @@
-
-jjtx:
-
-  nodePrefix: Ex
-  nodePackage: "org.expr"
-  typeHierarchy:
-    name: Expression
-    subtypes: "r:.*"

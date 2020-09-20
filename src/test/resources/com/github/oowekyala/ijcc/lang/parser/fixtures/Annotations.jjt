@@ -1,0 +1,11 @@
+PARSER_BEGIN(JJTreeParser)
+    public class JJTreeParser {    }
+PARSER_END(JJTreeParser)
+
+// note: for now annotations on productions is not supported by our parser,
+// not sure if the javacc syntax allows that
+
+void p1(@Nullable T foo, List<@Nullable T> list): {} { "a" }
+void p2(T foo, @A List<@Nullable T> list): {} { "a" }
+void p2(T foo, @A List<? super @Nullable T> list): {} { "a" }
+@O int p2(): {} { "a" }

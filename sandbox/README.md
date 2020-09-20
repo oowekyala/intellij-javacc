@@ -1,1 +1,4 @@
-A sample "project" to test the plugin on
+Launch the plugin in a sandbox IDE, in this directory:
+```
+./gradlew runIde
+```

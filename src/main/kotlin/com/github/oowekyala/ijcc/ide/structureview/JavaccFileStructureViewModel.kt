@@ -1,0 +1,136 @@
+package com.github.oowekyala.ijcc.ide.structureview
+
+import com.github.oowekyala.ijcc.icons.JccIcons
+import com.github.oowekyala.ijcc.lang.injection.InjectedTreeBuilderVisitor
+import com.github.oowekyala.ijcc.lang.psi.*
+import com.intellij.ide.structureView.StructureViewModel
+import com.intellij.ide.structureView.StructureViewModelBase
+import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.structureView.impl.java.JavaClassTreeElement
+import com.intellij.ide.structureView.impl.java.JavaClassTreeElementBase
+import com.intellij.ide.util.FileStructureFilter
+import com.intellij.ide.util.treeView.smartTree.*
+import com.intellij.openapi.actionSystem.Shortcut
+import com.intellij.util.PlatformIcons
+
+/**
+ * Model for the structure view, implements logic for filter buttons and sorting.
+ *
+ * @author Clément Fournier
+ * @since 1.0
+ */
+class JavaccFileStructureViewModel(val psiFile: JccFile)
+    : StructureViewModelBase(psiFile, JccFileStructureTreeElement(psiFile)),
+    StructureViewModel.ElementInfoProvider {
+
+    init {
+        withSuitableClasses(
+            JccFile::class.java,
+            JccOptionSection::class.java,
+            JccOptionBinding::class.java,
+
+            JccParserDeclaration::class.java,
+            JccTokenManagerDecls::class.java,
+            JccScopedExpansionUnit::class.java,
+
+            JccRegexProduction::class.java,
+            JccRegexSpec::class.java,
+            JccRegexExpansionUnit::class.java,
+
+            JccNonTerminalProduction::class.java
+        )
+    }
+
+
+    override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean {
+        val value = element.value
+        return value is JccRegexProduction || value is JccOptionSection || value is JccNonTerminalProduction
+                || value is JavaClassTreeElement
+    }
+
+    override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
+        val value = element.value
+        return value is JccRegexSpec || value is JccRegexExpansionUnit
+            // TODO these should not be leaves, ideally their declarations would be shown as well
+            || value is JccTokenManagerDecls
+    }
+
+
+    override fun getSorters(): Array<Sorter> = arrayOf(Sorter.ALPHA_SORTER)
+    override fun getFilters(): Array<Filter> = arrayOf(TerminalFilter, OptionFilter, GeneratedMemberFilter)
+
+    companion object {
+
+        object OptionFilter : FileStructureFilter {
+            override fun getCheckBoxText(): String = "Show Options"
+
+            override fun getShortcut(): Array<Shortcut> = emptyArray()
+
+            override fun isVisible(treeElement: TreeElement): Boolean =
+                when (treeElement.let { it as? JccStructureTreeElement }?.element) {
+                    is JccOptionSection -> false
+                    is JccOptionBinding -> false
+                    else                -> true
+                }
+
+            override fun isReverted(): Boolean = true
+
+            override fun getPresentation(): ActionPresentation =
+                ActionPresentationData(
+                    "Show JavaCC Options",
+                    "Show the options for code generation",
+                    JccIcons.JAVACC_OPTION
+                )
+
+            override fun getName(): String = "OptionFilter"
+        }
+
+        object TerminalFilter : FileStructureFilter {
+            override fun getCheckBoxText(): String = "Show Lexical Structure"
+
+            override fun getShortcut(): Array<Shortcut> = emptyArray()
+
+            override fun isVisible(treeElement: TreeElement): Boolean =
+                when (treeElement.let { it as? JccStructureTreeElement }?.element) {
+                    is JccRegexSpec          -> false
+                    is JccRegexProduction    -> false
+                    is JccRegexExpansionUnit -> false
+                    else                     -> true
+                }
+
+            override fun isReverted(): Boolean = true
+
+            override fun getPresentation(): ActionPresentation =
+                ActionPresentationData(
+                    "Show Lexical Structure",
+                    "Show tokens specifications.",
+                    JccIcons.TOKEN_HEADER
+                )
+
+            override fun getName(): String = "TerminalFilter"
+        }
+
+        object GeneratedMemberFilter : FileStructureFilter {
+            override fun getCheckBoxText(): String = "Show generated members"
+
+            override fun getShortcut(): Array<Shortcut> = emptyArray()
+
+            override fun isVisible(treeElement: TreeElement): Boolean =
+                treeElement.let { it as? JavaClassTreeElementBase<*> }
+                    ?.let { !InjectedTreeBuilderVisitor.isGeneratedMember(it) }
+                    ?: true
+
+            override fun isReverted(): Boolean = true
+
+            override fun getPresentation(): ActionPresentation =
+                ActionPresentationData(
+                    "Show generated members",
+                    "Show members generated by JavaCC/JJTree.",
+                    PlatformIcons.METHOD_ICON
+                )
+
+            override fun getName(): String = "GeneratedMemberFilter"
+        }
+    }
+
+}

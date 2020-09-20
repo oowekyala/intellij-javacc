@@ -1,4 +1,4 @@
-[![](https://img.shields.io/jetbrains/plugin/v/11431-a8translate.svg)](https://plugins.jetbrains.com/plugin/11431-javacc)
+[![](https://img.shields.io/jetbrains/plugin/v/11431-a8translate.svg)](https://plugins.jetbrains.com/plugin/11431-javacc) ![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/r/rating/11431-javacc)
 
 # JavaCC and JJTree plugin for IntelliJ IDEA
 
