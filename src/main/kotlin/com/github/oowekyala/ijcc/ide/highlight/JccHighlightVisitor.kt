@@ -142,7 +142,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             myHolder += errorInfo(
                 nodeDescriptor,
                 JccErrorMessages.unexpectedJjtreeConstruct()
-            ).withQuickFix(fixes = *JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
+            ).withQuickFix(fixes = JccErrorMessages.changeNatureFixes(myFile, GrammarNature.JJTREE))
         }
 
         // extracts the range of the "#" + the range of the ident or "void" kword

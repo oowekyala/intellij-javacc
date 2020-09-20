@@ -54,16 +54,6 @@ interface JccFile : PsiFile, JccPsiElement, PsiClassOwner
 
 
     val grammarNature: GrammarNature
-
-
-    // FIXME PsiClassOwnerNotResolved!!
-
-    override fun getClasses(): Array<PsiClass>
-
-    override fun getPackageName(): String
-
-    override fun setPackageName(var1: String?)
-
 }
 
 

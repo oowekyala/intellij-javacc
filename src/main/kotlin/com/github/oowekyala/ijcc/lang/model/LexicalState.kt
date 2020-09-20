@@ -55,7 +55,7 @@ class LexicalState private constructor(val lexicalGrammar: LexicalGrammar,
 
                     if (matcher?.matches() == true) Pair(token, matcher.group(0)) else null
                 }
-                .maxWith(matchComparator)
+                .maxWithOrNull(matchComparator)
                 ?.let { it.first }
     }
 
