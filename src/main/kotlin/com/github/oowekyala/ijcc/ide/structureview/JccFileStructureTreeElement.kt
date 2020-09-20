@@ -23,7 +23,7 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
 
     override fun getValue(): JccFile = myFile
 
-    private val myChildren: Array<JccStructureTreeElement>
+    private val myChildren: Array<out TreeElement>
 
     override fun getChildren(): Array<out TreeElement> = myChildren
 
@@ -78,16 +78,18 @@ class JccFileStructureTreeElement(private val myFile: JccFile)
                     .orEmpty()
 
             val otherLeaves =
-                listOfNotNull(parserDeclaration, tokenManagerDecls.firstOrNull()).map(::JccStructureTreeElement)
+                listOfNotNull(tokenManagerDecls.firstOrNull()).map(::JccStructureTreeElement)
+
+            val parserClass = myFile.classes.toList().map { JccJavaClassTreeElementWrapper(it) }
 
             myChildren = sequenceOf(
                 optionsNode,
                 otherLeaves.asSequence(),
+                parserClass.asSequence(),
                 regexChildren,
                 nonTerminalChildren
             )
                 .flatMap { it }
-                .sortedBy { it.element.textOffset }
                 .toList()
                 .toTypedArray()
         }

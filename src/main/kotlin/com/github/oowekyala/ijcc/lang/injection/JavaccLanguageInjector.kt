@@ -9,7 +9,10 @@ import com.github.oowekyala.ijcc.util.EnclosedLogger
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.lang.java.JavaLanguage
+import com.intellij.openapi.diagnostic.LogUtil
+import com.intellij.openapi.extensions.PluginId
 import com.intellij.psi.PsiElement
+import java.lang.RuntimeException
 
 /**
  * Injects Java into the whole grammar file.
@@ -25,15 +28,16 @@ object JavaccLanguageInjector : MultiHostInjector {
         if (context !is JccPsiElement) return
         if (context.pluginSettings.injectionSupportLevel == DISABLED) return
 
-        try {
+//        try {
             when (context) {
                 // FIXME inject both into the same injection file
                 //                is JccJavaCompilationUnit -> registrar.injectIntoJCU(context)
                 is JccGrammarFileRoot -> registrar.injectIntoGrammar(context)
             }
-        } catch (e: Exception) {
-            // TODO log?
-        }
+//        } catch (e: Exception) {
+//            throw RuntimeException(e)
+//             TODO log?
+//        }
     }
     //
     //    private fun MultiHostRegistrar.injectIntoJCU(jcu: JccJavaCompilationUnit) {

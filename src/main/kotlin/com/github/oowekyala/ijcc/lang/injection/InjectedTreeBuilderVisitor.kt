@@ -5,10 +5,11 @@ import com.github.oowekyala.ijcc.lang.model.GrammarNature
 import com.github.oowekyala.ijcc.lang.model.parserSimpleName
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.pop
+import com.intellij.ide.structureView.impl.java.JavaClassTreeElementBase
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.ElementManipulators
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.*
+import com.intellij.psi.util.PsiFormatUtil
+import com.intellij.psi.util.PsiFormatUtilBase
 import java.util.*
 
 /**
@@ -252,6 +253,35 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
 
     companion object {
+
+        val generatedFieldNames = setOf(
+            "trace_indent",
+            "trace_enabled",
+        )
+        val generatedMethodNames = setOf(
+            "getNextToken",
+//            "getToken(int)",
+            "generateParseException",
+            "trace_enabled",
+            "enable_tracing",
+            "disable_tracing",
+        )
+        val generatedClassNames = setOf("LookaheadSuccess", "JJCalls")
+
+        fun isGeneratedMember(javaTree: JavaClassTreeElementBase<*>): Boolean {
+            return when (val elt = javaTree.element) {
+                is PsiField -> elt.name.startsWith("jj_") || elt.name in generatedFieldNames
+                is PsiMethod ->
+                    elt.name.startsWith("jj_")
+                            || elt.name == "ReInit"
+                            || elt.name in generatedMethodNames && elt.parameterList.parametersCount == 0
+                            || elt.name == "getToken" && elt.parameterList.let { it.parametersCount == 1 && it.getParameter(
+                        0
+                    )!!.type.getPresentableText(false) == "int" }
+                is PsiClass -> elt.name in generatedClassNames
+                else -> false
+            }
+        }
 
         /** Gets the injection subtree for the given node. */
         fun getInjectedSubtreeFor(node: JccPsiElement): InjectionStructureTree =
