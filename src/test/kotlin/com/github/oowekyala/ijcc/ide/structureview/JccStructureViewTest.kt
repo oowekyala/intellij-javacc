@@ -1,11 +1,8 @@
 package com.github.oowekyala.ijcc.ide.structureview
 
-import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.testFramework.PlatformTestUtil.assertTreeEqual
 import com.intellij.testFramework.PlatformTestUtil.expandAll
-import com.intellij.ui.RowIcon
-import junit.framework.TestCase
 import org.intellij.lang.annotations.Language
 
 /**
@@ -31,7 +28,7 @@ class JccStructureViewTest : JccTestBase() {
 
     """, """
         -dummy.jjt
-         -parser class Dummy
+         parser class Dummy
          -TOKEN
           <FOO : "hello">
           <BAR : "hye">
@@ -58,7 +55,7 @@ class JccStructureViewTest : JccTestBase() {
         """,
         """
             -dummy.jjt
-             -parser class Dummy
+             parser class Dummy
              -TOKEN
               <FOO : "hello">
               <BAR : "hye">
@@ -86,7 +83,7 @@ class JccStructureViewTest : JccTestBase() {
     """,
         """
         -dummy.jjt
-         -parser class Dummy
+         parser class Dummy
          -TOKEN
           <FOO : "hello">
           <BAR : "hye">
@@ -108,27 +105,39 @@ class JccStructureViewTest : JccTestBase() {
     """,
         """
         -dummy.jjt
-         -parser class Dummy
+         parser class Dummy
          Foo()
          """
     )
 
-    private fun doPresentationDataTest(@Language("JavaCC") code: String, expectedPresentableText: String,
-                                       isPublic: Boolean) {
-        myFixture.configureByText("main.rs", code)
-        val psi = myFixture.file.children.mapNotNull { it as? JccPsiElement }.first()
-        val data = psi.presentationForStructure
-        TestCase.assertEquals(data.presentableText, expectedPresentableText)
-        val icon = data.getIcon(false) as? RowIcon
-        if (isPublic) {
-            TestCase.assertNotNull(icon)
-            TestCase.assertEquals(icon?.iconCount, 2);
-        } else {
-            if (icon != null) {
-                TestCase.assertEquals(icon.iconCount, 1);
-            }
+    fun `test java members are visible`() = doTest(
+        """
+                
+        PARSER_BEGIN(Dummy)
+        
+        package dummy.grammar;
+        
+        public class Dummy {
+        
+            void checkVersion(int v) {}
+        
         }
-    }
+        
+        PARSER_END(Dummy)
+
+
+        void Foo():
+        {}
+        {
+            <EOF>
+        }
+    """,
+        """
+        -dummy.jjt
+         -parser class Dummy
+         Foo()
+         """
+    )
 
     private fun doTest(@Language("JavaCC") code: String, expected: String) {
         val normExpected = expected.trimIndent() + "\n"

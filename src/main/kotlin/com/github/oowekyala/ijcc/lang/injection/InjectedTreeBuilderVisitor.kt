@@ -257,6 +257,8 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
         val generatedFieldNames = setOf(
             "trace_indent",
             "trace_enabled",
+            "token_source",
+            // "jjtree" // show this, as it can be useful
         )
         val generatedMethodNames = setOf(
             "getNextToken",
@@ -265,6 +267,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
             "trace_enabled",
             "enable_tracing",
             "disable_tracing",
+            "ReInit",
         )
         val generatedClassNames = setOf("LookaheadSuccess", "JJCalls")
 
@@ -273,7 +276,6 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                 is PsiField -> elt.name.startsWith("jj_") || elt.name in generatedFieldNames
                 is PsiMethod ->
                     elt.name.startsWith("jj_")
-                            || elt.name == "ReInit"
                             || elt.name in generatedMethodNames && elt.parameterList.parametersCount == 0
                             || elt.name == "getToken" && elt.parameterList.let { it.parametersCount == 1 && it.getParameter(
                         0
@@ -300,22 +302,23 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
             """.trimIndent()
             else ""
 
-            return jjtreeDecls + """
+            return """
+                        $jjtreeDecls
 
-                        /** Get the next Token. */
-                        final public Token getNextToken() {}
+                        /**
+                         * Returns the token at the given index (0 means last consumed token, 1 is the token just in front of us). 
+                         * Note: there is also a token field, and a getNextToken method, which should usually not be used directly.
+                         */
+                        final public Token getToken(int index) {}
 
-                        /** Get the specific Token. */
-                        final public Token getToken(int indices) {}
+                        // public Token token;
+                        /* Returns the next token. */
+                        // final public Token getNextToken() {}
 
-                        /** Generate ParseException. */
+                        /** Generate a parse exception. */
                         public ParseException generateParseException() {}
-                        private void jj_save(int indices, int xla) {}
-                        private void jj_rescan_token() {}
-                        private int trace_indent = 0;
-                        private boolean trace_enabled;
 
-                        /** Trace enabled. */
+                        /** Whether tracing is enabled. */
                         final public boolean trace_enabled() {}
 
                         /** Enable tracing. */
@@ -324,24 +327,12 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                         /** Disable tracing. */
                         final public void disable_tracing() {}
 
-                        private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
-                        private int[] jj_expentry;
-                        private int jj_kind = -1;
-                        private int[] jj_lasttokens = new int[100];
-                        private int jj_endpos;
-
-                        private void jj_add_error_token(int kind, int pos) {}
-                        static private final class LookaheadSuccess extends java.lang.Error { }
-                        final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-                        private boolean jj_scan_token(int kind) {}
-                        private Token jj_consume_token(int kind) throws ParseException {}
                         public void ReInit(${parserName}TokenManager tm) {}
 
                         /** Generated Token Manager. */
                         public ${parserName}TokenManager token_source;
-                        /** Current token. */
-                        public Token token;
-                        /** Next token. */
+
+                        /* This is hidden, as it's the internals of the parser.
                         public Token jj_nt;
                         private Token jj_scanpos, jj_lastpos;
                         private int jj_la;
@@ -351,21 +342,31 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                         static private int[] jj_la1_1;
                         static private int[] jj_la1_2;
                         static private int[] jj_la1_3;
-                        private static void jj_la1_init_0() {
-                           jj_la1_0 = new int[] {0x20000000,0x900b4400,0x0,0x20000000,0x40000000,0x0,0x0,0x40000,0x40000,0x1000,0x0,0x4000,0x4000,0x0,0x0,0x2000,0x2000,0x0,0x0,0x0,0x0,0x0,0x0,0x4000,0x4000,0x4000,0x8000,0x90080400,0x900b0400,0x30000,0x30000,0x10000000,0x0,0x10000000,0x0,0x0,0x0,0x0,0x280000,0x280000,0x20000000,0x900b4400,0x900b4400,0x200000,0x80000,0x0,0x80080400,0x0,0x0,0x0,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x0,0x0,0x20000000,0x0,0x400,0x400,0x0,0x0,0x80000,0x80000,0x0,0x20000000,0x80000,0x0,0x0,0x0,};
-                        }
-                        private static void jj_la1_init_1() {
-                           jj_la1_1 = new int[] {0x0,0xffffe3b9,0x0,0x0,0x0,0x4000000,0x8000000,0x0,0x0,0x0,0x0,0x10,0x10,0x70000008,0x70000008,0x80000000,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x10,0x10,0x0,0xffffe3a9,0xffffe3a9,0x0,0x0,0xffffe009,0x8000,0xffffe009,0x3ff6000,0xffffe008,0xffffe008,0x8,0x0,0x0,0x0,0xffffe3bd,0xffffe3bd,0x0,0x0,0x0,0x3a0,0x380,0x0,0x0,0x0,0x20,0x0,0x0,0x0,0x0,0x8,0x4,0x0,0x8,0x8,0x0,0x8,0x0,0x0,0x1c,0x1c,0x0,0x0,0x0,0x0,0x0,0x4,0xffffe000,0x0,};
-                        }
-                        private static void jj_la1_init_2() {
-                           jj_la1_2 = new int[] {0x0,0xffffffff,0x4100,0x0,0x200,0x0,0x0,0x10fc,0x10fc,0x0,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x3,0x40000,0x20000,0x10000,0x8000,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0xffffffff,0x0,0xffffffff,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0xffffffff,0xffffffff,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x800,0xf0000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfc000000,0xf8000000,0x0,0x0,0xfc000000,0x0,0xffffffff,0x0,};
-                        }
-                        private static void jj_la1_init_3() {
-                           jj_la1_3 = new int[] {0x0,0x7ff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x7ff,0x0,0x7ff,0x0,0x7ff,0x7ff,0x1c0,0x0,0x0,0x0,0x7ff,0x7ff,0x0,0x0,0x620,0x620,0x0,0x620,0x0,0x0,0x0,0x0,0x1f,0x18,0x18,0x600,0x0,0x0,0x600,0x600,0x0,0x600,0x200,0x200,0x0,0x0,0x63f,0x63f,0x20,0x0,0x63f,0x0,0x63f,0x600,};
-                        }
+                        private static void jj_la1_init_0() {}
+                        private static void jj_la1_init_1() {}
+                        private static void jj_la1_init_2() {}
+                        private static void jj_la1_init_3() {}
                         final private JJCalls[] jj_2_rtns = new JJCalls[5];
                         private boolean jj_rescan = false;
                         private int jj_gc = 0;
+
+                        final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+                        private boolean jj_scan_token(int kind) {}
+                        private Token jj_consume_token(int kind) throws ParseException {}
+
+                        private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+                        private int[] jj_expentry;
+                        private int jj_kind = -1;
+                        private int[] jj_lasttokens = new int[100];
+                        private int jj_endpos;
+
+                        private void jj_save(int indices, int xla) {}
+                        private void jj_rescan_token() {}
+                        private int trace_indent = 0;
+                        private boolean trace_enabled;
+
+                        private void jj_add_error_token(int kind, int pos) {}
+                        static private final class LookaheadSuccess extends java.lang.Error { }
 
                         static final class JJCalls {
                             int gen;
@@ -373,6 +374,7 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
                             int arg;
                             JJCalls next;
                         }
+                        */
                 """.trimIndent()
         }
 
