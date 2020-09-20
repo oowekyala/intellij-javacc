@@ -19,37 +19,7 @@ published_version=$(./gradlew properties -q  --console=plain | grep "version:" |
 
 cur_version=$(incr_ver_num "$published_version")
 
-branch="v$cur_version"
-
-git show-branch "v$cur_version" >> /dev/null
-
-if [[ $? -eq 0 ]]; then
-    echo "Preparing release for version $cur_version, from branch $branch..."
-else
-    branch=""
-
-    echo "Current branches"
-
-    git show-branch --list
-
-    while true; do
-        read -p "What is the topic branch for the next version? " branch
-
-        quiet=$(git show-branch "$branch")
-
-        case $? in
-            0 ) break;;
-            * ) echo "Please enter a valid branch name";;
-        esac
-    done
-fi
-
-
-echo "Merging branch $branch into master..."
-
-git merge "$branch" --no-ff
-#git br -d "$branch"
-
+echo "Preparing release for version $cur_version, from branch master..."
 
 read -p "Enter the name of the release tag (default v$cur_version): " tagname
 
@@ -62,7 +32,7 @@ git tag -a "$tagname" -F "$CHANGELOG_LOCATION"
 
 echo "Publishing plugin to repository..."
 
-./gradlew :idea:publishPlugin
+./gradlew publishPlugin
 
 
 echo "Pushing objects..."
