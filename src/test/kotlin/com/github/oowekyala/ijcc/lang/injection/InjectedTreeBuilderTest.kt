@@ -95,7 +95,7 @@ class InjectedTreeBuilderTest : JccTestBase() {
         stringMatchersIgnoreWhitespace {
 
             tree should matchInjectionTree<SurroundNode> {
-                it.suffix.shouldStartWith("/** Only available in JJTree grammars. */")
+                it.suffix.trim().shouldStartWith("/** Only available in JJTree grammars. */")
 
                 it.child shouldBe child<SurroundNode> {
                     it.child shouldBe child<MultiChildNode> {

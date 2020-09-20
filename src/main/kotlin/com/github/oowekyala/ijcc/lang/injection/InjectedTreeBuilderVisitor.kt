@@ -307,25 +307,18 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
                         /**
                          * Returns the token at the given index (0 means last consumed token, 1 is the token just in front of us). 
-                         * Note: there is also a token field, and a getNextToken method, which should usually not be used directly.
                          */
                         final public Token getToken(int index) {}
 
-                        // public Token token;
+                        /** @deprecated Use {@link #getToken(int) getToken(0)} */
+                        @Deprecated
+                        public Token token;
                         /* Returns the next token. */
-                        // final public Token getNextToken() {}
+                        @Deprecated
+                        final public Token getNextToken() {}
 
                         /** Generate a parse exception. */
                         public ParseException generateParseException() {}
-
-                        /** Whether tracing is enabled. */
-                        final public boolean trace_enabled() {}
-
-                        /** Enable tracing. */
-                        final public void enable_tracing() {}
-
-                        /** Disable tracing. */
-                        final public void disable_tracing() {}
 
                         public void ReInit(${parserName}TokenManager tm) {}
 
@@ -362,8 +355,6 @@ class InjectedTreeBuilderVisitor private constructor() : JccVisitor() {
 
                         private void jj_save(int indices, int xla) {}
                         private void jj_rescan_token() {}
-                        private int trace_indent = 0;
-                        private boolean trace_enabled;
 
                         private void jj_add_error_token(int kind, int pos) {}
                         static private final class LookaheadSuccess extends java.lang.Error { }

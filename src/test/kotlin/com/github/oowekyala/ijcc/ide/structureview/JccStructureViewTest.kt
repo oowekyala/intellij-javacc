@@ -119,7 +119,7 @@ class JccStructureViewTest : JccTestBase() {
         
         public class Dummy {
         
-            void checkVersion(int v) {}
+            void zzcheckVersion(int v) {}
         
         }
         
@@ -135,6 +135,9 @@ class JccStructureViewTest : JccTestBase() {
         """
         -dummy.jjt
          -parser class Dummy
+${generatedFieldsJjtree("          ")}
+          zzcheckVersion(int): void
+${generatedMethodsJjtree("          ")}
          Foo()
          """
     )
@@ -146,5 +149,21 @@ class JccStructureViewTest : JccTestBase() {
             expandAll(it.tree)
             assertTreeEqual(it.tree, normExpected)
         }
+    }
+
+    companion object {
+        fun generatedFieldsJjtree(indent:String) =
+            """
+jjtree: JJTDummyState = new JJTDummyState()
+token: Token
+token_source: DummyTokenManager
+            """.trim().replaceIndent(indent)
+
+        fun generatedMethodsJjtree(indent: String) =
+            """
+getToken(int): Token
+getNextToken(): Token
+generateParseException(): ParseException
+ReInit(DummyTokenManager): void""".trim().replaceIndent(indent)
     }
 }
