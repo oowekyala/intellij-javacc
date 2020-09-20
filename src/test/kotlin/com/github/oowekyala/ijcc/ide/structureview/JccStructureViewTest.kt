@@ -31,7 +31,7 @@ class JccStructureViewTest : JccTestBase() {
 
     """, """
         -dummy.jjt
-         class Dummy
+         -parser class Dummy
          -TOKEN
           <FOO : "hello">
           <BAR : "hye">
@@ -58,7 +58,7 @@ class JccStructureViewTest : JccTestBase() {
         """,
         """
             -dummy.jjt
-             class Dummy
+             -parser class Dummy
              -TOKEN
               <FOO : "hello">
               <BAR : "hye">
@@ -86,7 +86,7 @@ class JccStructureViewTest : JccTestBase() {
     """,
         """
         -dummy.jjt
-         class Dummy
+         -parser class Dummy
          -TOKEN
           <FOO : "hello">
           <BAR : "hye">
@@ -108,7 +108,7 @@ class JccStructureViewTest : JccTestBase() {
     """,
         """
         -dummy.jjt
-         class Dummy
+         -parser class Dummy
          Foo()
          """
     )
