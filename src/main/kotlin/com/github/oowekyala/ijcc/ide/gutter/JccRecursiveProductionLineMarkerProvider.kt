@@ -12,6 +12,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.util.FunctionUtil
+import java.util.function.Supplier
 import javax.swing.Icon
 
 /**
@@ -28,8 +29,7 @@ object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor()
 
     override fun getLineMarkerInfo(elt: PsiElement): LineMarkerInfo<*>? = null
 
-    override fun collectSlowLineMarkers(elements: List<PsiElement>,
-                                        result: MutableCollection<LineMarkerInfo<PsiElement>>) {
+    override fun collectSlowLineMarkers(elements: List<PsiElement>, result: MutableCollection<in LineMarkerInfo<*>>) {
 
         for (elt in elements) {
             ProgressManager.checkCanceled()
@@ -48,7 +48,8 @@ object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor()
             JccIcons.GUTTER_RECURSION,
             FunctionUtil.constant("Recursive call"),
             null,
-            GutterIconRenderer.Alignment.RIGHT
+            GutterIconRenderer.Alignment.RIGHT,
+            { "icon (recursive production)" } // accessible name...
         )
 }
 

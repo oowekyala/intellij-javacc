@@ -15,11 +15,11 @@ enum class JccCoreIcons(icon: Icon) : Icon by icon {
     JJTRICKS_FILE("jjtreeFile.svg"),
     ;
 
-    constructor(fname: String) : this(IconLoader.getIcon(fname))
+    constructor(fname: String) : this(IconLoader.getIcon(fname, JccCoreIcons::class.java))
 
     companion object {
 
-        fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg")
+        fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg", JccCoreIcons::class.java)
     }
 }
 

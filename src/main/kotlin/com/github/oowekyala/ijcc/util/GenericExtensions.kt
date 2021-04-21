@@ -63,14 +63,6 @@ private object E
 private object S
 
 
-inline fun Boolean.ifTrue(block: () -> Unit): Boolean {
-    if (this) {
-        block()
-    }
-    return this
-}
-
-
 fun <T> Iterable<T>.foreachAndBetween(delim: () -> Unit, main: (T) -> Unit) {
     val iterator = iterator()
 
@@ -140,22 +132,25 @@ fun <T> List<T>.tail(): List<T> =
 // null keys will not be added.
 // values must be checked to be not null by client
 
-fun <T : Any, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?): MostlySingularMultiMap<K, T> =
+fun <T, K> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?): MostlySingularMultiMap<K, T> =
     associateByToMostlySingular(keySelector) { it }
 
-fun <T, K, V> Sequence<T>.associateByToMostlySingular(keySelector: (T) -> K?,
-                                                      valueTransform: (T) -> V): MostlySingularMultiMap<K, V> {
+fun <T, K, V> Sequence<T>.associateByToMostlySingular(
+    keySelector: (T) -> K?,
+    valueTransform: (T) -> V?
+): MostlySingularMultiMap<K, V> {
     val multiMap = MostlySingularMultiMap<K, V>()
     for (element in this) {
         val k = keySelector(element)
-        if (k != null) {
-            multiMap.add(k, valueTransform(element))
+        val v = valueTransform(element)
+        if (k != null && v != null) {
+            multiMap.add(k, v)
         }
     }
     return multiMap
 }
 
-fun <K, V> MostlySingularMultiMap<K, V>.firstValues(): Map<K, V> {
+fun <K : Any, V : Any> MostlySingularMultiMap<K, V>.firstValues(): Map<K, V> {
     val map = mutableMapOf<K, V>()
 
     for (k in keySet()) {
@@ -166,7 +161,7 @@ fun <K, V> MostlySingularMultiMap<K, V>.firstValues(): Map<K, V> {
     return map
 }
 
-fun <K, V> MostlySingularMultiMap<K, V>.asMap(): Map<K, List<V>> {
+fun <K : Any, V : Any> MostlySingularMultiMap<K, V>.asMap(): Map<K, List<V>> {
 
     val wrapped = this
 

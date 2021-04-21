@@ -42,10 +42,10 @@ enum class JccIcons(icon: Icon) : Icon by icon {
     JJTREE_FILE(JccCoreIcons.JJTREE_FILE),
     ;
 
-    constructor(fname: String) : this(IconLoader.getIcon(fname))
+    constructor(fname: String) : this(IconLoader.getIcon(fname, JccIcons::class.java))
 
     companion object {
-        fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg")
+        fun default(): Icon = IconLoader.getIcon("jjtreeNodeLocate.svg", JccIcons::class.java)
     }
 }
 

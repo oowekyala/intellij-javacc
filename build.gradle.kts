@@ -5,17 +5,17 @@ import org.jetbrains.grammarkit.tasks.GenerateParser
 import java.net.URI
 
 plugins {
-    id("org.jetbrains.intellij") version "0.4.22"
+    id("org.jetbrains.intellij") version "0.7.2"
     java
-    id("org.jetbrains.grammarkit") version "2020.1"
-    kotlin("jvm") version "1.4.10" // sync with version below
+    id("org.jetbrains.grammarkit") version "2021.1.2"
+    kotlin("jvm") version "1.4.30" // sync with version below
 }
 
 group = "com.github.oowekyala"
 version = "1.7"
 
-val IntellijVersion = "2020.1" // note: "since" version should be updated manually in plugin.xml
-val KotlinVersion = "1.4.10"
+val IntellijVersion = "2021.1" // note: "since" version should be updated manually in plugin.xml
+val KotlinVersion = "1.4.30"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 

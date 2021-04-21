@@ -56,5 +56,10 @@
       <option name="name" value="maven3" />
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven7" />
+      <option name="name" value="maven7" />
+      <option name="url" value="https://cache-redirector.jetbrains.com/intellij-dependencies" />
+    </remote-repository>
   </component>
 </project>

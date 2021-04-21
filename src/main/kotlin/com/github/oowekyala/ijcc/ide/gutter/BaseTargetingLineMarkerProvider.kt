@@ -12,8 +12,7 @@ abstract class BaseTargetingLineMarkerProvider<in T : PsiElement>(private val ta
     : RelatedItemLineMarkerProvider() {
 
 
-    final override fun collectNavigationMarkers(element: PsiElement,
-                                          result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
+    final override fun collectNavigationMarkers(element: PsiElement, result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
 
         element.takeIf { target.isInstance(it) }
             ?.let { target.cast(it) }
