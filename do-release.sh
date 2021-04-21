@@ -15,20 +15,21 @@ function incr_ver_num() {
     echo "$ret"
 }
 
-published_version=$(./gradlew properties -q  --console=plain | grep "version:" | awk '{print $2}')
+release_version=$(./gradlew properties -q  --console=plain | grep "version:" | awk '{print $2}')
 
-cur_version=$(incr_ver_num "$published_version")
+echo "Preparing release for version $release_version, from branch master..."
 
-echo "Preparing release for version $cur_version, from branch master..."
-
-read -p "Enter the name of the release tag (default v$cur_version): " tagname
+read -p "Enter the name of the release tag (default v$release_version): " tagname
 
 if [[ -z "$tagname" ]]; then
-    tagname="v$cur_version"
+    tagname="v$release_version"
 fi
 
 git tag -a "$tagname" -F "$CHANGELOG_LOCATION"
 
+release_changelog=$(mktemp "ijcc-release-notes")
+
+cp "$CHANGELOG_LOCATION" "$release_changelog"
 
 echo "Publishing plugin to repository..."
 
@@ -40,8 +41,7 @@ echo "Pushing objects..."
 git push origin master
 git push --tags
 
-
-default_nr=$(incr_ver_num "$cur_version")
+default_nr=$(incr_ver_num "$release_version")
 
 read -p "What's the version number of the next release? (default $default_nr)" next_release
 
@@ -49,16 +49,11 @@ if [[ -z "$next_release" ]]; then
     next_release="$default_nr"
 fi
 
-git checkout -b "v$next_release"
-
-replacement="s/version = \"$cur_version\"/version = \"$next_release\"/"
+replacement="s/version = \"$release_version\"/version = \"$next_release\"/"
 
 echo "$replacement"
-
 sed -e "$replacement" build.gradle.kts
-
 git add build.gradle.kts
-git commit -m "Bump version to $next_release"
 
 echo "\nResetting the changelog..."
 
@@ -83,6 +78,6 @@ EOF
 echo "$DEFAULT_CHANGELOG" > "$CHANGELOG_LOCATION"
 
 git add "$CHANGELOG_LOCATION"
-git commit -m "Reset changelog"
+git commit -m "Prepare next development version $next_release"
 
-echo "\nSuccessfully released $cur_version, xoxo"
+echo "\nSuccessfully released $release_version, edit the release notes on Github with the contents of $release_changelog"
