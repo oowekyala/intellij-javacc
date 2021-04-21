@@ -62,8 +62,12 @@ object JavaccLanguageInjector : MultiHostInjector {
         startInjecting(JavaLanguage.INSTANCE, "java")
 
         for (spec in hostSpecs) {
-            val host = spec.host!!
-            addPlace(spec.prefix, spec.suffix, host, spec.getRangeInsideHost(host))
+            val host = spec.host
+            if (host != null) {
+                addPlace(spec.prefix, spec.suffix, host, spec.getRangeInsideHost(host))
+            } else {
+                // todo move prefix+suffix onto prefix of next host?
+            }
         }
 
         doneInjecting()

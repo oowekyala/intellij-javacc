@@ -123,16 +123,21 @@ class HostSpec(val prefix: String?, val suffix: String?,
      * Creates a new [HostSpec] based on this one but with the [additionalSuffix] appended to this suffix.
      * This spec is thereafter unusable.
      */
-    fun appendSuffixAndDestroy(additionalSuffix: CharSequence): HostSpec =
-        HostSpec(
-            prefix = prefix,
-            suffix = (suffix ?: "") + additionalSuffix,
-            host = host!!,
-            rangeGetter = rangeGetter
-        ).also {
+    fun appendSuffixAndDestroy(additionalSuffix: CharSequence): HostSpec {
+        val host = host
+        return if (host != null) {
             // this makes this spec unusable
             HostIndex.remove(this)
+            HostSpec(
+                prefix = prefix,
+                suffix = (suffix ?: "") + additionalSuffix,
+                host = host,
+                rangeGetter = rangeGetter
+            )
+        } else {
+            this
         }
+    }
 
     private fun remapHost(newHost: PsiLanguageInjectionHost) {
         HostIndex[this] = SmartPointerManager.createPointer(newHost)
