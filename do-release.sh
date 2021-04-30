@@ -25,9 +25,9 @@ if [[ -z "$tagname" ]]; then
     tagname="v$release_version"
 fi
 
-git tag -a "$tagname" -F "$CHANGELOG_LOCATION"
+git tag -fa "$tagname" -F "$CHANGELOG_LOCATION"
 
-release_changelog=$(mktemp "ijcc-release-notes")
+release_changelog=$(mktemp)
 
 cp "$CHANGELOG_LOCATION" "$release_changelog"
 
