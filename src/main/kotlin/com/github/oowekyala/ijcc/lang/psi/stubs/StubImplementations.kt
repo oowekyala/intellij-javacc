@@ -17,12 +17,12 @@ import com.intellij.psi.tree.IStubFileElementType
 /*
     DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
  */
-private const val StubVersion = 6
+private const val StubVersion = 8
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
 
-    val fileStub: JccFileStub
-        get() = ancestors(includeSelf = true).first { it is JccFileStub } as JccFileStub
+    val fileStub: JccFileStub?
+        get() = ancestors(includeSelf = true).filterIsInstance<JccFileStub>().firstOrNull()
 
 }
 
@@ -94,7 +94,7 @@ abstract class JjtNodeClassOwnerStub<T : JjtNodeClassOwner>(parent: StubElement<
     val jjtNodeQualifiedName: String?
         by lazy {
             jjtNodeRawName?.let { raw ->
-                fileStub.let {
+                fileStub?.let {
                     it.jjtreeNodePackage + "." + it.jjtreeNodeNamePrefix + raw
                 }
             }
