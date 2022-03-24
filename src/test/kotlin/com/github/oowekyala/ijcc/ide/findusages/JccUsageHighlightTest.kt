@@ -104,7 +104,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
     private fun doTest(@Language("JavaCC") code: String) {
         configureByText(code)
         val document = myFixture.editor.document
-        val data = ExpectedHighlightingData(document, false, false, true, false, myFixture.file)
+        val data = ExpectedHighlightingData(document, false, false, true, false)
         data.init()
 
         val caret = document.extractMarkerOffset(project, CARET_TAG)
@@ -124,7 +124,7 @@ class JccUsageHighlightTest : JccAnnotationTestBase() {
             HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION).range(startOffset, endOffset).create()
         }
 
-        data.checkResult(infos, StringBuilder(document.text).toString())
+        data.checkResult(myFixture.file, infos, StringBuilder(document.text).toString())
     }
 
     private companion object {
