@@ -5,6 +5,8 @@ import com.intellij.psi.ElementDescriptionProvider
 import com.intellij.psi.PsiElement
 import com.intellij.usageView.UsageViewLongNameLocation
 
+import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
+
 /**
  * Describes elements for the usage view. (TODO)
  *
@@ -13,8 +15,6 @@ import com.intellij.usageView.UsageViewLongNameLocation
  */
 class JccDescriptionProvider : ElementDescriptionProvider {
     override fun getElementDescription(element: PsiElement, location: ElementDescriptionLocation): String? =
-        when (location) {
-            is UsageViewLongNameLocation -> element.text
-            else                         -> null
-        }
+        if (element is JccPsiElement && location is UsageViewLongNameLocation) element.text
+        else null
 }
