@@ -51,8 +51,7 @@ fi
 
 replacement="s/version = \"$release_version\"/version = \"$next_release\"/"
 
-echo "$replacement"
-sed -e "$replacement" build.gradle.kts
+sed -i -e "$replacement" build.gradle.kts
 git add build.gradle.kts
 
 echo "\nResetting the changelog..."
