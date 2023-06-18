@@ -1,47 +1,45 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import org.jetbrains.grammarkit.tasks.GenerateLexer
-import org.jetbrains.grammarkit.tasks.GenerateParser
 import java.net.URI
 
 plugins {
-    id("org.jetbrains.intellij") version "0.7.2"
+    id("org.jetbrains.intellij") version "1.13.1"
     java
-    id("org.jetbrains.grammarkit") version "2021.1.2"
-    kotlin("jvm") version "1.4.20" // sync with version below
+    id("org.jetbrains.grammarkit") version "2022.3.1"
+    kotlin("jvm") version "1.8.22" // sync with version below
 }
 
 group = "com.github.oowekyala"
 version = "1.10"
 
-val IntellijVersion = "2021.1" // note: "since" version should be updated manually in plugin.xml
-val KotlinVersion = "1.4.20"
+val IntellijVersion = "2022.3.1" // note: "since" version should be updated manually in plugin.xml
+val IJBuild = "223.8214.52"
+val KotlinVersion = "1.8.22"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
-        url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
-    }
-    maven {
-        url = URI("https://dl.bintray.com/kotlin/kotlinx")
-    }
-    maven {
-        url = URI("https://jitpack.io")
-    }
-    maven {
-        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
+    maven(url = "https://www.jetbrains.com/intellij-repository/releases")
+    maven(url = "https://cache-redirector.jetbrains.com/intellij-dependencies")
+
+//    maven {
+//        url = URI("https://jitpack.io")
+//    }
+//    maven {
+//        url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
+//    }
+//    maven {
+//        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
+//    }
+//    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
 
 }
 
 
 
-ext {
+project.ext {
     // creates secret properties
     set("intellijPublishToken", "")
     if (projectDir.resolve("secrets.properties").exists())
@@ -60,13 +58,13 @@ sourceSets {
 
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion") // this could be avoided
 
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
+    // compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
 
     // this is for tests
-    testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
+    testImplementation("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
 
     testImplementation(kotlin("test"))
@@ -79,20 +77,35 @@ dependencies {
     }
 }
 
+grammarKit {
+    intellijRelease.set(IntellijVersion)
+}
+
 tasks {
+
+    // See https://github.com/JetBrains/gradle-intellij-plugin/
+    intellij {
+        version.set(IntellijVersion)
+        updateSinceUntilBuild.set(false)
+        ideaDependencyCachePath.set("${rootProject.path}/dependencies/repo/ijcc.build")
+//        plugins.set(listOf("com.intellij.java"))
+    }
 
     val GenerationTaskGroup = "Code generation"
 
-    val generateParser by creating(GenerateParser::class) {
+    val setupDependencies by setupDependencies
+
+    generateParser {
         group = GenerationTaskGroup
         description = "Generate the parser and PSI hierarchy"
+        sourceFile.set(file("src/main/grammars/JavaCC.bnf"))
+        targetRoot.set("$buildDir/gen")
+        pathToParser.set("$PackageRoot/lang/parser/JavaccParser.java")
+        pathToPsiRoot.set(PathToPsiRoot)
+        purgeOldFiles.set(true)
 
 
-        source = "src/main/grammars/JavaCC.bnf"
-        targetRoot = "$buildDir/gen"
-        pathToParser = "$PackageRoot/lang/parser/JavaccParser.java"
-        pathToPsiRoot = PathToPsiRoot
-        purgeOldFiles = true
+        classpath += files(File("${setupDependencies.idea.get().classes}/lib/util.jar"))
 
         doLast {
             // Eliminate the duplicate PSI classes found in the generated and main source tree
@@ -123,21 +136,20 @@ tasks {
     }
 
 
-    val generateLexer by creating(GenerateLexer::class) {
+    generateLexer {
         group = GenerationTaskGroup
         description = "Generate the JFlex lexer used by the parser"
 
-        source = "src/main/grammars/JavaCC.flex"
-        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
-        targetClass = "JavaccLexer"
-        purgeOldFiles = true
+        sourceFile.set(file("src/main/grammars/JavaCC.flex"))
+        targetDir.set("$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer")
+        targetClass.set("JavaccLexer")
+        purgeOldFiles.set(true)
     }
-
 
     compileJava {
         dependsOn(generateParser, generateLexer)
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     compileKotlin {
@@ -147,27 +159,20 @@ tasks {
                 "-Xjvm-default=enable",
                 "-Xuse-experimental=kotlin.Experimental"
             )
-            jvmTarget = "1.8"
+            jvmTarget = "17"
         }
 
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
 
-    // See https://github.com/JetBrains/gradle-intellij-plugin/
-    intellij {
-        version = IntellijVersion
-        updateSinceUntilBuild = false
-        ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
-        setPlugins("java")
-    }
 
     runIde {
         // this launches in the sandbox subdir
         jvmArgs = listOf("-Xmx2G")
-        setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
+        // configDirectory.set(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
 
     buildPlugin {
@@ -176,15 +181,14 @@ tasks {
     }
 
     publishPlugin {
-        token(project.property("intellijPublishToken"))
+        token.set(project.property("intellijPublishToken") as String)
     }
 
     patchPluginXml {
 
         val changelog = layout.files("changelog.html").singleFile.readText()
 
-        changeNotes(changelog)
-
-        version(project.version)
+        changeNotes.set(changelog)
+        version.set(project.version as String)
     }
 }
