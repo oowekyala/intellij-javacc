@@ -1,9 +1,7 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import java.net.URI
-
 plugins {
-    id("org.jetbrains.intellij") version "1.13.1"
+    id("org.jetbrains.intellij") version "1.14.1"
     java
     id("org.jetbrains.grammarkit") version "2022.3.1"
     kotlin("jvm") version "1.8.22" // sync with version below
@@ -12,8 +10,8 @@ plugins {
 group = "com.github.oowekyala"
 version = "1.10"
 
-val IntellijVersion = "2022.3.1" // note: "since" version should be updated manually in plugin.xml
-val IJBuild = "223.8214.52"
+val IntellijVersion = "231.9011.34" // note: "since" version should be updated manually in plugin.xml
+val IJBuild = "231.9011.34"
 val KotlinVersion = "1.8.22"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
@@ -21,8 +19,9 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 repositories {
     mavenCentral()
-    maven(url = "https://www.jetbrains.com/intellij-repository/releases")
-    maven(url = "https://cache-redirector.jetbrains.com/intellij-dependencies")
+    maven("https://www.jetbrains.com/intellij-repository/releases")
+    maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
 
 //    maven {
 //        url = URI("https://jitpack.io")
@@ -32,8 +31,8 @@ repositories {
 //    }
 //    maven {
 //        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
-//    }
-//    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
+///    }
+ //   maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
 
 }
 
@@ -87,13 +86,11 @@ tasks {
     intellij {
         version.set(IntellijVersion)
         updateSinceUntilBuild.set(false)
-        ideaDependencyCachePath.set("${rootProject.path}/dependencies/repo/ijcc.build")
+        ideaDependencyCachePath.set("deps")
 //        plugins.set(listOf("com.intellij.java"))
     }
 
     val GenerationTaskGroup = "Code generation"
-
-    val setupDependencies by setupDependencies
 
     generateParser {
         group = GenerationTaskGroup
@@ -105,7 +102,9 @@ tasks {
         purgeOldFiles.set(true)
 
 
-        classpath += files(File("${setupDependencies.idea.get().classes}/lib/util.jar"))
+//        classpath += files(File("${setupDependencies.idea.get().classes}/lib/util.jar"))
+
+        classpath(project.sourceSets.main.get().runtimeClasspath)
 
         doLast {
             // Eliminate the duplicate PSI classes found in the generated and main source tree
