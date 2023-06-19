@@ -14,7 +14,7 @@ inline fun <T> T.runIt(block: (T) -> Unit) {
 }
 
 fun <T : Any> Sequence<T>.firstOfAnyType(vararg types: Class<out T>): T? =
-    first { t -> types.any { type -> type.isInstance(t) } }
+    firstOrNull { t -> types.any { type -> type.isInstance(t) } }
 
 /** Insert [sub] into this string s.t. [sub] is at indices [offset] in the resulting string. */
 @Contract(pure = true)
