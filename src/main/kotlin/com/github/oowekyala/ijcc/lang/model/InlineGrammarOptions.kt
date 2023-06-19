@@ -36,6 +36,9 @@ class InlineGrammarOptions(file: JccFile) : BaseCachedModelObject(file), IGramma
 
     override val grammarName: String? = null
 
+    override val isUserTokenManager: Boolean
+        get() = getOptionValueOrDefault(JccOption.USER_TOKEN_MANAGER)
+
     override val nodeTakesParserArg: Boolean by lazy {
         getOptionValueOrDefault(JjtOption.NODE_USES_PARSER)
     }

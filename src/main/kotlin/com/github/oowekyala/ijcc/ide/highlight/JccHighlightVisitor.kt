@@ -317,19 +317,24 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
         val reffed = o.typedReference.resolveToken()
         myHolder +=
             when {
-                reffed == null                                           ->
+                reffed == null && !o.grammarOptions.isUserTokenManager       ->
                     wrongReferenceInfo(o.nameIdentifier, JccErrorMessages.undefinedTokenName(o.name!!))
-                reffed.isPrivate && !o.canReferencePrivate               ->
+
+                reffed != null && reffed.isPrivate && !o.canReferencePrivate ->
                     wrongReferenceInfo(
                         o.nameIdentifier,
                         "Token name \"${o.name}\" refers to a private (with a #) regular expression"
                     )
-                reffed.regexKind != RegexKind.TOKEN && !reffed.isPrivate && !o.ancestors(false).any { it is JccRegexSpec } ->
+
+                reffed != null && reffed.regexKind != RegexKind.TOKEN
+                        && !reffed.isPrivate
+                        && !o.ancestors(false).any { it is JccRegexSpec }    ->
                     wrongReferenceInfo(
                         o.nameIdentifier,
                         "Token name ${o.name} refers to a non-token (${reffed.regexKind}) regular expression"
                     )
-                else                                                     ->
+
+                else                                                         ->
                     highlightInfo(o, TOKEN_REFERENCE.highlightType)
             }
 

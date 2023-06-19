@@ -13,6 +13,7 @@ interface IGrammarOptions {
     val nodePrefix: String
     val isTrackTokens: Boolean
     val nodeTakesParserArg: Boolean
+    val isUserTokenManager: Boolean
 
     /**
      * If unknown, defaults to the empty string
