@@ -28,7 +28,7 @@ object JccParserQnameIndexer : ScalarIndexExtension<String>() {
     override fun getIndexer(): DataIndexer<String, Void, FileContent> = MyDataIndexer
 
     override fun getInputFilter(): FileBasedIndex.InputFilter =
-        DefaultFileTypeSpecificInputFilter(JavaccFileType, JjtreeFileType)
+        DefaultFileTypeSpecificInputFilter(JavaccFileType(), JjtreeFileType())
 
     override fun getKeyDescriptor(): KeyDescriptor<String> = EnumeratorStringDescriptor.INSTANCE
 

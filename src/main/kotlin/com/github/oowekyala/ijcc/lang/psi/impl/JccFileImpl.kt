@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.lang.model.*
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.intellij.extapi.psi.PsiFileBase
+import com.intellij.lang.Language
 import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeRegistry
@@ -20,7 +21,8 @@ import com.intellij.util.IncorrectOperationException
  * @author Clément Fournier
  * @since 1.0
  */
-class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProvider, JavaccLanguage), JccFile {
+class JccFileImpl(fileViewProvider: FileViewProvider, language: Language)
+    : PsiFileBase(fileViewProvider, language), JccFile {
 
     private val myType: FileType by lazy {
         originalFile.virtualFile?.fileType ?: FileTypeRegistry.getInstance().getFileTypeByFileName(name)
@@ -51,10 +53,9 @@ class JccFileImpl(fileViewProvider: FileViewProvider) : PsiFileBase(fileViewProv
 
     override var grammarNature: GrammarNature = when (fileType) {
         // isInInjection -> GrammarNature.UNKNOWN
-        JjtreeFileType   -> GrammarNature.JJTREE
-        JavaccFileType   -> GrammarNature.JAVACC
-        JjtricksFileType -> GrammarNature.JJTRICKS
-        Javacc21FileType -> GrammarNature.J21
+        is JjtreeFileType   -> GrammarNature.JJTREE
+        is JavaccFileType   -> GrammarNature.JAVACC
+        is Javacc21FileType -> GrammarNature.J21
         else             -> GrammarNature.UNKNOWN
     }
         set(value) {

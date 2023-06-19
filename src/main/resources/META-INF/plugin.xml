@@ -86,12 +86,16 @@
                   implementationClass="com.github.oowekyala.ijcc.JjtreeFileType" />
 
         <fileType name="JAVACC21_GRAMMAR"
-                  language="JavaCC"
-                  extensions="javacc"
+                  language="CongoCC"
+                  extensions="ccc"
                   implementationClass="com.github.oowekyala.ijcc.Javacc21FileType" />
 
         <lang.parserDefinition
                 language="JavaCC" implementationClass="com.github.oowekyala.ijcc.JavaccParserDefinition"/>
+
+
+        <lang.parserDefinition
+                language="CongoCC" implementationClass="com.github.oowekyala.ijcc.CongoccParserDefinition"/>
 
         <multiHostInjector implementation="com.github.oowekyala.ijcc.lang.injection.JavaccLanguageInjector"/>
 

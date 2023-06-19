@@ -81,7 +81,7 @@ TOKEN :
 | < DOUBLE_PIPE: "||" >
 | < PIPE: "|" >
 | < MINUS: "-" >
-| < BANG: "!" >
+| < INCLUDE: "!" >
 | < PATH: "/" >
 | < PATH_ALT: "//" >
 

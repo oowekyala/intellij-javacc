@@ -14,3 +14,8 @@ object JavaccLanguage : Language("JavaCC") {
 
     override fun isCaseSensitive(): Boolean = true
 }
+
+object CongoccLanguage : Language(JavaccLanguage, "CongoCC") {
+
+    override fun isCaseSensitive(): Boolean = true
+}

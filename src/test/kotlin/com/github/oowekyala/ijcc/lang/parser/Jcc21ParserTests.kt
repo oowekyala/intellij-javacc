@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.parser
 
-import com.github.oowekyala.ijcc.JavaccParserDefinition
+import com.github.oowekyala.ijcc.CongoccParserDefinition
 import com.github.oowekyala.ijcc.lang.ParserTestDataPath
 import com.intellij.testFramework.ParsingTestCase
 
@@ -8,7 +8,7 @@ import com.intellij.testFramework.ParsingTestCase
  * @author Clément Fournier
  * @since 1.6
  */
-class Jcc21ParserTests : ParsingTestCase("21", "javacc", JavaccParserDefinition) {
+class Jcc21ParserTests : ParsingTestCase("21", "ccc", CongoccParserDefinition()) {
 
     private val checkIt = true
 

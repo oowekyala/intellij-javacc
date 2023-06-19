@@ -33,7 +33,7 @@ open class JccElementFactory(val project: Project) {
     fun insertEolCommentBefore(anchor: PsiElement, name: String) {
         val parserFacade = PsiParserFacade.SERVICE.getInstance(project)
 
-        val comment = parserFacade.createLineCommentFromText(JavaccFileType, name)
+        val comment = parserFacade.createLineCommentFromText(JavaccFileType(), name)
         anchor.parent.addBefore(comment, anchor)
         val eol = parserFacade.createWhiteSpaceFromText("\n")
         anchor.parent.addBefore(eol, anchor)
@@ -168,7 +168,7 @@ open class JccElementFactory(val project: Project) {
     }
 
     fun createFile(text: String): JccFile =
-        project.psiFileFactory.createFileFromText("dummy.jjt", JjtreeFileType, text) as JccFile
+        project.psiFileFactory.createFileFromText("dummy.jjt", JjtreeFileType(), text) as JccFile
 
     /**
      * Create from an AST node, used by the parser.

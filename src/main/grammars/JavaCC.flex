@@ -37,9 +37,9 @@ import static com.github.oowekyala.ijcc.lang.JccTypes.*;
     private boolean myEnumKeyword;
     private boolean is21;
 
-    public JavaccLexer() {
+    public JavaccLexer(boolean is21) {
       this(null);
-      this.is21 = true;
+      this.is21 = is21;
 
       myAssertKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_4);
       myEnumKeyword = true; // level.isAtLeast(LanguageLevel.JDK_1_5);

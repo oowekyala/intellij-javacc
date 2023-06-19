@@ -1,17 +1,18 @@
 package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.ijcc.icons.JccCoreIcons
+import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
-abstract class BaseJccFileType : LanguageFileType(JavaccLanguage) {
-    override fun getDisplayName(): String = getDescription()
+abstract class BaseJccFileType(lang: Language = JavaccLanguage) : LanguageFileType(lang) {
+    override fun getDisplayName(): String = description
 }
 
 /**
  * @since inception
  */
-object JavaccFileType : BaseJccFileType() {
+class JavaccFileType : BaseJccFileType() {
     override fun getIcon(): Icon = JccCoreIcons.JAVACC_FILE
 
     override fun getName(): String = "JAVACC_GRAMMAR"
@@ -26,7 +27,7 @@ object JavaccFileType : BaseJccFileType() {
  *
  * @since 1.2
  */
-object JjtreeFileType : BaseJccFileType() {
+class JjtreeFileType : BaseJccFileType() {
     override fun getIcon(): Icon = JccCoreIcons.JJTREE_FILE
 
     override fun getName(): String = "JJTREE_GRAMMAR"
@@ -37,31 +38,16 @@ object JjtreeFileType : BaseJccFileType() {
 }
 
 /**
- * This third file type is available for JJTricks files.
- *
- * @since 1.4
- */
-object JjtricksFileType : BaseJccFileType() {
-    override fun getIcon(): Icon = JccCoreIcons.JJTREE_FILE
-
-    override fun getName(): String = "JJTRICKS_GRAMMAR"
-
-    override fun getDefaultExtension(): String = "jjtx"
-
-    override fun getDescription(): String = "JJTricks grammar"
-}
-
-/**
  * This file type is available for Javacc 21.
  *
  * @since 1.6
  */
-object Javacc21FileType : BaseJccFileType() {
+class Javacc21FileType : BaseJccFileType(CongoccLanguage) {
     override fun getIcon(): Icon = JccCoreIcons.JAVACC_FILE
 
     override fun getName(): String = "JAVACC21_GRAMMAR"
 
-    override fun getDefaultExtension(): String = "javacc"
+    override fun getDefaultExtension(): String = "ccc"
 
-    override fun getDescription(): String = "JavaCC 21 grammar"
+    override fun getDescription(): String = "CongoCC grammar"
 }

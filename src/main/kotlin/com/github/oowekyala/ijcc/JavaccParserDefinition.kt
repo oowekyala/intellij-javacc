@@ -22,7 +22,7 @@ import com.intellij.psi.tree.TokenSet
  *
  * @author Clément Fournier
  */
-object JavaccParserDefinition : ParserDefinition {
+open class JavaccParserDefinition : ParserDefinition {
 
     override fun createLexer(project: Project): Lexer = JavaccLexerAdapter()
 
@@ -38,11 +38,20 @@ object JavaccParserDefinition : ParserDefinition {
 
     override fun createElement(node: ASTNode): PsiElement = JccElementFactory.createElement(node)
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile = JccFileImpl(viewProvider)
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = JccFileImpl(viewProvider, JavaccLanguage)
 
     override fun spaceExistenceTypeBetweenTokens(
         astNode: ASTNode?,
         astNode1: ASTNode?
     ): ParserDefinition.SpaceRequirements =
         ParserDefinition.SpaceRequirements.MAY
+}
+
+open class CongoccParserDefinition : JavaccParserDefinition() {
+    override fun createLexer(project: Project): Lexer = JavaccLexerAdapter(isCCC = true)
+    override fun createFile(viewProvider: FileViewProvider): PsiFile =
+        JccFileImpl(viewProvider, CongoccLanguage)
+
+    override fun getFileNodeType(): IFileElementType = JccFileStub.CCC_TYPE
+
 }

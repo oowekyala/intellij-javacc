@@ -8,7 +8,7 @@ import com.intellij.testFramework.ParsingTestCase
  * @author Clément Fournier
  * @since 1.0
  */
-class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition) {
+class JccParserTests : ParsingTestCase("", "jjt", JavaccParserDefinition()) {
 
     private val checkIt = true
 

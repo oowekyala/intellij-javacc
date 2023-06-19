@@ -17,7 +17,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-object JavaccLanguageInjector : MultiHostInjector {
+class JavaccLanguageInjector : MultiHostInjector {
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> =
         mutableListOf(JccJavaCompilationUnit::class.java, JccGrammarFileRoot::class.java)
 
