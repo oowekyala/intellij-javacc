@@ -164,8 +164,8 @@ tasks {
     intellij {
         version.set(IntellijVersion)
         updateSinceUntilBuild.set(true)
-        ideaDependencyCachePath.set("deps")
-        //plugins.set(listOf("com.intellij.java"))
+        //ideaDependencyCachePath.set("deps")
+        plugins.set(listOf("com.intellij.java"))
         // setPlugins("java")
     }
 

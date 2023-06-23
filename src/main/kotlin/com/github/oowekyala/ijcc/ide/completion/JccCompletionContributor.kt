@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.ide.completion
 
+//import com.intellij.codeInsight.lookup.BracesTailType
 import com.github.oowekyala.ijcc.icons.JccIcons
 import com.github.oowekyala.ijcc.icons.icon
 import com.github.oowekyala.ijcc.ide.completion.JccPatterns.jjtreeHashPattern
@@ -12,18 +13,14 @@ import com.github.oowekyala.ijcc.lang.model.JccOptionType.BaseOptionType.BOOLEAN
 import com.github.oowekyala.ijcc.lang.model.RegexKind
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.runIt
+import com.intellij.codeInsight.CharTailType
 import com.intellij.codeInsight.TailType
 import com.intellij.codeInsight.completion.*
-import com.intellij.codeInsight.completion.simple.BracesTailType
-import com.intellij.codeInsight.completion.simple.ParenthesesTailType
-//import com.intellij.codeInsight.lookup.BracesTailType
 import com.intellij.codeInsight.lookup.EqTailType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.editor.Editor
 import com.intellij.patterns.ElementPattern
 import com.intellij.psi.PsiElement
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 
@@ -183,7 +180,7 @@ class JccCompletionContributor : CompletionContributor() {
                     .withPresentableText(it.name)
                     .withTailText(" : { ... }", true)
                     .withBoldness(true)
-                    .withTail(BracesTailType())
+                    // FIXME .withTail(BracesTailType())
             }
 
         val BoolOptionValueVariants =
@@ -198,14 +195,7 @@ class JccCompletionContributor : CompletionContributor() {
 
 }
 
-object CallParensTailType : ParenthesesTailType() {
-    override fun isSpaceWithinParentheses(styleSettings: CommonCodeStyleSettings,
-                                          editor: Editor,
-                                          tailOffset: Int): Boolean = false
-
-    override fun isSpaceBeforeParentheses(styleSettings: CommonCodeStyleSettings,
-                                          editor: Editor,
-                                          tailOffset: Int): Boolean = false
+object CallParensTailType : CharTailType('(') {
 
 }
 
