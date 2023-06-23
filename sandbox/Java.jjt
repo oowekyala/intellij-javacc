@@ -2354,7 +2354,7 @@ void MultiplicativeExprTail() #MultiplicativeExpression:
   }
   UnaryExpression()
 }
-void UnaryExpression() #UnaryExpression((jjtn000.getImage() != null)):
+void UnaryExpression() #UnaryExpression(jjtn000.getImage() != null):
 {}
 {
   ("+" {jjtThis.setImage("+");} | "-" {jjtThis.setImage("-");}) UnaryExpression()

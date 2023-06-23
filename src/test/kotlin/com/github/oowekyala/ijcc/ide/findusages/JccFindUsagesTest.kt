@@ -3,7 +3,7 @@ package com.github.oowekyala.ijcc.ide.findusages
 import com.github.oowekyala.ijcc.lang.psi.JccPsiElement
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.intellij.psi.PsiElement
-import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactly
 import org.intellij.lang.annotations.Language
 
 /**

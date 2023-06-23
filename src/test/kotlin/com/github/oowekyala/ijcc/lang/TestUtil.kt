@@ -1,7 +1,7 @@
 package com.github.oowekyala.ijcc.lang
 
-import io.kotlintest.matchers.types.shouldBeInstanceOf
-import io.kotlintest.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import io.kotest.matchers.shouldBe
 
 
 const val TestResourcesPath = "src/test/resources/"

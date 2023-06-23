@@ -7,7 +7,7 @@ import com.github.oowekyala.treeutils.matchers.TreeNodeWrapper
 import com.github.oowekyala.treeutils.matchers.baseShouldMatchSubtree
 import com.github.oowekyala.treeutils.printers.KotlintestBeanTreePrinter
 import com.intellij.psi.PsiElement
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 
 
 /** An instance of [TreeLikeAdapter] for the [InjectionStructureTree] hierarchy. */

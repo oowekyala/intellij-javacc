@@ -5,10 +5,10 @@ import com.github.oowekyala.ijcc.lang.injection.InjectionStructureTree.*
 import com.github.oowekyala.ijcc.lang.psi.JccExpansion
 import com.github.oowekyala.ijcc.lang.psi.impl.jccEltFactory
 import com.github.oowekyala.ijcc.lang.util.*
-import io.kotlintest.matchers.endWith
-import io.kotlintest.matchers.string.shouldStartWith
-import io.kotlintest.should
-import io.kotlintest.shouldBe
+import io.kotest.matchers.string.endWith
+import io.kotest.matchers.string.shouldStartWith
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
 import org.junit.Test
 
 /**

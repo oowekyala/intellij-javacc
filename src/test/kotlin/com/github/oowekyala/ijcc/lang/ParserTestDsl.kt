@@ -5,7 +5,7 @@ import com.github.oowekyala.ijcc.lang.util.JccTestBase
 import com.github.oowekyala.ijcc.lang.util.PsiSpec
 import com.github.oowekyala.ijcc.lang.util.matchPsi
 import com.intellij.psi.PsiElement
-import io.kotlintest.should
+import io.kotest.matchers.should
 
 /**
  * @author Clément Fournier

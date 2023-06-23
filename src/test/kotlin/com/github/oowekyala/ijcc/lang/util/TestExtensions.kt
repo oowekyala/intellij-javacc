@@ -1,10 +1,10 @@
 package com.github.oowekyala.ijcc.lang.util
 
-import io.kotlintest.Matcher
-import io.kotlintest.Result
-import io.kotlintest.shouldNotBe
-import io.kotlintest.should as ktShould
-import io.kotlintest.shouldBe as ktShouldBe
+import io.kotest.matchers.Matcher
+import io.kotest.matchers.MatcherResult
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.should as ktShould
+import io.kotest.matchers.shouldBe as ktShouldBe
 
 
 fun <T, C : Collection<T>> C?.eachShouldMatchInOrder(vararg assertions: (T) -> Unit) {
@@ -34,10 +34,10 @@ fun <T, C : Collection<T>> C?.eachShouldMatchInOrder(vararg matchers: Matcher<T>
     }
 }
 
-fun String.normalizeWhiteSpace(): String = replace(Regex("""([\s]|\R)+"""), " ").trim()
+fun String.normalizeWhiteSpace(): String = replace(Regex("""(\s|\R)+"""), " ").trim()
 
 fun <A, B> Matcher<A>.map(f: (B) -> A): Matcher<B> = object : Matcher<B> {
-    override fun test(value: B): Result = this@map.test(f(value))
+    override fun test(value: B): MatcherResult = this@map.test(f(value))
 }
 
 
@@ -48,7 +48,7 @@ inline fun stringMatchersIgnoreWhitespace(assertions: IgnoreWhitespaceCtx.() -> 
 class IgnoreWhitespaceCtx {
 
 
-    infix fun String?.should(matcher: Matcher<in String?>) {
+    infix fun String?.should(matcher: Matcher<String?>) {
         this?.normalizeWhiteSpace() ktShould matcher.map { it?.normalizeWhiteSpace() }
     }
 

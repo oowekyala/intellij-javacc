@@ -4,8 +4,8 @@ import com.github.oowekyala.ijcc.lang.model.LexicalState
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.psi.impl.JccParenthesizedExpansionUnitImpl
 import com.github.oowekyala.ijcc.lang.util.matchPsi
-import io.kotlintest.should
-import io.kotlintest.shouldBe
+import io.kotest.matchers.should
+import io.kotest.matchers.shouldBe
 import org.junit.Test
 
 /**
@@ -15,7 +15,6 @@ import org.junit.Test
 class AstStructureTests : ParserTestDsl() {
 
 
-    @Test
     fun testAssignmentPos() {
         "a=<REF>" should matchExpansion<JccAssignedExpansionUnit> {
             it.javaAssignmentLhs shouldBe child {
@@ -97,7 +96,6 @@ class AstStructureTests : ParserTestDsl() {
     }
 
 
-    @Test
     fun testExpansionPrecedence() {
 
         "\"foo\"" should matchExpansion<JccRegexExpansionUnit> {
@@ -147,7 +145,7 @@ class AstStructureTests : ParserTestDsl() {
     }
 
 
-    @Test
+    
     fun testExpansionDeletionInAlternative() {
 
 
@@ -188,7 +186,7 @@ class AstStructureTests : ParserTestDsl() {
     }
 
 
-    @Test
+    
     fun testExpansionDeletionInSequence() {
 
 
@@ -228,7 +226,7 @@ class AstStructureTests : ParserTestDsl() {
 
     }
 
-    @Test
+    
     fun testExpansionDeletionInSequenceAndAlternative() {
 
 
@@ -277,7 +275,7 @@ class AstStructureTests : ParserTestDsl() {
     }
 
 
-    @Test
+    
     fun testIgnoreCaseRegex() {
 
         val prod = """ TOKEN [IGNORE_CASE] : {

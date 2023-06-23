@@ -4,8 +4,8 @@ import com.github.oowekyala.ijcc.lang.psi.JjtNodeClassOwner
 import com.github.oowekyala.ijcc.lang.psi.descendantSequence
 import com.github.oowekyala.ijcc.lang.psi.typedReference
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
-import io.kotlintest.matchers.haveSize
-import io.kotlintest.should
+import io.kotest.matchers.collections.haveSize
+import io.kotest.matchers.should
 
 /**
  * @author Clément Fournier

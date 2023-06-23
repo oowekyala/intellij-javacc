@@ -27,12 +27,12 @@ repositories {
 
 
 
-ext {
+project.ext(configure = {
     // creates secret properties
     set("intellijPublishToken", "")
     if (projectDir.resolve("secrets.properties").exists())
         apply(from = "secrets.properties")
-}
+})
 
 sourceSets {
     main {
@@ -51,10 +51,9 @@ dependencies {
 
     // this is for tests
     testImplementation("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
-    testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
+    testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
 
     testImplementation(kotlin("test"))
-    testImplementation("junit:junit:4.12") // todo upgrade
 
     constraints {
         testImplementation("org.jetbrains.kotlin:kotlin-stdlib:$KotlinVersion")
@@ -141,6 +140,13 @@ tasks {
 
     compileTestKotlin {
         kotlinOptions.jvmTarget = JvmTarget
+    }
+
+    test {
+        testLogging {
+            events("failed")
+            setExceptionFormat("full")
+        }
     }
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/

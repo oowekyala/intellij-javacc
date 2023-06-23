@@ -4,9 +4,8 @@ import com.github.oowekyala.ijcc.lang.cfa.isEmptyMatchPossible
 import com.github.oowekyala.ijcc.lang.cfa.leftMostSet
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.lang.util.JccTestBase
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.shouldBe
-import org.junit.Test
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 
 /**
  * @author Clément Fournier
@@ -31,61 +30,43 @@ class EmptyMatchCheckTest : JccTestBase() {
     }
 
 
-    @Test
     fun testLookahead() = "LOOKAHEAD(1, Foo())".pos<JccLocalLookaheadUnit>()
 
-    @Test
     fun testOptional() = "[\"f\"]".pos<JccOptionalExpansionUnit>()
 
-    @Test
     fun testAlternativePos() = "\"f\" | [\"f\"]".pos<JccExpansionAlternative>()
 
-    @Test
     fun testAlternativeNeg() = "\"f\" | \"s\"".neg<JccExpansionAlternative>()
 
-    @Test
     fun testParenNeg() = "(\"f\" | \"s\")".neg<JccParenthesizedExpansionUnit>()
 
-    @Test
     fun testParenPos() = "(\"f\" | [\"f\"])".pos<JccParenthesizedExpansionUnit>()
 
-    @Test
     fun testParenPlusPos() = "(\"f\" | [\"f\"])+".pos<JccParenthesizedExpansionUnit>()
 
-    @Test
     fun testParenPlusNeg() = "(\"f\" | \"f\")+".neg<JccParenthesizedExpansionUnit>()
 
-    @Test
     fun testParenOptPos() = "(\"f\" | [\"f\"])?".pos<JccParenthesizedExpansionUnit>()
 
 
-    @Test
     fun testSeqNeg() = "\"f\" \"f\"".neg<JccExpansionSequence>()
 
-    @Test
     fun testSeqPos() = "[\"f\"] [\"f\"]".pos<JccExpansionSequence>()
 
-    @Test
     fun testReferenceNeg() = "Foo()".neg<JccNonTerminalExpansionUnit>("Foo" to "\"f\"")
 
-    @Test
     fun testReferencePos() = "Foo()".pos<JccNonTerminalExpansionUnit>("Foo" to "[\"f\"]")
 
     // fixme le parser bug ici
-    @Test
     fun testScopedExpansionPos() = "Foo() #Bar".pos<JccScopedExpansionUnit>("Foo" to "[\"f\"]")
 
-    @Test
     fun testScopedExpansionNeg() = "Foo() #Bar".neg<JccScopedExpansionUnit>("Foo" to "\"f\"")
 
-    @Test
     fun testAssignedExpansionPos() = "a=Foo()".pos<JccAssignedExpansionUnit>("Foo" to "[\"f\"]")
 
-    @Test
     fun testAssignedExpansionNeg() = "a=Foo()".neg<JccAssignedExpansionUnit>("Foo" to "\"f\"")
 
 
-    @Test
     fun testLeftMostSet() {
 
         val prod = """
@@ -98,7 +79,6 @@ class EmptyMatchCheckTest : JccTestBase() {
 
     }
 
-    @Test
     fun testLeftMostSetAlt() {
 
         val prod = """

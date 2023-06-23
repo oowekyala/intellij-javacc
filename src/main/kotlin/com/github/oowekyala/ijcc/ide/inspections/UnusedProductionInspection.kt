@@ -37,7 +37,7 @@ class UnusedProductionInspection : JccInspectionBase(DisplayName) {
         if (file !is JccFile) return null
         if (SuppressionUtil.inspectionResultSuppressed(file, this)) return null
         val prods = file.nonTerminalProductions.toList()
-        if (prods.any()) return null
+        if (!prods.any()) return null
 
         val holder = ProblemsHolder(manager, file, isOnTheFly)
 

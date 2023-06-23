@@ -8,7 +8,7 @@ import com.github.oowekyala.ijcc.lang.psi.JccFile
 import com.github.oowekyala.ijcc.lang.psi.getBindingFor
 import com.github.oowekyala.ijcc.lang.psi.matchesType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 
 /**
  * @author Clément Fournier
