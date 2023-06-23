@@ -1,12 +1,11 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
 
-
 plugins {
     id("org.jetbrains.intellij") version "1.14.1"
     java
     id("org.jetbrains.grammarkit") version "2022.3.1"
-    id("org.jetbrains.changelog") version "2.1.0"
+    // todo id("org.jetbrains.changelog") version "2.1.0"
     kotlin("jvm") version "1.8.22" // sync with version below
 }
 
@@ -168,10 +167,9 @@ tasks {
     }
 
     patchPluginXml {
-        changeNotes.set(provider { changelog.getLatest().toHTML() })
+        changeNotes.set(provider {
+            layout.files("changelog.html").singleFile.readText()
+        })
     }
 
-    changelog {
-        path.set(file("changelog.html").canonicalPath)
-    }
 }
