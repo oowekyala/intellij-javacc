@@ -31,7 +31,7 @@ open class JccElementFactory(val project: Project) {
 
 
     fun insertEolCommentBefore(anchor: PsiElement, name: String) {
-        val parserFacade = PsiParserFacade.SERVICE.getInstance(project)
+        val parserFacade = PsiParserFacade.getInstance(project)
 
         val comment = parserFacade.createLineCommentFromText(JavaccFileType(), name)
         anchor.parent.addBefore(comment, anchor)
@@ -141,7 +141,7 @@ open class JccElementFactory(val project: Project) {
             .let { it as JccBnfProduction }
             .expansion
             .let { it as JccAssignedExpansionUnit }
-            .let { it.javaAssignmentLhs }
+            .javaAssignmentLhs
     }
 
 

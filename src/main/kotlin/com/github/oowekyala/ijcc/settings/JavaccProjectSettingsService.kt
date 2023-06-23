@@ -48,7 +48,7 @@ interface JavaccProjectSettingsService {
 
 /** Gets the instance of [JavaccProjectSettingsService] for this project. */
 val Project.javaccSettings: JavaccProjectSettingsService
-    get() = getService(this, JavaccProjectSettingsService::class.java)
+    get() = getService(JavaccProjectSettingsService::class.java)
         ?: error("Failed to get JavaccProjectSettingsService for $this")
 
 /** Gets the project-specific settings of the plugin. */

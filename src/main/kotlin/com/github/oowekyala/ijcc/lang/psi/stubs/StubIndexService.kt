@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.lang.psi.stubs
 
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.stubs.IndexSink
 
 /**
@@ -15,7 +15,8 @@ open class StubIndexService protected constructor() {
 
     companion object {
         @JvmStatic
-        fun getInstance(): StubIndexService = ServiceManager.getService(StubIndexService::class.java) ?: NO_INDEX
+        fun getInstance(): StubIndexService =
+            ApplicationManager.getApplication().getService(StubIndexService::class.java) ?: NO_INDEX
 
         private val NO_INDEX = StubIndexService()
     }

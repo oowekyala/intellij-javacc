@@ -28,13 +28,7 @@
     <!-- You can find the version we use to build by running the sandbox, then Help/About  -->
     <idea-version since-build="211.6693.111"/>
 
-    <application-components>
-        <!-- Add your application components here -->
-    </application-components>
 
-    <project-components>
-        <!-- Add your project components here -->
-    </project-components>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>

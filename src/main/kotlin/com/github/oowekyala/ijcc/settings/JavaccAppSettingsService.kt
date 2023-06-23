@@ -1,5 +1,6 @@
 package com.github.oowekyala.ijcc.settings
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
@@ -12,7 +13,7 @@ import com.intellij.openapi.components.Storage
  * @since 1.0
  */
 @State(name = "JavaccAppSettings", storages = [Storage("javacc-plugin.xml")])
-object JavaccAppSettingsService : PersistentStateComponent<JccGlobalSettingsState> {
+class JavaccAppSettingsService : PersistentStateComponent<JccGlobalSettingsState> {
 
     override fun loadState(state: JccGlobalSettingsState) {
         myState = state.copy()
@@ -28,7 +29,8 @@ object JavaccAppSettingsService : PersistentStateComponent<JccGlobalSettingsStat
  * App-level settings of the plugin.
  */
 val globalPluginSettings: JccGlobalSettingsState
-    get() = ServiceManager.getService(JavaccAppSettingsService::class.java).state
+    get() = ApplicationManager.getApplication()
+        .getService(JavaccAppSettingsService::class.java).state
 
 
 data class JccGlobalSettingsState(

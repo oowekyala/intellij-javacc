@@ -14,7 +14,7 @@ import com.intellij.psi.PsiManager
  * @author Clément Fournier
  * @since 1.0
  */
-object JccDocumentationProvider : AbstractDocumentationProvider() {
+class JccDocumentationProvider : AbstractDocumentationProvider() {
 
     private val stopTypes = arrayOf(
         JccProduction::class.java,
