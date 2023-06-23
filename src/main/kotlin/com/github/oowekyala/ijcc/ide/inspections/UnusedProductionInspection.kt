@@ -9,11 +9,9 @@ import com.github.oowekyala.ijcc.util.capitalize
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInspection.*
 import com.intellij.openapi.util.Condition
-import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.JBIterable
-import gnu.trove.THashSet
 import org.intellij.lang.annotations.Language
 import java.util.*
 
@@ -38,27 +36,24 @@ class UnusedProductionInspection : JccInspectionBase(DisplayName) {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         if (file !is JccFile) return null
         if (SuppressionUtil.inspectionResultSuppressed(file, this)) return null
-        val prods = JBIterable.from(file.nonTerminalProductions.asIterable())
-        if (prods.isEmpty) return null
+        val prods = file.nonTerminalProductions.toList()
+        if (prods.any()) return null
 
         val holder = ProblemsHolder(manager, file, isOnTheFly)
 
         //noinspection LimitedScopeInnerClass,EmptyClass
         abstract class Cond<T> : JBIterable.Stateful<Cond<*>>(), Condition<T>
 
-        val inExpr: THashSet<JccNonTerminalProduction> = THashSet()
-        val inParsing: THashSet<JccNonTerminalProduction> = THashSet()
-        val inSuppressed: THashSet<JccNonTerminalProduction> = THashSet()
 
-        grammarTraverserOnlyBnf(file)
+        val inExpr = grammarTraverserOnlyBnf(file)
             .filterTypes { it == JccTypes.JCC_NON_TERMINAL_EXPANSION_UNIT }
             .traverse()
-            .map { resolveProd(it) }
-            .filter(Conditions.notNull())
-            .addAllTo(inExpr)
+            .mapNotNullTo(mutableSetOf()) { resolveProd(it) }
 
-        prods.filter { r -> SuppressionUtil.inspectionResultSuppressed(r, this) }
-            .addAllTo(inSuppressed)
+        val inSuppressed =
+            prods.filterTo(mutableSetOf()) { r -> SuppressionUtil.inspectionResultSuppressed(r, this) }
+
+        val inParsing = mutableSetOf<JccNonTerminalProduction>()
 
         inParsing.add(prods.first()) // add root rule
         var size = 0
@@ -82,7 +77,7 @@ class UnusedProductionInspection : JccInspectionBase(DisplayName) {
 
 
 
-        for (prod in prods.skip(1).filter { o -> !inSuppressed.contains(o) }) {
+        for (prod in prods.asSequence().drop(1).filter { o -> !inSuppressed.contains(o) }) {
             when {
                 !inExpr.contains(prod)    -> UNUSED
                 !inParsing.contains(prod) -> UNREACHABLE

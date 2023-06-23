@@ -34,7 +34,7 @@ class JccNonTerminalReference(psiElement: JccNonTerminalExpansionUnit) :
 
 
     override fun getVariants(): Array<Any> =
-        JccRefVariantService.getInstance().nonterminalRefVariants(this)
+        JccRefVariantService.getInstance(element.project).nonterminalRefVariants(this)
 
     override fun calculateDefaultRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent
 

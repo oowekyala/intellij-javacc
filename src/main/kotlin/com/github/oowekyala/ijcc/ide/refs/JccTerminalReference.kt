@@ -45,7 +45,7 @@ class JccTerminalReference(referenceUnit: JccTokenReferenceRegexUnit) :
     }
 
     override fun getVariants(): Array<Any> =
-        JccRefVariantService.getInstance().terminalVariants(this)
+        JccRefVariantService.getInstance(element.project).terminalVariants(this)
 
 
     override fun getRangeInElement(): TextRange = element.nameIdentifier.textRangeInParent

@@ -43,7 +43,7 @@ class JjtNodePolyReference(psiElement: JjtNodeClassOwner)
         JccIdentifierManipulator().handleContentChange(element.nodeIdentifier!!, newElementName)!!
 
     override fun getVariants(): Array<Any> =
-        JccRefVariantService.getInstance().jjtreeNodeVariants(this)
+        JccRefVariantService.getInstance(element.project).jjtreeNodeVariants(this)
 
 }
 

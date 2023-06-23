@@ -22,7 +22,7 @@ import java.util.regex.Pattern
 /**
  * Allows suppressing inspections.
  */
-object JccInspectionSuppressor : InspectionSuppressor {
+class JccInspectionSuppressor : InspectionSuppressor {
     override fun getSuppressActions(element: PsiElement?, toolId: String): Array<SuppressQuickFix> {
         val seq: Sequence<SuppressQuickFix> = element?.let {
             val containers: Sequence<SuppressQuickFix> = it.getAllContainers().map {
@@ -71,7 +71,7 @@ object JccInspectionSuppressor : InspectionSuppressor {
     /**
      * Intention to suppress an inspection.
      */
-    class SuppressIntention(elt: PsiElement, toolId: String)
+    inner class SuppressIntention(elt: PsiElement, toolId: String)
         : AbstractBatchSuppressByNoInspectionCommentFix(toolId, toolId == ALL) {
 
         init {

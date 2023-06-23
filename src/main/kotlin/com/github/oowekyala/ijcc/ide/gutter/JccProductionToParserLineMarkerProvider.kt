@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.3
  */
-object JccProductionToParserLineMarkerProvider
+class JccProductionToParserLineMarkerProvider
     : BaseTargetingLineMarkerProvider<JccNonTerminalProduction>(JccNonTerminalProduction::class.java) {
 
     override fun processElt(elt: JccNonTerminalProduction): Sequence<RelatedItemLineMarkerInfo<PsiElement>> {

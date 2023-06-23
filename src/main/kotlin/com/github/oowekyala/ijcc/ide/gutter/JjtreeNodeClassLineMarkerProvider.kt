@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-object JjtreeNodeClassLineMarkerProvider :
+class JjtreeNodeClassLineMarkerProvider :
     BaseTargetingLineMarkerProvider<JjtNodeClassOwner>(JjtNodeClassOwner::class.java) {
 
     override fun processElt(elt: JjtNodeClassOwner): Sequence<RelatedItemLineMarkerInfo<PsiElement>> {

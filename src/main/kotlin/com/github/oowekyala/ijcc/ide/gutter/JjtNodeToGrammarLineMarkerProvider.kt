@@ -13,7 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
  * @author Clément Fournier
  * @since 1.2
  */
-object JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiClass>(PsiClass::class.java) {
+class JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiClass>(PsiClass::class.java) {
     override fun processElt(elt: PsiClass): Sequence<RelatedItemLineMarkerInfo<PsiElement>> =
         elt.qualifiedName
             ?.let { qname ->
@@ -28,7 +28,7 @@ object JjtNodeToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiC
                     elt.nameIdentifier?.let { ident ->
                         NavigationGutterIconBuilder.create(JccIcons.GUTTER_NAVIGATE_TO_JJTREE_NODE)
                             .setTargets(nodes)
-                            .setCellRenderer(JjtPartialDeclCellRenderer)
+                            .setCellRenderer { JjtPartialDeclCellRenderer }
                             .setTooltipText("Navigate to JJTree node in ${grammar.name}")
                             .setPopupTitle("Select partial declaration in ${grammar.name}")
                             .createLineMarkerInfo(ident)

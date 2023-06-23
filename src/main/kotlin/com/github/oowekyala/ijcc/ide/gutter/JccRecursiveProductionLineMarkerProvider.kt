@@ -22,7 +22,7 @@ import javax.swing.Icon
  * @author Clément Fournier
  * @since 1.1
  */
-object JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor(), DumbAware {
+class JccRecursiveProductionLineMarkerProvider : LineMarkerProviderDescriptor(), DumbAware {
     override fun getName(): String? = null
 
     override fun getIcon(): Icon = JccIcons.GUTTER_RECURSION

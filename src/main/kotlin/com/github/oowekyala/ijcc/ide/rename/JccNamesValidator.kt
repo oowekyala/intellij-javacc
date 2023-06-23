@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
  * @author Clément Fournier
  * @since 1.0
  */
-object JccNamesValidator : JavaNamesValidator() {
+class JccNamesValidator : JavaNamesValidator() {
     private val jccKeywords = listOf(
         "LOOKAHEAD",
         "IGNORE_CASE",

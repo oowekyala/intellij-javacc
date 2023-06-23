@@ -13,7 +13,7 @@ import com.intellij.psi.PsiElement
  * @author Clément Fournier
  * @since 1.0
  */
-object JjtreePartialDeclarationLineMarkerProvider :
+class JjtreePartialDeclarationLineMarkerProvider :
     BaseTargetingLineMarkerProvider<JjtNodeClassOwner>(JjtNodeClassOwner::class.java), DumbAware {
 
 
@@ -26,7 +26,7 @@ object JjtreePartialDeclarationLineMarkerProvider :
 
                 NavigationGutterIconBuilder.create(JccIcons.GUTTER_PARTIAL_DECL)
                     .setTargets(targets)
-                    .setCellRenderer(JjtPartialDeclCellRenderer)
+                    .setCellRenderer { JjtPartialDeclCellRenderer }
                     .setTooltipText("Navigate to partial declarations of $nodeName")
                     .setPopupTitle("Select partial declaration for $nodeName")
             }?.let { builder ->

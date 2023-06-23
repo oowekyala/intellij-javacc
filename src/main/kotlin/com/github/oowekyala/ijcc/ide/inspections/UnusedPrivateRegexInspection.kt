@@ -12,7 +12,6 @@ import com.intellij.openapi.util.Conditions
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.util.containers.JBIterable
-import gnu.trove.THashSet
 import org.intellij.lang.annotations.Language
 
 /**
@@ -40,18 +39,18 @@ class UnusedPrivateRegexInspection : JccInspectionBase(DisplayName) {
         val holder = ProblemsHolder(manager, file, isOnTheFly)
 
 
-        // specs used in other specs or regular expressions
-        val inExpr: THashSet<Token> = THashSet()
-        // specs used in other
-        val reachable: THashSet<Token> = THashSet()
-        val inSuppressed: THashSet<Token> = THashSet()
 
-        grammarTraverser(file)
+        // specs used in other specs or regular expressions
+        val inExpr = grammarTraverser(file)
             .filterTypes { it == JccTypes.JCC_TOKEN_REFERENCE_REGEX_UNIT }
             .traverse()
             .map { resolveToken(it) }
             .filter(Conditions.notNull())
-            .addAllTo(inExpr)
+            .toSet()
+
+        // specs used in other
+        val reachable: MutableSet<Token> = mutableSetOf()
+        val inSuppressed: MutableSet<Token> = mutableSetOf()
 
 
         tokens.filter { r -> r.psiElement?.let { SuppressionUtil.inspectionResultSuppressed(it, this) } == true }

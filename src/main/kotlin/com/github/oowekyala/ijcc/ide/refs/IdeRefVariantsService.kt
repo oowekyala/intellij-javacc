@@ -15,7 +15,7 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 /**
  * @author Clément Fournier
  */
-object IdeRefVariantsService : JccRefVariantService() {
+class IdeRefVariantsService : JccRefVariantService() {
 
     override fun nonterminalRefVariants(ref: JccNonTerminalReference): Array<Any> =
         ref.element.containingFile.nonTerminalProductions.map {

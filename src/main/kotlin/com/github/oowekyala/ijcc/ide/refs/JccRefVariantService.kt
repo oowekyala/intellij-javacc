@@ -1,6 +1,6 @@
 package com.github.oowekyala.ijcc.ide.refs
 
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.project.Project
 
 /**
  * @author Clément Fournier
@@ -17,8 +17,8 @@ open class JccRefVariantService {
 
     companion object {
         @JvmStatic
-        fun getInstance(): JccRefVariantService =
-            ServiceManager.getService(JccRefVariantService::class.java) ?: NO_VARIANTS
+        fun getInstance(project: Project): JccRefVariantService =
+            project.getService(JccRefVariantService::class.java) ?: NO_VARIANTS
 
         private val NO_VARIANTS = JccRefVariantService()
     }

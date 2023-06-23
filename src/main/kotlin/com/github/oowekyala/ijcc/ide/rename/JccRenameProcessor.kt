@@ -29,7 +29,7 @@ import com.intellij.usageView.UsageInfo
  * @author Clément Fournier
  * @since 1.0
  */
-object JccRenameProcessor : RenamePsiElementProcessor() {
+class JccRenameProcessor : RenamePsiElementProcessor() {
     override fun canProcessElement(element: PsiElement): Boolean {
         if (element !is JccIdentifier) return false
 

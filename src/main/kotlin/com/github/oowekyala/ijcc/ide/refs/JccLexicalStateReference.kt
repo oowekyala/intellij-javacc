@@ -20,5 +20,5 @@ class JccLexicalStateReference(element: JccIdentifier) : PsiReferenceBase<JccIde
 
 
     override fun getVariants(): Array<Any> =
-        JccRefVariantService.getInstance().lexicalStateVariants(this)
+        JccRefVariantService.getInstance(element.project).lexicalStateVariants(this)
 }

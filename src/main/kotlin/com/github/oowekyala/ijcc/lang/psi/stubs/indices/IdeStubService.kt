@@ -8,7 +8,7 @@ import com.intellij.psi.stubs.IndexSink
 /**
  * @author Clément Fournier
  */
-object IdeStubService : StubIndexService() {
+class IdeStubService : StubIndexService() {
 
     override fun indexJjtreeNodeClassOwner(stub: JjtNodeClassOwnerStub<*>, sink: IndexSink) {
         stub.jjtNodeQualifiedName?.runIt {

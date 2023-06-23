@@ -44,6 +44,6 @@ class JccBnfStringLiteralReference(element: JccLiteralRegexUnit) :
      * Enables autocompletion. Only tokens from the default state are considered.
      */
     override fun getVariants(): Array<Any> =
-        JccRefVariantService.getInstance().stringLiteralVariants(this)
+        JccRefVariantService.getInstance(element.project).stringLiteralVariants(this)
 
 }

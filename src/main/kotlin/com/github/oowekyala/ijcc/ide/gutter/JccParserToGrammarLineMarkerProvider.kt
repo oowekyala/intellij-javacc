@@ -15,7 +15,7 @@ import com.intellij.psi.util.PsiUtil
  * @author Clément Fournier
  * @since 1.2
  */
-object JccParserToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiMethod>(PsiMethod::class.java) {
+class JccParserToGrammarLineMarkerProvider : BaseTargetingLineMarkerProvider<PsiMethod>(PsiMethod::class.java) {
 
    private val jj3rRegex = Regex("jj_3R_(\\w+)_(\\d+)_(\\d+)_\\d+")
 
