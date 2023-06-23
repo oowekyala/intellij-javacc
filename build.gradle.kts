@@ -22,26 +22,8 @@ val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 repositories {
     mavenCentral()
- //   jcenter()
-
     maven("https://www.jetbrains.com/intellij-repository/releases")
-//    maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
     maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
-
-/*    maven {
-        url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
-    }
-    maven {
-        url = URI("https://dl.bintray.com/kotlin/kotlinx")
-    }
-    maven {
-        url = URI("https://jitpack.io")
-    }
-    maven {
-        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
-*/
 }
 
 
