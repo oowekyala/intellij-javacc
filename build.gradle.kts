@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.github.oowekyala"
-version = "1.11"
+version = "1.12"
 
 val IntellijVersion = "231.9011.34" // note: "since" version should be updated manually in plugin.xml
 val KotlinVersion = "1.8.22"
