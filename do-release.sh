@@ -6,7 +6,7 @@
 set -e
 
 
-git checkout master -q
+git checkout main -q
 
 CHANGELOG_LOCATION="changelog.html"
 
@@ -17,7 +17,7 @@ function incr_ver_num() {
 
 release_version=$(./gradlew properties -q  --console=plain | grep "version:" | awk '{print $2}')
 
-echo "Preparing release for version $release_version, from branch master..."
+echo "Preparing release for version $release_version, from branch main..."
 
 read -p "Enter the name of the release tag (default v$release_version): " tagname
 
@@ -38,7 +38,7 @@ echo "Publishing plugin to repository..."
 
 echo "Pushing objects..."
 
-git push origin master
+git push origin main
 git push --tags
 
 default_nr=$(incr_ver_num "$release_version")
