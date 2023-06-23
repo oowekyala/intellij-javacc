@@ -13,7 +13,6 @@ interface JccIdentifierOwner : JccPsiElement, PsiNameIdentifierOwner {
 
     override fun getNameIdentifier(): JccIdentifier?
 
-    @JvmDefault
     override fun setName(name: String): PsiElement {
         nameIdentifier?.name = name
         return this

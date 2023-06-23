@@ -13,6 +13,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 /**
  * Base class offering utilities to parse and create tests.
@@ -132,7 +133,7 @@ PARSER_END(Dummy)
         fun camelOrWordsToSnake(name: String): String {
             if (' ' in name) return name.trim().replace(" ", "_")
 
-            return name.split("(?=[A-Z])".toRegex()).joinToString("_", transform = String::toLowerCase)
+            return name.split("(?=[A-Z])".toRegex()).joinToString("_", transform = String::lowercase)
         }
     }
 

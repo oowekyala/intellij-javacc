@@ -75,7 +75,7 @@ fun String.unescapeJavaString(): String {
  * Replaces unprintable characters by their escaped (or unicode escaped)
  * equivalents in the given string
  */
-fun String.escapeJava(): String? {
+fun String.escapeJava(): String {
     val retval = java.lang.StringBuilder()
 
     for (ch in this) {
@@ -90,8 +90,8 @@ fun String.escapeJava(): String? {
             '\"'                 -> retval.append("\\\"")
             '\''                 -> retval.append("\\'")
             '\\'                 -> retval.append("\\\\")
-            else                 -> if (ch.toInt() < 0x20 || ch.toInt() > 0x7e) {
-                val s = "0000" + ch.toInt().toString(16)
+            else                 -> if (ch.code < 0x20 || ch.code > 0x7e) {
+                val s = "0000" + ch.code.toString(16)
                 retval.append("\\u").append(s.substring(s.length - 4))
             } else {
                 retval.append(ch)

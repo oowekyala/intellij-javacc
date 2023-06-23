@@ -5,6 +5,7 @@ import com.github.oowekyala.ijcc.ide.inspections.UnusedProductionInspection.Comp
 import com.github.oowekyala.ijcc.lang.JccTypes
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.addIfNotNull
+import com.github.oowekyala.ijcc.util.capitalize
 import com.github.oowekyala.ijcc.util.runIt
 import com.intellij.codeInspection.*
 import com.intellij.openapi.util.Condition
@@ -14,6 +15,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.util.containers.JBIterable
 import gnu.trove.THashSet
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 /**
  * @author Clément Fournier
@@ -108,7 +110,8 @@ class UnusedProductionInspection : JccInspectionBase(DisplayName) {
         enum class ErrorType {
             UNUSED, UNREACHABLE;
 
-            fun makeMessage(prodName: String) = name.toLowerCase().capitalize() + " production \"$prodName\""
+            fun makeMessage(prodName: String) =
+                name.lowercase(Locale.ROOT).capitalize() + " production \"$prodName\""
         }
     }
 }

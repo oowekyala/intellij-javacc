@@ -16,8 +16,7 @@ interface JjtNodeClassOwner : JccPsiElement, JccIdentifierOwner {
 
     val jjtreeNodeDescriptor: JccJjtreeNodeDescriptor?
 
-    @JvmDefault
-    val isVoid: Boolean
+        val isVoid: Boolean
         get() = nodeRawName == null
 
 

@@ -10,8 +10,7 @@ import com.github.oowekyala.ijcc.lang.JccTypes
  */
 interface JccJjtreeNodeDescriptorExpr : JccPsiElement {
 
-    @JvmDefault
-    val isGtExpression: Boolean
+        val isGtExpression: Boolean
         // the first child is the parenthesis
         get() = firstChild.nextSiblingNoWhitespace?.node?.elementType === JccTypes.JCC_GT
 

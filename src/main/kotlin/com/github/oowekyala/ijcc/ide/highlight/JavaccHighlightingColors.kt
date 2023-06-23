@@ -2,6 +2,7 @@ package com.github.oowekyala.ijcc.ide.highlight
 
 import com.github.oowekyala.ijcc.lang.JccTypes.*
 import com.github.oowekyala.ijcc.lang.psi.JccJjtreeNodeDescriptor
+import com.github.oowekyala.ijcc.util.capitalize
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType
 import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.lang.annotation.HighlightSeverity
@@ -65,7 +66,7 @@ enum class JavaccHighlightingColors(base: TextAttributesKey?) {
 
     val displayName =
         name.replace('_', ' ')
-            .toLowerCase().capitalize()
+            .lowercase(Locale.ROOT).capitalize()
             .replace("Jjtree", "JJTree")
             .replace("Javacc", "JavaCC")
 

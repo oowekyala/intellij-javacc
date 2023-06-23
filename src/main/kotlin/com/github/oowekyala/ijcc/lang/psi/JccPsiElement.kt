@@ -14,8 +14,7 @@ interface JccPsiElement : NavigatablePsiElement {
     override fun getContainingFile(): JccFile
 
     /** Gets the options bundle associated with the grammar this element is found in. */
-    @JvmDefault
-    val grammarOptions: IGrammarOptions
+        val grammarOptions: IGrammarOptions
         get() = containingFile.grammarOptions
 
 

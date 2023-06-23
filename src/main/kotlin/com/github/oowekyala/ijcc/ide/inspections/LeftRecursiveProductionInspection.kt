@@ -13,9 +13,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiFile
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
-import kotlinx.collections.immutable.immutableSetOf
+import kotlinx.collections.immutable.*
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
 
@@ -52,7 +50,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
         for (prod in leftMostSets.keys) {
             if (visited[prod] != VisitStatus.VISITED) {
-                prod.checkLeftRecursion(leftMostSets, visited, immutableListOf(Pair(prod, null)), holder)
+                prod.checkLeftRecursion(leftMostSets, visited, persistentListOf(Pair(prod, null)), holder)
             }
         }
 
@@ -67,7 +65,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
         visitStatuses[this] = VisitStatus.BEING_VISITED
 
 
-        val myLeftMost = leftMostSets[this] ?: immutableSetOf()
+        val myLeftMost = leftMostSets[this] ?: persistentSetOf()
 
         loop@ for (ref in myLeftMost) {
 
@@ -78,7 +76,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
 
             when (visitStatuses[prod]) {
                 VisitStatus.VISITED       -> break@loop // should we continue?
-                VisitStatus.NOT_VISITED   ->
+                null, VisitStatus.NOT_VISITED   ->
                     // recurse
                     prod.checkLeftRecursion(leftMostSets, visitStatuses, loopPath.add(Pair(prod, ref)), holder)
                 VisitStatus.BEING_VISITED -> {
@@ -87,7 +85,7 @@ class LeftRecursiveProductionInspection : JccInspectionBase(DisplayName) {
                     val myIdx = loopPath.indexOfFirst { it.first == prod }
                     if (myIdx < 0) continue@loop // ??
 
-                    val subPath: ProductionLoopPath = loopPath.subList(myIdx, loopPath.size).add(Pair(prod, ref))
+                    val subPath: ProductionLoopPath = loopPath.subList(myIdx, loopPath.size).toPersistentList().add(Pair(prod, ref))
 
                     // report on the root production
                     holder.registerProblem(
@@ -139,4 +137,4 @@ enum class VisitStatus {
  * added them to the path. Only the first in the list has no corresponding
  * expansion unit.
  */
-private typealias ProductionLoopPath = ImmutableList<Pair<JccNonTerminalProduction, JccNonTerminalExpansionUnit?>>
+private typealias ProductionLoopPath = PersistentList<Pair<JccNonTerminalProduction, JccNonTerminalExpansionUnit?>>

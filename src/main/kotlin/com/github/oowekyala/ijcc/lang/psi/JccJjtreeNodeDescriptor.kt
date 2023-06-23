@@ -17,16 +17,14 @@ interface JccJjtreeNodeDescriptor : JccPsiElement, JccIdentifierOwner {
     /**
      * Returns the expression if one was specified.
      */
-    @JvmDefault
-    val descriptorExpr: JccJjtreeNodeDescriptorExpr?
+        val descriptorExpr: JccJjtreeNodeDescriptorExpr?
         get() = lastChildNoWhitespace as JccJjtreeNodeDescriptorExpr?
 
     /** Is null if this is void. */
     override fun getNameIdentifier(): JccIdentifier?
 
     /** Either the identifier or the void element. */
-    @JvmDefault
-    val namingLeaf: PsiElement
+        val namingLeaf: PsiElement
         get() = nameIdentifier ?: node.findChildByType(JccTypes.JCC_VOID_KEYWORD)!!.psi
 
     /**
@@ -34,8 +32,7 @@ interface JccJjtreeNodeDescriptor : JccPsiElement, JccIdentifierOwner {
      * descriptor is applied. If null then [expansionUnit] won't
      * return null, bc this is applied to a single expansion unit.
      */
-    @JvmDefault
-    val productionHeader: JccJavaNonTerminalProductionHeader?
+        val productionHeader: JccJavaNonTerminalProductionHeader?
         get() = parent.let { it as? JccNonTerminalProduction }?.header
 
     /**
@@ -43,22 +40,18 @@ interface JccJjtreeNodeDescriptor : JccPsiElement, JccIdentifierOwner {
      * If null then [productionHeader] won't return null, bc this
      * is applied to a whole production.
      */
-    @JvmDefault
-    val expansionUnit: JccExpansionUnit?
+        val expansionUnit: JccExpansionUnit?
         get() = parent.let { it as? JccScopedExpansionUnit }?.expansionUnit
 
     /**
      * Returns true if this is a "#void" annotation.
      */
-    @JvmDefault
-    val isVoid: Boolean
+        val isVoid: Boolean
         get() = nameIdentifier == null
 
-    @JvmDefault
-    val isIndefinite: Boolean
+        val isIndefinite: Boolean
         get() = descriptorExpr == null
 
-    @JvmDefault
-    val isGreaterThan: Boolean
+        val isGreaterThan: Boolean
         get() = descriptorExpr != null && descriptorExpr!!.isGtExpression
 }

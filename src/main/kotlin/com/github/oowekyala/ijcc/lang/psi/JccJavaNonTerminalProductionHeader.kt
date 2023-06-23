@@ -20,18 +20,14 @@ interface JccJavaNonTerminalProductionHeader : JccIdentifierOwner, PsiLanguageIn
 
     override fun getNameIdentifier(): JccIdentifier
 
-    @JvmDefault
-    fun toJavaMethodHeader(): String = text
+        fun toJavaMethodHeader(): String = text
 
-    @JvmDefault
-    override fun isValidHost(): Boolean = false
+        override fun isValidHost(): Boolean = false
 
-    @JvmDefault
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
         MultilineTextEscaper(this)
 
-    @JvmDefault
-    override fun updateText(text: String): PsiLanguageInjectionHost =
+        override fun updateText(text: String): PsiLanguageInjectionHost =
         this.replace(project.jccEltFactory.createJavaNonterminalHeader(text)) as PsiLanguageInjectionHost
 
 

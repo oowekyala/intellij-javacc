@@ -9,17 +9,14 @@ import com.intellij.psi.PsiLanguageInjectionHost
 interface JccJavaExpression : JccPsiElement, PsiLanguageInjectionHost {
 
 
-    @JvmDefault
-    override fun isValidHost(): Boolean = true
+        override fun isValidHost(): Boolean = true
 
-    @JvmDefault
-    override fun updateText(text: String): PsiLanguageInjectionHost =
+        override fun updateText(text: String): PsiLanguageInjectionHost =
         this.replace(project.jccEltFactory.createJavaExpression(text))
             .let { it as PsiLanguageInjectionHost }
             .also { HostSpec.replaceHost(this, it) }
 
 
-    @JvmDefault
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
         MultilineTextEscaper(this)
 }

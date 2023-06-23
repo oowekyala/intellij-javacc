@@ -81,6 +81,9 @@ class JccCompletionContributor : CompletionContributor() {
             // FIXME doesn't work
             when (parent.modelOption?.expectedType) {
                 BOOLEAN -> result.addAllElements(BoolOptionValueVariants)
+                else -> {
+                    // todo
+                }
             }
         }
 

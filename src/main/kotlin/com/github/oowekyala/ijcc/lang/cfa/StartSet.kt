@@ -4,9 +4,7 @@ import com.github.oowekyala.ijcc.lang.model.Token
 import com.github.oowekyala.ijcc.lang.psi.*
 import com.github.oowekyala.ijcc.util.foldNullable
 import com.github.oowekyala.ijcc.util.takeUntil
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
-import kotlinx.collections.immutable.immutableSetOf
+import kotlinx.collections.immutable.*
 import kotlin.math.max
 
 /**
@@ -68,16 +66,11 @@ private fun JccExpansion.firstSetImpl(state: FirstSetState): Set<AtomicUnit> =
         is JccLocalLookaheadUnit         -> emptySet()
 
         is JccRegexExpansionUnit         ->
-            this.referencedToken?.let {
-                immutableSetOf(AtomicToken(it))
-            }   // then there's a token reference that couldn't be resolved
+            this.referencedToken?.let { persistentSetOf(AtomicToken(it)) }
+            // if null, then there's a token reference that couldn't be resolved
                 ?: when (val r = this.regularExpression) {
-                    is JccRefRegularExpression -> immutableSetOf(
-                        AtomicUnresolved(
-                            r
-                        )
-                    )
-                    else                                                          -> emptySet() // weird
+                    is JccRefRegularExpression -> persistentSetOf(AtomicUnresolved(r))
+                    else                       -> emptySet() // weird
                 }
 
         is JccScopedExpansionUnit        -> expansionUnit.firstSetImpl(state)
@@ -111,7 +104,7 @@ private fun JccExpansion.firstSetImpl(state: FirstSetState): Set<AtomicUnit> =
 private typealias FirstSetState = AlgoState<JccNonTerminalProduction, Set<AtomicUnit>>
 
 private class FirstSetStateImpl(
-    alreadySeen: ImmutableList<JccNonTerminalProduction> = immutableListOf(),
+    alreadySeen: PersistentList<JccNonTerminalProduction> = persistentListOf(),
     cache: MutableMap<JccNonTerminalProduction, Set<AtomicUnit>> = mutableMapOf(),
     /**
      * Whether to consider productions that can only ever match a single token
@@ -151,7 +144,7 @@ private class FirstSetStateImpl(
 // TODO reuse this for regex start sets
 private open class AlgoState<T : JccPsiElement, V>(
     // checks for left recursion
-    val alreadySeen: ImmutableList<T> = immutableListOf(),
+    val alreadySeen: PersistentList<T> = persistentListOf(),
     val cache: MutableMap<T, V> = mutableMapOf()
 ) {
 
@@ -195,20 +188,18 @@ private fun JccExpansion.maxTokens(state: MaxTokensState): Int? =
         is JccParserActionsUnit          -> 0
         is JccRegexExpansionUnit         -> 1
         is JccScopedExpansionUnit        -> expansionUnit.maxTokens(state)
-        is JccAssignedExpansionUnit      -> assignableExpansionUnit.let {
-            if (it == null) 0 // no expansion is 0, we mustn't hide the null
-            else it.maxTokens(state)
-        }
-        is JccParenthesizedExpansionUnit -> occurrenceIndicator.let {
-            when (it) {
+        is JccAssignedExpansionUnit      ->
+            assignableExpansionUnit?.maxTokens(state)
+                ?: 0 // no expansion is 0, we mustn't hide the null
+        is JccParenthesizedExpansionUnit ->
+            when (occurrenceIndicator) {
                 is JccZeroOrMore,
                 is JccOneOrMore -> null
-                else                                               -> expansion.let {
-                    if (it == null) 0 // no expansion is 0, we mustn't hide the null
-                    else it.maxTokens(state)
-                }
+
+                else            ->
+                    // no expansion is 0, we mustn't hide the null
+                    expansion?.maxTokens(state) ?: 0
             }
-        }
         is JccExpansionSequence          ->
             expansionUnitList.asSequence()
                 .map { it.maxTokens(state) }.foldNullable(0) { a, b -> a + b }

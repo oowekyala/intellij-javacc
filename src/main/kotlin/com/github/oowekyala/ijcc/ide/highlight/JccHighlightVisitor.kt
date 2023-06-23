@@ -381,7 +381,7 @@ open class JccHighlightVisitor : JccVisitor(), HighlightVisitor, DumbAware {
             checkCharLength(descriptor.baseCharElement, left)
                 && right != null && checkCharLength(descriptor.toCharElement!!, right)
 
-        if (checkRange && (left[0].toInt() > right!![0].toInt())) {
+        if (checkRange && (left[0].code > right!![0].code)) {
 
             myHolder += errorInfo(
                 descriptor,

@@ -128,6 +128,8 @@ fun <T> List<T>.init(): List<T> =
 fun <T> List<T>.tail(): List<T> =
     if (isEmpty()) throw NoSuchElementException() else subList(1, size)
 
+fun String.capitalize(): String =
+    replaceFirstChar { it.uppercaseChar() }
 
 // null keys will not be added.
 // values must be checked to be not null by client

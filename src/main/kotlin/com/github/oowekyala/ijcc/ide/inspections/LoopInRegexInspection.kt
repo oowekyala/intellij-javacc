@@ -11,8 +11,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiFile
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.*
 import org.intellij.lang.annotations.Language
 import org.jetbrains.annotations.TestOnly
 
@@ -37,7 +36,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
     // Like left-recursion checking but simpler, we check for any kind of loop
     // and not just those at start positions
 
-    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         if (file !is JccFile) return emptyArray()
 
         val grammar = file.lexicalGrammar
@@ -51,7 +50,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
 
         for (token in allTokens) {
             if (visited[token] != VisitStatus.VISITED) {
-                token.checkLoop(visited, immutableListOf(token), holder)
+                token.checkLoop(visited, persistentListOf(token), holder)
             }
         }
 
@@ -59,7 +58,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
     }
 
     private fun Token.checkLoop(visitStatuses: MutableMap<Token, VisitStatus>,
-                                loopPath: ImmutableList<Token>,
+                                loopPath: PersistentList<Token>,
                                 holder: ProblemsHolder) {
 
         visitStatuses[this] = VisitStatus.BEING_VISITED
@@ -82,7 +81,7 @@ class LoopInRegexInspection : JccInspectionBase(DisplayName) {
                 // report left recursion
                 holder.registerProblem(
                     reffed.psiElement!!,
-                    makeMessage(loopPath.subList(myIdx, loopPath.size).add(reffed)),
+                    makeMessage(loopPath.subList(myIdx, loopPath.size).toPersistentList().add(reffed)),
                     ProblemHighlightType.ERROR
                 )
                 break

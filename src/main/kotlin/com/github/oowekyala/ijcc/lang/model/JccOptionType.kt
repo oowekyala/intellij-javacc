@@ -1,5 +1,7 @@
 package com.github.oowekyala.ijcc.lang.model
 
+import java.util.*
+
 /**
  * Expected type of a [GenericOption].
  */
@@ -25,7 +27,7 @@ sealed class JccOptionType<T : Any> {
         object BOOLEAN : BaseOptionType<Boolean>()
     }
 
-    override fun toString(): String = javaClass.simpleName.toLowerCase()
+    override fun toString(): String = javaClass.simpleName.lowercase(Locale.ROOT)
 
     /** Projects this option type on the corresponding base type. */
     abstract val projection: BaseOptionType<T>

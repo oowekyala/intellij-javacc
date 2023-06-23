@@ -8,14 +8,15 @@ plugins {
     id("org.jetbrains.intellij") version "0.7.2"
     java
     id("org.jetbrains.grammarkit") version "2021.1.2"
-    kotlin("jvm") version "1.4.20" // sync with version below
+    kotlin("jvm") version "1.8.22" // sync with version below
 }
 
 group = "com.github.oowekyala"
 version = "1.10"
 
 val IntellijVersion = "2021.1" // note: "since" version should be updated manually in plugin.xml
-val KotlinVersion = "1.4.20"
+val KotlinVersion = "1.8.22"
+val JvmTarget = "11"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 
@@ -60,17 +61,15 @@ sourceSets {
 
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$KotlinVersion") // this could be avoided
-
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$KotlinVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+    implementation(kotlin("reflect")) // this could be avoided
 
     // this is for tests
-    testCompile("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
+    testImplementation("com.github.oowekyala.treeutils:tree-matchers:2.0.2")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:3.1.11")
 
     testImplementation(kotlin("test"))
-    testImplementation("junit:junit:4.12")
+    testImplementation("junit:junit:4.12") // todo upgrade
 
     constraints {
         testImplementation("org.jetbrains.kotlin:kotlin-stdlib:$KotlinVersion")
@@ -136,24 +135,28 @@ tasks {
 
     compileJava {
         dependsOn(generateParser, generateLexer)
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = JvmTarget
+        targetCompatibility = JvmTarget
+    }
+
+    compileTestJava {
+        sourceCompatibility = JvmTarget
+        targetCompatibility = JvmTarget
     }
 
     compileKotlin {
         dependsOn(generateParser, generateLexer)
         kotlinOptions {
             freeCompilerArgs = listOf(
-                "-Xjvm-default=enable",
-                "-Xuse-experimental=kotlin.Experimental"
+                "-Xjvm-default=all"
             )
-            jvmTarget = "1.8"
+            jvmTarget = JvmTarget
         }
 
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = JvmTarget
     }
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
