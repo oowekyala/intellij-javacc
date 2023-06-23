@@ -1,30 +1,32 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
-import org.jetbrains.grammarkit.tasks.GenerateLexer
-import org.jetbrains.grammarkit.tasks.GenerateParser
-import java.net.URI
 
 plugins {
-    id("org.jetbrains.intellij") version "0.7.2"
+    id("org.jetbrains.intellij") version "1.14.1"
     java
-    id("org.jetbrains.grammarkit") version "2021.1.2"
+    id("org.jetbrains.grammarkit") version "2022.3.1"
     kotlin("jvm") version "1.8.22" // sync with version below
 }
 
 group = "com.github.oowekyala"
-version = "1.10"
+version = "1.11"
 
-val IntellijVersion = "2021.1" // note: "since" version should be updated manually in plugin.xml
+val IntellijVersion = "231.9011.34" // note: "since" version should be updated manually in plugin.xml
 val KotlinVersion = "1.8.22"
-val JvmTarget = "11"
+val JvmTarget = "17"
 val PackageRoot = "/com/github/oowekyala/ijcc"
 val PathToPsiRoot = "$PackageRoot/lang/psi"
 
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
+ //   jcenter()
+
+    maven("https://www.jetbrains.com/intellij-repository/releases")
+//    maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
+    maven("https://cache-redirector.jetbrains.com/intellij-dependencies")
+
+/*    maven {
         url = URI("https://jetbrains.bintray.com/intellij-plugin-service")
     }
     maven {
@@ -37,7 +39,7 @@ repositories {
         url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
     }
     maven("https://jetbrains.bintray.com/intellij-third-party-dependencies")
-
+*/
 }
 
 
@@ -82,16 +84,15 @@ tasks {
 
     val GenerationTaskGroup = "Code generation"
 
-    val generateParser by creating(GenerateParser::class) {
+     generateParser {
         group = GenerationTaskGroup
         description = "Generate the parser and PSI hierarchy"
+        sourceFile.set(file("src/main/grammars/JavaCC.bnf"))
+        targetRoot.set("$buildDir/gen")
+        pathToParser.set("$PackageRoot/lang/parser/JavaccParser.java")
+        pathToPsiRoot.set(PathToPsiRoot)
+        purgeOldFiles.set(true)
 
-
-        source = "src/main/grammars/JavaCC.bnf"
-        targetRoot = "$buildDir/gen"
-        pathToParser = "$PackageRoot/lang/parser/JavaccParser.java"
-        pathToPsiRoot = PathToPsiRoot
-        purgeOldFiles = true
 
         doLast {
             // Eliminate the duplicate PSI classes found in the generated and main source tree
@@ -122,14 +123,14 @@ tasks {
     }
 
 
-    val generateLexer by creating(GenerateLexer::class) {
+     generateLexer  {
         group = GenerationTaskGroup
         description = "Generate the JFlex lexer used by the parser"
 
-        source = "src/main/grammars/JavaCC.flex"
-        targetDir = "$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer"
-        targetClass = "JavaccLexer"
-        purgeOldFiles = true
+        sourceFile.set(file("src/main/grammars/JavaCC.flex"))
+        targetDir.set("$buildDir/gen/com/github/oowekyala/ijcc/lang/lexer")
+        targetClass.set("JavaccLexer")
+        purgeOldFiles.set(true)
     }
 
 
@@ -161,33 +162,35 @@ tasks {
 
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
-        version = IntellijVersion
-        updateSinceUntilBuild = false
-        ideaDependencyCachePath = "${rootProject.path}/dependencies/repo/ijcc.build"
-        setPlugins("java")
+        version.set(IntellijVersion)
+        updateSinceUntilBuild.set(true)
+        ideaDependencyCachePath.set("deps")
+        //plugins.set(listOf("com.intellij.java"))
+        // setPlugins("java")
     }
 
-    runIde {
+  /*  runIde {
         // this launches in the sandbox subdir
         jvmArgs = listOf("-Xmx2G")
         setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
-
+*/
     buildPlugin {
         archiveVersion.set(project.version.toString())
         archiveBaseName.set("intellij-javacc")
     }
 
     publishPlugin {
-        token(project.property("intellijPublishToken"))
+        token.set(project.property("intellijPublishToken") as String)
     }
 
     patchPluginXml {
+        // todo gradle changelog plugin
 
         val changelog = layout.files("changelog.html").singleFile.readText()
 
-        changeNotes(changelog)
+        changeNotes.set(changelog)
 
-        version(project.version)
+ //       version.set(project.version)
     }
 }
