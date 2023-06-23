@@ -1,10 +1,12 @@
 @file:Suppress("PropertyName", "LocalVariableName")
 
 
+
 plugins {
     id("org.jetbrains.intellij") version "1.14.1"
     java
     id("org.jetbrains.grammarkit") version "2022.3.1"
+    id("org.jetbrains.changelog") version "2.1.0"
     kotlin("jvm") version "1.8.22" // sync with version below
 }
 
@@ -166,15 +168,14 @@ tasks {
         updateSinceUntilBuild.set(true)
         //ideaDependencyCachePath.set("deps")
         plugins.set(listOf("com.intellij.java"))
-        // setPlugins("java")
     }
 
-  /*  runIde {
+    runIde {
         // this launches in the sandbox subdir
         jvmArgs = listOf("-Xmx2G")
-        setConfigDirectory(rootProject.projectDir.resolve("sandbox").resolve("config"))
+        configDir.set(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
-*/
+
     buildPlugin {
         archiveVersion.set(project.version.toString())
         archiveBaseName.set("intellij-javacc")
@@ -185,12 +186,10 @@ tasks {
     }
 
     patchPluginXml {
-        // todo gradle changelog plugin
+        changeNotes.set(provider { changelog.getLatest().toHTML() })
+    }
 
-        val changelog = layout.files("changelog.html").singleFile.readText()
-
-        changeNotes.set(changelog)
-
- //       version.set(project.version)
+    changelog {
+        path.set(file("changelog.html").canonicalPath)
     }
 }
