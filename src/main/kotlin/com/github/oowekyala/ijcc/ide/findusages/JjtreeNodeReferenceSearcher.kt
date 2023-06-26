@@ -11,7 +11,7 @@ import com.intellij.util.Processor
  * @author Clément Fournier
  * @since 1.1
  */
-object JjtreeNodeReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters>(true) {
+class JjtreeNodeReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters>(true) {
 
     override fun processQuery(queryParameters: ReferencesSearch.SearchParameters,
                               consumer: Processor<in PsiReference>) {

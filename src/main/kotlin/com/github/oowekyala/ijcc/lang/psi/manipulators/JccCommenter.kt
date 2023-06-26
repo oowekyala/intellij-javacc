@@ -6,7 +6,7 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 
-object JccCommenter : CodeDocumentationAwareCommenterEx {
+class JccCommenter : CodeDocumentationAwareCommenterEx {
     override fun getLineCommentPrefix(): String? = "//"
 
     override fun getBlockCommentPrefix(): String? = "/*"

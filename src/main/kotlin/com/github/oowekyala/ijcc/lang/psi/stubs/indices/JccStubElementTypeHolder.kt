@@ -5,10 +5,18 @@ import com.github.oowekyala.ijcc.lang.psi.stubs.JavacodeProductionStubImpl
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccFileStub
 import com.github.oowekyala.ijcc.lang.psi.stubs.JccScopedExpansionUnitStub
 
-object JccStubElementTypeHolder {
+interface JccStubElementTypeHolder {
+    companion object {
+        @JvmStatic
+        val bnfProd = BnfProductionStubImpl.TYPE
 
-    val bnfProd = BnfProductionStubImpl.TYPE
-    val javacodeProd = JavacodeProductionStubImpl.TYPE
-    val unitStub = JccScopedExpansionUnitStub.TYPE
-    val fileStub = JccFileStub.TYPE
+        @JvmStatic
+        val javacodeProd = JavacodeProductionStubImpl.TYPE
+
+        @JvmStatic
+        val unitStub = JccScopedExpansionUnitStub.TYPE
+
+        @JvmStatic
+        val fileStub = JccFileStub.TYPE
+    }
 }

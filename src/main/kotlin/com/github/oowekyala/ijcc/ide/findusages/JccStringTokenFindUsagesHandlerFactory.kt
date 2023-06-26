@@ -8,7 +8,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.search.SearchScope
 
 
-object JccStringTokenFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
+class JccStringTokenFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
     override fun createFindUsagesHandler(element: PsiElement, forHighlightUsages: Boolean): FindUsagesHandler? =
         when (element) {
             is JccLiteralRegexUnit ->

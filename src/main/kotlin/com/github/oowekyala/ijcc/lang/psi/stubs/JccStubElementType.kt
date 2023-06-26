@@ -10,7 +10,7 @@ import com.intellij.psi.stubs.StubElement
  * @since 1.2
  */
 abstract class JccStubElementType<TStub : StubElement<*>, TElem : JccPsiElement>(val id: String)
-    : IStubElementType<TStub, TElem>(id, JavaccLanguage) {
+    : IStubElementType<TStub, TElem>(id, JavaccLanguage.INSTANCE) {
 
     override fun getExternalId(): String = "JCC_$id"
 

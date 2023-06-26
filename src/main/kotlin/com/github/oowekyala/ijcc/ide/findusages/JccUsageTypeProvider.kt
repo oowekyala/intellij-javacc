@@ -10,7 +10,7 @@ import com.intellij.usages.impl.rules.UsageTypeProviderEx
  * @author Clément Fournier
  * @since 1.2
  */
-object JccUsageTypeProvider : UsageTypeProviderEx {
+class JccUsageTypeProvider : UsageTypeProviderEx {
 
     override fun getUsageType(element: PsiElement, targets: Array<out UsageTarget>): UsageType? = when {
         element is JccNonTerminalExpansionUnit                     -> JccUsageTypes.NONTERMINAL_REFERENCE

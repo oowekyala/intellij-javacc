@@ -159,7 +159,10 @@ tasks {
 
     runIde {
         // this launches in the sandbox subdir
-        jvmArgs = listOf("-Xmx2G")
+        jvmArgs = listOf(
+            "-Xmx2G",
+            "-XX:+UnlockDiagnosticVMOptions"
+        )
         configDir.set(rootProject.projectDir.resolve("sandbox").resolve("config"))
     }
 

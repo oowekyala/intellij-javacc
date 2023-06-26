@@ -10,12 +10,24 @@ import com.intellij.lang.Language
  * @author Clément Fournier
  * @since 1.0
  */
-object JavaccLanguage : Language("JavaCC") {
+class JavaccLanguage private constructor() : Language("JavaCC") {
 
     override fun isCaseSensitive(): Boolean = true
+
+    companion object {
+        val INSTANCE get() = Language.findInstance(JavaccLanguage::class.java)
+        fun newInstance() = JavaccLanguage()
+        val displayName get() = INSTANCE.displayName
+    }
 }
 
-object CongoccLanguage : Language(JavaccLanguage, "CongoCC") {
+class CongoccLanguage private constructor() : Language(JavaccLanguage.INSTANCE, "CongoCC") {
 
     override fun isCaseSensitive(): Boolean = true
+
+    companion object {
+        val INSTANCE get() = Language.findInstance(CongoccLanguage::class.java)
+        fun newInstance() = CongoccLanguage()
+        val displayName get() = INSTANCE.displayName
+    }
 }

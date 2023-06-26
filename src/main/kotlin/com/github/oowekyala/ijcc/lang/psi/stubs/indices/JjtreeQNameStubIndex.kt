@@ -13,11 +13,11 @@ import com.intellij.psi.stubs.StubIndexKey
  */
 object JjtreeQNameStubIndex : StringStubIndexExtension<JjtNodeClassOwner>() {
 
-
     private val Key = StubIndexKey.createIndexKey<String, JjtNodeClassOwner>("jjtree.qname.owner")
 
     override fun getKey(): StubIndexKey<String, JjtNodeClassOwner> = Key
 
     override fun getVersion(): Int = 1
+
 
 }

@@ -1,11 +1,12 @@
 package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.ijcc.icons.JccCoreIcons
-import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
-abstract class BaseJccFileType(lang: Language = JavaccLanguage) : LanguageFileType(lang) {
+private val JavaccLang = JavaccLanguage.newInstance()
+
+abstract class BaseJccFileType : LanguageFileType(JavaccLang) {
     override fun getDisplayName(): String = description
 }
 
@@ -42,7 +43,8 @@ class JjtreeFileType : BaseJccFileType() {
  *
  * @since 1.6
  */
-class Javacc21FileType : BaseJccFileType(CongoccLanguage) {
+class Javacc21FileType : LanguageFileType(CongoccLanguage.newInstance()) {
+    override fun getDisplayName(): String = description
     override fun getIcon(): Icon = JccCoreIcons.JAVACC_FILE
 
     override fun getName(): String = "JAVACC21_GRAMMAR"

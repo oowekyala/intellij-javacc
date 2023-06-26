@@ -11,7 +11,7 @@ import com.intellij.util.Processor
  * @author Clément Fournier
  * @since 1.1
  */
-object StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters>(true) {
+class StringReferenceSearcher : QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters>(true) {
     override fun processQuery(queryParameters: ReferencesSearch.SearchParameters,
                               consumer: Processor<in PsiReference>) {
 

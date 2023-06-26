@@ -16,8 +16,7 @@ import com.intellij.util.io.KeyDescriptor
  * @author Clément Fournier
  * @since 1.2
  */
-object JccParserQnameIndexer : ScalarIndexExtension<String>() {
-    val NAME = ID.create<String, Void>("jccParserQname")
+class JccParserQnameIndexer : ScalarIndexExtension<String>() {
 
     override fun getName(): ID<String, Void> = NAME
 
@@ -40,6 +39,10 @@ object JccParserQnameIndexer : ScalarIndexExtension<String>() {
 
             return mapOf(file.grammarOptions.parserQualifiedName to null)
         }
+    }
+
+    companion object {
+        val NAME = ID.create<String, Void>("jccParserQname")
     }
 
 }

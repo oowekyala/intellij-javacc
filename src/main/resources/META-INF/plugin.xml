@@ -136,7 +136,7 @@
 
         <!-- INDEX -->
 
-        <stubElementTypeHolder class="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccStubElementTypeHolder" />
+        <stubElementTypeHolder class="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccStubElementTypeHolder" externalIdPrefix="javacc."/>
         <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
         <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
 
@@ -181,7 +181,7 @@
                              implementationClass="com.github.oowekyala.ijcc.ide.rename.JccNamesValidator"/>
 
 
-        <codeFoldingOptionsProvider implementation="com.github.oowekyala.ijcc.ide.folding.JccFoldingOptionsProvider" />
+        <codeFoldingOptionsProvider instance="com.github.oowekyala.ijcc.ide.folding.JccFoldingOptionsProvider" />
 
         <lang.foldingBuilder language="JavaCC"
                              implementationClass="com.github.oowekyala.ijcc.ide.folding.JccFoldingBuilder"/>

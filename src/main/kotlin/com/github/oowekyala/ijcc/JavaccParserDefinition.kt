@@ -38,7 +38,7 @@ open class JavaccParserDefinition : ParserDefinition {
 
     override fun createElement(node: ASTNode): PsiElement = JccElementFactory.createElement(node)
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile = JccFileImpl(viewProvider, JavaccLanguage)
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = JccFileImpl(viewProvider, JavaccLanguage.INSTANCE)
 
     override fun spaceExistenceTypeBetweenTokens(
         astNode: ASTNode?,
@@ -50,7 +50,7 @@ open class JavaccParserDefinition : ParserDefinition {
 open class CongoccParserDefinition : JavaccParserDefinition() {
     override fun createLexer(project: Project): Lexer = JavaccLexerAdapter(isCCC = true)
     override fun createFile(viewProvider: FileViewProvider): PsiFile =
-        JccFileImpl(viewProvider, CongoccLanguage)
+        JccFileImpl(viewProvider, CongoccLanguage.INSTANCE)
 
     override fun getFileNodeType(): IFileElementType = JccFileStub.CCC_TYPE
 
