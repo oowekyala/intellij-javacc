@@ -9,9 +9,5 @@ import com.intellij.psi.stubs.StubElement
  * @author Clément Fournier
  * @since 1.2
  */
-abstract class JccStubElementType<TStub : StubElement<*>, TElem : JccPsiElement>(val id: String)
-    : IStubElementType<TStub, TElem>(id, JavaccLanguage.INSTANCE) {
-
-    override fun getExternalId(): String = "JCC_$id"
-
-}
+abstract class JccStubElementType<TStub : StubElement<*>, TElem : JccPsiElement>(id: String)
+    : IStubElementType<TStub, TElem>(id, JavaccLanguage.INSTANCE)

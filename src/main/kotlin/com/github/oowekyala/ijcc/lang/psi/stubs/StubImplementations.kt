@@ -143,6 +143,7 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
     object TYPE :
         NodeClassOwnerStubElementType<JccScopedExpansionUnitStub, JccScopedExpansionUnit>("SCOPED_EXPANSION_UNIT") {
 
+        override fun getExternalId(): String = "JCC_SCOPED_EXPANSION_UNIT"
         override fun createPsi(stub: JccScopedExpansionUnitStub): JccScopedExpansionUnit =
             JccScopedExpansionUnitImpl(stub, this)
 
@@ -202,6 +203,7 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
 
 
     object TYPE : NonTerminalStubElementType<BnfProductionStubImpl, JccBnfProduction>("BNF_PRODUCTION") {
+        override fun getExternalId(): String = "JCC_BNF_PRODUCTION"
         override fun createPsi(stub: BnfProductionStubImpl): JccBnfProduction =
             JccBnfProductionImpl(stub, this)
 
@@ -241,6 +243,7 @@ class JavacodeProductionStubImpl(parent: StubElement<*>?,
 
 
     object TYPE : NonTerminalStubElementType<JavacodeProductionStubImpl, JccJavacodeProduction>("JAVACODE_PRODUCTION") {
+        override fun getExternalId(): String = "JCC_JAVACODE_PRODUCTION"
         override fun createPsi(stub: JavacodeProductionStubImpl): JccJavacodeProduction =
             JccJavacodeProductionImpl(stub, this)
 

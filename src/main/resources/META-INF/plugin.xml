@@ -136,7 +136,7 @@
 
         <!-- INDEX -->
 
-        <stubElementTypeHolder class="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccStubElementTypeHolder" externalIdPrefix="javacc."/>
+        <stubElementTypeHolder class="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccStubElementTypeHolder" externalIdPrefix="JCC_"/>
         <fileBasedIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JccParserQnameIndexer"/>
         <stubIndex implementation="com.github.oowekyala.ijcc.lang.psi.stubs.indices.JjtreeQNameStubIndex"/>
 
