@@ -152,7 +152,7 @@ tasks {
     // See https://github.com/JetBrains/gradle-intellij-plugin/
     intellij {
         version.set(IntellijVersion)
-        updateSinceUntilBuild.set(true)
+        updateSinceUntilBuild.set(false)
         //ideaDependencyCachePath.set("deps")
         plugins.set(listOf("com.intellij.java"))
     }
