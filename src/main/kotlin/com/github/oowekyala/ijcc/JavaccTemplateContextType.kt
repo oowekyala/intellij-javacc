@@ -1,7 +1,6 @@
 package com.github.oowekyala.ijcc
 
 import com.github.oowekyala.ijcc.lang.psi.JccFile
-import com.intellij.codeInsight.template.EverywhereContextType
 import com.intellij.codeInsight.template.TemplateActionContext
 import com.intellij.codeInsight.template.TemplateContextType
 
@@ -12,10 +11,8 @@ import com.intellij.codeInsight.template.TemplateContextType
  * @since 1.0
  */
 abstract class JccTemplateContextBase(
-    id: String,
-    displayName: String,
-    baseContextType: Class<out TemplateContextType>
-) : TemplateContextType("JAVACC_$id", displayName, baseContextType) {
+    displayName: String
+) : TemplateContextType(displayName) {
 
     override fun isInContext(ctx: TemplateActionContext): Boolean {
         return ctx.file is JccFile
@@ -26,12 +23,12 @@ abstract class JccTemplateContextBase(
 
     companion object {
 
-        class Generic : JccTemplateContextBase("CODE", JavaccLanguage.displayName, EverywhereContextType::class.java) {
+        class Generic : JccTemplateContextBase(JavaccLanguage.displayName) {
 
             override fun isInJccContext(file: JccFile, ctx: TemplateActionContext): Boolean = true
         }
 
-        class OptionsCtx : JccTemplateContextBase("OPTIONS", "Options declaration", Generic::class.java) {
+        class OptionsCtx : JccTemplateContextBase("Options declaration") {
 
 
             override fun isInJccContext(file: JccFile, ctx: TemplateActionContext): Boolean {
@@ -42,7 +39,7 @@ abstract class JccTemplateContextBase(
             }
         }
 
-        class ParserDeclCtx : JccTemplateContextBase("PARSER_DECL", "Parser declaration", Generic::class.java) {
+        class ParserDeclCtx : JccTemplateContextBase("Parser declaration") {
 
 
             override fun isInJccContext(file: JccFile, ctx: TemplateActionContext): Boolean {
@@ -54,7 +51,7 @@ abstract class JccTemplateContextBase(
         }
 
         class ProductionCtx :
-            JccTemplateContextBase("PRODUCTION_DECLS", "Production declarations", Generic::class.java) {
+            JccTemplateContextBase("Production declarations") {
 
             override fun isInJccContext(file: JccFile, ctx: TemplateActionContext): Boolean {
                 val parserEnd = file.parserDeclaration?.let { it.textOffset + it.textLength } ?: 0

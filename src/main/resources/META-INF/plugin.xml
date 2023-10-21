@@ -112,10 +112,10 @@
         <!-- LIVE TEMPLATES -->
 
         <defaultLiveTemplates file="/com/github/oowekyala/ijcc/liveTemplates/JavaCC" />
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
-        <liveTemplateContext implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
+        <liveTemplateContext contextId="JAVACC_CODE" implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$Generic"/>
+        <liveTemplateContext contextId="JAVACC_OPTIONS" baseContextId="JAVACC_CODE" implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$OptionsCtx"/>
+        <liveTemplateContext contextId="JAVACC_PARSER_DECL" baseContextId="JAVACC_CODE" implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ParserDeclCtx"/>
+        <liveTemplateContext contextId="JAVACC_PRODUCTIONS_DECL" baseContextId="JAVACC_CODE" implementation="com.github.oowekyala.ijcc.JccTemplateContextBase$Companion$ProductionCtx"/>
 
         <!-- FIND USAGES -->
 
