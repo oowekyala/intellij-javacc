@@ -2,7 +2,7 @@
 
 
 plugins {
-    id("org.jetbrains.intellij") version "1.14.1"
+    id("org.jetbrains.intellij") version "1.16.0"
     java
     id("org.jetbrains.grammarkit") version "2022.3.1"
     // todo id("org.jetbrains.changelog") version "2.1.0"
