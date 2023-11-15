@@ -1,4 +1,4 @@
-JCC_FILE
+CCC_FILE
   JccGrammarFileRootImpl(JCC_GRAMMAR_FILE_ROOT)
     JccInjectDirectiveImpl(JCC_INJECT_DIRECTIVE)
       PsiElement(INJECT)('INJECT')

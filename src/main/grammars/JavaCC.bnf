@@ -13,7 +13,7 @@
   elementTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccElementType"
   tokenTypeClass="com.github.oowekyala.ijcc.lang.psi.IJccTokenType"
   // factory for stub types
-  elementTypeFactory="com.github.oowekyala.ijcc.lang.psi.stubs.StubImplementationsKt.factory"
+  elementTypeFactory("(bnf|javacode)_production|scoped_expansion_unit")="com.github.oowekyala.ijcc.lang.psi.stubs.StubImplementationsKt.factory"
 
   psiClassPrefix="Jcc"
   psiImplClassSuffix="Impl"

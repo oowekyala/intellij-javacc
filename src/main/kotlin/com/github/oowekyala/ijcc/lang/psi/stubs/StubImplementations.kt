@@ -19,7 +19,7 @@ import com.intellij.psi.tree.IStubFileElementType
 /*
     DONT FORGET TO BUMP VERSION NUMBERS WHEN CHANGING SERIALIZED STRUCTURE
  */
-private const val StubVersion = 8
+private const val StubVersion = 9
 
 interface JccStub<T : JccPsiElement> : StubElement<T> {
 
@@ -89,7 +89,7 @@ fun factory(id: String): IElementType = when (id) {
     "JCC_BNF_PRODUCTION"        -> BnfProductionStubImpl.TYPE
     "JCC_JAVACODE_PRODUCTION"   -> JavacodeProductionStubImpl.TYPE
     "JCC_SCOPED_EXPANSION_UNIT" -> JccScopedExpansionUnitStub.TYPE
-    else                        -> IJccElementType(id)
+    else -> error("Unknown element $id")
 }
 
 
@@ -141,9 +141,8 @@ class JccScopedExpansionUnitStub(parent: StubElement<*>?,
 
 
     object TYPE :
-        NodeClassOwnerStubElementType<JccScopedExpansionUnitStub, JccScopedExpansionUnit>("SCOPED_EXPANSION_UNIT") {
+        NodeClassOwnerStubElementType<JccScopedExpansionUnitStub, JccScopedExpansionUnit>("JCC_SCOPED_EXPANSION_UNIT") {
 
-        override fun getExternalId(): String = "JCC_SCOPED_EXPANSION_UNIT"
         override fun createPsi(stub: JccScopedExpansionUnitStub): JccScopedExpansionUnit =
             JccScopedExpansionUnitImpl(stub, this)
 
@@ -202,8 +201,7 @@ class BnfProductionStubImpl(parent: StubElement<*>?,
     : NonTerminalStub<JccBnfProduction>(parent, elementType, jjtNodeRawName, methodName, accessModifier) {
 
 
-    object TYPE : NonTerminalStubElementType<BnfProductionStubImpl, JccBnfProduction>("BNF_PRODUCTION") {
-        override fun getExternalId(): String = "JCC_BNF_PRODUCTION"
+    object TYPE : NonTerminalStubElementType<BnfProductionStubImpl, JccBnfProduction>("JCC_BNF_PRODUCTION") {
         override fun createPsi(stub: BnfProductionStubImpl): JccBnfProduction =
             JccBnfProductionImpl(stub, this)
 
@@ -242,8 +240,7 @@ class JavacodeProductionStubImpl(parent: StubElement<*>?,
     : NonTerminalStub<JccJavacodeProduction>(parent, elementType, jjtNodeRawName, methodName, accessModifier) {
 
 
-    object TYPE : NonTerminalStubElementType<JavacodeProductionStubImpl, JccJavacodeProduction>("JAVACODE_PRODUCTION") {
-        override fun getExternalId(): String = "JCC_JAVACODE_PRODUCTION"
+    object TYPE : NonTerminalStubElementType<JavacodeProductionStubImpl, JccJavacodeProduction>("JCC_JAVACODE_PRODUCTION") {
         override fun createPsi(stub: JavacodeProductionStubImpl): JccJavacodeProduction =
             JccJavacodeProductionImpl(stub, this)
 

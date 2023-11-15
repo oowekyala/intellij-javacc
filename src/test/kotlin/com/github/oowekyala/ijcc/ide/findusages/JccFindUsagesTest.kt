@@ -336,7 +336,8 @@ class JccFindUsagesTest : JccTestBase() {
     private fun markersActual(source: JccPsiElement): List<Pair<Int, String>> =
         myFixture.findUsages(source)
             .filter { it.element != null }
-            .map { Pair(it.element?.line ?: -1, JccFindUsagesProvider.getType(it.element!!).split(" ")[0]) }
+            .map { Pair(it.element?.line ?: -1,
+                JccFindUsagesProvider().getType(it.element!!).split(" ")[0]) }
 
     private fun markersFrom(text: String): List<Pair<Int, String>> =
         text.split('\n')

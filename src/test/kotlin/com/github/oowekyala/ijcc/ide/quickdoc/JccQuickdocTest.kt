@@ -380,7 +380,7 @@ class JccQuickdocTest : JccTestBase() {
         val element = DocumentationManager.getInstance(project)
             .findTargetElement(myFixture.editor, offset, myFixture.file, originalElement)
 
-        val actual = JccDocumentationProvider.generateDoc(element, originalElement)?.trim()
+        val actual = JccDocumentationProvider().generateDoc(element, originalElement)?.trim()
 
         when {
             actual == null && expected == null -> return
