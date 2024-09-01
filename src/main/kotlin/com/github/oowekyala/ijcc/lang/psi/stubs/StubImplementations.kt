@@ -37,8 +37,8 @@ class JccFileStub(val file: JccFile?,
     : PsiFileStubImpl<JccFile>(file), JccStub<JccFile> {
 
     companion object {
-        val TYPE = StubType("JCC_FILE", JavaccLanguage.INSTANCE)
-        val CCC_TYPE = StubType("CCC_FILE", CongoccLanguage.INSTANCE)
+        val TYPE: StubType by lazy { StubType("JCC_FILE", JavaccLanguage.INSTANCE) }
+        val CCC_TYPE: StubType by lazy { StubType("CCC_FILE", CongoccLanguage.INSTANCE) }
     }
 
     class StubType(name: String, language: Language) : IStubFileElementType<JccFileStub>(name, language) {
