@@ -167,7 +167,7 @@
         <!-- MISC -->
 
 
-        <applicationService
+        <projectService
                 serviceInterface="com.github.oowekyala.ijcc.ide.refs.JccRefVariantService"
                 serviceImplementation="com.github.oowekyala.ijcc.ide.refs.IdeRefVariantsService"/>
 
